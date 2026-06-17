@@ -74,6 +74,10 @@ Per i progetti dove si accumula conoscenza trasversale (ricerca, studio di un do
 
 Per i progetti con libri o PDF tecnici di riferimento, il pacchetto opzionale `book-to-skill` installa la skill `book-digest`, che trasforma un PDF in una skill-libro densa e interrogabile on-demand: durante il lavoro `/<slug> argomento` restituisce la sintesi del tema senza rileggere il PDF. Le skill-libro nascono dentro il progetto (`.claude/skills/<slug>/`, versionate), perche ogni progetto puo avere libri suoi; si possono promuovere al contesto globale di Claude (`~/.claude/skills/`) solo su conferma esplicita e tracciando la scelta. La stessa skill-libro ha un doppio uso: resta una skill che gli agenti consultano (path A), oppure, se il progetto ha `knowledge-wiki`, alimenta la wiki accumulatoria copiando i file capitolo in `knowledge/sources/books/<slug>/` (path B). Dettaglio e comandi in `.claude/templates/book-to-skill/README.md`.
 
+## Token economy
+
+Il sistema e' progettato per non sprecare contesto: densita sopra completezza, caricamento on-demand di skill, schede e capitoli, niente riletture integrali (il motore di riconciliazione legge solo le schede pertinenti, i `.docx` si estraggono a fette), e il `CLAUDE.md` indicizza i satelliti invece di incorporarli. Quando serve di piu, al gate dei pacchetti si possono attivare strumenti esterni a scelta, per esempio `caveman`, che riduce i token di output ma va tenuto spento quando si produce documentazione. Le pratiche di base e le opzioni stanno nella regola `.claude/rules/token-economy.md`.
+
 ## Componenti del bundle
 
 ```
@@ -92,6 +96,7 @@ template-claude-developing/
       git-identity-and-repo.md   identita git locale, alias SSH, bootstrap del remoto
       interaction-style.md       stile della documentazione tecnica
       manual-screenshots.md      quando e come chiedere uno screenshot per i passi manuali
+      token-economy.md           pratiche di risparmio contesto e tool opzionali (caveman)
     skills/
       init-project-system/       installa l'anatomia, modalita nuovo o allineamento
       sync-context/              misura la divergenza schede contro codice
@@ -128,6 +133,8 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - `book-to-skill` di virgiliojr94, per pre-digerire un PDF tecnico in skill: https://github.com/virgiliojr94/book-to-skill
 - LLM Wiki, pattern di Andrej Karpathy: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
 - mermaid-cli del progetto Mermaid, usato dalla resa dei diagrammi: https://github.com/mermaid-js/mermaid-cli
+- `caveman` di JuliusBrussee, riduzione dei token di output a scelta dell'utente: https://github.com/juliusbrussee/caveman
+- `token-optimizer-mcp` di ooples, compressione e caching del contesto via MCP: https://github.com/ooples/token-optimizer-mcp
 
 ## Repository
 

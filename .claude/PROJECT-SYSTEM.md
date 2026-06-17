@@ -160,7 +160,7 @@ La documentazione si rivolge a un lettore tecnico esperto e va scritta come ci s
 trattini brevi. Non si presenta mai come fatto un contenuto inferito, speculativo o non
 verificato: ciò che non è verificabile va etichettato come tale, e ciò che non si conosce va dichiarato invece di essere riempito per ipotesi. Si preferisce spiegare una cosa una volta sola, in modo descrittivo, senza dare per scontato nemmeno il semplice.
 
-Questo stesso stile conviene codificarlo in un file di regola, `.claude/rules/interaction-style.md`, così da caricarlo on demand e renderlo vincolante per ogni sessione invece di affidarlo alla memoria.
+Questo stesso stile conviene codificarlo in un file di regola, `.claude/rules/interaction-style.md`, così da caricarlo on demand e renderlo vincolante per ogni sessione invece di affidarlo alla memoria. Sullo stesso principio, le pratiche di risparmio di contesto descritte in più punti di questo documento sono consolidate nella regola `.claude/rules/token-economy.md`, che indica anche quando valutare uno strumento esterno di ottimizzazione dei token.
 
 ---
 
