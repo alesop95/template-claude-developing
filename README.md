@@ -62,6 +62,10 @@ Diverse parti del sistema cambiano a seconda del sistema operativo: il forzare o
 
 Quando uno sviluppo ha parti necessariamente manuali e visive, che l'agente non puo osservare da se, l'agente chiede all'utente uno screenshot del punto preciso e lo legge dalla cartella di cattura invece di proseguire per ipotesi. Su Windows lo strumento e Screenpresso, con cartella di default `%USERPROFILE%\Pictures\Screenpresso`, e `tools/latest-screenshot.ps1` individua l'immagine piu recente da leggere. La regola completa, con il caso Linux e l'igiene degli screenshot come materiale effimero non versionato, e in `.claude/rules/manual-screenshots.md`.
 
+## Comprensione del codice esistente
+
+Per allineare un progetto che ha già codice, l'agente deve capirne la struttura. Oltre a leggere il codice, può appoggiarsi a un server MCP basato su tree-sitter, `code-context-provider-mcp`, che gira via `npx` senza dipendenze native, con licenza MIT, e restituisce l'albero delle cartelle e i simboli del codice, cioè funzioni, classi, import ed export, per JavaScript, TypeScript e Python. È già configurato in `templates/mcp.json` e viene offerto al gate MCP soprattutto nel prompt di allineamento, dove la struttura non è nota a priori; in un progetto nuovo lo stack è già noto e resta opzionale.
+
 ## Componenti del bundle
 
 ```
@@ -85,6 +89,7 @@ template-claude-developing/
       sync-context/              misura la divergenza schede contro codice
       git-sync/                  prepara le operazioni git, non committa
       repo-status/               riepilogo dello stato del repository
+      onboard/                   spiegazione completa del progetto per chi parte da zero
     agents/  commands/  hooks/  plugins/    livelli di orchestrazione, vuoti di default
     templates/
       CLAUDE.md  CLAUDE.local.md  settings.json  gitignore.snippet  mcp.json

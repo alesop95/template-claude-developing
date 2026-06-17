@@ -166,9 +166,12 @@ il dettaglio autoritativo resta nel file.
    satellite e contenga la procedura di ripresa, piu lo stub di `CLAUDE.local.md` ignorato per
    gli override personali. Sull'MCP chiedere sempre esplicitamente all'utente, sia in greenfield
    sia in allineamento, se vuole configurare un server MCP, offrendo di crearlo ora o di
-   rimandarlo come promemoria; non assumere mai. In caso affermativo istanziare in radice
-   `.mcp.json` e la cartella `mcp/`, mai sotto `.claude`, e se un `.mcp.json` esiste gia mostrare
-   la differenza invece di sovrascrivere.
+   rimandarlo come promemoria; non assumere mai. In allineamento il server consigliato e
+   `code-context-provider-mcp`, gia pronto in `templates/mcp.json`, che via `npx` espone struttura
+   e simboli del codice per mappare un progetto esistente. In caso affermativo istanziare in radice
+   `.mcp.json` dal template (per un server avviato via `npx` non serve la cartella `mcp/`, che
+   riguarda solo i server implementati in proprio), mai sotto `.claude`, e se un `.mcp.json` esiste
+   gia mostrare la differenza invece di sovrascrivere.
    Con la stessa logica del gate MCP, per ciascun pacchetto opzionale di framework presente in
    `.claude/templates/` (sottocartella con un proprio `README.md`, attualmente `templates/latex/`)
    chiedere esplicitamente se attivarlo, offrendo di istanziarlo ora o di rimandarlo come

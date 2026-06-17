@@ -28,11 +28,24 @@ templates/README-project.md    ->  <radice>/README.md                    (tracci
 
 Anatomia di radice opzionale, da istanziare solo se il progetto integra un servizio esterno
 tramite un server MCP. Vive nella radice del progetto, accanto a `.claude`, mai sotto `.claude`,
-perché Claude Code scopre i server MCP solo dal `.mcp.json` di radice.
+perché Claude Code scopre i server MCP solo dal `.mcp.json` di radice, in formato `mcpServers`.
+
+`templates/mcp.json` è già pronto per il server MCP consigliato, `code-context-provider-mcp`
+(tree-sitter in WebAssembly, zero dipendenze native, licenza MIT), avviato via `npx`: dà
+all'agente l'albero delle cartelle e i simboli del codice (funzioni, classi, import, export) ed è
+particolarmente utile in allineamento, per mappare un progetto esistente di cui non si conosce la
+struttura. Essendo un pacchetto pubblicato e avviato via `npx`, NON richiede una cartella `mcp/`,
+che serve solo per un server implementato in proprio. Per usare un altro server si modifica
+`.mcp.json` e solo in quel caso si crea `mcp/` con l'implementazione.
+
+Nota per sistema operativo: su Linux la forma diretta con `"command": "npx"` va bene; su Windows,
+se Claude Code non riesce ad avviare `npx` direttamente, usare il wrapper `"command": "cmd"` con
+`"args": ["/c", "npx", "-y", "code-context-provider-mcp@latest"]`. Il gate del sistema operativo
+dell'inizializzazione sceglie la variante giusta.
 
 ```
-templates/mcp.json             ->  <radice>/.mcp.json                    (tracciato, opzionale)
-                                    <radice>/mcp/<server>.js              (implementazione del server, tracciata, opzionale)
+templates/mcp.json   ->  <radice>/.mcp.json        (tracciato, opzionale; pronto per code-context via npx)
+                         <radice>/mcp/<server>.js   (solo per un server MCP implementato in proprio)
 ```
 
 Pacchetto opzionale per progetti LaTeX, da istanziare solo se il progetto produce un documento

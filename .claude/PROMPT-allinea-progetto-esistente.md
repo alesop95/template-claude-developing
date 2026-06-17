@@ -22,8 +22,8 @@ eseguire mai `git add`, `commit` o `push`: prepari i file e lascio a me le opera
    dello standard e del motore dalla cartella di riferimento:
    - `PROJECT-SYSTEM.md` (la fonte di verità della procedura)
    - l'intera cartella `rules/`
-   - le skill del motore e del flusso git sotto `skills/`: `init-project-system`,
-     `sync-context`, `git-sync`, `repo-status`
+   - le skill del motore, del flusso git e di onboarding sotto `skills/`: `init-project-system`,
+     `sync-context`, `git-sync`, `repo-status`, `onboard`
    - l'intera cartella `templates/` (scheletri da cui istanziare solo le schede mancanti)
    Se uno di questi file esiste già nel progetto, NON sovrascriverlo: mostrami la differenza e
    chiedimi come procedere. NON copiare `settings.local.json` né la `memory/`/`context/` del
@@ -57,17 +57,22 @@ eseguire mai `git add`, `commit` o `push`: prepari i file e lascio a me le opera
      di ripresa privato e ignorato, da aggiornare alla fine di ogni sessione con lo stato raggiunto;
    - crea le schede di `context/` con il frontmatter di riconciliazione ancorato al commit
      corrente e popolale leggendo il codice ATTUALE (non la storia), una alla volta partendo
-     dalle aree più critiche, con `covers-paths` sulle aree reali;
+     dalle aree più critiche, con `covers-paths` sulle aree reali, appoggiandoti se attivo al
+     server MCP `code-context` per ricavarne struttura e simboli (vedi punto 4);
    - dove un documento esistente copre già un'area, dotalo del frontmatter e riconcilialo
      invece di duplicarlo; dove un'area non è coperta da nulla, istanzia la scheda mancante dal
      template corrispondente sotto `.claude/templates/context/` e popolala leggendo il codice.
    Proponimi e allinea poche schede alla volta, chiedendo conferma su ogni passo che tocca git.
 
 4. Sull'MCP chiedimi sempre esplicitamente, anche se il progetto esiste già da tempo, non
-   assumere: "Vuoi configurare un server MCP per questo progetto?". Se sì e non esiste già, crea
-   `.mcp.json` e la cartella `mcp/` in radice, mai sotto `.claude`, istanziando il template
-   opzionale `templates/mcp.json`; se un `.mcp.json` esiste già, mostrami la differenza invece di
-   sovrascrivere. Se no, lasciami un promemoria esplicito che potrò aggiungerli in seguito.
+   assumere: "Vuoi configurare un server MCP per questo progetto?". In allineamento consigliami in
+   particolare `code-context-provider-mcp`, già pronto in `templates/mcp.json`: si avvia via `npx`,
+   non ha dipendenze native e dà struttura e simboli del codice, utile proprio per mappare un
+   progetto esistente di cui non conosco la struttura. Se accetto e non esiste già, crea `.mcp.json`
+   in radice, mai sotto `.claude`, istanziando `templates/mcp.json` (per un server avviato via
+   `npx` come questo NON serve la cartella `mcp/`, che riguarda solo i server implementati in
+   proprio); se un `.mcp.json` esiste già, mostrami la differenza invece di sovrascrivere. Se
+   rifiuto, lasciami un promemoria esplicito che potrò aggiungerlo in seguito.
 
 5. Quando le schede hanno il frontmatter ancorato al commit corrente, invoca la skill
    `sync-context` per verificare il drift tra schede e codice e produrre il sync report. Da quel

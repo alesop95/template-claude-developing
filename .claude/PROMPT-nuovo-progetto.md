@@ -22,8 +22,8 @@ lascio a me le operazioni git.
    standard e il motore, NON il materiale legato all'account o alla macchina:
    - `PROJECT-SYSTEM.md` (la fonte di verità della procedura)
    - l'intera cartella `rules/`
-   - le skill del motore e del flusso git sotto `skills/`: `init-project-system`,
-     `sync-context`, `git-sync`, `repo-status`
+   - le skill del motore, del flusso git e di onboarding sotto `skills/`: `init-project-system`,
+     `sync-context`, `git-sync`, `repo-status`, `onboard`
    - l'intera cartella `templates/` (scheletri canonici dell'anatomia da istanziare)
    NON copiare `settings.local.json` né eventuali `memory/` o `context/` del progetto di
    riferimento: la memoria e le schede di questo progetto si creano qui da zero, istanziando i
