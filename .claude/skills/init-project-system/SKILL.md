@@ -169,8 +169,9 @@ il dettaglio autoritativo resta nel file.
    rimandarlo come promemoria; non assumere mai. In allineamento il server consigliato e
    `code-context-provider-mcp`, gia pronto in `templates/mcp.json`, che via `npx` espone struttura
    e simboli del codice per mappare un progetto esistente. In caso affermativo istanziare in radice
-   `.mcp.json` dal template (per un server avviato via `npx` non serve la cartella `mcp/`, che
-   riguarda solo i server implementati in proprio), mai sotto `.claude`, e se un `.mcp.json` esiste
+   `.mcp.json` dal template della variante del sistema operativo (`templates/mcp.json` su
+   Linux/macOS, `templates/mcp.windows.json` su Windows; per un server avviato via `npx` non serve
+   la cartella `mcp/`, che riguarda solo i server implementati in proprio), mai sotto `.claude`, e se un `.mcp.json` esiste
    gia mostrare la differenza invece di sovrascrivere.
    Con la stessa logica del gate MCP, per ciascun pacchetto opzionale di framework presente in
    `.claude/templates/` (sottocartella con un proprio `README.md`, attualmente `templates/latex/`)

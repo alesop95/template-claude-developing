@@ -38,14 +38,17 @@ struttura. Essendo un pacchetto pubblicato e avviato via `npx`, NON richiede una
 che serve solo per un server implementato in proprio. Per usare un altro server si modifica
 `.mcp.json` e solo in quel caso si crea `mcp/` con l'implementazione.
 
-Nota per sistema operativo: su Linux la forma diretta con `"command": "npx"` va bene; su Windows,
-se Claude Code non riesce ad avviare `npx` direttamente, usare il wrapper `"command": "cmd"` con
-`"args": ["/c", "npx", "-y", "code-context-provider-mcp@latest"]`. Il gate del sistema operativo
-dell'inizializzazione sceglie la variante giusta.
+Del `.mcp.json` esistono due varianti pronte, perché `npx` si avvia in modo diverso secondo il
+sistema operativo. Su Linux e macOS `npx` è un vero eseguibile e si usa la forma diretta
+`"command": "npx"` di `templates/mcp.json`. Su Windows `npx` è uno script (`npx.cmd`), non un
+eseguibile lanciabile direttamente, quindi si usa `templates/mcp.windows.json`, che lo avvia
+tramite l'interprete dei comandi con `"command": "cmd"` e `"args": ["/c", "npx", ...]`. Il gate del
+sistema operativo dell'inizializzazione istanzia in `.mcp.json` la variante giusta.
 
 ```
-templates/mcp.json   ->  <radice>/.mcp.json        (tracciato, opzionale; pronto per code-context via npx)
-                         <radice>/mcp/<server>.js   (solo per un server MCP implementato in proprio)
+templates/mcp.json          ->  <radice>/.mcp.json   (Linux/macOS: code-context via npx diretto)
+templates/mcp.windows.json  ->  <radice>/.mcp.json   (Windows: code-context via wrapper cmd /c)
+                                 <radice>/mcp/<server>.js   (solo per un server MCP implementato in proprio)
 ```
 
 Pacchetto opzionale per progetti LaTeX, da istanziare solo se il progetto produce un documento

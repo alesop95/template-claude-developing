@@ -69,9 +69,10 @@ eseguire mai `git add`, `commit` o `push`: prepari i file e lascio a me le opera
    particolare `code-context-provider-mcp`, già pronto in `templates/mcp.json`: si avvia via `npx`,
    non ha dipendenze native e dà struttura e simboli del codice, utile proprio per mappare un
    progetto esistente di cui non conosco la struttura. Se accetto e non esiste già, crea `.mcp.json`
-   in radice, mai sotto `.claude`, istanziando `templates/mcp.json` (per un server avviato via
-   `npx` come questo NON serve la cartella `mcp/`, che riguarda solo i server implementati in
-   proprio); se un `.mcp.json` esiste già, mostrami la differenza invece di sovrascrivere. Se
+   in radice, mai sotto `.claude`, istanziando la variante del sistema operativo
+   (`templates/mcp.json` su Linux/macOS, `templates/mcp.windows.json` su Windows; per un server
+   avviato via `npx` come questo NON serve la cartella `mcp/`, che riguarda solo i server
+   implementati in proprio); se un `.mcp.json` esiste già, mostrami la differenza invece di sovrascrivere. Se
    rifiuto, lasciami un promemoria esplicito che potrò aggiungerlo in seguito.
 
 5. Quando le schede hanno il frontmatter ancorato al commit corrente, invoca la skill
