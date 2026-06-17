@@ -58,3 +58,27 @@ nel dare subito il recap d'uso e dei comandi, invece di creare cartelle vuote se
 **Rifiniture derivate.** Regola "all'attivazione mostra il recap d'uso del pacchetto" aggiunta al
 gate (`PACKAGES.md` e skill di init), e documentazione d'uso chiara con crediti agli strumenti open
 source nel README.
+
+---
+
+## 2026-06-17 — Mining di una pipeline documentale (pattern agnostici)
+
+**Archetipo.** Progetto-pipeline che ingerisce un corpus di documenti e produce una knowledge base,
+separando il lavoro deterministico (script) da quello linguistico (LLM), con stati intermedi su disco.
+
+**Cosa si e testato.** Lettura mirata dell'architettura di un progetto maturo per estrarre solo le
+strategie agnostiche al dominio, scartando quelle specifiche.
+
+**Esito.** Estratti quattro pattern riusabili: disclosure progressiva a tre livelli sui documenti,
+deterministico prima del linguistico, ingest incrementale via hash del contenuto, generazione
+idempotente via identificatori stabili. Scartato tutto cio che era di dominio: tassonomia,
+classificazione, regex di lingua, export pubblico, formula del grafo pesato.
+
+**Perche/come/dove funziona meglio.** I pattern infrastrutturali di un progetto maturo si riusano
+solo se separati dal dominio. La disclosure a livelli e il principio deterministico-prima abbattono i
+token su corpora grandi; l'ingest via hash rende ripetibile l'aggiornamento; gli ID stabili evitano
+duplicati nelle rigenerazioni.
+
+**Rifiniture derivate.** `rules/token-economy.md` esteso (disclosure progressiva, deterministico vs
+linguistico), `wiki-digest` con ingest-state via hash e re-ingestione idempotente, e `graphify`
+aggiunto al catalogo come pacchetto opzionale per il grafo di conoscenza di un progetto.

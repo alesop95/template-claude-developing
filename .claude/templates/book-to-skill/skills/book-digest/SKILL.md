@@ -44,3 +44,6 @@ per esempio con una voce nel work-log del progetto. Mai promuovere al globale se
 Densita sopra completezza: una sintesi da mille token vale piu di un estratto da diecimila. Mai
 testo grezzo: sempre estrazione di segnale. On-demand: i capitoli si caricano solo quando servono.
 Non eseguire `git add`, `commit` o `push`: restano all'utente.
+
+Idempotenza: rilanciare `book-digest` sullo stesso slug aggiorna la skill-libro esistente in luogo,
+senza duplicarla.

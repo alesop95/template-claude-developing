@@ -66,6 +66,8 @@ Quando uno sviluppo ha parti necessariamente manuali e visive, che l'agente non 
 
 Per allineare un progetto che ha già codice, l'agente deve capirne la struttura. Oltre a leggere il codice, può appoggiarsi a un server MCP basato su tree-sitter, `code-context-provider-mcp`, che gira via `npx` senza dipendenze native, con licenza MIT, e restituisce l'albero delle cartelle e i simboli del codice, cioè funzioni, classi, import ed export, per JavaScript, TypeScript e Python. È già configurato in `templates/mcp.json` e viene offerto al gate MCP soprattutto nel prompt di allineamento, dove la struttura non è nota a priori; in un progetto nuovo lo stack è già noto e resta opzionale.
 
+Per una comprensione piu olistica, soprattutto di un progetto grande o sconosciuto o di una collezione di documenti, c'e il pacchetto opzionale `graphify`, che costruisce un grafo di conoscenza dell'intero progetto: nodi e relazioni, community tematiche, nodi centrali e connessioni sorprendenti, con visualizzazione interattiva e report di insight. Sul piano concettuale serve a vedere le relazioni che leggendo i file singoli non emergono; sul piano operativo si installa con `uv tool install graphifyy` (oppure `pipx install graphifyy`), si registra con `graphify install` e si lancia con `/graphify .` nella cartella, ottenendo `graph.html`, `GRAPH_REPORT.md` e `graph.json`. Il codice e analizzato localmente via tree-sitter, mentre documenti e PDF passano dall'LLM e consumano token. Complementa `code-context` (simboli precisi del codice) e `knowledge-wiki` (pagine curate): graphify e la mappa delle relazioni, la wiki e la conoscenza sintetizzata.
+
 ## Knowledge wiki: accumulare conoscenza nel tempo
 
 Per i progetti dove si accumula conoscenza trasversale (ricerca, studio di un dominio, o le fonti dietro un libro che si sta scrivendo), il pacchetto opzionale `knowledge-wiki` scaffolda una LLM Wiki: una cartella `knowledge/` con le fonti grezze immutabili in `sources/`, le pagine compilate dall'LLM in `wiki/`, e lo schema `WIKI-SCHEMA.md` che governa tipi di pagina, collegamenti e contraddizioni. Il flusso e semplice: metti una fonte in `knowledge/sources/`, invochi la skill `wiki-digest`, e la wiki aggiorna o crea le pagine collegandole al resto, senza che tu colleghi nulla a mano. Si attiva al gate dei pacchetti e non viene proposto se il progetto ha gia una propria knowledge base nativa. Il dettaglio e il recap dei comandi sono in `.claude/templates/knowledge-wiki/README.md`.
@@ -135,6 +137,7 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - mermaid-cli del progetto Mermaid, usato dalla resa dei diagrammi: https://github.com/mermaid-js/mermaid-cli
 - `caveman` di JuliusBrussee, riduzione dei token di output a scelta dell'utente: https://github.com/juliusbrussee/caveman
 - `token-optimizer-mcp` di ooples, compressione e caching del contesto via MCP: https://github.com/ooples/token-optimizer-mcp
+- `graphify` di safishamsi, grafo di conoscenza di codice e documenti (licenza MIT): https://github.com/safishamsi/graphify
 
 ## Repository
 

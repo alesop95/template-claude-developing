@@ -21,6 +21,43 @@ tiene un mirror `.md` per i diff invece di rileggere il binario.
 Si legge un file quando serve davvero, e solo la porzione necessaria, non l'intero file se non
 occorre.
 
+## Disclosure progressiva su documenti voluminosi
+
+Un corpus documentale e' troppo grande per entrare in contesto: cento documenti possono valere oltre
+un milione di token, e l'ottanta per cento serve come riferimento ricercabile, non come materiale di
+ragionamento attivo. Invece di caricare tutto, si accede ai documenti per livelli crescenti di
+dettaglio, scendendo solo dove serve.
+
+Livello 1, scheletro: solo titolo, gerarchia delle intestazioni e conteggi per sezione, una manciata
+di token per documento. Permette di vedere un'intera cartella in poche decine di migliaia di token e
+decidere dove guardare.
+
+Livello 2, preview di sezione: per i soli documenti su cui si vuole ragionare, si aggiungono l'incipit
+e la chiusura di ogni sezione piu le entita rilevate, qualche centinaio di token per documento.
+
+Livello 3, sezione completa: lettura puntuale di una sola sezione di un solo documento, attivata solo
+per rispondere a una domanda precisa.
+
+Operativamente si parte sempre dal Livello 1 sull'intera cartella, si sale al Livello 2 solo sui
+documenti pertinenti al task, e al Livello 3 solo su richiesta esplicita. Vale per qualsiasi corpus,
+non solo per i `.docx`.
+
+## Deterministico prima del linguistico
+
+In una pipeline che mescola codice e LLM, si spinge il piu possibile il lavoro su codice
+deterministico e si riserva l'LLM al solo lavoro che richiede comprensione semantica. Parsing,
+estrazione con regex, trasformazioni, calcoli e generazione di file derivati sono deterministici e
+vanno in script. L'estrazione semantica di concetti e relazioni e la sintesi narrativa sono
+linguistiche e vanno all'LLM.
+
+Tre benefici concreti. Riproducibilita: rilanciando gli script si ottiene lo stesso risultato.
+Economia: il lavoro deterministico costa CPU locale, non token. Ispezionabilita: gli stati intermedi
+sono file leggibili, tipicamente JSON, che si possono correggere a mano senza rilanciare l'LLM.
+
+Operativamente, quando un passo si puo fare con codice lo si fa con codice e se ne salva l'output come
+stato intermedio ispezionabile; si chiama l'LLM solo per il salto semantico, e anche il suo output
+torna a essere uno stato su disco, non un risultato volatile in chat.
+
 ## Strumenti esterni, a scelta
 
 Quando il risparmio nativo non basta, per esempio in sessioni operative molto lunghe e ricche di

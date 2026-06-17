@@ -22,8 +22,11 @@ sola.
 
 ## Procedura
 
-1. Determinare le fonti nuove o cambiate rispetto all'ultima ingestione, confrontando
-   `knowledge/sources/` con le voci gia registrate in `knowledge/log.md`. Ingerire solo quelle.
+1. Determinare le fonti nuove o cambiate tramite un ingest-state: un piccolo file
+   `knowledge/.ingest-state.json` che mappa ogni fonte all'hash SHA256 del suo contenuto e alla data
+   di ingestione. Si calcola l'hash dei file in `knowledge/sources/` e si ingeriscono solo quelli
+   nuovi o con hash diverso da quello registrato. E' un rilevamento piu robusto del semplice
+   confronto col `log.md`, che resta il giornale leggibile delle ingestioni.
 2. Per ciascuna fonte nuova: leggerla, estrarne concetti, entita e punti chiave, e produrre o
    aggiornare la pagina `wiki/sources/<fonte>.md` con il riassunto denso della fonte.
 3. Aggiornare o creare le pagine in `wiki/concepts/` e `wiki/entities/` toccate dalla fonte,
@@ -38,3 +41,6 @@ Non leggere mai una fonte voluminosa per intero se non serve: estrarne il segnal
 coerentemente con l'ingestione documenti del sistema. Non modificare `knowledge/sources/`: e'
 append-only. Non eseguire `git add`, `commit` o `push`: le operazioni git restano all'utente. Non
 inventare collegamenti o contenuti non presenti nelle fonti.
+
+Re-ingestione idempotente: ingerire di nuovo una fonte aggiorna in luogo le pagine da essa derivate,
+identificate in modo stabile (per esempio per nome di fonte o concetto), senza creare duplicati.
