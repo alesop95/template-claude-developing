@@ -1,0 +1,8 @@
+# File personali e locali, non condivisi nel repository
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Artefatti di sistema operativo e di sincronizzazione
+Thumbs.db
+desktop.ini
+.DS_Store
