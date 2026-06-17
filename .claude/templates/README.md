@@ -78,6 +78,17 @@ ingestione `wiki-digest`. La mappa di dettaglio e le note stanno in `templates/k
 templates/knowledge-wiki/  ->  knowledge/ (WIKI-SCHEMA.md, log.md, sources/, wiki/) e .claude/skills/wiki-digest/
 ```
 
+Pacchetto opzionale per creare skill da libri o PDF tecnici, sul modello di book-to-skill. Installa
+la skill `book-digest`, che digerisce un PDF in una skill-libro densa e interrogabile on-demand
+sotto `.claude/skills/<slug>/`. Le skill-libro nascono locali al progetto e versionate; si possono
+promuovere al contesto globale di Claude solo su conferma esplicita. Path opzionale verso la wiki: i
+file capitolo possono finire in `knowledge/sources/books/<slug>/`. Dettaglio in
+`templates/book-to-skill/README.md`.
+
+```
+templates/book-to-skill/  ->  .claude/skills/book-digest/ (la skill); le skill-libro <slug>/ le genera book-digest
+```
+
 Pacchetto opzionale per la resa dei diagrammi, da istanziare se il progetto contiene diagrammi
 Mermaid sotto `.claude/context/diagrams/`. Lo script rende i `.mmd` nei corrispondenti `.svg`
 riusando il browser Chromium-based di sistema (Edge o Chrome), senza scaricare un Chromium di

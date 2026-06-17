@@ -70,6 +70,10 @@ Per allineare un progetto che ha già codice, l'agente deve capirne la struttura
 
 Per i progetti dove si accumula conoscenza trasversale (ricerca, studio di un dominio, o le fonti dietro un libro che si sta scrivendo), il pacchetto opzionale `knowledge-wiki` scaffolda una LLM Wiki: una cartella `knowledge/` con le fonti grezze immutabili in `sources/`, le pagine compilate dall'LLM in `wiki/`, e lo schema `WIKI-SCHEMA.md` che governa tipi di pagina, collegamenti e contraddizioni. Il flusso e semplice: metti una fonte in `knowledge/sources/`, invochi la skill `wiki-digest`, e la wiki aggiorna o crea le pagine collegandole al resto, senza che tu colleghi nulla a mano. Si attiva al gate dei pacchetti e non viene proposto se il progetto ha gia una propria knowledge base nativa. Il dettaglio e il recap dei comandi sono in `.claude/templates/knowledge-wiki/README.md`.
 
+## Libri come skill (book-to-skill)
+
+Per i progetti con libri o PDF tecnici di riferimento, il pacchetto opzionale `book-to-skill` installa la skill `book-digest`, che trasforma un PDF in una skill-libro densa e interrogabile on-demand: durante il lavoro `/<slug> argomento` restituisce la sintesi del tema senza rileggere il PDF. Le skill-libro nascono dentro il progetto (`.claude/skills/<slug>/`, versionate), perche ogni progetto puo avere libri suoi; si possono promuovere al contesto globale di Claude (`~/.claude/skills/`) solo su conferma esplicita e tracciando la scelta. La stessa skill-libro ha un doppio uso: resta una skill che gli agenti consultano (path A), oppure, se il progetto ha `knowledge-wiki`, alimenta la wiki accumulatoria copiando i file capitolo in `knowledge/sources/books/<slug>/` (path B). Dettaglio e comandi in `.claude/templates/book-to-skill/README.md`.
+
 ## Componenti del bundle
 
 ```
@@ -104,6 +108,7 @@ template-claude-developing/
       _notes/    DIARIO.md  RESOCONTO.md  TEST-CHECKLIST.md  RESUME-PROMPT.md
       latex/           pacchetto opzionale per progetti LaTeX, con script .ps1 e .sh
       knowledge-wiki/  pacchetto opzionale LLM Wiki (sources/ + wiki/ + schema + skill wiki-digest)
+      book-to-skill/   pacchetto opzionale: skill book-digest (PDF in skill on-demand, locale)
       tools/     render-diagrams.mjs  latest-screenshot.ps1  check-account-hygiene  session-end-wipe  README.md
 ```
 
