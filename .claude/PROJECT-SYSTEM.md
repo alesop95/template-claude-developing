@@ -276,6 +276,8 @@ Il wipe può essere reso automatico, come scelta opt-in dell'utente, installando
 
 Poiché l'hook è una proprietà dell'account e non del progetto, il sistema verifica che l'account attivo sia in regola tramite `templates/tools/check-account-hygiene` (`.ps1` su Windows, `.sh` su Linux), uno script di sola lettura che controlla `autoMemoryEnabled: false` e la presenza dell'hook `SessionEnd` di wipe, stampando un report PASS/FAIL con le azioni di rimedio. Il check si esegue al Passo 0 dell'inizializzazione e dell'allineamento di un progetto, prima di toccare il repository, e in caso di FAIL l'agente propone di installare lo script e registrare l'hook, senza mai modificare il `settings.json` dell'account senza conferma.
 
+Complementare al wipe c'e' la sessione incognito: invece di pulire dopo, si evita del tutto di scrivere nell'account reale, redirigendo `HOME` e le cartelle XDG (`XDG_CONFIG_HOME`, `XDG_CACHE_HOME`) su una directory temporanea e azzerando `CLAUDE_CONFIG_DIR`, cosi la sessione parte vergine e la temp si rimuove alla chiusura. Gli script `templates/tools/claude-incognito.ps1` e `claude-incognito.sh` la avviano su un progetto a scelta. E' utile per lavorare su materiale sensibile senza lasciare traccia in credenziali, cronologia o configurazione dell'account. La tecnica si basa sulla specifica XDG Base Directory piu la redirezione di `HOME`.
+
 ---
 
 [^1]: *Skill* — workflow richiamabile descritto in un file `SKILL.md`, che incapsula istruzioni

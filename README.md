@@ -80,6 +80,10 @@ Per i progetti con libri o PDF tecnici di riferimento, il pacchetto opzionale `b
 
 Il sistema e' progettato per non sprecare contesto: densita sopra completezza, caricamento on-demand di skill, schede e capitoli, niente riletture integrali (il motore di riconciliazione legge solo le schede pertinenti, i `.docx` si estraggono a fette), e il `CLAUDE.md` indicizza i satelliti invece di incorporarli. Quando serve di piu, al gate dei pacchetti si possono attivare strumenti esterni a scelta, per esempio `caveman`, che riduce i token di output ma va tenuto spento quando si produce documentazione. Le pratiche di base e le opzioni stanno nella regola `.claude/rules/token-economy.md`.
 
+## Niente AI slop
+
+Lo stile pulito e' garantito sempre dalla regola `interaction-style` (niente trattini lunghi, niente stilemi da testo generativo). Quando serve una pulizia attiva, al gate si possono attivare due strumenti esterni a scelta, distinti per ambito. Per il testo, `humanizer` e' una skill che rimuove i segni di scrittura AI (frasi riempitive, regola del tre, trattini lunghi e grassetto in eccesso, hedging, tono promozionale, 33 pattern): si clona in `.claude/skills/humanizer/` e si usa con `/humanizer <testo>`. Per le interfacce, `taste-skill` migliora layout, tipografia, spaziatura e motion delle UI generate per evitare l'aspetto generico-AI: si aggiunge con `npx skills add https://github.com/Leonxlnx/taste-skill`. Il primo serve ai progetti che producono prosa, il secondo ai progetti con frontend.
+
 ## Componenti del bundle
 
 ```
@@ -116,7 +120,7 @@ template-claude-developing/
       latex/           pacchetto opzionale per progetti LaTeX, con script .ps1 e .sh
       knowledge-wiki/  pacchetto opzionale LLM Wiki (sources/ + wiki/ + schema + skill wiki-digest)
       book-to-skill/   pacchetto opzionale: skill book-digest (PDF in skill on-demand, locale)
-      tools/     render-diagrams.mjs  latest-screenshot.ps1  check-account-hygiene  session-end-wipe  README.md
+      tools/     render-diagrams.mjs  latest-screenshot.ps1  check-account-hygiene  session-end-wipe  claude-incognito  README.md
 ```
 
 ## Cosa non finisce nei progetti
@@ -153,6 +157,8 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - `caveman` di JuliusBrussee, riduzione dei token di output a scelta dell'utente: https://github.com/juliusbrussee/caveman
 - `token-optimizer-mcp` di ooples, compressione e caching del contesto via MCP: https://github.com/ooples/token-optimizer-mcp
 - `graphify` di safishamsi, grafo di conoscenza di codice e documenti (licenza MIT): https://github.com/safishamsi/graphify
+- `humanizer` di blader, skill che rimuove i segni di scrittura AI dal testo (licenza MIT): https://github.com/blader/humanizer
+- `taste-skill` di Leonxlnx, skill di design-taste per interfacce non generiche (licenza MIT): https://github.com/Leonxlnx/taste-skill
 
 ## Repository
 
