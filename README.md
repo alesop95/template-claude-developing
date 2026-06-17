@@ -66,6 +66,10 @@ Quando uno sviluppo ha parti necessariamente manuali e visive, che l'agente non 
 
 Per allineare un progetto che ha già codice, l'agente deve capirne la struttura. Oltre a leggere il codice, può appoggiarsi a un server MCP basato su tree-sitter, `code-context-provider-mcp`, che gira via `npx` senza dipendenze native, con licenza MIT, e restituisce l'albero delle cartelle e i simboli del codice, cioè funzioni, classi, import ed export, per JavaScript, TypeScript e Python. È già configurato in `templates/mcp.json` e viene offerto al gate MCP soprattutto nel prompt di allineamento, dove la struttura non è nota a priori; in un progetto nuovo lo stack è già noto e resta opzionale.
 
+## Knowledge wiki: accumulare conoscenza nel tempo
+
+Per i progetti dove si accumula conoscenza trasversale (ricerca, studio di un dominio, o le fonti dietro un libro che si sta scrivendo), il pacchetto opzionale `knowledge-wiki` scaffolda una LLM Wiki: una cartella `knowledge/` con le fonti grezze immutabili in `sources/`, le pagine compilate dall'LLM in `wiki/`, e lo schema `WIKI-SCHEMA.md` che governa tipi di pagina, collegamenti e contraddizioni. Il flusso e semplice: metti una fonte in `knowledge/sources/`, invochi la skill `wiki-digest`, e la wiki aggiorna o crea le pagine collegandole al resto, senza che tu colleghi nulla a mano. Si attiva al gate dei pacchetti e non viene proposto se il progetto ha gia una propria knowledge base nativa. Il dettaglio e il recap dei comandi sono in `.claude/templates/knowledge-wiki/README.md`.
+
 ## Componenti del bundle
 
 ```
@@ -98,7 +102,8 @@ template-claude-developing/
       memory/    index.md  progress.md  decisions.md
       context/   STACK.md  design-and-security.md  deployment.md  dev-testing.md  current-work.md  roadmap.md
       _notes/    DIARIO.md  RESOCONTO.md  TEST-CHECKLIST.md  RESUME-PROMPT.md
-      latex/     pacchetto opzionale per progetti LaTeX, con script .ps1 e .sh
+      latex/           pacchetto opzionale per progetti LaTeX, con script .ps1 e .sh
+      knowledge-wiki/  pacchetto opzionale LLM Wiki (sources/ + wiki/ + schema + skill wiki-digest)
       tools/     render-diagrams.mjs  latest-screenshot.ps1  check-account-hygiene  session-end-wipe  README.md
 ```
 
@@ -109,6 +114,15 @@ Questo `README.md` di radice resta nella repository del template e non viene cop
 ## Origine
 
 Questo sistema non nasce da zero. E la distillazione di un modo di lavorare gia maturato su un progetto reale e completo, ripulito dalle parti legate a quel dominio specifico e reso astratto e portabile. Le strategie riusabili emerse anche da altri progetti sono state innestate qui, scartando cio che era specifico di un singolo dominio o gia coperto. Il risultato e un bundle unico, fatto del file di sistema, della skill di inizializzazione, della regola di identita git e delle skill di riconciliazione, che si copia in un progetto nuovo per rendere disponibili altrove queste stesse strategie.
+
+## Riferimenti e strumenti open source
+
+Il sistema integra o adatta alcuni strumenti e pattern open source:
+
+- `code-context-provider-mcp` di AB498, server MCP tree-sitter in WebAssembly (licenza MIT), per struttura e simboli del codice: https://github.com/AB498/code-context-provider-mcp
+- `book-to-skill` di virgiliojr94, per pre-digerire un PDF tecnico in skill: https://github.com/virgiliojr94/book-to-skill
+- LLM Wiki, pattern di Andrej Karpathy: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
+- mermaid-cli del progetto Mermaid, usato dalla resa dei diagrammi: https://github.com/mermaid-js/mermaid-cli
 
 ## Repository
 

@@ -15,6 +15,8 @@ presente nel progetto non si reinstalla: se ne mostra la differenza e si chiede 
 Allo stesso modo, se il progetto fornisce gia quella capacita in proprio (per esempio implementa
 gia una propria knowledge base o un proprio sistema di grafo), il pacchetto non si propone come
 duplicato: al massimo si propone di allineare l'implementazione esistente allo standard.
+Quando un pacchetto viene attivato, l'agente mostra subito un recap d'uso, cioe i comandi e il
+flusso essenziali presi dal README del pacchetto, cosi l'utente sa come usarlo da subito.
 
 ## Catalogo
 
@@ -23,7 +25,7 @@ duplicato: al massimo si propone di allineare l'implementazione esistente allo s
 | `latex` | Ambiente di build LaTeX: manifesto pacchetti, script setup/build, skill `latex-build` | Il progetto contiene o produrra file `.tex` | `templates/latex/` in `scripts/`, `tex-packages.txt`, `.latexmkrc`, `.claude/skills/latex-build/` | Script `.ps1` e `.sh`; la distribuzione TeX resta esterna e non versionata |
 | `diagrams` | Resa dei diagrammi Mermaid `.mmd` in `.svg` riusando il browser di sistema | Il progetto ha o avra diagrammi sotto `.claude/context/diagrams/` | `templates/tools/render-diagrams.mjs` in `tools/render-diagrams.mjs` | Richiede Node e un browser Chromium-based (Edge o Chrome) |
 | `code-context` (MCP) | Server MCP tree-sitter che da struttura cartelle e simboli del codice | In allineamento di un progetto esistente, per far mappare all'agente la struttura del codice e popolare le schede | `.mcp.json` in radice, dalla variante OS (`templates/mcp.json` o `templates/mcp.windows.json`) | Avviato via `npx`, zero dipendenze native; nessuna cartella `mcp/` |
-| `knowledge-wiki` | LLM Wiki: `sources/` immutabile, `wiki/` compilata dall'LLM, schema `CLAUDE.md` | Progetti dove si accumula conoscenza trasversale nel tempo | da definire (Fase B) | Pattern Karpathy; vedi knowledge-systems-analysis |
+| `knowledge-wiki` | LLM Wiki: `sources/` immutabile, `wiki/` compilata dall'LLM, schema `WIKI-SCHEMA.md`, skill `wiki-digest` | Progetti dove si accumula conoscenza trasversale nel tempo, se non gia coperta da una knowledge base nativa | `templates/knowledge-wiki/` in `knowledge/` (`WIKI-SCHEMA.md`, `sources/`, `wiki/`, `log.md`) e `.claude/skills/wiki-digest/` | Pattern Karpathy; vedi knowledge-systems-analysis |
 | `book-to-skill` | PDF tecnico in skill pre-digerita, caricata on-demand | Progetti con libri o PDF tecnici di riferimento | da definire (Fase C) | Ponte verso `knowledge-wiki` (path A e path B) |
 
 Le ultime due righe sono segnaposto: i pacchetti `knowledge-wiki` e `book-to-skill` verranno

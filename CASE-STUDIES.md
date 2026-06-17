@@ -35,3 +35,26 @@ per l'utente che spesso la struttura la conosce gia.
 **Rifiniture derivate.** Due micro-edit a `PACKAGES.md`: check "capacita gia implementata in
 proprio" nella sezione d'uso, e riformulazione del trigger di `code-context` verso la mappatura del
 codice in allineamento.
+
+---
+
+## 2026-06-17 — Pacchetto knowledge-wiki su un progetto-libro
+
+**Archetipo.** Progetto di scrittura di un libro in LaTeX, con sorgenti e build gia strutturati,
+dove durante la scrittura si accumulano fonti di ricerca.
+
+**Cosa si e testato.** Il gate dei pacchetti su un progetto-libro: come si comportano `latex` e
+`knowledge-wiki`, in simulazione di sola lettura.
+
+**Esito.** `latex` ha trigger fortissimo (presenza di sorgenti `.tex`) e va proposto o confermato.
+`knowledge-wiki` non e implicato dal solo fatto che sia un libro: va proposto come scelta, perche
+serve solo se si accumulano fonti di ricerca da organizzare, e decide l'utente.
+
+**Perche/come/dove funziona meglio.** La guida al gate funziona meglio quando distingue i trigger
+forti e oggettivi (un'estensione di file) dalle scelte di metodo (accumulare o no una wiki di
+ricerca). Per queste ultime il valore sta nel proporre con una domanda chiara e, all'attivazione,
+nel dare subito il recap d'uso e dei comandi, invece di creare cartelle vuote senza spiegazione.
+
+**Rifiniture derivate.** Regola "all'attivazione mostra il recap d'uso del pacchetto" aggiunta al
+gate (`PACKAGES.md` e skill di init), e documentazione d'uso chiara con crediti agli strumenti open
+source nel README.

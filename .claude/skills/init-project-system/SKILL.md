@@ -184,7 +184,9 @@ il dettaglio autoritativo resta nel file.
    `.latexmkrc` in radice e la skill `latex-build` sotto `.claude/skills/`, abilita nel `.gitignore`
    il blocco di artefatti del framework e adatta il manifesto al preambolo reale; se un file di
    destinazione esiste gia si mostra la differenza invece di sovrascrivere. In caso negativo,
-   lasciare un promemoria esplicito che il pacchetto resta istanziabile in seguito.
+   lasciare un promemoria esplicito che il pacchetto resta istanziabile in seguito. All'attivazione
+   di un pacchetto, mostrare subito il suo recap d'uso, cioe comandi e flusso essenziali presi dal
+   README del pacchetto, perche l'utente sappia come usarlo da subito.
    Con la stessa logica, chiedere esplicitamente se creare un `README.md` pubblico per la
    repository GitHub, istanziandolo dal template `templates/README-project.md` se presente;
    se no, lasciare un promemoria esplicito. Il `README.md` e' tracciato in git, vive in radice

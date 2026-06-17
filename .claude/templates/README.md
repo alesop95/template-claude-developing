@@ -69,6 +69,15 @@ in `templates/latex/README.md`.
 templates/latex/               ->  scripts/, tex-packages.txt, .latexmkrc, .claude/skills/latex-build/
 ```
 
+Pacchetto opzionale per una LLM Wiki, da istanziare nei progetti dove si accumula conoscenza
+trasversale nel tempo e che non hanno gia una knowledge base nativa. Crea la cartella `knowledge/`
+con `sources/` immutabile, `wiki/` compilata dall'LLM e lo schema `WIKI-SCHEMA.md`, piu la skill di
+ingestione `wiki-digest`. La mappa di dettaglio e le note stanno in `templates/knowledge-wiki/README.md`.
+
+```
+templates/knowledge-wiki/  ->  knowledge/ (WIKI-SCHEMA.md, log.md, sources/, wiki/) e .claude/skills/wiki-digest/
+```
+
 Pacchetto opzionale per la resa dei diagrammi, da istanziare se il progetto contiene diagrammi
 Mermaid sotto `.claude/context/diagrams/`. Lo script rende i `.mmd` nei corrispondenti `.svg`
 riusando il browser Chromium-based di sistema (Edge o Chrome), senza scaricare un Chromium di
