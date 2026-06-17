@@ -127,6 +127,21 @@ Questo `README.md` di radice resta nella repository del template e non viene cop
 
 Questo sistema non nasce da zero. E la distillazione di un modo di lavorare gia maturato su un progetto reale e completo, ripulito dalle parti legate a quel dominio specifico e reso astratto e portabile. Le strategie riusabili emerse anche da altri progetti sono state innestate qui, scartando cio che era specifico di un singolo dominio o gia coperto. Il risultato e un bundle unico, fatto del file di sistema, della skill di inizializzazione, della regola di identita git e delle skill di riconciliazione, che si copia in un progetto nuovo per rendere disponibili altrove queste stesse strategie.
 
+## Come estendere il sistema
+
+Il sistema cresce aggiungendo pacchetti al catalogo quando si trova uno strumento o un pattern utile, tipicamente open source. Il percorso e' lo stesso ogni volta.
+
+1. Trova lo strumento o il pattern e verifica cosa fa, come si installa e con quale licenza, cercando se esiste gia invece di ricostruirlo.
+2. Decidi il tipo. Un pacchetto a cartella scaffolda file nel progetto: vive sotto `.claude/templates/<nome>/` con un proprio `README.md` manifest, sul modello di `latex`, `knowledge-wiki`, `book-to-skill`. Uno strumento esterno non scaffolda nulla: e' solo una voce di catalogo che si installa su conferma, sul modello di `code-context`, `caveman`, `graphify`.
+3. Aggiungi una riga a `.claude/templates/PACKAGES.md` con un trigger concreto nella colonna "quando offrirlo", piu cosa istanzia, note e crediti. Il trigger e' cio che permette al gate di proporlo senza assumere.
+4. Spiega lo strumento su due piani, concettuale e operativo: cosa risolve e perche, e i comandi per usarlo. La spiegazione va nel `README.md` del pacchetto, se a cartella, e in sintesi nel `README.md` di radice.
+5. Aggiungi il credito nella sezione "Riferimenti e strumenti open source", con il link al repo e la licenza.
+6. Non serve toccare il gate: la skill `init-project-system` e i due prompt leggono `PACKAGES.md`, propongono il pacchetto quando il trigger e' pertinente e ne mostrano il recap d'uso all'attivazione.
+7. Valida su un progetto reale, anche solo in simulazione di sola lettura, e registra l'esito in `CASE-STUDIES.md` come voce anonima: perche, come e dove funziona meglio.
+8. Le operazioni git restano manuali: prepara i file e lascia commit e push all'utente.
+
+Due principi guida nella scelta. Si preferisce non introdurre stato globale o dipendenze pesanti: meglio un pacchetto self-contained e versionato col progetto. E non si propone un pacchetto se il progetto fornisce gia quella capacita nativamente, per non duplicare.
+
 ## Riferimenti e strumenti open source
 
 Il sistema integra o adatta alcuni strumenti e pattern open source:

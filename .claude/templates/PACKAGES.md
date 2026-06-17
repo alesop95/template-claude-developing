@@ -41,3 +41,7 @@ sottocartella sotto `templates/` che contiene un proprio `README.md` di istanzia
 di `templates/latex/`. La colonna "quando offrirlo" deve indicare un trigger concreto, cosi che il
 gate sappia quando proporlo senza assumere. I pacchetti che non sono cartelle, come `diagrams` e
 `code-context`, vivono come voci del catalogo e puntano ai file gia presenti sotto `templates/`.
+
+Il percorso completo per estendere il sistema, dalla ricerca dello strumento alla voce di catalogo
+fino alla validazione come case-study, e' descritto nella sezione "Come estendere il sistema" del
+`README.md` di radice.
