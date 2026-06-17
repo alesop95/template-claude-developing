@@ -173,16 +173,18 @@ il dettaglio autoritativo resta nel file.
    Linux/macOS, `templates/mcp.windows.json` su Windows; per un server avviato via `npx` non serve
    la cartella `mcp/`, che riguarda solo i server implementati in proprio), mai sotto `.claude`, e se un `.mcp.json` esiste
    gia mostrare la differenza invece di sovrascrivere.
-   Con la stessa logica del gate MCP, per ciascun pacchetto opzionale di framework presente in
-   `.claude/templates/` (sottocartella con un proprio `README.md`, attualmente `templates/latex/`)
-   chiedere esplicitamente se attivarlo, offrendo di istanziarlo ora o di rimandarlo come
-   promemoria; non assumere mai. Per LaTeX la domanda e' particolarmente pertinente se il progetto
-   contiene file `.tex`. In caso affermativo istanziare il pacchetto secondo il suo `README.md`
-   (per `latex/`: `scripts/`, `tex-packages.txt` e `.latexmkrc` in radice, e la skill `latex-build`
-   sotto `.claude/skills/`), abilitare nel `.gitignore` il blocco di artefatti del framework (per
-   LaTeX il blocco LaTeX dello snippet) e adattare il manifesto al preambolo reale; se un file di
-   destinazione esiste gia, mostrare la differenza invece di sovrascrivere. In caso negativo,
-   lasciare un promemoria esplicito che il pacchetto resta istanziabile in seguito dal template.
+   Per i pacchetti opzionali consultare il registro `.claude/templates/PACKAGES.md`, che elenca
+   cosa il sistema sa offrire (al momento `latex`, `diagrams`, `code-context`, piu i segnaposto
+   `knowledge-wiki` e `book-to-skill`) con, per ciascuno, il trigger che dice quando proporlo. Con
+   la stessa logica del gate MCP, valutare quali pacchetti sono pertinenti al progetto secondo quel
+   trigger e proporli uno per uno, esplicitamente, offrendo di istanziarli ora o di rimandarli come
+   promemoria; non assumere mai, e un pacchetto gia presente non si reinstalla ma se ne mostra la
+   differenza. L'istanziazione segue il `README.md` del pacchetto quando e' a cartella: per esempio
+   `latex`, pertinente se il progetto contiene file `.tex`, crea `scripts/`, `tex-packages.txt` e
+   `.latexmkrc` in radice e la skill `latex-build` sotto `.claude/skills/`, abilita nel `.gitignore`
+   il blocco di artefatti del framework e adatta il manifesto al preambolo reale; se un file di
+   destinazione esiste gia si mostra la differenza invece di sovrascrivere. In caso negativo,
+   lasciare un promemoria esplicito che il pacchetto resta istanziabile in seguito.
    Con la stessa logica, chiedere esplicitamente se creare un `README.md` pubblico per la
    repository GitHub, istanziandolo dal template `templates/README-project.md` se presente;
    se no, lasciare un promemoria esplicito. Il `README.md` e' tracciato in git, vive in radice

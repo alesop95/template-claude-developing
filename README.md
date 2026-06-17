@@ -92,6 +92,7 @@ template-claude-developing/
       onboard/                   spiegazione completa del progetto per chi parte da zero
     agents/  commands/  hooks/  plugins/    livelli di orchestrazione, vuoti di default
     templates/
+      PACKAGES.md  registro dei pacchetti opzionali offerti al init/align
       CLAUDE.md  CLAUDE.local.md  settings.json  gitignore.snippet  mcp.json  mcp.windows.json
       README.md  README-project.md
       memory/    index.md  progress.md  decisions.md

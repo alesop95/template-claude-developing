@@ -1,0 +1,39 @@
+# Pacchetti opzionali del sistema di progetto
+
+> Registro dei pacchetti opzionali che l'agente puo proporre quando inizializza o allinea un
+> progetto. Non e' un elenco di cose da installare sempre: ogni voce si offre con un gate
+> esplicito, in base al tipo di progetto, e si istanzia solo su conferma dell'utente. La skill
+> `init-project-system` e i due prompt consultano questo file per sapere cosa proporre.
+
+## Come si usa
+
+Al Passo 4 dell'inizializzazione e durante l'allineamento, l'agente legge questo registro, valuta
+quali pacchetti sono pertinenti al progetto secondo la colonna "quando offrirlo", e li propone uno
+per uno con una domanda esplicita, offrendo di istanziarli ora o di rimandarli come promemoria.
+Non assume mai: anche un pacchetto pertinente si attiva solo se l'utente accetta. Un pacchetto gia
+presente nel progetto non si reinstalla: se ne mostra la differenza e si chiede come procedere.
+Allo stesso modo, se il progetto fornisce gia quella capacita in proprio (per esempio implementa
+gia una propria knowledge base o un proprio sistema di grafo), il pacchetto non si propone come
+duplicato: al massimo si propone di allineare l'implementazione esistente allo standard.
+
+## Catalogo
+
+| Pacchetto | Cosa fa | Quando offrirlo | Cosa istanzia | Note |
+|---|---|---|---|---|
+| `latex` | Ambiente di build LaTeX: manifesto pacchetti, script setup/build, skill `latex-build` | Il progetto contiene o produrra file `.tex` | `templates/latex/` in `scripts/`, `tex-packages.txt`, `.latexmkrc`, `.claude/skills/latex-build/` | Script `.ps1` e `.sh`; la distribuzione TeX resta esterna e non versionata |
+| `diagrams` | Resa dei diagrammi Mermaid `.mmd` in `.svg` riusando il browser di sistema | Il progetto ha o avra diagrammi sotto `.claude/context/diagrams/` | `templates/tools/render-diagrams.mjs` in `tools/render-diagrams.mjs` | Richiede Node e un browser Chromium-based (Edge o Chrome) |
+| `code-context` (MCP) | Server MCP tree-sitter che da struttura cartelle e simboli del codice | In allineamento di un progetto esistente, per far mappare all'agente la struttura del codice e popolare le schede | `.mcp.json` in radice, dalla variante OS (`templates/mcp.json` o `templates/mcp.windows.json`) | Avviato via `npx`, zero dipendenze native; nessuna cartella `mcp/` |
+| `knowledge-wiki` | LLM Wiki: `sources/` immutabile, `wiki/` compilata dall'LLM, schema `CLAUDE.md` | Progetti dove si accumula conoscenza trasversale nel tempo | da definire (Fase B) | Pattern Karpathy; vedi knowledge-systems-analysis |
+| `book-to-skill` | PDF tecnico in skill pre-digerita, caricata on-demand | Progetti con libri o PDF tecnici di riferimento | da definire (Fase C) | Ponte verso `knowledge-wiki` (path A e path B) |
+
+Le ultime due righe sono segnaposto: i pacchetti `knowledge-wiki` e `book-to-skill` verranno
+definiti nelle fasi successive. Restano elencati qui perche il registro sia il punto unico in cui
+si vede cosa il sistema sa offrire.
+
+## Aggiungere un pacchetto
+
+Un nuovo pacchetto si aggiunge con una riga in questo catalogo e, se e' a cartella, con una
+sottocartella sotto `templates/` che contiene un proprio `README.md` di istanziazione, sul modello
+di `templates/latex/`. La colonna "quando offrirlo" deve indicare un trigger concreto, cosi che il
+gate sappia quando proporlo senza assumere. I pacchetti che non sono cartelle, come `diagrams` e
+`code-context`, vivono come voci del catalogo e puntano ai file gia presenti sotto `templates/`.

@@ -6,6 +6,15 @@
 > e li compila, sostituendo i segnaposto. Non vanno mai letti come fonte di verità di un
 > progetto: la fonte di verità di un progetto è la sua `memory/index.md` istanziata.
 
+## Registro dei pacchetti opzionali
+
+`PACKAGES.md` è il registro dei pacchetti opzionali che il sistema sa offrire (`latex`, `diagrams`,
+`code-context`, e i futuri `knowledge-wiki` e `book-to-skill`), con per ciascuno il trigger che dice
+quando proporlo. La skill `init-project-system` lo consulta al gate dei pacchetti, sia in
+inizializzazione sia in allineamento, e propone solo quelli pertinenti, sempre su conferma esplicita.
+A differenza degli altri template, `PACKAGES.md` non si istanzia nella radice del progetto: resta qui
+come riferimento del bundle.
+
 ## Mappa di istanziazione
 
 Anatomia sempre creata. La colonna git indica se il file istanziato è tracciato o ignorato.
