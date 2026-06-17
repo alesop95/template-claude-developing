@@ -58,6 +58,10 @@ Per tenere pulito il magazzino nascosto nel tempo, il bundle fornisce uno strume
 
 Diverse parti del sistema cambiano a seconda del sistema operativo: il forzare o meno `core.sshCommand` all'OpenSSH di sistema, gli script di setup e build dell'ambiente, gli script di wipe e di verifica dell'account, e la sintassi degli hook. Per questo i due prompt chiedono al punto giusto, in fase di inizializzazione o allineamento, se si sviluppa su Windows o su Linux, e da quel momento usano la variante corretta degli strumenti. Gli strumenti che hanno una doppia forma, come il pacchetto LaTeX e gli strumenti di igiene dell'account, sono forniti sia in PowerShell sia in shell POSIX.
 
+## Screenshot per i passi manuali
+
+Quando uno sviluppo ha parti necessariamente manuali e visive, che l'agente non puo osservare da se, l'agente chiede all'utente uno screenshot del punto preciso e lo legge dalla cartella di cattura invece di proseguire per ipotesi. Su Windows lo strumento e Screenpresso, con cartella di default `%USERPROFILE%\Pictures\Screenpresso`, e `tools/latest-screenshot.ps1` individua l'immagine piu recente da leggere. La regola completa, con il caso Linux e l'igiene degli screenshot come materiale effimero non versionato, e in `.claude/rules/manual-screenshots.md`.
+
 ## Componenti del bundle
 
 ```
@@ -75,6 +79,7 @@ template-claude-developing/
     rules/
       git-identity-and-repo.md   identita git locale, alias SSH, bootstrap del remoto
       interaction-style.md       stile della documentazione tecnica
+      manual-screenshots.md      quando e come chiedere uno screenshot per i passi manuali
     skills/
       init-project-system/       installa l'anatomia, modalita nuovo o allineamento
       sync-context/              misura la divergenza schede contro codice
@@ -88,7 +93,7 @@ template-claude-developing/
       context/   STACK.md  design-and-security.md  deployment.md  dev-testing.md  current-work.md  roadmap.md
       _notes/    DIARIO.md  RESOCONTO.md  TEST-CHECKLIST.md  RESUME-PROMPT.md
       latex/     pacchetto opzionale per progetti LaTeX, con script .ps1 e .sh
-      tools/     render-diagrams.mjs  check-account-hygiene  session-end-wipe  README.md
+      tools/     render-diagrams.mjs  latest-screenshot.ps1  check-account-hygiene  session-end-wipe  README.md
 ```
 
 ## Cosa non finisce nei progetti

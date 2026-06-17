@@ -54,6 +54,12 @@ templates/tools/render-diagrams.mjs ->  <radice>/tools/render-diagrams.mjs   (tr
 templates/tools/README.md           ->  <radice>/tools/README.md             (tracciato, opzionale)
 ```
 
+Strumento per i passi manuali e visivi, da istanziare nel progetto quando lo sviluppo richiede riscontri visivi che l'agente non puo osservare. Restituisce l'immagine piu recente nella cartella di cattura di Screenpresso, perche l'agente legga lo screenshot appena fatto dall'utente. Si abbina alla regola `rules/manual-screenshots.md`, gia presente sotto `.claude/rules/` e copiata con essa.
+
+```
+templates/tools/latest-screenshot.ps1 ->  <radice>/tools/latest-screenshot.ps1  (tracciato, opzionale)
+```
+
 Strumenti di igiene dell'account, non del progetto: agiscono sulla home dell'account Claude Code, non sul repository. Non si istanziano nella radice del progetto; restano nel bundle e si invocano da li, e `session-end-wipe.ps1` si installa nella home dell'account. Vedi PROJECT-SYSTEM.md sezione 15.
 
 ```
