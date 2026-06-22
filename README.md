@@ -44,6 +44,12 @@ Prima di considerare sano un repository si verifica che non siano rimasti file i
 
 La convenzione degli alias SSH, ad esempio `github-personal` per l'identita personale e `github-corp` per quella di lavoro, e uno schema riusabile su qualsiasi macchina: si possono adottare gli stessi nomi ovunque. I valori concreti dietro ogni alias, ovvero il percorso della chiave, lo `user.name` e lo `user.email`, sono invece specifici della macchina e si rileggono dal relativo `~/.ssh/config` senza inventarli.
 
+## Sicurezza e permessi
+
+Il file `settings.json` del bundle porta una baseline esplicita di permessi: le operazioni git irreversibili (commit, push, reset, rebase, modifica della config globale), la lettura di file sensibili (`.env`, chiavi SSH, credenziali AWS) e la cancellazione ricorsiva sono negate per default; le operazioni di publish (`npm publish`, `docker push`) richiedono conferma esplicita. La regola `.claude/rules/security-permissions.md` documenta le sei modalita' di esecuzione disponibili in Claude Code (default, acceptEdits, plan, dontAsk, auto, bypassPermissions), con i casi d'uso e i rischi di ciascuna, le limitazioni del sandboxing su Windows nativo e WSL2, e le linee guida per `--dangerously-skip-permissions` negli ambienti CI/CD automatizzati.
+
+Le modalita' piu' permissive, auto e bypassPermissions, propagano le loro autorizzazioni anche agli strumenti MCP connessi: un server MCP riceve le stesse autorizzazioni dell'agente che lo ha attivato. Per questo il numero di server connessi va tenuto al minimo (tre-sei al massimo) e si preferisce sempre l'implementazione ufficiale del vendor rispetto a fork community non verificati: un audit pubblico ha trovato problemi nel 66% dei server MCP scansionati.
+
 ## Diagrammi e stile della documentazione
 
 I flussi applicativi si rappresentano con mappe versionate sotto `context/diagrams/`, in `.svg` per la versione resa e con il sorgente `.mmd` accanto, con corrispondenza uno a uno tra componenti disegnati e componenti descritti. Lo strumento `templates/tools/render-diagrams.mjs` rende i Mermaid riusando il browser Chromium gia installato sul sistema, senza scaricare un browser dedicato. Lo stile della documentazione tecnica e codificato nella regola `.claude/rules/interaction-style.md`: prosa discorsiva, niente elenchi puntati superflui, niente emoji, acronimi spiegati in nota, niente trattini lunghi, e nessun contenuto presentato come fatto se e inferito o non verificato.
@@ -76,9 +82,15 @@ Per i progetti dove si accumula conoscenza trasversale (ricerca, studio di un do
 
 Per i progetti con libri o PDF tecnici di riferimento, il pacchetto opzionale `book-to-skill` installa la skill `book-digest`, che trasforma un PDF in una skill-libro densa e interrogabile on-demand: durante il lavoro `/<slug> argomento` restituisce la sintesi del tema senza rileggere il PDF. Le skill-libro nascono dentro il progetto (`.claude/skills/<slug>/`, versionate), perche ogni progetto puo avere libri suoi; si possono promuovere al contesto globale di Claude (`~/.claude/skills/`) solo su conferma esplicita e tracciando la scelta. La stessa skill-libro ha un doppio uso: resta una skill che gli agenti consultano (path A), oppure, se il progetto ha `knowledge-wiki`, alimenta la wiki accumulatoria copiando i file capitolo in `knowledge/sources/books/<slug>/` (path B). Dettaglio e comandi in `.claude/templates/book-to-skill/README.md`.
 
+## Agenti di progetto
+
+I subagent sono agenti con una persona specializzata, un system prompt focalizzato e un insieme ristretto di strumenti. Si definiscono come file Markdown in `.claude/agents/` del progetto, con un frontmatter YAML che specifica nome, modello e tool disponibili, e lavorano in un contesto isolato rispetto all'agente principale, riportando solo il risultato finale. Il bundle include due definizioni di agente pronte all'uso sotto `templates/agents/`: `code-reviewer`, che esamina struttura, gestione degli errori e sicurezza del codice classificando i finding per severita' (CRITICAL / HIGH / MEDIUM / LOW) e concludendo con APPROVE, REQUEST_CHANGES o NEEDS_DISCUSSION; e `security-auditor`, che conduce un audit sistematico per autenticazione, autorizzazione, validazione degli input, esposizione di dati, dipendenze con CVE note e segreti hardcoded. Entrambi operano esclusivamente in lettura e si copiano in `.claude/agents/` del progetto al momento dell'attivazione del pacchetto `subagent-template`.
+
 ## Token economy
 
-Il sistema e' progettato per non sprecare contesto: densita sopra completezza, caricamento on-demand di skill, schede e capitoli, niente riletture integrali (il motore di riconciliazione legge solo le schede pertinenti, i `.docx` si estraggono a fette), e il `CLAUDE.md` indicizza i satelliti invece di incorporarli. Quando serve di piu, al gate dei pacchetti si possono attivare strumenti esterni a scelta, per esempio `caveman`, che riduce i token di output ma va tenuto spento quando si produce documentazione. Le pratiche di base e le opzioni stanno nella regola `.claude/rules/token-economy.md`.
+Il sistema e' progettato per non sprecare contesto: densita' sopra completezza, caricamento on-demand di skill, schede e capitoli, niente riletture integrali (il motore di riconciliazione legge solo le schede pertinenti, i `.docx` si estraggono a fette), e il `CLAUDE.md` indicizza i satelliti invece di incorporarli. La regola `.claude/rules/token-economy.md` documenta anche le pratiche di igiene di sessione: il comando `/compact` va invocato proattivamente quando il contesto raggiunge il 40-60% (non aspettando il limite automatico) e puo' essere guidato con istruzioni esplicite; prima di `/clear` o di chiudere una sessione non ancora conclusa si fa scrivere a Claude un file `HANDOFF.md` con decisioni, pattern e file toccati; la finestra da un milione di token e' utile come assicurazione ma non come obiettivo, dato che oltre i 120-150K token utili la qualita' tende a degradare per accumulo di rumore; il principio "un task, una chat" mantiene il contesto fresco.
+
+Quando serve di piu', al gate dei pacchetti si propone uno stack di sette strumenti open source, uno per fronte di consumo: `ccusage` per la misurazione baseline (sempre, prima degli altri), `rtk` per l'output shell, `ponytail` per il codice generato, `context-mode` per l'output di tool pesanti, `caveman` per la prosa di risposta, `headroom` come compressore generale, e `claude-code-router` per il routing tra modelli. Nessuno e' abilitato di default; ogni scelta richiede gate e conferma esplicita dell'utente per quel progetto.
 
 ## Niente AI slop
 
@@ -102,7 +114,8 @@ template-claude-developing/
       git-identity-and-repo.md   identita git locale, alias SSH, bootstrap del remoto
       interaction-style.md       stile della documentazione tecnica
       manual-screenshots.md      quando e come chiedere uno screenshot per i passi manuali
-      token-economy.md           pratiche di risparmio contesto e tool opzionali (caveman)
+      security-permissions.md    modalita di permesso, sandbox, baseline deny e ask rules
+      token-economy.md           pratiche di risparmio contesto, igiene sessione, stack 7 tool
     skills/
       init-project-system/       installa l'anatomia, modalita nuovo o allineamento
       sync-context/              misura la divergenza schede contro codice
@@ -114,6 +127,7 @@ template-claude-developing/
       PACKAGES.md  registro dei pacchetti opzionali offerti al init/align
       CLAUDE.md  CLAUDE.local.md  settings.json  gitignore.snippet  mcp.json  mcp.windows.json
       README.md  README-project.md
+      agents/    code-reviewer.md  security-auditor.md  (agenti template, da copiare in .claude/agents/)
       memory/    index.md  progress.md  decisions.md
       context/   STACK.md  design-and-security.md  deployment.md  dev-testing.md  current-work.md  roadmap.md
       _notes/    DIARIO.md  RESOCONTO.md  TEST-CHECKLIST.md  RESUME-PROMPT.md
@@ -159,6 +173,27 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - `graphify` di safishamsi, grafo di conoscenza di codice e documenti (licenza MIT): https://github.com/safishamsi/graphify
 - `humanizer` di blader, skill che rimuove i segni di scrittura AI dal testo (licenza MIT): https://github.com/blader/humanizer
 - `taste-skill` di Leonxlnx, skill di design-taste per interfacce non generiche (licenza MIT): https://github.com/Leonxlnx/taste-skill
+- `ccusage` di ryoppippi, misura baseline del consumo token per sessione e modello (MIT): https://github.com/ryoppippi/ccusage
+- `rtk` di rtk-ai, comprime l'output shell (git, cargo, pytest, npm, 100+ comandi) prima che entri nel contesto (MIT): https://github.com/rtk-ai/rtk
+- `ponytail` di DietrichGebert, impone la disciplina "senior developer pigro" al codice generato (MIT): https://github.com/DietrichGebert/ponytail
+- `context-mode` di mksglu, sandboxa l'output di tool pesanti (Playwright, log, dump) in SQLite locale (MIT): https://github.com/mksglu/context-mode
+- `headroom` di chopratejas, proxy locale che comprime tutto l'input dell'LLM (MIT): https://github.com/chopratejas/headroom
+- `claude-code-router` di musistudio, routing automatico tra modelli per costo API (MIT): https://github.com/musistudio/claude-code-router
+- `claude-mem` di thedotmack, memoria semantica persistente cross-sessione SQLite e Chroma, tutto locale (MIT): https://github.com/thedotmack/claude-mem
+- `codebase-memory-mcp` di DeusData, grafo strutturale del codice con call chain, 158 linguaggi via tree-sitter (MIT): https://github.com/DeusData/codebase-memory-mcp
+- `andrej-karpathy-skills` di forrestchang, quattro principi comportamentali anti-over-engineering come skill (MIT): https://github.com/forrestchang/andrej-karpathy-skills
+- `code-simplifier`, plugin ufficiale Anthropic per semplificazione del codice prodotto: https://github.com/anthropics/claude-plugins-official
+- `github-mcp-server`, server MCP ufficiale GitHub per issue, PR, code search e repository management (MIT): https://github.com/github/github-mcp-server
+- `context7` di Upstash, documentazione aggiornata di librerie e framework via MCP (MIT): https://github.com/upstash/context7
+- `playwright-mcp`, server MCP ufficiale Microsoft per automazione browser e test E2E (MIT): https://github.com/microsoft/playwright-mcp
+- `multiclaude` di dlorenc, supervisore per feature branch paralleli con gate di review umana (MIT): https://github.com/dlorenc/multiclaude
+- `psmux`, tmux nativo per Windows senza WSL, con supporto agent teams Claude Code (MIT): https://github.com/psmux/psmux
+- `tmux-claude-session-manager` di craftzdog, plugin tmux con stato live di tutte le sessioni Claude Code via hook nativi (MIT): https://github.com/craftzdog/tmux-claude-session-manager
+- `claudecode.nvim` di coder, plugin Neovim con protocollo MCP WebSocket in Lua pura (MIT): https://github.com/coder/claudecode.nvim
+- `sentry-mcp`, server MCP ufficiale Sentry per stack trace e correlazione errori-release: implementazione ufficiale Sentry
+- `figma-mcp`, server MCP ufficiale Figma per accesso all'albero dei nodi del design: implementazione ufficiale Figma
+- `vercel-mcp`, server MCP ufficiale Vercel per monitoraggio deploy e variabili d'ambiente: implementazione ufficiale Vercel
+- `linear-mcp`, server MCP ufficiale Linear per CRUD issue e sprint (richiede piano Standard+): implementazione ufficiale Linear
 
 ## Repository
 
