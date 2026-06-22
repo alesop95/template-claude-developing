@@ -1,0 +1,287 @@
+<title>template-claude-developing — Flusso di progetto e fonti</title>
+<style>
+:root{
+  --ground:#F7F6F2;--surface:#FFFFFF;
+  --text:#19190F;--muted:#716C5E;--light:#A09880;
+  --green:#2D6A4F;--green-l:#D4EDDE;--green-d:#1A4030;
+  --amber:#B7791F;--amber-l:#FEF3C7;
+  --border:#E3DFD5;--line:#C8C3B5;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ground);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.7}
+
+.page{max-width:900px;margin:0 auto;padding:3.5rem 2rem 5rem}
+
+.hero{margin-bottom:3.5rem;padding-bottom:2.5rem;border-bottom:2px solid var(--text)}
+.hero-eye{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-family:'Cascadia Code','Consolas',monospace;margin-bottom:.5rem}
+.hero-title{font-family:Georgia,serif;font-size:2.75rem;line-height:1.05;letter-spacing:-.03em;margin-bottom:.75rem}
+.hero-title span{color:var(--green)}
+.hero-sub{font-size:14px;color:var(--muted);max-width:640px;line-height:1.7;margin-bottom:1.5rem}
+.hero-meta{display:flex;gap:2.5rem;flex-wrap:wrap}
+.hm{display:flex;flex-direction:column}
+.hm-n{font-family:Georgia,serif;font-size:1.8rem;color:var(--green);line-height:1.1;font-weight:normal}
+.hm-l{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:2px}
+
+.sec-eye{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);font-family:'Cascadia Code','Consolas',monospace;margin-bottom:.5rem}
+h2.sec{font-family:Georgia,serif;font-size:1.7rem;letter-spacing:-.015em;margin-bottom:.5rem}
+.sec-desc{font-size:13.5px;color:var(--muted);max-width:640px;line-height:1.7;margin-bottom:2rem}
+
+.timeline{position:relative;padding-left:2.5rem}
+.timeline::before{content:'';position:absolute;left:10px;top:6px;bottom:6px;width:2px;background:linear-gradient(to bottom,var(--green) 0%,var(--line) 100%)}
+.phase{position:relative;margin-bottom:2.5rem;padding-bottom:2.5rem;border-bottom:1px solid var(--border)}
+.phase:last-child{border-bottom:none;margin-bottom:0}
+.phase-dot{position:absolute;left:-2.5rem;top:4px;width:18px;height:18px;border-radius:50%;background:var(--green);border:3px solid var(--ground);display:flex;align-items:center;justify-content:center}
+.phase-dot span{color:#fff;font-size:8px;font-weight:bold;font-family:'Cascadia Code','Consolas',monospace;line-height:1}
+.phase-when{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);font-family:'Cascadia Code','Consolas',monospace;margin-bottom:.3rem;font-weight:600}
+.phase-title{font-family:Georgia,serif;font-size:1.2rem;letter-spacing:-.01em;margin-bottom:.6rem}
+.phase-body{font-size:13.5px;color:var(--muted);line-height:1.7;margin-bottom:.9rem}
+.phase-body strong{color:var(--text);font-weight:600}
+
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:.5rem}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-family:'Cascadia Code','Consolas',monospace;font-weight:500;border:1px solid}
+.p-core{background:var(--green-l);color:var(--green-d);border-color:#A7D7BF}
+.p-pkg{background:var(--amber-l);color:#92400E;border-color:#FDE68A}
+.pill-label{font-size:9px;text-transform:uppercase;letter-spacing:.07em;opacity:.7;margin-right:2px}
+
+.divider{height:1px;background:var(--border);margin:3.5rem 0}
+
+table.src{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:1.25rem}
+table.src th{text-align:left;padding:.45rem .9rem;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);background:var(--ground);font-weight:700}
+table.src td{padding:.5rem .9rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5}
+table.src tr:last-child td{border-bottom:none}
+table.src td:first-child{font-family:'Cascadia Code','Consolas',monospace;font-size:11.5px;color:var(--green-d);white-space:nowrap}
+table.src a{color:var(--green);text-decoration:none;font-family:'Cascadia Code','Consolas',monospace;font-size:10.5px}
+table.src a:hover{text-decoration:underline}
+.badge{display:inline-block;font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;padding:1px 5px;border-radius:2px;font-weight:700}
+.b-mit{background:#D4EDDE;color:#1A4030}
+.b-off{background:#DBEAFE;color:#1E3A5F}
+.src-group{background:var(--green-l);padding:.35rem .9rem;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--green-d);font-weight:700;border-bottom:1px solid #A7D7BF}
+
+.callout{background:var(--amber-l);border:1px solid #FDE68A;border-radius:6px;padding:1rem 1.25rem;font-size:13px;color:#78350F;line-height:1.65;margin:1.5rem 0}
+.callout strong{color:#92400E}
+
+.fn{margin-top:3.5rem;padding-top:1.5rem;border-top:1px solid var(--border);font-size:11.5px;color:var(--light);line-height:1.7}
+
+@media(max-width:620px){.page{padding:2rem 1rem 3rem}.hero-title{font-size:2rem}.timeline{padding-left:2rem}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eye">template-claude-developing · guida operativa</div>
+    <h1 class="hero-title">Potenzialita' e fonti<br><span>in un flusso reale</span></h1>
+    <p class="hero-sub">Cosa fa questo template, quando lo fa, e da quali strumenti e repository open source attinge. Illustrato su un progetto tipico: una REST API Node.js con PostgreSQL, test E2E e deploy su Vercel. Vedi anche: <a href="feature-map.html" style="color:var(--green);font-family:monospace;font-size:12px">feature-map.html</a></p>
+    <div class="hero-meta">
+      <div class="hm"><span class="hm-n">5</span><span class="hm-l">Skill</span></div>
+      <div class="hm"><span class="hm-n">6</span><span class="hm-l">Regole</span></div>
+      <div class="hm"><span class="hm-n">2</span><span class="hm-l">Agenti template</span></div>
+      <div class="hm"><span class="hm-n">32</span><span class="hm-l">Pacchetti opt-in</span></div>
+      <div class="hm"><span class="hm-n">21+</span><span class="hm-l">Repo open source</span></div>
+    </div>
+  </div>
+
+  <div class="sec-eye">Flusso di progetto</div>
+  <h2 class="sec">Da zero a produzione — con ogni feature attivata al momento giusto</h2>
+  <p class="sec-desc">Ogni feature del template ha un gate: si attiva solo quando il contesto del progetto lo rende pertinente, mai di default. Questo flusso mostra quando e perche' ciascuna si accende su un progetto reale.</p>
+
+  <div class="timeline">
+
+    <div class="phase">
+      <div class="phase-dot"><span>1</span></div>
+      <div class="phase-when">Giorno 0 — 30 minuti</div>
+      <div class="phase-title">Inizializzazione del progetto</div>
+      <div class="phase-body">
+        Si incolla <strong>PROMPT-nuovo-progetto.md</strong> in Claude Code nella radice del progetto. La skill <strong>init-project-system</strong> esegue l'anatomia minima: crea .claude/ con memory/, context/ e rules/, istanzia le schede tecniche vuote, popola CLAUDE.md con la procedura di ripresa. Poi legge PACKAGES.md e propone i pacchetti pertinenti uno per uno.<br><br>
+        Gate accettati in questo progetto: <em>github-mcp</em> (il progetto vive su GitHub), <em>context7</em> (si usa Express e Drizzle in evoluzione rapida), <em>playwright-mcp</em> (test E2E previsti), <em>ccusage</em> (baseline misurazione token, sempre), <em>vercel-mcp</em> (deploy su Vercel). Gate rifiutati: LaTeX, knowledge-wiki (non necessari ora).
+      </div>
+      <div class="pills">
+        <span class="pill p-core"><span class="pill-label">core</span>init-project-system</span>
+        <span class="pill p-core"><span class="pill-label">core</span>PROMPT-nuovo-progetto</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>github-mcp</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>context7</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>playwright-mcp</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>ccusage</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>vercel-mcp</span>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot"><span>2</span></div>
+      <div class="phase-when">Giorno 1 — Prima sessione</div>
+      <div class="phase-title">Architettura e schede tecniche</div>
+      <div class="phase-body">
+        All'avvio della prima sessione si legge <strong>memory/index.md</strong> (stato iniziale), si invoca <strong>sync-context</strong> per misurare la divergenza. Si popola <strong>STACK.md</strong> con stack, flussi e ruolo dei file; <strong>design-and-security.md</strong> con i paradigmi scelti.<br><br>
+        <strong>security-auditor</strong> viene chiamato sullo schema di autenticazione JWT appena abbozzato: trova un finding HIGH (token senza scadenza configurabile) e uno MEDIUM (mancanza di rate limiting). Si corregge prima di andare avanti. La regola <strong>security-permissions.md</strong> e' gia' attiva: qualsiasi tentativo di leggere .env viene bloccato dalle deny rules.
+      </div>
+      <div class="pills">
+        <span class="pill p-core"><span class="pill-label">core</span>sync-context</span>
+        <span class="pill p-core"><span class="pill-label">core</span>memory/index.md</span>
+        <span class="pill p-core"><span class="pill-label">core</span>STACK.md + design-and-security.md</span>
+        <span class="pill p-core"><span class="pill-label">agente</span>security-auditor</span>
+        <span class="pill p-core"><span class="pill-label">regola</span>security-permissions</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>context7 (docs Express 5)</span>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot"><span>3</span></div>
+      <div class="phase-when">Settimana 1 — Sviluppo attivo</div>
+      <div class="phase-title">Loop di sviluppo quotidiano</div>
+      <div class="phase-body">
+        Ogni sessione inizia leggendo <strong>memory/index.md</strong> e <strong>current-work.md</strong>, poi <strong>sync-context</strong> misura il drift. Solo le schede pertinenti alla feature attiva vengono lette. Il <strong>RESUME-PROMPT.md</strong> (in _notes/, ignorato) viene aggiornato a fine sessione.<br><br>
+        <strong>github-mcp</strong> gestisce issue e PR senza uscire da Claude Code. <strong>code-reviewer</strong> viene invocato prima di ogni PR merge: classifica i finding per severita' (CRITICAL blocca il merge). <strong>context7</strong> risolve le ambiguita' sulla documentazione di Drizzle ORM.<br><br>
+        <strong>ccusage</strong> mostra la baseline: media 45K token per sessione. Si decide di attivare <strong>ponytail</strong> per tenere il codice piu' compatto.
+      </div>
+      <div class="pills">
+        <span class="pill p-core"><span class="pill-label">core</span>sync-context (ogni sessione)</span>
+        <span class="pill p-core"><span class="pill-label">agente</span>code-reviewer (pre-merge)</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>github-mcp</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>context7</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>ccusage</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>ponytail</span>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot"><span>4</span></div>
+      <div class="phase-when">Settimana 1 — Sessione lunga (6 ore)</div>
+      <div class="phase-title">Igiene di sessione e token economy</div>
+      <div class="phase-body">
+        A meta' sessione il contesto raggiunge il 52%. Si lancia <strong>/compact</strong> con istruzione guidata: <em>"focus on the auth flow decisions and the Drizzle schema we finalized"</em>. La qualita' delle risposte resta alta.<br><br>
+        Prima di chiudere, si fa scrivere a Claude un <strong>HANDOFF.md</strong> con le tre decisioni prese, i quattro file toccati e il prossimo passo concreto. La sessione successiva riparte da quel file invece che da zero.<br><br>
+        L'output dei test vitest e' verboso: si attiva <strong>rtk</strong> per comprimere l'output shell prima che entri nel contesto.
+      </div>
+      <div class="pills">
+        <span class="pill p-core"><span class="pill-label">regola</span>token-economy (/compact 52%)</span>
+        <span class="pill p-core"><span class="pill-label">core</span>HANDOFF.md (pre-chiusura)</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>rtk (output vitest)</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>ponytail</span>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot"><span>5</span></div>
+      <div class="phase-when">Settimana 2 — Testing e deploy</div>
+      <div class="phase-title">Test E2E, audit di sicurezza e deploy</div>
+      <div class="phase-body">
+        <strong>playwright-mcp</strong> pilota il browser in locale per verificare le rotte API autenticate: nessun browser aggiuntivo, riusa Chromium gia' installato.<br><br>
+        <strong>security-auditor</strong> esegue un full pass prima del deploy: trova un finding CRITICAL (path traversal su un endpoint di upload) che viene risolto prima del push. Il finding viene registrato in <strong>memory/decisions.md</strong> come decisione architetturale.<br><br>
+        <strong>vercel-mcp</strong> monitora il deploy preview: differenza di latenza tra preview e produzione visibile direttamente in Claude Code. La variabile d'ambiente mancante viene aggiunta tramite vercel-mcp senza uscire dalla sessione.
+      </div>
+      <div class="pills">
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>playwright-mcp</span>
+        <span class="pill p-core"><span class="pill-label">agente</span>security-auditor (full pass)</span>
+        <span class="pill p-core"><span class="pill-label">agente</span>code-reviewer (test review)</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>vercel-mcp</span>
+        <span class="pill p-core"><span class="pill-label">core</span>memory/decisions.md</span>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot"><span>6</span></div>
+      <div class="phase-when">Settimana 3-4 — Progetto in evoluzione</div>
+      <div class="phase-title">Memoria semantica e grafo di conoscenza</div>
+      <div class="phase-body">
+        Dopo tre settimane memory/progress.md e' cresciuto a 400 righe. Si attiva <strong>claude-mem</strong>: memoria semantica persistente SQLite+Chroma, interamente locale. I due sistemi sono complementari: progress.md per la traccia versionata; claude-mem per il retrieval semantico cross-sessione.<br><br>
+        <strong>graphify</strong> genera una mappa interattiva delle relazioni tra moduli: emerge che il modulo di autenticazione e' un nodo con 12 connessioni in uscita, molto piu' centrale del previsto. Cambia la priorita' del refactoring.<br><br>
+        Si attiva <strong>codebase-memory-mcp</strong> perche' il codebase ha superato 50K righe: le query strutturali costano ora 200 token invece di 8K.
+      </div>
+      <div class="pills">
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>claude-mem</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>graphify</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>codebase-memory-mcp</span>
+        <span class="pill p-core"><span class="pill-label">core</span>memory/progress.md</span>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot"><span>7</span></div>
+      <div class="phase-when">Tag v1.0 — Documentazione finale</div>
+      <div class="phase-title">Onboarding, stile e riconciliazione finale</div>
+      <div class="phase-body">
+        Prima del tag, <strong>sync-context</strong> passa in rassegna tutte le schede: tre sono marcate "da aggiornare" perche' il refactoring di settimana 3 ha spostato file coperti dalle paths. Si aggiornano solo quelle tre.<br><br>
+        Il README pubblico viene scritto da Claude e poi passato a <strong>humanizer</strong>: rimuove 11 occorrenze di pattern AI. La regola <strong>interaction-style</strong> era gia' attiva sulla documentazione interna; humanizer serve per la prosa esterna.<br><br>
+        La skill <strong>onboard</strong> genera la guida per il nuovo collaboratore leggendo le schede, la storia dei commit e le decisioni architetturali.
+      </div>
+      <div class="pills">
+        <span class="pill p-core"><span class="pill-label">core</span>sync-context (finale)</span>
+        <span class="pill p-core"><span class="pill-label">skill</span>onboard</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>humanizer</span>
+        <span class="pill p-core"><span class="pill-label">regola</span>interaction-style</span>
+        <span class="pill p-core"><span class="pill-label">regola</span>git-commands-format</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout">
+    <strong>Cosa non hai dovuto fare in questo flusso:</strong> rileggere la documentazione da zero a ogni sessione, copiare stack trace in chat, aprire GitHub nel browser per gestire PR, cercare documentazione di Drizzle ORM su MDN, ricordare a mano le decisioni architetturali di tre settimane fa, scrivere il README senza aiuto stilistico.
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sec-eye">Fonti e crediti</div>
+  <h2 class="sec">Tutte le repository e gli strumenti open source</h2>
+  <p class="sec-desc">Ogni componente esterno e' opt-in, mai forzato. Licenza MIT salvo indicazione diversa.</p>
+
+  <table class="src">
+    <thead><tr><th>Strumento</th><th>Cosa fa nel template</th><th>Repository / Fonte</th><th>Licenza</th></tr></thead>
+    <tbody>
+      <tr class="src-group"><td colspan="4">Conoscenza e documentazione</td></tr>
+      <tr><td>code-context-provider-mcp</td><td>Struttura cartelle e simboli del codice via tree-sitter</td><td><a href="https://github.com/AB498/code-context-provider-mcp">github.com/AB498/code-context-provider-mcp</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>book-to-skill</td><td>PDF tecnico → skill interrogabile on-demand via /&lt;slug&gt;</td><td><a href="https://github.com/virgiliojr94/book-to-skill">github.com/virgiliojr94/book-to-skill</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>LLM Wiki (pattern)</td><td>sources/ immutabili + wiki/ compilata dall'LLM</td><td><a href="#">gist.github.com/karpathy/442a6bf…</a></td><td>—</td></tr>
+      <tr><td>andrej-karpathy-skills</td><td>4 principi anti-over-engineering come vincoli comportamentali</td><td><a href="https://github.com/forrestchang/andrej-karpathy-skills">github.com/forrestchang/andrej-karpathy-skills</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>graphify</td><td>Grafo interattivo di conoscenza: nodi, relazioni, community</td><td><a href="https://github.com/safishamsi/graphify">github.com/safishamsi/graphify</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>codebase-memory-mcp</td><td>Grafo strutturale del codice (158 linguaggi); 10x-120x meno token</td><td><a href="https://github.com/DeusData/codebase-memory-mcp">github.com/DeusData/codebase-memory-mcp</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>claude-mem</td><td>Memoria semantica cross-sessione SQLite+Chroma, locale</td><td><a href="https://github.com/thedotmack/claude-mem">github.com/thedotmack/claude-mem</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+
+      <tr class="src-group"><td colspan="4">Diagrammi e rendering</td></tr>
+      <tr><td>mermaid-cli</td><td>Resa Mermaid .mmd → .svg riusando Chromium di sistema</td><td><a href="https://github.com/mermaid-js/mermaid-cli">github.com/mermaid-js/mermaid-cli</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+
+      <tr class="src-group"><td colspan="4">Risparmio token</td></tr>
+      <tr><td>ccusage</td><td>Baseline consumo token per sessione e modello</td><td><a href="https://github.com/ryoppippi/ccusage">github.com/ryoppippi/ccusage</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>caveman</td><td>Risposte telegrafiche: ~65% meno token di output</td><td><a href="https://github.com/juliusbrussee/caveman">github.com/juliusbrussee/caveman</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>rtk</td><td>Comprime output shell (git, cargo, vitest, npm, 100+ comandi)</td><td><a href="https://github.com/rtk-ai/rtk">github.com/rtk-ai/rtk</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>ponytail</td><td>Disciplina "senior developer pigro": YAGNI, stdlib prima</td><td><a href="https://github.com/DietrichGebert/ponytail">github.com/DietrichGebert/ponytail</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>context-mode</td><td>Sandboxa output tool pesanti in SQLite locale</td><td><a href="https://github.com/mksglu/context-mode">github.com/mksglu/context-mode</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>headroom</td><td>Proxy locale che comprime tutto l'input LLM</td><td><a href="https://github.com/chopratejas/headroom">github.com/chopratejas/headroom</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>claude-code-router</td><td>Routing automatico tra modelli per costo API</td><td><a href="https://github.com/musistudio/claude-code-router">github.com/musistudio/claude-code-router</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>token-optimizer-mcp</td><td>Compressione e caching del contesto via MCP</td><td><a href="https://github.com/ooples/token-optimizer-mcp">github.com/ooples/token-optimizer-mcp</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+
+      <tr class="src-group"><td colspan="4">MCP server ufficiali dei vendor</td></tr>
+      <tr><td>github-mcp-server</td><td>Issue, PR, code search, repository management</td><td><a href="https://github.com/github/github-mcp-server">github.com/github/github-mcp-server</a></td><td><span class="badge b-off">Ufficiale GitHub · MIT</span></td></tr>
+      <tr><td>context7</td><td>Documentazione aggiornata di librerie e framework</td><td><a href="https://github.com/upstash/context7">github.com/upstash/context7</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>playwright-mcp</td><td>Automazione browser locale via accessibility snapshot</td><td><a href="https://github.com/microsoft/playwright-mcp">github.com/microsoft/playwright-mcp</a></td><td><span class="badge b-off">Ufficiale Microsoft · MIT</span></td></tr>
+      <tr><td>sentry-mcp</td><td>Stack trace, breadcrumb e correlazione errori-release</td><td>Implementazione ufficiale Sentry</td><td><span class="badge b-off">Ufficiale Sentry</span></td></tr>
+      <tr><td>figma-mcp</td><td>Albero dei nodi Figma per implementazione pixel-accurate</td><td>Implementazione ufficiale Figma</td><td><span class="badge b-off">Ufficiale Figma</span></td></tr>
+      <tr><td>vercel-mcp</td><td>Monitoraggio deploy, variabili d'ambiente, health check</td><td>Implementazione ufficiale Vercel</td><td><span class="badge b-off">Ufficiale Vercel</span></td></tr>
+      <tr><td>linear-mcp</td><td>CRUD issue, sprint e cicli Linear</td><td>Implementazione ufficiale Linear</td><td><span class="badge b-off">Ufficiale Linear</span></td></tr>
+
+      <tr class="src-group"><td colspan="4">Orchestrazione multi-agente</td></tr>
+      <tr><td>multiclaude</td><td>Supervisore per 3+ feature branch paralleli con gate review</td><td><a href="https://github.com/dlorenc/multiclaude">github.com/dlorenc/multiclaude</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>subagent-template</td><td>code-reviewer e security-auditor come agenti template</td><td>Documentazione ufficiale Claude Code</td><td>—</td></tr>
+
+      <tr class="src-group"><td colspan="4">Ambiente, editor e multi-terminale</td></tr>
+      <tr><td>psmux</td><td>Tmux nativo Windows senza WSL</td><td><a href="https://github.com/psmux/psmux">github.com/psmux/psmux</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>tmux-claude-session-manager</td><td>Plugin tmux con stato live delle sessioni Claude Code</td><td><a href="https://github.com/craftzdog/tmux-claude-session-manager">github.com/craftzdog/tmux-claude-session-manager</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>claudecode.nvim</td><td>Plugin Neovim con protocollo MCP WebSocket in Lua pura</td><td><a href="https://github.com/coder/claudecode.nvim">github.com/coder/claudecode.nvim</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+
+      <tr class="src-group"><td colspan="4">Stile e qualita'</td></tr>
+      <tr><td>humanizer</td><td>Rimuove 33 pattern di scrittura AI dal testo</td><td><a href="https://github.com/blader/humanizer">github.com/blader/humanizer</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>taste-skill</td><td>Design-taste per interfacce: layout, tipografia, spaziatura, motion</td><td><a href="https://github.com/Leonxlnx/taste-skill">github.com/Leonxlnx/taste-skill</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>code-simplifier</td><td>Filtro di semplificazione del codice con vincolo no-behaviour-change</td><td><a href="https://github.com/anthropics/claude-plugins-official">github.com/anthropics/claude-plugins-official</a></td><td><span class="badge b-off">Ufficiale Anthropic</span></td></tr>
+
+      <tr class="src-group"><td colspan="4">Build e ambienti specifici</td></tr>
+      <tr><td>latex (eco-sistema)</td><td>Manifesto pacchetti TeX, script build .ps1/.sh, skill latex-build</td><td>Ecosystem LaTeX standard</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="fn">
+    I benchmark di risparmio token sono auto-dichiarati dagli autori dei rispettivi strumenti. Nessuno e' incluso nel bundle di default: ogni voce si attiva su gate esplicito e conferma per quel progetto specifico.<br><br>
+    Per aggiornare questo file: aprire una sessione Claude Code su questo repository e chiedere di rigenerare docs/project-flow.html.
+  </div>
+
+</div>

@@ -101,6 +101,9 @@ Lo stile pulito e' garantito sempre dalla regola `interaction-style` (niente tra
 ```
 template-claude-developing/
   README.md                      questo file, solo per la repo, non trasportato nei progetti
+  docs/
+    feature-map.html             inventario completo delle feature con source e repo, apribile localmente
+    project-flow.html            flusso di progetto annotato con tutte le feature e la tabella fonti
   CLAUDE.md                      segnaposto di radice del template
   CLAUDE.local.md                override personali, ignorato
   .gitignore
@@ -139,7 +142,7 @@ template-claude-developing/
 
 ## Cosa non finisce nei progetti
 
-Questo `README.md` di radice resta nella repository del template e non viene copiato nei progetti. Gli strumenti di igiene dell'account, `check-account-hygiene` e `session-end-wipe`, agiscono sulla home dell'account Claude Code e non sul repository del progetto: il wipe si installa una volta per-account, non per-progetto. I file personali e locali, `CLAUDE.local.md` e `.claude/settings.local.json`, sono ignorati da git.
+Questo `README.md` di radice e la cartella `docs/` (con i due file HTML di documentazione) restano nella repository del template e non vengono copiati nei progetti. Gli strumenti di igiene dell'account, `check-account-hygiene` e `session-end-wipe`, agiscono sulla home dell'account Claude Code e non sul repository del progetto: il wipe si installa una volta per-account, non per-progetto. I file personali e locali, `CLAUDE.local.md` e `.claude/settings.local.json`, sono ignorati da git.
 
 ## Origine
 

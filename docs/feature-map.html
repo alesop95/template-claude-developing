@@ -1,0 +1,327 @@
+<title>template-claude-developing — Mappa completa delle feature</title>
+<style>
+:root{
+  --ground:#F1F2F6;--surface:#fff;--sidebar:#1A1D2E;
+  --stext:#CBD5E1;--smuted:#64748B;--sacti:#4338CA;
+  --text:#111827;--muted:#6B7280;--accent:#4338CA;
+  --amber:#92400E;--green:#14532D;--red:#991B1B;
+  --border:#DDE0E8;--sw:230px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ground);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.65;display:flex;min-height:100vh}
+
+aside{width:var(--sw);flex-shrink:0;background:var(--sidebar);position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.75rem 1.25rem;display:flex;flex-direction:column}
+.sl{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--smuted);margin-bottom:2rem;font-family:'Cascadia Code','Consolas',monospace}
+.sg{margin-bottom:1.25rem}
+.sg-lbl{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--smuted);margin-bottom:.35rem;padding:0 .4rem}
+.sl-a{display:flex;align-items:center;gap:7px;text-decoration:none;color:var(--stext);font-size:12px;padding:.28rem .4rem;border-radius:4px;margin-bottom:1px;transition:background .1s}
+.sl-a:hover{background:rgba(255,255,255,.07)}
+.sl-n{font-family:Georgia,serif;font-size:10px;color:var(--smuted);width:16px;flex-shrink:0}
+.s-foot{margin-top:auto;padding-top:1rem;border-top:1px solid rgba(255,255,255,.08)}
+.s-foot p{font-size:10px;color:var(--smuted);line-height:1.6}
+.s-foot strong{color:var(--stext)}
+
+main{flex:1;padding:3rem 2.5rem;max-width:900px;min-width:0}
+
+.ph{margin-bottom:3rem;padding-bottom:2rem;border-bottom:2px solid var(--text)}
+.ph-eye{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);font-family:'Cascadia Code','Consolas',monospace;margin-bottom:.6rem}
+.ph-title{font-family:Georgia,serif;font-size:2.5rem;line-height:1.08;letter-spacing:-.025em;margin-bottom:.6rem}
+.ph-desc{font-size:13.5px;color:var(--muted);max-width:580px;line-height:1.7}
+.ph-stats{display:flex;gap:2rem;margin-top:1.25rem;flex-wrap:wrap}
+.ps{display:flex;flex-direction:column}
+.ps-n{font-family:Georgia,serif;font-size:1.9rem;color:var(--accent);line-height:1}
+.ps-l{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:3px}
+
+.sec{margin-bottom:3.5rem}
+.sec-hd{display:flex;align-items:baseline;gap:.75rem;margin-bottom:1.25rem}
+.sec-num{font-family:Georgia,serif;font-size:1.2rem;color:var(--border);font-weight:bold;user-select:none}
+.sec-title{font-family:Georgia,serif;font-size:1.35rem;letter-spacing:-.01em}
+.sec-sub{font-size:13px;color:var(--muted);margin-bottom:1rem;max-width:640px;line-height:1.6}
+.divider{height:1px;background:var(--border);margin:3rem 0}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:.75rem}
+.card-hd{display:flex;align-items:center;gap:7px;padding:.5rem .9rem;background:var(--ground);border-bottom:1px solid var(--border);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.d-indigo{background:var(--accent)}.d-green{background:#15803D}.d-amber{background:#D97706}.d-new{background:#7C3AED}
+
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}
+table.t th{text-align:left;padding:.4rem .9rem;font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);font-weight:700;background:#FAFBFD}
+table.t td{padding:.48rem .9rem;border-bottom:1px solid #ECEEF3;vertical-align:top;line-height:1.5}
+table.t tr:last-child td{border-bottom:none}
+table.t code{font-family:'Cascadia Code','Consolas',monospace;font-size:11.5px;background:var(--ground);padding:1px 5px;border-radius:3px;color:var(--accent)}
+
+.badge{display:inline-block;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:3px;font-weight:700;margin-left:4px}
+.b-new{background:#EDE9FE;color:#5B21B6;border:1px solid #DDD6FE}
+.b-core{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0}
+.b-off{background:#F9FAFB;color:var(--muted);border:1px solid var(--border)}
+
+a.repo{font-family:'Cascadia Code','Consolas',monospace;font-size:11px;color:var(--accent);text-decoration:none}
+a.repo:hover{text-decoration:underline}
+
+.fn{margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border);font-size:11.5px;color:var(--muted);line-height:1.7}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:700px){body{flex-direction:column}aside{width:100%;height:auto;position:static}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<aside>
+  <div class="sl">template-claude-developing</div>
+  <div class="sg">
+    <div class="sg-lbl">Sistema core</div>
+    <a class="sl-a" href="#core"><span class="sl-n">01</span>Core originale</a>
+    <a class="sl-a" href="#rules"><span class="sl-n">02</span>Regole modulari</a>
+    <a class="sl-a" href="#skills"><span class="sl-n">03</span>Skill</a>
+    <a class="sl-a" href="#agents"><span class="sl-n">04</span>Agenti</a>
+  </div>
+  <div class="sg">
+    <div class="sg-lbl">Pacchetti opt-in</div>
+    <a class="sl-a" href="#pkg-dev"><span class="sl-n">05</span>Ambiente e editor</a>
+    <a class="sl-a" href="#pkg-know"><span class="sl-n">06</span>Conoscenza</a>
+    <a class="sl-a" href="#pkg-token"><span class="sl-n">07</span>Risparmio token</a>
+    <a class="sl-a" href="#pkg-mcp"><span class="sl-n">08</span>MCP server</a>
+    <a class="sl-a" href="#pkg-orch"><span class="sl-n">09</span>Orchestrazione</a>
+    <a class="sl-a" href="#pkg-style"><span class="sl-n">10</span>Stile e qualita'</a>
+  </div>
+  <div class="s-foot">
+    <p>Voci <span class="badge b-new" style="font-size:9px">Nuovo</span> aggiunte nella sessione giugno 2026 dai 6 playbook.<br><br>
+    <strong>32</strong> pacchetti opt-in totali<br>
+    <strong>22</strong> nuovi in questa sessione<br><br>
+    Vedi anche: <a href="project-flow.html" style="color:#94A3B8;font-size:10px">project-flow.html</a></p>
+  </div>
+</aside>
+
+<main>
+  <div class="ph">
+    <div class="ph-eye">mappa delle feature · giugno 2026</div>
+    <h1 class="ph-title">template-claude-developing</h1>
+    <p class="ph-desc">Inventario completo di tutte le feature del template, con source, repository e licenza per ogni componente esterno. Le voci marcate <span class="badge b-new">Nuovo</span> sono state aggiunte in questa sessione a partire dai 6 playbook.</p>
+    <div class="ph-stats">
+      <div class="ps"><span class="ps-n">5</span><span class="ps-l">Skill</span></div>
+      <div class="ps"><span class="ps-n">6</span><span class="ps-l">Regole</span></div>
+      <div class="ps"><span class="ps-n">2</span><span class="ps-l">Agenti template</span></div>
+      <div class="ps"><span class="ps-n">32</span><span class="ps-l">Pacchetti opt-in</span></div>
+      <div class="ps"><span class="ps-n">7</span><span class="ps-l">MCP server</span></div>
+    </div>
+  </div>
+
+  <section class="sec" id="core">
+    <div class="sec-hd"><span class="sec-num">01</span><h2 class="sec-title">Sistema core — lavoro originale</h2></div>
+    <p class="sec-sub">Componenti progettati e scritti per questo template. Nessuna dipendenza esterna; portabili su qualsiasi progetto tramite i due prompt fissi.</p>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-green"></span>Architettura e procedure</div>
+      <table class="t">
+        <thead><tr><th>Componente</th><th>Posizione</th><th>Funzione</th></tr></thead>
+        <tbody>
+          <tr><td><strong>PROJECT-SYSTEM.md</strong></td><td><code>.claude/</code></td><td>Fonte di verita' dell'architettura; procedura di inizializzazione in sezioni numerate</td></tr>
+          <tr><td><strong>PROMPT-nuovo-progetto.md</strong></td><td><code>.claude/</code></td><td>Punto di ingresso per un progetto nuovo o quasi vuoto</td></tr>
+          <tr><td><strong>PROMPT-allinea-progetto-esistente.md</strong></td><td><code>.claude/</code></td><td>Allineamento retroattivo di un progetto con codice e storia git preesistenti</td></tr>
+          <tr><td><strong>PACKAGES.md</strong></td><td><code>.claude/templates/</code></td><td>Catalogo dei pacchetti opt-in; letto da init-project-system per proporre i gate</td></tr>
+          <tr><td><strong>CLAUDE.md / CLAUDE.local.md</strong></td><td>radice progetto</td><td>Istruzioni di team versionate + override personali ignorati da git</td></tr>
+          <tr><td><strong>settings.json / settings.local.json</strong></td><td><code>.claude/</code></td><td>Permessi condivisi del team + permessi personali ignorati</td></tr>
+          <tr><td><strong>Struttura memory/</strong></td><td><code>.claude/</code></td><td>index.md (snapshot), progress.md (work-log), decisions.md (ADR-lite)</td></tr>
+          <tr><td><strong>Struttura context/</strong></td><td><code>.claude/</code></td><td>Schede tecniche con frontmatter di riconciliazione (STACK, design, deployment, dev-testing, current-work, roadmap)</td></tr>
+          <tr><td><strong>Tools</strong></td><td><code>.claude/templates/tools/</code></td><td>render-diagrams.mjs, latest-screenshot.ps1, check-account-hygiene (.ps1/.sh), session-end-wipe (.ps1/.sh), claude-incognito (.ps1/.sh)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="rules">
+    <div class="sec-hd"><span class="sec-num">02</span><h2 class="sec-title">Regole modulari</h2></div>
+    <p class="sec-sub">Caricate su necessita'. Definiscono stile, sicurezza, identita' git e pratiche operative. Sei regole totali, tre nuove in questa sessione.</p>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-green"></span>Regole preesistenti</div>
+      <table class="t">
+        <thead><tr><th>File</th><th>Contenuto</th></tr></thead>
+        <tbody>
+          <tr><td><code>interaction-style.md</code></td><td>Registro discorsivo, no elenchi, no emoji, no trattini lunghi, acronimi in nota a pie' di pagina.</td></tr>
+          <tr><td><code>manual-screenshots.md</code></td><td>Quando e come chiedere uno screenshot; cartella Screenpresso su Windows, strumento latest-screenshot.ps1.</td></tr>
+          <tr><td><code>git-identity-and-repo.md</code></td><td>Identita' git locale, alias SSH per profilo, bootstrap remoto, protezione con user.useConfigOnly.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>Regole nuove — aggiunte in questa sessione</div>
+      <table class="t">
+        <thead><tr><th>File</th><th>Contenuto</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td><code>token-economy.md</code> <span class="badge b-new">Esteso</span></td><td>Aggiunta sezione "Igiene di sessione": /compact al 40-60%, CLAUDE_AUTOCOMPACT_PCT_OVERRIDE, pattern HANDOFF.md, caveat finestra 1M token, principio "un task = una chat".</td><td>claude-code-token-saving-playbook</td></tr>
+          <tr><td><code>security-permissions.md</code> <span class="badge b-new">Nuovo</span></td><td>6 modalita' di permesso, sandbox OS e limitazioni Windows, linee guida per --dangerously-skip-permissions, avvertenze Agent Teams sperimentali.</td><td>claude-code-security-permissions-sandboxing</td></tr>
+          <tr><td><code>git-commands-format.md</code> <span class="badge b-new">Nuovo</span></td><td>Comandi git presentati sempre come singola riga copiabile, sia per PowerShell che per bash. Messaggio di commit su una riga, max 72 caratteri.</td><td>questa sessione</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-amber"></span>Baseline di sicurezza aggiornata — templates/settings.json</div>
+      <table class="t">
+        <thead><tr><th>Tipo</th><th>Regole aggiunte</th></tr></thead>
+        <tbody>
+          <tr><td><strong>deny</strong> (nuove)</td><td><code>Read(.env)</code> · <code>Read(.env.*)</code> · <code>Read(~/.ssh/**)</code> · <code>Read(~/.aws/credentials)</code> · <code>Bash(rm -rf:*)</code></td></tr>
+          <tr><td><strong>ask</strong> (nuove)</td><td><code>Bash(npm publish:*)</code> · <code>Bash(docker push:*)</code></td></tr>
+          <tr><td><strong>deny</strong> (gia' presenti)</td><td><code>git commit</code> · <code>git push</code> · <code>git reset --hard</code> · <code>git rebase</code> · <code>git config --global</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="skills">
+    <div class="sec-hd"><span class="sec-num">03</span><h2 class="sec-title">Skill</h2></div>
+    <p class="sec-sub">Workflow richiamabili on-demand. Il metadata costa ~30-100 token; il corpo si carica solo quando la skill e' pertinente al task.</p>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-green"></span>Cinque skill di sistema — lavoro originale</div>
+      <table class="t">
+        <thead><tr><th>Skill</th><th>Funzione</th><th>Invocazione tipica</th></tr></thead>
+        <tbody>
+          <tr><td><strong>init-project-system</strong></td><td>Installa l'anatomia minima del progetto; legge PACKAGES.md per i gate</td><td>Chiamata dai due prompt fissi</td></tr>
+          <tr><td><strong>sync-context</strong></td><td>Confronta il last-verified-commit di ogni scheda con HEAD, propone delta update mirati</td><td>Inizio sessione o dopo git pull</td></tr>
+          <tr><td><strong>git-sync</strong></td><td>Prepara le operazioni git (add, status, diff), mai commit ne' push</td><td>Prima di committare</td></tr>
+          <tr><td><strong>repo-status</strong></td><td>Riepilogo: branch, commit recenti, file modificati, differenze non committate</td><td>Inizio sessione o on-demand</td></tr>
+          <tr><td><strong>onboard</strong></td><td>Spiegazione completa del progetto per chi parte da zero: struttura, flussi, decisioni chiave</td><td>Quando un nuovo membro o agente entra</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="agents">
+    <div class="sec-hd"><span class="sec-num">04</span><h2 class="sec-title">Agenti di progetto</h2></div>
+    <p class="sec-sub">Definizioni di subagent in .claude/agents/. Persona specializzata, contesto isolato, riporta solo il risultato finale. Formato nativo Claude Code.</p>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>Due agenti template — nuovi in questa sessione</div>
+      <table class="t">
+        <thead><tr><th>Agente</th><th>Modello</th><th>Tool</th><th>Cosa fa</th></tr></thead>
+        <tbody>
+          <tr><td><strong>code-reviewer</strong> <span class="badge b-new">Nuovo</span></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob</td><td>Revisiona struttura, error handling e sicurezza; classifica ogni finding CRITICAL / HIGH / MEDIUM / LOW; conclude con APPROVE, REQUEST_CHANGES o NEEDS_DISCUSSION</td></tr>
+          <tr><td><strong>security-auditor</strong> <span class="badge b-new">Nuovo</span></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob</td><td>Audit per autenticazione, autorizzazione, validazione input, esposizione dati, dipendenze con CVE note, secrets hardcoded; classifica per severita' e impatto reale</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="pkg-dev">
+    <div class="sec-hd"><span class="sec-num">05</span><h2 class="sec-title">Pacchetti — Ambiente e editor</h2></div>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-indigo"></span>Ambiente di sviluppo</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
+        <tbody>
+          <tr><td><strong>code-context</strong> (MCP)</td><td>Struttura cartelle e simboli del codice via tree-sitter; JS/TS/Python</td><td>Allineamento di progetto esistente</td><td><a class="repo" href="https://github.com/AB498/code-context-provider-mcp">github.com/AB498/code-context-provider-mcp</a> · MIT</td></tr>
+          <tr><td><strong>latex</strong></td><td>Ambiente build LaTeX: manifesto pacchetti, script setup/build, skill latex-build</td><td>Progetto con file .tex</td><td>Ecosystem LaTeX standard</td></tr>
+          <tr><td><strong>diagrams</strong></td><td>Resa Mermaid .mmd → .svg riusando il browser Chromium di sistema</td><td>Progetto con diagrammi in .claude/context/diagrams/</td><td><a class="repo" href="https://github.com/mermaid-js/mermaid-cli">github.com/mermaid-js/mermaid-cli</a> · MIT</td></tr>
+          <tr><td><strong>psmux</strong> <span class="badge b-new">Nuovo</span></td><td>Tmux nativo Windows (no WSL); first-class support agent teams Claude Code</td><td>Windows senza WSL2, 3+ progetti paralleli</td><td><a class="repo" href="https://github.com/psmux/psmux">github.com/psmux/psmux</a> · MIT</td></tr>
+          <tr><td><strong>tmux-claude-session-manager</strong> <span class="badge b-new">Nuovo</span></td><td>Plugin tmux con picker fzf per stato live di tutte le sessioni Claude Code; no polling</td><td>Setup tmux con 3+ sessioni Claude Code</td><td><a class="repo" href="https://github.com/craftzdog/tmux-claude-session-manager">github.com/craftzdog/tmux-claude-session-manager</a> · MIT</td></tr>
+          <tr><td><strong>claudecode.nvim</strong> <span class="badge b-new">Nuovo</span></td><td>Plugin Neovim con protocollo MCP WebSocket in Lua pura; toggle floating window, auto-reload buffer</td><td>Workflow primario in Neovim</td><td><a class="repo" href="https://github.com/coder/claudecode.nvim">github.com/coder/claudecode.nvim</a> · MIT</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="pkg-know">
+    <div class="sec-hd"><span class="sec-num">06</span><h2 class="sec-title">Pacchetti — Conoscenza e navigazione</h2></div>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-indigo"></span>Conoscenza</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
+        <tbody>
+          <tr><td><strong>knowledge-wiki</strong></td><td>LLM Wiki: sources/ immutabili, wiki/ compilata dall'LLM, schema WIKI-SCHEMA.md, skill wiki-digest</td><td>Progetti con conoscenza trasversale accumulata nel tempo</td><td>Pattern: <a class="repo" href="#">gist.github.com/karpathy/442a6bf…</a></td></tr>
+          <tr><td><strong>book-to-skill</strong></td><td>PDF tecnico → skill interrogabile on-demand con /slug; path A (skill) o path B (fonte wiki)</td><td>Progetti con libri o PDF tecnici di riferimento</td><td><a class="repo" href="https://github.com/virgiliojr94/book-to-skill">github.com/virgiliojr94/book-to-skill</a> · MIT</td></tr>
+          <tr><td><strong>andrej-karpathy-skills</strong> <span class="badge b-new">Nuovo</span></td><td>4 principi anti-over-engineering in CLAUDE.md: no assunzioni silenziose, no 500 righe dove ne bastano 50</td><td>Qualsiasi progetto con output codice intenso</td><td><a class="repo" href="https://github.com/forrestchang/andrej-karpathy-skills">github.com/forrestchang/andrej-karpathy-skills</a> · MIT</td></tr>
+          <tr><td><strong>graphify</strong></td><td>Grafo di conoscenza dell'intero progetto: nodi, relazioni, community, nodi centrali, visualizzazione interattiva</td><td>Progetti grandi o sconosciuti dove le relazioni non emergono leggendo i file singoli</td><td><a class="repo" href="https://github.com/safishamsi/graphify">github.com/safishamsi/graphify</a> · MIT</td></tr>
+          <tr><td><strong>codebase-memory-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Grafo strutturale del codice (call chain, 158 linguaggi via tree-sitter); 10x-120x meno token su query strutturali</td><td>Progetti oltre 50K righe. Complementa code-context e graphify</td><td><a class="repo" href="https://github.com/DeusData/codebase-memory-mcp">github.com/DeusData/codebase-memory-mcp</a> · MIT</td></tr>
+          <tr><td><strong>claude-mem</strong> <span class="badge b-new">Nuovo</span></td><td>Memoria semantica persistente cross-sessione (SQLite + Chroma, tutto locale); retrieval a 3 livelli; web viewer su localhost:37777</td><td>Progetti multi-settimana. Complementare al deterministico .claude/memory/ gia' nel template</td><td><a class="repo" href="https://github.com/thedotmack/claude-mem">github.com/thedotmack/claude-mem</a> · MIT</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="pkg-token">
+    <div class="sec-hd"><span class="sec-num">07</span><h2 class="sec-title">Pacchetti — Risparmio token</h2></div>
+    <p class="sec-sub">Sette tool open source, uno per fronte di consumo. Il risparmio e' cumulativo.</p>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-indigo"></span>Stack token-saving — da claude-code-token-saving-playbook</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Fronte</th><th>Risparmio dichiarato</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
+        <tbody>
+          <tr><td><strong>caveman</strong></td><td>Output testuale Claude (prosa)</td><td>50-75%</td><td>Sessioni operative pesanti; NON con documentazione</td><td><a class="repo" href="https://github.com/juliusbrussee/caveman">github.com/juliusbrussee/caveman</a> · MIT</td></tr>
+          <tr><td><strong>ccusage</strong> <span class="badge b-new">Nuovo</span></td><td>Misurazione baseline</td><td>—</td><td>Sempre, prima di qualsiasi ottimizzazione</td><td><a class="repo" href="https://github.com/ryoppippi/ccusage">github.com/ryoppippi/ccusage</a> · MIT</td></tr>
+          <tr><td><strong>rtk</strong> <span class="badge b-new">Nuovo</span></td><td>Output shell (git, cargo, pytest, npm, 100+ comandi)</td><td>60-90%</td><td>CI/test-heavy su Linux o WSL2</td><td><a class="repo" href="https://github.com/rtk-ai/rtk">github.com/rtk-ai/rtk</a> · MIT</td></tr>
+          <tr><td><strong>ponytail</strong> <span class="badge b-new">Nuovo</span></td><td>Codice scritto da Claude</td><td>46-94%</td><td>Sessioni coding output-intenso</td><td><a class="repo" href="https://github.com/DietrichGebert/ponytail">github.com/DietrichGebert/ponytail</a> · MIT</td></tr>
+          <tr><td><strong>context-mode</strong> <span class="badge b-new">Nuovo</span></td><td>Output tool grandi (Playwright, log, dump)</td><td>fino al 98%</td><td>Sessioni con output tool molto pesanti</td><td><a class="repo" href="https://github.com/mksglu/context-mode">github.com/mksglu/context-mode</a> · MIT</td></tr>
+          <tr><td><strong>headroom</strong> <span class="badge b-new">Nuovo</span></td><td>Tutto l'input (tool, log, file, history) + output</td><td>47-95%</td><td>Sessioni molto lunghe dove RTK non basta</td><td><a class="repo" href="https://github.com/chopratejas/headroom">github.com/chopratejas/headroom</a> · MIT</td></tr>
+          <tr><td><strong>claude-code-router</strong> <span class="badge b-new">Nuovo</span></td><td>Costo per token (model routing)</td><td>3-5x sul traffico spostato</td><td>Bolletta API come vincolo principale</td><td><a class="repo" href="https://github.com/musistudio/claude-code-router">github.com/musistudio/claude-code-router</a> · MIT</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="pkg-mcp">
+    <div class="sec-hd"><span class="sec-num">08</span><h2 class="sec-title">Pacchetti — MCP server</h2></div>
+    <p class="sec-sub">Max 3-6 server connessi totali; preferire sempre l'implementazione ufficiale del vendor. Tutti nuovi in questa sessione (eccetto code-context, gia' presente).</p>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>7 server MCP aggiunti — da claude-code-mcp-servers-stack-2026</div>
+      <table class="t">
+        <thead><tr><th>Server</th><th>Categoria</th><th>Gate</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td><strong>github-mcp</strong></td><td>Repo / PR / issue</td><td>Qualsiasi progetto su GitHub con workflow PR e issue</td><td><a class="repo" href="https://github.com/github/github-mcp-server">github.com/github/github-mcp-server</a> · MIT · Ufficiale GitHub</td></tr>
+          <tr><td><strong>context7</strong></td><td>Documentazione librerie</td><td>Framework con release frequenti (Next.js, React, FastAPI...)</td><td><a class="repo" href="https://github.com/upstash/context7">github.com/upstash/context7</a> · MIT</td></tr>
+          <tr><td><strong>playwright-mcp</strong></td><td>Browser automation locale</td><td>Progetti con test E2E o verifica visuale</td><td><a class="repo" href="https://github.com/microsoft/playwright-mcp">github.com/microsoft/playwright-mcp</a> · MIT · Ufficiale Microsoft</td></tr>
+          <tr><td><strong>sentry-mcp</strong></td><td>Error monitoring</td><td>Progetti con Sentry attivo</td><td>Implementazione ufficiale Sentry</td></tr>
+          <tr><td><strong>figma-mcp</strong></td><td>Design-to-code</td><td>Frontend con Figma come source of truth</td><td>Implementazione ufficiale Figma</td></tr>
+          <tr><td><strong>vercel-mcp</strong></td><td>Deploy management</td><td>Progetti deployed su Vercel</td><td>Implementazione ufficiale Vercel</td></tr>
+          <tr><td><strong>linear-mcp</strong></td><td>Issue tracking</td><td>Team con Linear (richiede piano Standard+)</td><td>Implementazione ufficiale Linear</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="pkg-orch">
+    <div class="sec-hd"><span class="sec-num">09</span><h2 class="sec-title">Pacchetti — Orchestrazione multi-agente</h2></div>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>Orchestrazione — da claude-code-subagents-orchestration-playbook</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
+        <tbody>
+          <tr><td><strong>subagent-template</strong> <span class="badge b-new">Nuovo</span></td><td>Due agenti di esempio in templates/agents/ (code-reviewer, security-auditor) come punto di partenza</td><td>Progetti con review automatizzata o audit ricorrenti</td><td>Documentazione ufficiale Claude Code</td></tr>
+          <tr><td><strong>multiclaude</strong> <span class="badge b-new">Nuovo</span></td><td>Supervisore che assegna task a subagent via file Markdown; modalita' singleplayer o multiplayer</td><td>3+ feature branch paralleli con gate di review umana</td><td><a class="repo" href="https://github.com/dlorenc/multiclaude">github.com/dlorenc/multiclaude</a> · MIT</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="pkg-style">
+    <div class="sec-hd"><span class="sec-num">10</span><h2 class="sec-title">Pacchetti — Stile e qualita'</h2></div>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-indigo"></span>Stile</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
+        <tbody>
+          <tr><td><strong>humanizer</strong></td><td>Skill che rimuove 33 pattern di scrittura AI dal testo: frasi riempitive, regola del tre, trattini lunghi, hedging</td><td>Progetti che producono prosa o testo</td><td><a class="repo" href="https://github.com/blader/humanizer">github.com/blader/humanizer</a> · MIT</td></tr>
+          <tr><td><strong>taste-skill</strong></td><td>Skill di design-taste per interfacce: layout, tipografia, spaziatura e motion</td><td>Progetti con frontend o UI</td><td><a class="repo" href="https://github.com/Leonxlnx/taste-skill">github.com/Leonxlnx/taste-skill</a> · MIT</td></tr>
+          <tr><td><strong>code-simplifier</strong> <span class="badge b-new">Nuovo</span></td><td>Filtro di semplificazione del codice con vincolo contro il cambio di comportamento</td><td>Progetti con over-engineering ricorrente; usare selettivamente</td><td><a class="repo" href="https://github.com/anthropics/claude-plugins-official">anthropics/claude-plugins-official</a> · Ufficiale Anthropic</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="fn">
+    Tutti i repository sono open source (MIT salvo indicazione diversa). Le voci "Ufficiale" sono mantenute direttamente dal vendor. I benchmark di risparmio token sono auto-dichiarati dagli autori. Nessuna dipendenza e' inclusa di default: ogni voce si attiva su gate esplicito e conferma dell'utente per quel progetto specifico.<br><br>
+    Per aggiornare questo file: aprire una sessione Claude Code su questo repository e chiedere di rigenerare docs/feature-map.html.
+  </div>
+</main>
