@@ -38,6 +38,8 @@ A inizio sessione lo stato si recupera leggendo per primo `.claude/memory/index.
 
 Un documento di contesto voluminoso non si legge mai per intero. Si estrae il contenuto una sola volta in una cartella scratch ignorata e si caricano solo le porzioni utili al task. La data di riconciliazione, il nome del documento sorgente e l'esito si annotano in `memory/progress.md`. Sono previste anche le direzioni inverse, da repository a Word per i deliverable e da Word a mirror Markdown versionato quando il Word e la fonte di verita umana.
 
+Quando invece il `.docx` va trasformato in documentazione tecnica navigabile e versionata, e non solo letto a fette, il pacchetto opzionale `docx-to-docs` (vedi `.claude/templates/docx-to-docs/`) automatizza questa direzione: converte il documento in un albero `docs/` con un file per sezione, `README.md` indice generati che linkano ai figli e un hub `DEVELOPMENT.md`, con conversione deterministica e livelli curati (banner LEGACY, redazioni, pulizia `--clean`) che sopravvivono alla rigenerazione. Si offre al gate dei pacchetti.
+
 ## Igiene del version control e identita git
 
 Prima di considerare sano un repository si verifica che non siano rimasti file indicizzati per errore e soprattutto che non siano mai stati committati segreti, controllando i file tracciati e l'intera storia dei commit. La regola `.claude/rules/git-identity-and-repo.md` definisce come impostare sempre l'identita git a livello locale di repository, come collegare il remoto tramite l'alias SSH corretto, e come proteggersi con `user.useConfigOnly` dal commit con l'identita sbagliata su una macchina con piu profili.
@@ -169,6 +171,7 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 
 - `code-context-provider-mcp` di AB498, server MCP tree-sitter in WebAssembly (licenza MIT), per struttura e simboli del codice: https://github.com/AB498/code-context-provider-mcp
 - `book-to-skill` di virgiliojr94, per pre-digerire un PDF tecnico in skill: https://github.com/virgiliojr94/book-to-skill
+- `python-docx`, libreria per leggere e scrivere documenti Word, base del pacchetto `docx-to-docs` (licenza MIT): https://github.com/python-openxml/python-docx
 - LLM Wiki, pattern di Andrej Karpathy: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
 - mermaid-cli del progetto Mermaid, usato dalla resa dei diagrammi: https://github.com/mermaid-js/mermaid-cli
 - `caveman` di JuliusBrussee, riduzione dei token di output a scelta dell'utente: https://github.com/juliusbrussee/caveman

@@ -82,3 +82,32 @@ duplicati nelle rigenerazioni.
 **Rifiniture derivate.** `rules/token-economy.md` esteso (disclosure progressiva, deterministico vs
 linguistico), `wiki-digest` con ingest-state via hash e re-ingestione idempotente, e `graphify`
 aggiunto al catalogo come pacchetto opzionale per il grafo di conoscenza di un progetto.
+
+---
+
+## 2026-07-01 — Pacchetto docx-to-docs da un .docx voluminoso
+
+**Archetipo.** Progetto che parte da un unico `.docx` di circa 200 pagine, scritto a mano, denso e
+non lineare: titoli a livelli profondi, sezioni marcate TBC/aborted, emoji, refusi segnaposto e
+molti riferimenti a fonti esterne, da trasformare in documentazione tecnica navigabile e versionata.
+
+**Cosa si e testato.** La conversione deterministica in albero `docs/` con un file per sezione e
+`README.md` indice generati, i tre livelli curati (annotazioni LEGACY, redazioni di materiale fuori
+policy, pulizia `--clean` del rumore) e la verifica di completezza integrata.
+
+**Esito.** La conversione ha preservato l'intero contenuto testuale, con verifica per paragrafo e
+per cella di tabella superata salvo divergenze volute, ha estratto le immagini in `assets/` locali e
+prodotto un report con conteggi e trasformazioni. Annotazioni e redazioni sono sopravvissute alle
+rigenerazioni; `--clean` ha rimosso centinaia di emoji e trattini lunghi e le righe segnaposto senza
+toccare i simboli tecnici (impedenza, frecce). Un hub `DEVELOPMENT.md` scritto a mano e collegato
+dalla home con un'annotazione ha reso l'albero navigabile da un unico punto di ingresso.
+
+**Perche/come/dove funziona meglio.** Il pattern conviene quando il `.docx` e la fonte di verita
+umana e va reso conoscenza recuperabile da un clone, non solo letto a fette. La chiave e separare
+l'output verbatim dai livelli curati in sidecar deterministici, cosi le correzioni non si perdono
+alla rigenerazione. Tenere il `.docx` e le redazioni locali, versionando solo l'albero e il
+convertitore, evita di pubblicare materiale sensibile.
+
+**Rifiniture derivate.** Nascita del pacchetto `docx-to-docs`, con `MACRO_NAMES` generalizzato
+(nomi cartella auto-derivati dallo slug) e la pulizia `--clean` come controparte attiva di
+`interaction-style`.
