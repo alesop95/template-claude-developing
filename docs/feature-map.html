@@ -84,9 +84,9 @@ a.repo:hover{text-decoration:underline}
   </div>
   <div class="s-foot">
     <p>Voci <span class="badge b-new" style="font-size:9px">Nuovo</span> aggiunte nella sessione giugno 2026 dai 6 playbook.<br><br>
-    <strong>34</strong> pacchetti opt-in totali<br>
+    <strong>42</strong> pacchetti opt-in totali<br>
     <strong>22</strong> nuovi nella sessione giugno 2026<br>
-    <strong>2</strong> aggiunti il 2026-07-01 (docx-to-docs, doc-ingest)<br><br>
+    <strong>10</strong> aggiunti il 2026-07-01 (docx-to-docs, doc-ingest, academic-researcher, zotero-mcp, academix, semantic-scholar-mcp, refchecker-mcp, arxiv-cli, grobid, paperqa2)<br><br>
     Vedi anche: <a href="project-flow.html" style="color:#94A3B8;font-size:10px">project-flow.html</a></p>
   </div>
 </aside>
@@ -100,8 +100,8 @@ a.repo:hover{text-decoration:underline}
       <div class="ps"><span class="ps-n">5</span><span class="ps-l">Skill</span></div>
       <div class="ps"><span class="ps-n">6</span><span class="ps-l">Regole</span></div>
       <div class="ps"><span class="ps-n">2</span><span class="ps-l">Agenti template</span></div>
-      <div class="ps"><span class="ps-n">34</span><span class="ps-l">Pacchetti opt-in</span></div>
-      <div class="ps"><span class="ps-n">7</span><span class="ps-l">MCP server</span></div>
+      <div class="ps"><span class="ps-n">42</span><span class="ps-l">Pacchetti opt-in</span></div>
+      <div class="ps"><span class="ps-n">11</span><span class="ps-l">MCP server</span></div>
     </div>
   </div>
 
@@ -241,6 +241,10 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>graphify</strong></td><td>Grafo di conoscenza dell'intero progetto: nodi, relazioni, community, nodi centrali, visualizzazione interattiva</td><td>Progetti grandi o sconosciuti dove le relazioni non emergono leggendo i file singoli</td><td><a class="repo" href="https://github.com/safishamsi/graphify">github.com/safishamsi/graphify</a> · MIT</td></tr>
           <tr><td><strong>codebase-memory-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Grafo strutturale del codice (call chain, 158 linguaggi via tree-sitter); 10x-120x meno token su query strutturali</td><td>Progetti oltre 50K righe. Complementa code-context e graphify</td><td><a class="repo" href="https://github.com/DeusData/codebase-memory-mcp">github.com/DeusData/codebase-memory-mcp</a> · MIT</td></tr>
           <tr><td><strong>claude-mem</strong> <span class="badge b-new">Nuovo</span></td><td>Memoria semantica persistente cross-sessione (SQLite + Chroma, tutto locale); retrieval a 3 livelli; web viewer su localhost:37777</td><td>Progetti multi-settimana. Complementare al deterministico .claude/memory/ gia' nel template</td><td><a class="repo" href="https://github.com/thedotmack/claude-mem">github.com/thedotmack/claude-mem</a> · MIT</td></tr>
+          <tr><td><strong>academic-researcher</strong> <span class="badge b-new">Nuovo</span></td><td>Ambiente di ricerca accademica: scoping, tracciamento tripartito delle fonti, sync Zotero-JabRef del .bib, Corpus Analysis Suite (9 prompt). 4 skill complete, 4 stub dichiarati</td><td>Progetti di ricerca accademica, tesi, o analisi sistematica di un corpus di paper</td><td>Distillato da modulo di ricerca dedicato; vedi righe MCP e tool esterni sotto</td></tr>
+          <tr><td><strong>arxiv-cli</strong> <span class="badge b-new">Nuovo</span></td><td>CLI standalone per recupero rapido dei paper arXiv piu' recenti per categoria/query, senza demone</td><td>Primo passo veloce di literature-search nel pacchetto academic-researcher</td><td><a class="repo" href="https://github.com/AstraBert/arxiv-cli">github.com/AstraBert/arxiv-cli</a> · MIT</td></tr>
+          <tr><td><strong>grobid</strong> <span class="badge b-new">Nuovo</span></td><td>Parsing di PDF scientifici in XML/TEI strutturato, incluso il parsing dei riferimenti bibliografici (F1 &gt;0.87)</td><td>Lettura profonda dei paper nel pacchetto academic-researcher; richiede Docker</td><td>Open source dal 2011, mantenuto da Luca Foppiano/Inria</td></tr>
+          <tr><td><strong>paperqa2</strong> <span class="badge b-new">Nuovo</span></td><td>Framework RAG agentico per letteratura scientifica con citazioni in-testo verificate e controllo retrazioni</td><td>Risposte su un corpus di PDF nel pacchetto academic-researcher, con citazioni verificate</td><td><a class="repo" href="https://github.com/Future-House/paper-qa">github.com/Future-House/paper-qa</a> · licenza da verificare</td></tr>
         </tbody>
       </table>
     </div>
@@ -285,6 +289,10 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>figma-mcp</strong></td><td>Design-to-code</td><td>Frontend con Figma come source of truth</td><td>Implementazione ufficiale Figma</td></tr>
           <tr><td><strong>vercel-mcp</strong></td><td>Deploy management</td><td>Progetti deployed su Vercel</td><td>Implementazione ufficiale Vercel</td></tr>
           <tr><td><strong>linear-mcp</strong></td><td>Issue tracking</td><td>Team con Linear (richiede piano Standard+)</td><td>Implementazione ufficiale Linear</td></tr>
+          <tr><td><strong>zotero-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Libreria bibliografica Zotero</td><td>Pacchetto academic-researcher, gestione libreria Zotero</td><td><a class="repo" href="https://github.com/54yyyu/zotero-mcp">github.com/54yyyu/zotero-mcp</a> · Community</td></tr>
+          <tr><td><strong>academix</strong> <span class="badge b-new">Nuovo</span></td><td>Ricerca letteratura aggregata</td><td>Pacchetto academic-researcher, base di literature-search</td><td><a class="repo" href="https://github.com/xingyulu23/Academix">github.com/xingyulu23/Academix</a> · Community</td></tr>
+          <tr><td><strong>semantic-scholar-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Ricerca su 225M+ paper, export BibTeX</td><td>Pacchetto academic-researcher, in combinazione con academix</td><td><a class="repo" href="https://github.com/akapet00/semantic-scholar-mcp">github.com/akapet00/semantic-scholar-mcp</a> · Community</td></tr>
+          <tr><td><strong>refchecker-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Verifica anti-hallucination delle citazioni</td><td>Pacchetto academic-researcher, usato da citation-tracker</td><td><a class="repo" href="https://github.com/JonasBaath/mcp-refchecker">github.com/JonasBaath/mcp-refchecker</a> · MIT</td></tr>
         </tbody>
       </table>
     </div>

@@ -103,6 +103,12 @@ Per i progetti dove si accumula conoscenza trasversale (ricerca, studio di un do
 
 Per i progetti con libri o PDF tecnici di riferimento, il pacchetto opzionale `book-to-skill` installa la skill `book-digest`, che trasforma un PDF in una skill-libro densa e interrogabile on-demand: durante il lavoro `/<slug> argomento` restituisce la sintesi del tema senza rileggere il PDF. Le skill-libro nascono dentro il progetto (`.claude/skills/<slug>/`, versionate), perche ogni progetto puo avere libri suoi; si possono promuovere al contesto globale di Claude (`~/.claude/skills/`) solo su conferma esplicita e tracciando la scelta. La stessa skill-libro ha un doppio uso: resta una skill che gli agenti consultano (path A), oppure, se il progetto ha `knowledge-wiki`, alimenta la wiki accumulatoria copiando i file capitolo in `knowledge/sources/books/<slug>/` (path B). Dettaglio e comandi in `.claude/templates/book-to-skill/README.md`.
 
+## Ricerca accademica (academic-researcher)
+
+Per i progetti di ricerca accademica, di tesi, o di analisi sistematica di un corpus di paper, il pacchetto opzionale `academic-researcher` scaffolda un intero ambiente di ricerca assistita: scoping del topic con le domande di gate corrette (dominio disciplinare, libreria Zotero esistente o meno, output LaTeX o Word, livello di autonomia), tracciamento tripartito di ogni fonte come verificata, da verificare o scartata, sincronizzazione di `research-vault/bibliography.bib` tra Zotero come libreria di lavoro e JabRef come validatore umano finale, e la Corpus Analysis Suite, nove prompt collaudati (Intake Protocol, Contradiction Finder, Citation Chain, Gap Scanner, Methodology Audit, Master Synthesis, Assumption Killer, Knowledge Map Builder, So What Test) per analizzare un corpus di paper gia' caricato in conversazione. Il pacchetto e' distillato da un modulo di ricerca dedicato, che si instanzia insieme al pacchetto come riferimento consultabile in `research-vault/reference/`.
+
+Quattro delle sette skill del pacchetto (`corpus-analysis`, `citation-tracker`, `bib-sync`, `research-scoping`) hanno un corpo operativo completo, perche' il modulo di origine ne fissa il comportamento in modo concreto; le altre quattro (`literature-search`, `deep-paper-reading`, `gap-analysis`, `skill-autogen`) sono stub dichiarati che rimandano al documento di riferimento e si completano all'attivazione, quando sono note le scelte specifiche del progetto: quali MCP di ricerca sono connessi, se Docker e GROBID sono disponibili, quale dominio disciplinare calibra le soglie di rilevanza. Il pacchetto non installa da solo alcun MCP: le voci concrete raccomandate dal modulo di origine, `zotero-mcp`, `academix`, `semantic-scholar-mcp`, `refchecker-mcp`, piu i tool esterni `arxiv-cli`, `grobid` e `paperqa2`, restano righe separate del catalogo, proposte una alla volta rispettando il limite di 3-4 MCP nuovi per sessione. Il dettaglio completo, coi crediti e la mappa di istanziazione, e' in `.claude/templates/academic-researcher/README.md`.
+
 ## Agenti di progetto
 
 I subagent sono agenti con una persona specializzata, un system prompt focalizzato e un insieme ristretto di strumenti. Si definiscono come file Markdown in `.claude/agents/` del progetto, con un frontmatter YAML che specifica nome, modello e tool disponibili, e lavorano in un contesto isolato rispetto all'agente principale, riportando solo il risultato finale. Il bundle include due definizioni di agente pronte all'uso sotto `templates/agents/`: `code-reviewer`, che esamina struttura, gestione degli errori e sicurezza del codice classificando i finding per severita' (CRITICAL / HIGH / MEDIUM / LOW) e concludendo con APPROVE, REQUEST_CHANGES o NEEDS_DISCUSSION; e `security-auditor`, che conduce un audit sistematico per autenticazione, autorizzazione, validazione degli input, esposizione di dati, dipendenze con CVE note e segreti hardcoded. Entrambi operano esclusivamente in lettura e si copiano in `.claude/agents/` del progetto al momento dell'attivazione del pacchetto `subagent-template`.
@@ -158,6 +164,7 @@ template-claude-developing/
       latex/           pacchetto opzionale per progetti LaTeX, con script .ps1 e .sh
       knowledge-wiki/  pacchetto opzionale LLM Wiki (sources/ + wiki/ + schema + skill wiki-digest)
       book-to-skill/   pacchetto opzionale: skill book-digest (PDF in skill on-demand, locale)
+      academic-researcher/  pacchetto opzionale: 7 skill di ricerca (4 complete, 4 stub), regola no-uncited-claims, documento di riferimento
       tools/     render-diagrams.mjs  latest-screenshot.ps1  check-account-hygiene  session-end-wipe  claude-incognito  README.md
 ```
 
@@ -225,6 +232,13 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - `figma-mcp`, server MCP ufficiale Figma per accesso all'albero dei nodi del design: implementazione ufficiale Figma
 - `vercel-mcp`, server MCP ufficiale Vercel per monitoraggio deploy e variabili d'ambiente: implementazione ufficiale Vercel
 - `linear-mcp`, server MCP ufficiale Linear per CRUD issue e sprint (richiede piano Standard+): implementazione ufficiale Linear
+- `zotero-mcp` di 54yyyu, MCP per la libreria bibliografica Zotero con ricerca semantica e CLI, base del pacchetto `academic-researcher`: https://github.com/54yyyu/zotero-mcp
+- `Academix` di xingyulu23, MCP di ricerca letteratura aggregata su OpenAlex, DBLP, Semantic Scholar, arXiv e Crossref con export BibTeX: https://github.com/xingyulu23/Academix
+- `semantic-scholar-mcp` di akapet00, MCP di ricerca su Semantic Scholar con export BibTeX e tracking di sessione: https://github.com/akapet00/semantic-scholar-mcp
+- `mcp-refchecker` di JonasBaath, MCP di verifica anti-hallucination delle citazioni contro Semantic Scholar, OpenAlex e Crossref (costruito su `academic-refchecker`, MIT): https://github.com/JonasBaath/mcp-refchecker
+- GROBID, motore open source di parsing PDF scientifico in XML/TEI strutturato, mantenuto da Luca Foppiano/Inria dal 2011, usato dal pacchetto `academic-researcher` per la lettura profonda dei paper
+- `paper-qa` (PaperQA2) di Future-House, framework RAG agentico per letteratura scientifica con citazioni verificate: https://github.com/Future-House/paper-qa
+- `arxiv-cli` di AstraBert, CLI standalone per recupero rapido di paper arXiv senza MCP (licenza MIT): https://github.com/AstraBert/arxiv-cli
 
 ## Repository
 
