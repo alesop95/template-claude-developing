@@ -16,15 +16,15 @@ disable-model-invocation: true
 
 Questa skill copre lo stadio 2 della pipeline a stadi (sezione 9 punto 2 del documento di riferimento) e la ricerca letteratura della sezione 5. Il percorso via MCP resta quello raccomandato dal documento di riferimento quando `academix` o `semantic-scholar-mcp` sono connessi (vedi `../PACKAGES.md`): offre copertura piu' ampia, `export_bibtex` nativo e tracciamento di sessione. Il secondo percorso, descritto sotto, non fa parte del documento di riferimento originale: proviene da un metodo a piu' step condiviso dall'utente tramite screenshot di un post pubblico (account `@techwith.ram`), utile in particolare quando nessun MCP di letteratura e' ancora connesso al progetto, oppure come integrazione rapida accanto a un MCP gia' attivo. La sua efficacia e' quella dichiarata dalla fonte esterna, non verificata indipendentemente da questo template: va trattata come tecnica da collaudare sul campo, non come raccomandazione al pari di quelle del documento di riferimento.
 
-## Percorso A — via MCP
+## Percorso A - via MCP
 
 Con `academix` o `semantic-scholar-mcp` connessi, la ricerca interroga direttamente questi server, che gia' restituiscono metadati strutturati (titolo, autori, anno, venue, DOI o arXiv-ID) e, nel caso di `academix`, l'export BibTeX nativo. Ogni risultato va comunque aggiunto alla lista di candidati (sezione "Cosa succede dopo" qui sotto) prima di poter essere citato: la connessione di un MCP non esenta dal passaggio per `citation-tracker`.
 
-## Percorso B — via Extended Thinking e Research Mode
+## Percorso B - via Extended Thinking e Research Mode
 
 Richiede solo Claude Opus 4.8 (o il modello disponibile piu' capace nel progetto) con Extended Thinking e Research Mode attivi in Claude.ai: nessun MCP, nessuna API key. Si usa in due fasi, la prima opzionale, la seconda quella che produce i candidati veri e propri.
 
-### Fase 0 (opzionale) — mappa del campo prima di cercare paper singoli
+### Fase 0 (opzionale) - mappa del campo prima di cercare paper singoli
 
 Utile quando il topic e' nuovo per l'utente o per il progetto: prima di raccogliere paper specifici, questo prompt produce una mappa fattuale del campo, da eseguire una sola volta e mantenere come riferimento stabile.
 
@@ -66,7 +66,7 @@ END WITH: Researcher Synthesis (5 bullets)
 
 L'output di questo prompt non produce candidati citabili: e' un documento di orientamento, non una fonte. Ogni paper che vi compare per nome resta nello stato "da verificare" finche' non passa dalla Fase 1 o da `citation-tracker`, esattamente come qualunque altro risultato di ricerca.
 
-### Fase 1 — scoperta di paper con link PDF da fonti ufficiali
+### Fase 1 - scoperta di paper con link PDF da fonti ufficiali
 
 Questo e' il prompt che produce la lista di candidati veri e propri, con il vincolo esplicito di fonti ufficiali gia' incorporato nel prompt stesso.
 

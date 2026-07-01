@@ -20,7 +20,7 @@ Il vincolo non negoziabile sul parsing: un paper non si legge "al volo" per estr
 
 Questi due prompt non fanno parte del documento di riferimento originale: provengono da un metodo a piu' step condiviso dall'utente tramite screenshot di un post pubblico (account `@techwith.ram`). Si eseguono in sequenza su un singolo paper (o una singola idea) gia' caricato nel progetto e gia' passato da `citation-tracker`, dopo il parsing strutturato quando disponibile, o direttamente sul testo caricato quando GROBID/PaperQA2 non sono ancora configurati: il vincolo quote-first che entrambi impongono e' sufficiente da solo a evitare l'invenzione di claim, indipendentemente dal parsing a monte. Il primo argomenta a favore del paper, il secondo lo attacca: letti insieme danno una lettura piu' equilibrata di uno letto da un solo lato.
 
-### A. The Believer's Synthesis — perche' questa idea conta
+### A. The Believer's Synthesis - perche' questa idea conta
 
 ```
 TASK
@@ -36,7 +36,7 @@ For every factual claim, provide the exact quote from the source first, then you
 WRITING STYLE — Plain English, short sentences. No buzzwords, no hype.
 ```
 
-### B. The Skeptic's Teardown — come potrebbe essere sbagliata
+### B. The Skeptic's Teardown - come potrebbe essere sbagliata
 
 ```
 Using ONLY the documents in this project, and following the quote-first sourcing rules in the project instructions:
