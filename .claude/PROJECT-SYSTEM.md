@@ -35,7 +35,7 @@ your-project/
 │   ├── DIARIO.md              log cronologico personale degli interventi
 │   ├── RESOCONTO.md           sintesi narrativa estesa
 │   ├── TEST-CHECKLIST.md      checklist operativa locale di test manuali e non
-│   └── .tmp-docx-*/           estratti temporanei dei .docx, scratch
+│   └── .tmp-doc-*/            estratti temporanei di documenti voluminosi, scratch
 └── .claude/                   centro di controllo, versionato
     ├── settings.json          permessi e configurazione condivisi, versionato
     ├── settings.local.json    permessi personali, ignorato da git
@@ -79,9 +79,9 @@ come indice di progetto, `context/roadmap.md`, `memory/decisions.md` con le deci
 architetturali, `memory/index.md` come snapshot e procedura di ripresa, `memory/progress.md`come work-log append-only, `context/current-work.md` per la feature attiva, le skill e i comandi sotto `.claude/`, e i diagrammi sotto `context/diagrams/` in corrispondenza uno a uno con le schede. Sono tracciate inoltre le schede tecniche strutturali, che portano il frontmatter di riconciliazione descritto nella sezione 4: `STACK.md` con stack e le alternative deliberatamente escluse per evitare deriva tecnologica, flussi di codice e riferimenti a snippet e ruolo architetturale dei file, `design-and-security.md` con i paradigmi di software design e di sicurezza applicativa, `deployment.md` con i livelli di test e produzione e i relativi comandi, e `dev-testing.md` con i test di sviluppo. 
 
 Sono ignorati, in `_notes/`, perché personali, narrativi o transitori, `DIARIO.md` come log cronologico verboso degli interventi, `RESOCONTO.md` come sintesi narrativa estesa,
-`TEST-CHECKLIST.md` come checklist operativa locale di test manuali e automatici, i `.docx`grezzi e gli estratti temporanei `.tmp-docx-*` salvo le eccezioni curate dichiarate nel `.gitignore`. 
+`TEST-CHECKLIST.md` come checklist operativa locale di test manuali e automatici, i documenti grezzi (`.docx`, `.pdf`, e affini) e gli estratti temporanei `.tmp-doc-*` salvo le eccezioni curate dichiarate nel `.gitignore`. 
 
-Due scelte si discostano da una collocazione puramente privata e vanno tenute presenti. Lo `STACK.md` è il documento di recupero più importante e va tracciato, non confinato nel locale, perché un collega che clona deve vederlo. Il work-log di ingestione dei `.docx`, con le date di riconciliazione, non va in un file ignorato a parte ma confluisce in `memory/progress.md` tracciato, così che la data di allineamento sopravviva a un clone e non si duplichi il log.
+Due scelte si discostano da una collocazione puramente privata e vanno tenute presenti. Lo `STACK.md` è il documento di recupero più importante e va tracciato, non confinato nel locale, perché un collega che clona deve vederlo. Il work-log di ingestione dei documenti voluminosi, con le date di riconciliazione, non va in un file ignorato a parte ma confluisce in `memory/progress.md` tracciato, così che la data di allineamento sopravviva a un clone e non si duplichi il log.
 
 ---
 
@@ -118,9 +118,9 @@ Ogni feature in `current-work.md` si descrive con uno schema fisso, cosa fa, i f
 
 ---
 
-## 5. Ingestione di documenti `.docx` voluminosi
+## 5. Ingestione di documenti voluminosi (`.docx`, `.pdf`, e affini)
 
-Quando arriva un documento di contesto voluminoso, tipicamente un `.docx`, la regola è non leggerlo mai per intero, perché brucerebbe contesto inutilmente. La strategia riusabile è estrarne il contenuto su disco una sola volta, in una cartella scratch ignorata da git come`_notes/.tmp-docx-<nome>/`, e poi caricare in lettura solo le porzioni mirate al task corrente, on demand.
+Quando arriva un documento di contesto voluminoso, tipicamente un `.docx` o un `.pdf`, la regola è non leggerlo mai per intero, perché brucerebbe contesto inutilmente. La strategia riusabile è estrarne il contenuto su disco una sola volta, in una cartella scratch ignorata da git come`_notes/.tmp-doc-<nome>/`, e poi caricare in lettura solo le porzioni mirate al task corrente, on demand. Quando i documenti da tenere sotto questa disciplina sono molti insieme, non uno alla volta, il pacchetto opzionale `doc-ingest` (vedi `.claude/templates/doc-ingest/`) automatizza l'estrazione dell'intero corpus in una cache condivisa `_notes/.tmp-doc-cache/`, con manifest a content-hash e indice di Livello 1 rigenerati a ogni corsa.
 
 Sui documenti di contesto si trovano spesso marcatori del tipo `[TBC]`[^6], che indicano punti da confermare. Questi marcatori vanno estratti temporaneamente su disco e confrontati con l'elenco di ciò che le schede `.md` già coprono, così da capire cosa manca davvero senza rileggere il documento intero. Se le schede risultano già allineate a quel documento, non serve rileggerle né modificarle: si registra soltanto la data di riconciliazione. La data di riconciliazione si annota sempre, sia quando si è prodotto un aggiornamento sia quando si è solo verificato l'allineamento, e va in `memory/progress.md`, accompagnata dal nome del documento sorgente e dall'esito. Le schede che derivano da un documento sorgente ne citano il percorso nel frontmatter, in un campo `source-doc`, così che il legame resti tracciabile. Questa stessa strategia va annotata nel work-log la prima volta che si applica, perché diventi
 patrimonio del progetto e non vada ricostruita a ogni ingestione.
@@ -184,7 +184,7 @@ Quando il bundle portabile include una cartella `templates/` con gli scheletri c
 
 Primo, verifica il version control secondo la sezione 6: scansiona file tracciati e storia alla ricerca di segreti, individua file indicizzati per errore, e riporta gli esiti senza committare. Subito dopo sceglie con l'utente l'identita git con cui verranno firmati i commit e a quale repository agganciare il remoto, e la configura a livello locale del repo secondo `.claude/rules/git-identity-and-repo.md`, senza mai committare ne pushare.
 
-Secondo, predispone il `.gitignore` aggiungendo le esclusioni del livello privato, almeno `_notes/`, `CLAUDE.local.md`, `.claude/settings.local.json`, i `.docx` grezzi con le eventuali eccezioni curate, e le cartelle scratch `.tmp-docx-*`.
+Secondo, predispone il `.gitignore` aggiungendo le esclusioni del livello privato, almeno `_notes/`, `CLAUDE.local.md`, `.claude/settings.local.json`, i documenti grezzi (`.docx`, `.pdf`, e affini) con le eventuali eccezioni curate, e le cartelle scratch `.tmp-doc-*`, che coprono sia l'estrazione manuale di un singolo documento sia la cache condivisa del pacchetto `doc-ingest`.
 
 Terzo, crea l'anatomia di `.claude`descritta nella sezione 2 nella forma minima: `settings.json` con una whitelist minima di permessi allow/deny e le variabili di progetto utili come nome e fase, le cartelle `commands`, `rules`, `skills`, `agents`, la cartella `memory` con `index.md`, `progress.md` e `decisions.md`, e la cartella `context` con le schede `STACK.md`, `design-and-security.md`, `deployment.md`, `dev-testing.md`, `current-work.md`, `roadmap.md` e la sottocartella `diagrams`.
 

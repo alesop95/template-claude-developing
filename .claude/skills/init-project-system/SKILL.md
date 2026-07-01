@@ -160,7 +160,8 @@ il dettaglio autoritativo resta nel file.
    service account) e di file indicizzati per errore. Riportare gli esiti senza committare.
 2. Predisposizione del `.gitignore` con le esclusioni del livello privato: almeno `_notes/`,
    `CLAUDE.local.md`, `.claude/settings.local.json`, i `.docx` grezzi con eventuali eccezioni
-   curate, e le cartelle scratch `.tmp-docx-*`.
+   curate, e le cartelle scratch `.tmp-doc-*` (coprono anche la cache del pacchetto
+   `doc-ingest`).
 3. Creazione dell'anatomia di `.claude` nella forma minima: `settings.json`, le cartelle
    `commands`, `rules`, `skills`, `agents`, la cartella `memory` con `index.md`, `progress.md`,
    `decisions.md`, e la cartella `context` con `STACK.md`, `design-and-security.md`,

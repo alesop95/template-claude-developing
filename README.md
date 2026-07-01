@@ -34,11 +34,30 @@ Ogni scheda tecnica tracciata porta in testa un blocco di metadati che la ancora
 
 A inizio sessione lo stato si recupera leggendo per primo `.claude/memory/index.md`, che da il branch, il commit di riferimento, lo stato di verifica di ogni scheda e il punto di ripresa come prossima azione concreta. Si legge poi `context/current-work.md` se c'e una feature attiva, si invoca `sync-context` per misurare la divergenza, e si leggono solo le schede pertinenti al task. Il prompt di ripresa privato `_notes/RESUME-PROMPT.md` si aggiorna alla fine di ogni sessione con lo stato raggiunto e con il prompt da incollare alla riapertura.
 
-## Ingestione di documenti .docx
+## Ingestione di documenti voluminosi (.docx, .pdf e affini)
 
-Un documento di contesto voluminoso non si legge mai per intero. Si estrae il contenuto una sola volta in una cartella scratch ignorata e si caricano solo le porzioni utili al task. La data di riconciliazione, il nome del documento sorgente e l'esito si annotano in `memory/progress.md`. Sono previste anche le direzioni inverse, da repository a Word per i deliverable e da Word a mirror Markdown versionato quando il Word e la fonte di verita umana.
+Un documento di contesto voluminoso non si legge mai per intero, sia esso `.docx` o `.pdf`. Si
+estrae il contenuto una sola volta in una cartella scratch ignorata e si caricano solo le
+porzioni utili al task. La data di riconciliazione, il nome del documento sorgente e l'esito si
+annotano in `memory/progress.md`. Sono previste anche le direzioni inverse, da repository a Word
+per i deliverable e da Word a mirror Markdown versionato quando il Word e la fonte di verita
+umana.
 
-Quando invece il `.docx` va trasformato in documentazione tecnica navigabile e versionata, e non solo letto a fette, il pacchetto opzionale `docx-to-docs` (vedi `.claude/templates/docx-to-docs/`) automatizza questa direzione: converte il documento in un albero `docs/` con un file per sezione, `README.md` indice generati che linkano ai figli e un hub `DEVELOPMENT.md`, con conversione deterministica e livelli curati (banner LEGACY, redazioni, pulizia `--clean`) che sopravvivono alla rigenerazione. Si offre al gate dei pacchetti.
+Quando i documenti da consultare sono piu di uno, il pacchetto opzionale `doc-ingest` (vedi
+`.claude/templates/doc-ingest/`) automatizza l'estrazione a corpus intero: converte `.pdf`,
+`.docx`, `.pptx`, `.xlsx` e `.html` in una cache Markdown locale con un manifest a content-hash
+che salta i file invariati tra una corsa e l'altra, e rigenera a ogni corsa un indice `_INDEX.md`
+con titoli, conteggi e stato di ciascun documento: lo scheletro di Livello 1 della disclosure
+progressiva descritta nella sezione "Token economy" qui sotto. E interamente locale e a zero
+consumo di token; una modalita accurata e un fallback OCR sono disponibili come flag opzionali
+per i PDF piu difficili.
+
+Quando invece il `.docx` va trasformato in documentazione tecnica navigabile e versionata, e non
+solo letto a fette, il pacchetto opzionale `docx-to-docs` (vedi `.claude/templates/docx-to-docs/`)
+automatizza questa direzione: converte il documento in un albero `docs/` con un file per sezione,
+`README.md` indice generati che linkano ai figli e un hub `DEVELOPMENT.md`, con conversione
+deterministica e livelli curati (banner LEGACY, redazioni, pulizia `--clean`) che sopravvivono
+alla rigenerazione. Entrambi i pacchetti si offrono al gate dei pacchetti.
 
 ## Igiene del version control e identita git
 
@@ -172,6 +191,11 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - `code-context-provider-mcp` di AB498, server MCP tree-sitter in WebAssembly (licenza MIT), per struttura e simboli del codice: https://github.com/AB498/code-context-provider-mcp
 - `book-to-skill` di virgiliojr94, per pre-digerire un PDF tecnico in skill: https://github.com/virgiliojr94/book-to-skill
 - `python-docx`, libreria per leggere e scrivere documenti Word, base del pacchetto `docx-to-docs` (licenza MIT): https://github.com/python-openxml/python-docx
+- `markitdown` di Microsoft, motore di default del pacchetto `doc-ingest` per l'estrazione multi-formato (`.pdf`, `.docx`, `.pptx`, `.xlsx`, `.html`) in Markdown (licenza MIT): https://github.com/microsoft/markitdown
+- `Docling` di IBM Research, motore accurato opzionale di `doc-ingest` per PDF con layout complessi (codice open source; licenze dei pesi dei modelli di layout da verificare all'installazione): https://github.com/docling-project/docling
+- `pytesseract`, wrapper del motore OCR `tesseract-ocr`, fallback opzionale di `doc-ingest` sui PDF senza testo nativo (entrambi Apache-2.0): https://github.com/madmaze/pytesseract
+- `LiteDoc` di 0xovo, convertitore `.pdf` in Markdown interamente nel browser, senza dipendenze server (licenza AGPL-3.0): alternativa manuale per conversioni singole quando non si vuole installare nulla, non scriptabile da un agente, non adottata direttamente in `doc-ingest`: https://github.com/0xovo/LiteDoc
+- `PyMuPDF4LLM`, motore "veloce" citato dalla guida pdf-to-markdown di mcp.directory che ha ispirato l'architettura a due motori di `doc-ingest`; non adottato perche si appoggia a `PyMuPDF`, sotto doppia licenza AGPL-3.0 o commerciale, da valutare caso per caso nei progetti proprietari: https://github.com/pymupdf/pymupdf4llm
 - LLM Wiki, pattern di Andrej Karpathy: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
 - mermaid-cli del progetto Mermaid, usato dalla resa dei diagrammi: https://github.com/mermaid-js/mermaid-cli
 - `caveman` di JuliusBrussee, riduzione dei token di output a scelta dell'utente: https://github.com/juliusbrussee/caveman

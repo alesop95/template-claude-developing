@@ -111,3 +111,38 @@ convertitore, evita di pubblicare materiale sensibile.
 **Rifiniture derivate.** Nascita del pacchetto `docx-to-docs`, con `MACRO_NAMES` generalizzato
 (nomi cartella auto-derivati dallo slug) e la pulizia `--clean` come controparte attiva di
 `interaction-style`.
+
+---
+
+## 2026-07-01 — Pacchetto doc-ingest, dry-run su un corpus di prova
+
+**Archetipo.** Verifica a se stante dello script di un pacchetto nuovo, senza un progetto ospite:
+un corpus minimo di prova con un `.html` e un `.pdf` fittizio (non un vero documento), usato solo
+per esercitare i percorsi di codice dello script.
+
+**Cosa si e testato.** Corsa pulita (file nuovo), rilevamento di un sorgente modificato
+(riconversione mirata), corsa ripetuta senza modifiche (cache-hit, nessuna riconversione), il
+flag `--engine docling` senza il pacchetto opzionale installato, e il flag `--ocr` senza
+`pytesseract` installato, in assenza del binario di sistema `tesseract-ocr`.
+
+**Esito.** Tutti i percorsi si sono comportati come progettato. Il file nuovo genera un mirror
+Markdown e una riga "nuovo" nell'indice; la modifica del sorgente produce "aggiornato" e
+riconverte solo quel file; la corsa invariata produce "invariato" per entrambi senza toccare la
+cache. La dipendenza opzionale mancante per `--engine docling` produce un messaggio d'errore
+guidato con il comando di installazione, non un traceback, e il file resta segnalato come errore
+senza bloccare gli altri. La dipendenza opzionale mancante per `--ocr` degrada senza bloccare la
+corsa: il file viene comunque processato con il testo nativo disponibile e una nota nell'indice
+spiega perche l'OCR non e stato applicato.
+
+**Perche/come/dove funziona meglio.** Separare l'errore bloccante (dipendenza core assente, es.
+`markitdown` non installato) dalla degradazione controllata (dipendenza opzionale assente per un
+flag esplicito) evita due estremi sbagliati: fermare l'intera corsa per un flag opzionale, o
+fallire in silenzio senza dire perche un file non ha l'output atteso. Il controllo
+`cache_path.exists()` nella logica di stato, oltre al confronto hash, rende il manifest
+autocorrettivo: se una conversione precedente e fallita dopo aver gia registrato l'hash, la
+corsa successiva la ritenta comunque, perche il file di cache atteso non c'e.
+
+**Rifiniture derivate.** Nascita del pacchetto `doc-ingest`, generalizzazione del pattern
+`_notes/.tmp-docx-*` esistente a `_notes/.tmp-doc-*` (PROJECT-SYSTEM.md, README, gitignore
+snippet, skill di inizializzazione), e cross-reference aggiunto in `token-economy.md` dalla
+disclosure progressiva alla sua implementazione di riferimento.

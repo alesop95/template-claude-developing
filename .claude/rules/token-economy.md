@@ -42,6 +42,13 @@ Operativamente si parte sempre dal Livello 1 sull'intera cartella, si sale al Li
 documenti pertinenti al task, e al Livello 3 solo su richiesta esplicita. Vale per qualsiasi corpus,
 non solo per i `.docx`.
 
+Il pacchetto opzionale `doc-ingest` (vedi `templates/doc-ingest/`) e l'implementazione di
+riferimento di questo principio su un corpus di piu documenti: converte `.pdf`, `.docx`, `.pptx`,
+`.xlsx` e `.html` in una cache Markdown locale con manifest a content-hash (non riconverte
+l'invariato) e rigenera a ogni corsa lo scheletro di Livello 1 in un `_INDEX.md`. Resta uno
+strumento, non un sostituto del principio: i Livelli 2 e 3 restano disciplina di lettura
+sull'output che produce.
+
 ## Deterministico prima del linguistico
 
 In una pipeline che mescola codice e LLM, si spinge il piu possibile il lavoro su codice
