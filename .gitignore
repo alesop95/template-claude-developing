@@ -6,3 +6,7 @@ CLAUDE.local.md
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Artefatti di bytecode Python, generati eseguendo gli script dei pacchetti (docx-to-docs, doc-ingest)
+__pycache__/
+*.pyc
