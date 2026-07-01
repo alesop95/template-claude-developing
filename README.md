@@ -178,9 +178,10 @@ Il sistema cresce aggiungendo pacchetti al catalogo quando si trova uno strument
 3. Aggiungi una riga a `.claude/templates/PACKAGES.md` con un trigger concreto nella colonna "quando offrirlo", piu cosa istanzia, note e crediti. Il trigger e' cio che permette al gate di proporlo senza assumere.
 4. Spiega lo strumento su due piani, concettuale e operativo: cosa risolve e perche, e i comandi per usarlo. La spiegazione va nel `README.md` del pacchetto, se a cartella, e in sintesi nel `README.md` di radice.
 5. Aggiungi il credito nella sezione "Riferimenti e strumenti open source", con il link al repo e la licenza.
-6. Non serve toccare il gate: la skill `init-project-system` e i due prompt leggono `PACKAGES.md`, propongono il pacchetto quando il trigger e' pertinente e ne mostrano il recap d'uso all'attivazione.
-7. Valida su un progetto reale, anche solo in simulazione di sola lettura, e registra l'esito in `CASE-STUDIES.md` come voce anonima: perche, come e dove funziona meglio.
-8. Le operazioni git restano manuali: prepara i file e lascia commit e push all'utente.
+6. Aggiorna le due mappe visive in `docs/`: `feature-map.html` (riga di catalogo nella sezione pertinente, badge Nuovo, contatore pacchetti opt-in) e `project-flow.html` (contatore pacchetti, riga nella tabella fonti se il pacchetto introduce una dipendenza open source non ancora elencata). Sono generate una volta e poi mantenute a mano: un pacchetto o una funzionalita' aggiunta al sistema senza questo passo le lascia disallineate rispetto a `PACKAGES.md`, com'e' gia successo una volta. Questo passo si applica a ogni estensione del sistema, non solo ai pacchetti a se stanti: anche una funzionalita' che cambia il numero o la natura di skill, regole o agenti va riflessa negli stessi contatori.
+7. Non serve toccare il gate: la skill `init-project-system` e i due prompt leggono `PACKAGES.md`, propongono il pacchetto quando il trigger e' pertinente e ne mostrano il recap d'uso all'attivazione.
+8. Valida su un progetto reale, anche solo in simulazione di sola lettura, e registra l'esito in `CASE-STUDIES.md` come voce anonima: perche, come e dove funziona meglio.
+9. Le operazioni git restano manuali: prepara i file e lascia commit e push all'utente.
 
 Due principi guida nella scelta. Si preferisce non introdurre stato globale o dipendenze pesanti: meglio un pacchetto self-contained e versionato col progetto. E non si propone un pacchetto se il progetto fornisce gia quella capacita nativamente, per non duplicare.
 
