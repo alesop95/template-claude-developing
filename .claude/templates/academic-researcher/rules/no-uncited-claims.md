@@ -20,7 +20,7 @@ Le fonti Sci-Hub, o comunque non ad accesso aperto legittimo, restano escluse in
 
 Le credenziali di accesso istituzionale a riviste ed editori a pagamento non vanno mai gestite da Claude sotto forma di password generiche: solo API key o token dedicati, forniti esplicitamente dall'utente per quello scopo, mai credenziali di sistemi terzi non autorizzati.
 
-Le nove modalita' della skill `corpus-analysis` restano fedeli al vincolo "solo dai paper caricati nella conversazione corrente": non vanno mai arricchite con conoscenza generale del modello, anche quando sembrerebbe utile completare un punto lasciato incompleto dal corpus fornito.
+Le dieci modalita' della skill `corpus-analysis` restano fedeli al vincolo "solo dai paper caricati nella conversazione corrente": non vanno mai arricchite con conoscenza generale del modello, anche quando sembrerebbe utile completare un punto lasciato incompleto dal corpus fornito.
 
 Una nuova skill specializzata si crea solo quando un topic e' ricorrente e specialistico attraverso piu sessioni, non per ogni singola query di ricerca: altrimenti si genera uno sprawl di skill poco mantenibili.
 

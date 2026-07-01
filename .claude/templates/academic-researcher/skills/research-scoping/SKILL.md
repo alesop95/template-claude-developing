@@ -25,6 +25,44 @@ Qual e' il dominio disciplinare della ricerca, per calibrare quali database priv
 
 Oltre alle domande di gate, la skill definisce con l'utente la domanda di ricerca vera e propria, seguendo lo schema dello stadio 1: la domanda di ricerca in una frase, il tipo di revisione attesa (systematic review, narrative review, o esplorazione libera), l'orizzonte temporale delle fonti accettate, e le lingue accettate per i paper.
 
+## Istruzioni custom da incollare nel progetto Claude
+
+Quando lo scope si materializza in un progetto dedicato di Claude.ai (una cartella "Progetti" per topic, secondo il pattern condiviso dall'utente via screenshot, account `@techwith.ram`, non parte del documento di riferimento originale del pacchetto), queste istruzioni custom vanno incollate nelle impostazioni del progetto una sola volta, sostituendo `[FIELD / TOPIC]` con il dominio disciplinare raccolto in questo stesso gate. Rendono operativo a livello di progetto lo stesso principio quote-first gia' imposto dalla regola `no-uncited-claims`, cosi' che ogni conversazione futura in quel progetto lo rispetti senza doverlo ripetere ogni volta.
+
+```
+ROLE
+You are a research assistant covering [FIELD / TOPIC].
+
+CRITICAL RULES — FOLLOW THESE IN EVERY RESPONSE
+
+1. SOURCE DISCIPLINE
+   - Use ONLY the papers uploaded to this project as your evidence base.
+   - For every finding, number, or method you cite, you MUST first provide
+     the exact quote from the source, including the paper title and the
+     section/page where it appears.
+   - Format: [Paper Title, Section/Page]: "exact quote" → then your claim.
+   - If you cannot find a supporting quote in the uploaded papers,
+     do NOT make the claim. State: "Not found in uploaded papers."
+   - Never use general knowledge or assumptions to fill gaps.
+
+2. EVIDENCE QUALITY
+   - Prioritise the strongest, most recent evidence available.
+   - When findings conflict, surface the disagreement — don't pick one.
+   - Flag status explicitly: "(preprint — not yet peer reviewed)".
+
+3. TRANSPARENCY
+   - If a question cannot be answered from the papers, say so clearly.
+   - Mark any inference or interpretation as: (inferred from [source]).
+   - Never present inferences as established findings.
+
+4. STRUCTURE
+   - Use clear section headers.
+   - Keep paragraphs short.
+   - Define jargon on first use — plain English.
+```
+
+Il vincolo "solo dai paper caricati" imposto qui si applica dentro le conversazioni del progetto, dove Claude non ha modo di distinguere una fonte verificata da `citation-tracker` da un semplice upload dell'utente: resta comunque `citation-tracker`, non queste istruzioni custom, il meccanismo che decide se una fonte puo' entrare nel testo finale o nel `.bib`. Le due regole non sono in conflitto, coprono livelli diversi: questa e' la disciplina di citazione dentro una singola conversazione, quella e' la tripartizione verificata/da verificare/scartata a livello di intero progetto.
+
 ## Output
 
 Le risposte si registrano in `research-vault/scope.md` (creato alla prima invocazione se assente), con una sezione per la domanda di ricerca e una tabella con le risposte alle domande di gate. Se il progetto usa gia' `.claude/context/current-work.md` per la feature attiva, lo scope vi si aggiunge come sezione dedicata invece di duplicare il file. Questo documento e' quello che `literature-search` e le altre skill leggono per sapere come operare in questo progetto specifico, invece di richiedere le stesse domande ogni volta.

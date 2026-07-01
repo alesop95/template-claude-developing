@@ -1,10 +1,11 @@
 ---
 name: corpus-analysis
 description: >
-  Applica una o piu delle nove modalita della Corpus Analysis Suite a un corpus di paper gia
+  Applica una o piu delle dieci modalita della Corpus Analysis Suite a un corpus di paper gia
   caricati nella conversazione corrente: Intake Protocol, Contradiction Finder, Citation Chain,
   Gap Scanner, Methodology Audit, Master Synthesis, Assumption Killer, Knowledge Map Builder, So
-  What Test. Non cerca nuovi paper, quello e' compito di literature-search, e non attinge a
+  What Test, e Canon Update per quando arriva un paper nuovo dopo che il corpus e' gia' stato
+  analizzato. Non cerca nuovi paper, quello e' compito di literature-search, e non attinge a
   conoscenza esterna del modello: lavora solo sui paper gia' forniti nella conversazione. Usare
   quando l'utente chiede di analizzare, confrontare, sintetizzare o mappare un insieme di paper
   gia' condivisi, per nome della modalita' o per intento equivalente.
@@ -13,7 +14,7 @@ disable-model-invocation: true
 
 ## Premessa
 
-Questa skill trascrive fedelmente i nove prompt della Corpus Analysis Suite documentati nella sezione 10 di `research-vault/reference/claude-ricercatore-universitario-completo.md`, che resta la fonte di verita' in caso di ambiguita' interpretativa. Ogni modalita' assume che i paper siano gia' stati caricati o forniti nella conversazione corrente: se il corpus non e' ancora stato tracciato dalla skill `citation-tracker`, invocarla prima, cosi' le citazioni generate da queste modalita' si riferiscono solo a paper nello stato verificata, come richiesto dalla regola `no-uncited-claims`.
+Questa skill trascrive fedelmente i nove prompt della Corpus Analysis Suite documentati nella sezione 10 di `research-vault/reference/claude-ricercatore-universitario-completo.md`, che resta la fonte di verita' in caso di ambiguita' interpretativa per quelle nove modalita'. La decima modalita', Canon Update, non fa parte di quel documento: proviene da un metodo a piu' step condiviso dall'utente tramite screenshot di un post pubblico (account `@techwith.ram`), aggiunto qui perche' opera esattamente sullo stesso materiale (un corpus gia' caricato) delle altre nove, non su una ricerca di paper nuovi. Ogni modalita' assume che i paper siano gia' stati caricati o forniti nella conversazione corrente: se il corpus non e' ancora stato tracciato dalla skill `citation-tracker`, invocarla prima, cosi' le citazioni generate da queste modalita' si riferiscono solo a paper nello stato verificata, come richiesto dalla regola `no-uncited-claims`.
 
 ## Come si sceglie la modalita'
 
@@ -30,8 +31,9 @@ L'utente puo' chiedere una modalita' per nome (per esempio "fai il Gap Scanner s
 | 7. The Assumption Killer | 5-8 assunzioni condivise mai testate, con rischio e conseguenza |
 | 8. The Knowledge Map Builder | Outline strutturato: claim centrale, pilastri, zone contese, domande di frontiera, reading list |
 | 9. The So What Test | Sintesi divulgativa in 3 punti: provato, ignoto, perche' conta |
+| 10. The Canon Update | Confronto strutturato di un paper nuovo contro il corpus gia' analizzato: claim vs evidenza, risultato vs canone, cosa cambia davvero |
 
-Ordine consigliato su un corpus nuovo, quando l'utente non ne chiede una specifica: 1, poi 5, 2, 3, 4, 7, 8, 6, e infine 9 come chiusura divulgativa.
+Ordine consigliato su un corpus nuovo, quando l'utente non ne chiede una specifica: 1, poi 5, 2, 3, 4, 7, 8, 6, e infine 9 come chiusura divulgativa. La modalita' 10 non entra in questo ordine iniziale: si usa solo in un momento successivo, quando un paper nuovo si aggiunge a un corpus gia' passato almeno dall'Intake Protocol.
 
 ## I nove prompt, testo integrale
 
@@ -184,6 +186,45 @@ Rules: No jargon. No citations. No qualifications that weaken the core point.
 If you cannot make a statement confidently based on the papers, say so — don't fabricate certainty.
 ```
 
+### 10. The Canon Update
+
+Si esegue quando un paper nuovo viene caricato nel progetto dopo che il corpus esistente e' gia' stato analizzato con una o piu' delle nove modalita' precedenti: confronta il nuovo arrivato contro il canone gia' stabilito, invece di analizzarlo isolatamente.
+
+```
+Using ONLY the documents in this project, and following the quote-first sourcing rules in the project instructions:
+
+ROLE — You are a research assistant covering [FIELD / TOPIC].
+TASK — Analyse the new paper I just uploaded, comparing it to the canon and prior findings already in this project. Quote the source first (with paper title), then interpret. Answer the core questions:
+
+SECTION 1 — CLAIM VS EVIDENCE
+- What does the paper claim to contribute?          → exact quote
+- What did the authors actually show?                → exact quote from results
+- Strong / Mixed / Weak — quantify where possible
+- Is the contribution new, or a relabel of prior work?
+- Is the claim supported by data, or mostly framing?
+End with: short judgment on how much to trust this result.
+
+SECTION 2 — RESULT VS THE CANON (for each key result)
+- This paper's finding (quote source)
+- The prior consensus in the project (quote source)
+- Agreement, extension, or contradiction
+- What it signals for the field
+- Whether it survives the project's skeptic memo
+
+SECTION 3 — WHAT ACTUALLY CHANGED?
+- What does this genuinely add?
+- What does it overturn?
+- What is newly possible (method, data, benchmark)?
+- What did NOT change despite the paper's framing?
+
+FINAL SUMMARY
+- Evidence quality: Strong / Mixed / Weak
+- Novelty: High / Incremental / Recycled
+- Field impact vs the hype: Bigger / Same / Smaller
+```
+
+La riga "the project's skeptic memo" nella Sezione 2 presuppone che il paper o l'idea di riferimento del canone sia gia' passato dal memo Skeptic's Teardown di `deep-paper-reading`: se non lo e' ancora, quel controllo si salta esplicitamente invece di inventare un esito. Ripetere l'Intake Protocol (modalita' 1) sull'intero corpus ampliato resta comunque raccomandato dopo alcuni Canon Update accumulati, per aggiornare cluster e contraddizioni sul corpus nella sua forma corrente.
+
 ## Vincoli non negoziabili
 
-Tutte e nove le modalita' dicono esplicitamente di basarsi solo sui paper caricati o allegati: questo vincolo va rispettato alla lettera, coerentemente con la regola `no-uncited-claims` del pacchetto. Nessuna modalita' attinge a conoscenza generale del modello per completare un punto lasciato incompleto dal corpus fornito, nemmeno quando sembrerebbe utile. Le modalita' 2, 6, 7 e 8 chiedono esplicitamente di citare paper a supporto di ogni claim: quelle citazioni devono riferirsi solo a paper nello stato verificata secondo `citation-tracker`. Se l'utente carica paper nuovi durante la sessione, si ri-esegue almeno l'Intake Protocol prima di riusare le altre modalita', per aggiornare cluster e contraddizioni sul corpus ampliato.
+Tutte e dieci le modalita' dicono esplicitamente di basarsi solo sui paper caricati o allegati: questo vincolo va rispettato alla lettera, coerentemente con la regola `no-uncited-claims` del pacchetto. Nessuna modalita' attinge a conoscenza generale del modello per completare un punto lasciato incompleto dal corpus fornito, nemmeno quando sembrerebbe utile. Le modalita' 2, 6, 7, 8 e 10 chiedono esplicitamente di citare paper a supporto di ogni claim: quelle citazioni devono riferirsi solo a paper nello stato verificata secondo `citation-tracker`. Se l'utente carica paper nuovi durante la sessione, si ri-esegue almeno l'Intake Protocol prima di riusare le altre modalita', per aggiornare cluster e contraddizioni sul corpus ampliato; la modalita' 10 e' l'alternativa mirata quando serve solo confrontare il singolo paper nuovo contro il canone, senza rifare l'Intake Protocol ogni volta.
