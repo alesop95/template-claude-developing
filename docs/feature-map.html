@@ -84,8 +84,9 @@ a.repo:hover{text-decoration:underline}
   </div>
   <div class="s-foot">
     <p>Voci <span class="badge b-new" style="font-size:9px">Nuovo</span> aggiunte nella sessione giugno 2026 dai 6 playbook.<br><br>
-    <strong>32</strong> pacchetti opt-in totali<br>
-    <strong>22</strong> nuovi in questa sessione<br><br>
+    <strong>34</strong> pacchetti opt-in totali<br>
+    <strong>22</strong> nuovi nella sessione giugno 2026<br>
+    <strong>2</strong> aggiunti il 2026-07-01 (docx-to-docs, doc-ingest)<br><br>
     Vedi anche: <a href="project-flow.html" style="color:#94A3B8;font-size:10px">project-flow.html</a></p>
   </div>
 </aside>
@@ -99,7 +100,7 @@ a.repo:hover{text-decoration:underline}
       <div class="ps"><span class="ps-n">5</span><span class="ps-l">Skill</span></div>
       <div class="ps"><span class="ps-n">6</span><span class="ps-l">Regole</span></div>
       <div class="ps"><span class="ps-n">2</span><span class="ps-l">Agenti template</span></div>
-      <div class="ps"><span class="ps-n">32</span><span class="ps-l">Pacchetti opt-in</span></div>
+      <div class="ps"><span class="ps-n">34</span><span class="ps-l">Pacchetti opt-in</span></div>
       <div class="ps"><span class="ps-n">7</span><span class="ps-l">MCP server</span></div>
     </div>
   </div>
@@ -234,6 +235,8 @@ a.repo:hover{text-decoration:underline}
         <tbody>
           <tr><td><strong>knowledge-wiki</strong></td><td>LLM Wiki: sources/ immutabili, wiki/ compilata dall'LLM, schema WIKI-SCHEMA.md, skill wiki-digest</td><td>Progetti con conoscenza trasversale accumulata nel tempo</td><td>Pattern: <a class="repo" href="#">gist.github.com/karpathy/442a6bf…</a></td></tr>
           <tr><td><strong>book-to-skill</strong></td><td>PDF tecnico → skill interrogabile on-demand con /slug; path A (skill) o path B (fonte wiki)</td><td>Progetti con libri o PDF tecnici di riferimento</td><td><a class="repo" href="https://github.com/virgiliojr94/book-to-skill">github.com/virgiliojr94/book-to-skill</a> · MIT</td></tr>
+          <tr><td><strong>docx-to-docs</strong> <span class="badge b-new">Nuovo</span></td><td>Converte un .docx voluminoso in un albero docs/ Markdown versionato: un file per sezione, README indice generati, annotazioni/redazioni/pulizia --clean sopravvivono alla rigenerazione</td><td>Il progetto parte da un .docx o corpus scritto a mano da rendere documentazione navigabile</td><td>Basato su <a class="repo" href="https://github.com/python-openxml/python-docx">github.com/python-openxml/python-docx</a> · MIT</td></tr>
+          <tr><td><strong>doc-ingest</strong> <span class="badge b-new">Nuovo</span></td><td>Ingestione incrementale di un corpus .pdf/.docx/.pptx/.xlsx/.html in cache Markdown a zero token: manifest a content-hash, indice _INDEX.md di Livello 1, motore accurato e OCR opzionali</td><td>Il progetto ha piu' documenti voluminosi da consultare senza versionarli; complementa docx-to-docs</td><td><a class="repo" href="https://github.com/microsoft/markitdown">github.com/microsoft/markitdown</a> · MIT (+ Docling e pytesseract opzionali)</td></tr>
           <tr><td><strong>andrej-karpathy-skills</strong> <span class="badge b-new">Nuovo</span></td><td>4 principi anti-over-engineering in CLAUDE.md: no assunzioni silenziose, no 500 righe dove ne bastano 50</td><td>Qualsiasi progetto con output codice intenso</td><td><a class="repo" href="https://github.com/forrestchang/andrej-karpathy-skills">github.com/forrestchang/andrej-karpathy-skills</a> · MIT</td></tr>
           <tr><td><strong>graphify</strong></td><td>Grafo di conoscenza dell'intero progetto: nodi, relazioni, community, nodi centrali, visualizzazione interattiva</td><td>Progetti grandi o sconosciuti dove le relazioni non emergono leggendo i file singoli</td><td><a class="repo" href="https://github.com/safishamsi/graphify">github.com/safishamsi/graphify</a> · MIT</td></tr>
           <tr><td><strong>codebase-memory-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Grafo strutturale del codice (call chain, 158 linguaggi via tree-sitter); 10x-120x meno token su query strutturali</td><td>Progetti oltre 50K righe. Complementa code-context e graphify</td><td><a class="repo" href="https://github.com/DeusData/codebase-memory-mcp">github.com/DeusData/codebase-memory-mcp</a> · MIT</td></tr>
