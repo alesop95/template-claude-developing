@@ -123,9 +123,25 @@ Per i progetti il cui scopo dichiarato e apprendere un topic specifico, per esem
 
 Per i progetti dichiarati finiti o quasi finiti di sviluppare, dove lo scopo della sessione e' capire l'architettura invece di continuare a modificarla, il pacchetto opzionale `codebase-learning` scaffolda un comando `/learn-repo` che accompagna l'utente in cinque fasi fisse, panoramica dello stack, astrazioni centrali, flussi end-to-end, design pattern e principi effettivamente usati, idiomi dello stack confrontati con le best practice della versione in uso, fermandosi dopo ognuna con due domande di verifica prima di procedere. Il subagent dedicato `code-tutor` esegue l'esplorazione al posto della sessione principale e non enuncia mai un'affermazione tecnica senza uno snippet reale con path e riga a sostegno, appoggiandosi ai tool semantici connessi invece che a grep a tappeto. E' distinto da `learning-agent`: quest'ultimo insegna un topic esterno alla repository da una knowledge base personale con spaced repetition, mentre `codebase-learning` insegna la repository stessa, senza knowledge base esterna, e i due pacchetti possono coesistere senza sovrapporsi. Il pacchetto non installa da solo alcun MCP: al gate si sceglie se collegare `serena` (grafo semantico via language server, per repo dove la ricerca testuale non basta piu') e `repomix` (snapshot consolidato iniziale), riusando per il resto le righe di catalogo gia' esistenti `code-context`, `codebase-memory-mcp`, `graphify` e `context7`; `deepwiki-mcp` e `deepwiki-skill` completano lo stack per generare Q&A e documentazione con citazioni a riga, il primo solo su repository effettivamente pubbliche. Deriva da un handoff di ricerca dell'utente di luglio 2026, non ancora validato su un progetto reale: il dettaglio completo e in `.claude/templates/codebase-learning/README.md`.
 
+## Riferimento delle opzioni di Claude Code (claude-code-handoff)
+
+Per tenere dentro il progetto un riferimento esaustivo e sempre allineato delle capacita' dello strumento, il pacchetto opzionale `claude-code-handoff` installa un documento di handoff distillato dalla guida community `Cranot/claude-code-guide` e dalle docs ufficiali: flag CLI, comandi di sessione, modalita' di permesso, MCP, skills, subagent, agent teams e hooks, con marcatori di provenienza e puntatori alle regole del sistema nei punti di contatto, perche' in caso di divergenza vincono sempre le regole. Il meccanismo di allineamento e' a tre livelli: il documento distillato tracciato in `.claude/context/claude-code-handoff.md`, la fonte grezza scaricata in `_notes/upstream/` ignorata, e lo stato `.claude/handoff-state.json` tracciato con la versione upstream. Lo script `tools/update-handoff.ps1`/`.sh` confronta le versioni a costo zero, scarica la guida quando cambia e ri-distilla il documento via `claude -p`; in sessione lo stesso lavoro lo fa il comando `/refresh-handoff`, e un workflow GitHub Actions opzionale apre una pull request quando la fonte cambia. Un punto di onesta' verificato sul campo: l'auto-aggiornamento upstream e' reale (commit automatici a cadenza di circa due giorni) ma puo' fermarsi, ed e' gia' successo; per questo gli script rilevano anche lo stallo della fonte e avvisano quando la guida stessa e' vecchia, invece di dichiarare un falso allineamento. Il dettaglio e' in `.claude/templates/claude-code-handoff/README.md`.
+
+## Profili di stack (stack-profiles)
+
+Il pacchetto opzionale `stack-profiles` fornisce profili di regole gia' scritti per gli stack ricorrenti, TypeScript/Node con server MCP, Python, React, n8n, piu' un profilo generico come fallback esplicito: convenzioni di stile, comandi tipici e controlli pre-commit, istanziati come regola modulare `.claude/rules/stack-profile.md` quando il gate riconosce lo stack dai manifest del progetto. Il profilo e' normativo e complementare alla scheda descrittiva `STACK.md`: la scheda descrive lo stack che il progetto ha, il profilo prescrive le convenzioni con cui si scrive il codice di quello stack, e il file istanziato si personalizza col progetto man mano che le convenzioni reali emergono. Il dettaglio e' in `.claude/templates/stack-profiles/README.md`.
+
+## Hook pronti all'uso (hooks-starter)
+
+Il pacchetto opzionale `hooks-starter` concretizza le famiglie di hook descritte nella sezione 14 di `PROJECT-SYSTEM.md`, finora solo descrittiva, con tre script in doppia forma PowerShell e shell POSIX, mai attivi dopo l'istanziazione: `session-context`, un hook `SessionStart` che inietta nel contesto branch, ultimi commit, file modificati e la testa di `memory/index.md` con il punto di ripresa, automatizzando la procedura di ripresa della sezione 12; `protect-sensitive-files`, che blocca le scritture dell'agente su `.env`, chiavi e area `.git/` come difesa in profondita' rispetto ai deny del `settings.json`; e `secret-scan`, che scansiona il diff in stage prima di un `git commit` dell'agente, con la nota onesta che nella baseline del sistema quel commit e' gia' negato e l'hook serve ai progetti che allentano quel deny. L'attivazione resta sempre una scelta esplicita: si copiano i soli blocchi voluti dal frammento di esempio della propria piattaforma nel `settings.json` del progetto. Il dettaglio e' in `.claude/templates/hooks-starter/README.md`.
+
+## Skill di sviluppo (dev-skills)
+
+Il pacchetto opzionale `dev-skills` porta quattro skill di sviluppo da scegliere una per una al gate: `test-generator`, che genera test rilevando framework e pattern gia' presenti nel progetto invece di imporne di propri; `mcp-tool-scaffold`, che scaffolda tool di server MCP con contratto esplicito, validazione degli input e description scritte per il modello che le legge; e le due varianti di progetto `code-review` e `security-review`, che duplicano deliberatamente le skill native omonime di Claude Code e gli agenti del pacchetto `subagent-template`, e si propongono solo dichiarando questa sovrapposizione: restano utili quando si vuole un processo di revisione personalizzato e versionato col repository, indipendente dalla versione della CLI di chi clona. Il dettaglio, con la nota sul naming che mette in ombra le skill native, e' in `.claude/templates/dev-skills/README.md`.
+
 ## Agenti di progetto
 
-I subagent sono agenti con una persona specializzata, un system prompt focalizzato e un insieme ristretto di strumenti. Si definiscono come file Markdown in `.claude/agents/` del progetto, con un frontmatter YAML che specifica nome, modello e tool disponibili, e lavorano in un contesto isolato rispetto all'agente principale, riportando solo il risultato finale. Il bundle include due definizioni di agente pronte all'uso sotto `templates/agents/`: `code-reviewer`, che esamina struttura, gestione degli errori e sicurezza del codice classificando i finding per severita' (CRITICAL / HIGH / MEDIUM / LOW) e concludendo con APPROVE, REQUEST_CHANGES o NEEDS_DISCUSSION; e `security-auditor`, che conduce un audit sistematico per autenticazione, autorizzazione, validazione degli input, esposizione di dati, dipendenze con CVE note e segreti hardcoded. Entrambi operano esclusivamente in lettura e si copiano in `.claude/agents/` del progetto al momento dell'attivazione del pacchetto `subagent-template`.
+I subagent sono agenti con una persona specializzata, un system prompt focalizzato e un insieme ristretto di strumenti. Si definiscono come file Markdown in `.claude/agents/` del progetto, con un frontmatter YAML che specifica nome, modello e tool disponibili, e lavorano in un contesto isolato rispetto all'agente principale, riportando solo il risultato finale. Il bundle include quattro definizioni di agente pronte all'uso sotto `templates/agents/`, da scegliere una per una: `code-reviewer`, che esamina struttura, gestione degli errori e sicurezza del codice classificando i finding per severita' (CRITICAL / HIGH / MEDIUM / LOW) e concludendo con APPROVE, REQUEST_CHANGES o NEEDS_DISCUSSION; `security-auditor`, che conduce un audit sistematico per autenticazione, autorizzazione, validazione degli input, esposizione di dati, dipendenze con CVE note e segreti hardcoded; `debugger`, che investiga un bug con metodo, contesto, ipotesi ordinate, verifica mirata, root cause e fix a blast radius minimo, senza applicare nulla senza conferma; ed `explorer`, che mappa il codebase in sola lettura partendo dalle schede di contesto e restituisce una sintesi con citazioni a file e riga, dichiarando al gate che duplica in parte l'agente nativo Explore, rispetto al quale la variante di progetto e' versionata e conosce il sistema di memoria. Tutti operano esclusivamente in lettura sul repository e si copiano in `.claude/agents/` del progetto al momento dell'attivazione del pacchetto `subagent-template`.
 
 ## Token economy
 
@@ -171,9 +187,9 @@ template-claude-developing/
     agents/  commands/  hooks/  plugins/    livelli di orchestrazione, vuoti di default
     templates/
       PACKAGES.md  registro dei pacchetti opzionali offerti al init/align
-      CLAUDE.md  CLAUDE.local.md  settings.json  gitignore.snippet  mcp.json  mcp.windows.json
+      CLAUDE.md  CLAUDE.local.md  settings.json  gitignore.snippet  env.example  mcp.json  mcp.windows.json
       README.md  README-project.md
-      agents/    code-reviewer.md  security-auditor.md  (agenti template, da copiare in .claude/agents/)
+      agents/    code-reviewer.md  security-auditor.md  debugger.md  explorer.md  (agenti template, da copiare in .claude/agents/)
       memory/    index.md  progress.md  decisions.md
       context/   STACK.md  design-and-security.md  deployment.md  dev-testing.md  current-work.md  roadmap.md
       _notes/    DIARIO.md  RESOCONTO.md  TEST-CHECKLIST.md  RESUME-PROMPT.md
@@ -184,6 +200,10 @@ template-claude-developing/
       notebooklm-bridge/  pacchetto opzionale: loop di ricerca fondata NotebookLM gratuito + Claude, skill notebooklm-bridge, strumenti di verifica notebooklm-check.ps1/.sh
       learning-agent/   pacchetto opzionale: tutor di apprendimento guidato, 3 agent (tutor, kb-retriever, examiner), 3 skill/comandi (profile, learn, review), LEARNER_PROFILE.md, documento di riferimento
       codebase-learning/  pacchetto opzionale: comando /learn-repo a 5 fasi, subagent code-tutor, documento di riferimento
+      claude-code-handoff/  pacchetto opzionale: handoff delle opzioni Claude Code auto-aggiornante (documento distillato, script update-handoff .ps1/.sh con rilevamento stallo fonte, comando /refresh-handoff, workflow GitHub Actions opzionale)
+      stack-profiles/   pacchetto opzionale: profili di regole per stack (ts-mcp, python, react, n8n, generico), un profilo per progetto in rules/stack-profile.md
+      hooks-starter/    pacchetto opzionale: 3 hook pronti .ps1/.sh mai attivi di default (session-context, protect-sensitive-files, secret-scan) + frammenti settings di attivazione
+      dev-skills/       pacchetto opzionale: 4 skill di sviluppo a scelta (test-generator, mcp-tool-scaffold, code-review, security-review)
       tools/     render-diagrams.mjs  latest-screenshot.ps1  check-account-hygiene  session-end-wipe  claude-incognito  README.md
 ```
 
@@ -200,6 +220,10 @@ Ogni pacchetto a cartella porta con se' un proprio `README.md` di istanziazione 
 - `notebooklm-bridge` — ricerca fondata NotebookLM gratuito + Claude: [.claude/templates/notebooklm-bridge/README.md](.claude/templates/notebooklm-bridge/README.md)
 - `learning-agent` — tutor di apprendimento guidato di un topic: [.claude/templates/learning-agent/README.md](.claude/templates/learning-agent/README.md)
 - `codebase-learning` — comprensione guidata di un progetto finito: [.claude/templates/codebase-learning/README.md](.claude/templates/codebase-learning/README.md)
+- `claude-code-handoff` — riferimento auto-aggiornante delle opzioni di Claude Code: [.claude/templates/claude-code-handoff/README.md](.claude/templates/claude-code-handoff/README.md)
+- `stack-profiles` — profili di regole per gli stack ricorrenti: [.claude/templates/stack-profiles/README.md](.claude/templates/stack-profiles/README.md)
+- `hooks-starter` — hook di automazione pronti, mai attivi di default: [.claude/templates/hooks-starter/README.md](.claude/templates/hooks-starter/README.md)
+- `dev-skills` — skill di sviluppo (test, scaffolding MCP, review): [.claude/templates/dev-skills/README.md](.claude/templates/dev-skills/README.md)
 
 ## Cosa non finisce nei progetti
 
@@ -229,6 +253,8 @@ Due principi guida nella scelta. Si preferisce non introdurre stato globale o di
 
 Il sistema integra o adatta alcuni strumenti e pattern open source:
 
+- `claude-code-guide` di Cranot, guida community auto-aggiornante alle funzionalita' di Claude Code (nessuna licenza dichiarata nel repository; il pacchetto `claude-code-handoff` ne distilla i contenuti fattuali invece di copiarla, e la fonte grezza scaricata resta locale non versionata), fonte del pacchetto `claude-code-handoff` e origine dei pacchetti `stack-profiles`, `hooks-starter` e `dev-skills` attraverso il bundle di template generato dall'utente: https://github.com/Cranot/claude-code-guide
+- `create-pull-request` di peter-evans, action GitHub usata dal workflow opzionale del pacchetto `claude-code-handoff` per aprire la pull request di aggiornamento (MIT): https://github.com/peter-evans/create-pull-request
 - `code-context-provider-mcp` di AB498, server MCP tree-sitter in WebAssembly (licenza MIT), per struttura e simboli del codice: https://github.com/AB498/code-context-provider-mcp
 - `book-to-skill` di virgiliojr94, per pre-digerire un PDF tecnico in skill: https://github.com/virgiliojr94/book-to-skill
 - `python-docx`, libreria per leggere e scrivere documenti Word, base del pacchetto `docx-to-docs` (licenza MIT): https://github.com/python-openxml/python-docx

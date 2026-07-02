@@ -81,14 +81,16 @@ a.repo:hover{text-decoration:underline}
     <a class="sl-a" href="#pkg-mcp"><span class="sl-n">08</span>MCP server</a>
     <a class="sl-a" href="#pkg-orch"><span class="sl-n">09</span>Orchestrazione</a>
     <a class="sl-a" href="#pkg-style"><span class="sl-n">10</span>Stile e qualita'</a>
+    <a class="sl-a" href="#pkg-cranot"><span class="sl-n">11</span>Strumento e convenzioni</a>
   </div>
   <div class="s-foot">
     <p>Voci <span class="badge b-new" style="font-size:9px">Nuovo</span> aggiunte nella sessione giugno 2026 dai 6 playbook.<br><br>
-    <strong>52</strong> pacchetti opt-in totali<br>
+    <strong>56</strong> pacchetti opt-in totali<br>
     <strong>22</strong> nuovi nella sessione giugno 2026<br>
     <strong>10</strong> aggiunti il 2026-07-01 (docx-to-docs, doc-ingest, academic-researcher, zotero-mcp, academix, semantic-scholar-mcp, refchecker-mcp, arxiv-cli, grobid, paperqa2)<br>
     <strong>8</strong> aggiunti il 2026-07-02 (learning-agent, knowledge-mcp, anki-mcp, codebase-learning, serena, repomix, deepwiki-skill, deepwiki-mcp)<br>
-    <strong>2</strong> aggiunti il 2026-07-02 (notebooklm-bridge, notebooklm-mcp)<br><br>
+    <strong>2</strong> aggiunti il 2026-07-02 (notebooklm-bridge, notebooklm-mcp)<br>
+    <strong>4</strong> aggiunti il 2026-07-02 dal bundle Cranot (claude-code-handoff, stack-profiles, hooks-starter, dev-skills), piu' 2 agenti template (debugger, explorer)<br><br>
     Vedi anche: <a href="project-flow.html" style="color:#94A3B8;font-size:10px">project-flow.html</a></p>
   </div>
 </aside>
@@ -101,8 +103,8 @@ a.repo:hover{text-decoration:underline}
     <div class="ph-stats">
       <div class="ps"><span class="ps-n">5</span><span class="ps-l">Skill</span></div>
       <div class="ps"><span class="ps-n">6</span><span class="ps-l">Regole</span></div>
-      <div class="ps"><span class="ps-n">2</span><span class="ps-l">Agenti template</span></div>
-      <div class="ps"><span class="ps-n">52</span><span class="ps-l">Pacchetti opt-in</span></div>
+      <div class="ps"><span class="ps-n">4</span><span class="ps-l">Agenti template</span></div>
+      <div class="ps"><span class="ps-n">56</span><span class="ps-l">Pacchetti opt-in</span></div>
       <div class="ps"><span class="ps-n">17</span><span class="ps-l">MCP server</span></div>
     </div>
   </div>
@@ -195,12 +197,14 @@ a.repo:hover{text-decoration:underline}
     <div class="sec-hd"><span class="sec-num">04</span><h2 class="sec-title">Agenti di progetto</h2></div>
     <p class="sec-sub">Definizioni di subagent in .claude/agents/. Persona specializzata, contesto isolato, riporta solo il risultato finale. Formato nativo Claude Code.</p>
     <div class="card">
-      <div class="card-hd"><span class="dot d-new"></span>Due agenti template — nuovi in questa sessione</div>
+      <div class="card-hd"><span class="dot d-new"></span>Quattro agenti template — pacchetto subagent-template</div>
       <table class="t">
         <thead><tr><th>Agente</th><th>Modello</th><th>Tool</th><th>Cosa fa</th></tr></thead>
         <tbody>
-          <tr><td><strong>code-reviewer</strong> <span class="badge b-new">Nuovo</span></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob</td><td>Revisiona struttura, error handling e sicurezza; classifica ogni finding CRITICAL / HIGH / MEDIUM / LOW; conclude con APPROVE, REQUEST_CHANGES o NEEDS_DISCUSSION</td></tr>
-          <tr><td><strong>security-auditor</strong> <span class="badge b-new">Nuovo</span></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob</td><td>Audit per autenticazione, autorizzazione, validazione input, esposizione dati, dipendenze con CVE note, secrets hardcoded; classifica per severita' e impatto reale</td></tr>
+          <tr><td><strong>code-reviewer</strong></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob</td><td>Revisiona struttura, error handling e sicurezza; classifica ogni finding CRITICAL / HIGH / MEDIUM / LOW; conclude con APPROVE, REQUEST_CHANGES o NEEDS_DISCUSSION</td></tr>
+          <tr><td><strong>security-auditor</strong></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob</td><td>Audit per autenticazione, autorizzazione, validazione input, esposizione dati, dipendenze con CVE note, secrets hardcoded; classifica per severita' e impatto reale</td></tr>
+          <tr><td><strong>debugger</strong> <span class="badge b-new">Nuovo</span></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob, Bash</td><td>Investigazione sistematica di un bug: contesto, ipotesi ordinate, verifica mirata, root cause, fix a blast radius minimo; non applica fix senza conferma. Dal bundle Cranot</td></tr>
+          <tr><td><strong>explorer</strong> <span class="badge b-new">Nuovo</span></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob</td><td>Mappa il codebase in sola lettura partendo dalle schede di contesto; sintesi con citazioni file:riga. Duplica in parte l'agente nativo Explore (dichiarato al gate); la variante di progetto e' versionata e conosce il sistema di memoria. Dal bundle Cranot</td></tr>
         </tbody>
       </table>
     </div>
@@ -319,7 +323,7 @@ a.repo:hover{text-decoration:underline}
       <table class="t">
         <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
         <tbody>
-          <tr><td><strong>subagent-template</strong> <span class="badge b-new">Nuovo</span></td><td>Due agenti di esempio in templates/agents/ (code-reviewer, security-auditor) come punto di partenza</td><td>Progetti con review automatizzata o audit ricorrenti</td><td>Documentazione ufficiale Claude Code</td></tr>
+          <tr><td><strong>subagent-template</strong></td><td>Quattro agenti di esempio in templates/agents/ (code-reviewer, security-auditor, debugger, explorer) come punto di partenza, da scegliere uno per uno</td><td>Progetti con review automatizzata, audit ricorrenti o investigazione sistematica dei bug</td><td>Documentazione ufficiale Claude Code; debugger ed explorer dal bundle Cranot</td></tr>
           <tr><td><strong>multiclaude</strong> <span class="badge b-new">Nuovo</span></td><td>Supervisore che assegna task a subagent via file Markdown; modalita' singleplayer o multiplayer</td><td>3+ feature branch paralleli con gate di review umana</td><td><a class="repo" href="https://github.com/dlorenc/multiclaude">github.com/dlorenc/multiclaude</a> · MIT</td></tr>
         </tbody>
       </table>
@@ -338,6 +342,25 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>humanizer</strong></td><td>Skill che rimuove 33 pattern di scrittura AI dal testo: frasi riempitive, regola del tre, trattini lunghi, hedging</td><td>Progetti che producono prosa o testo</td><td><a class="repo" href="https://github.com/blader/humanizer">github.com/blader/humanizer</a> · MIT</td></tr>
           <tr><td><strong>taste-skill</strong></td><td>Skill di design-taste per interfacce: layout, tipografia, spaziatura e motion</td><td>Progetti con frontend o UI</td><td><a class="repo" href="https://github.com/Leonxlnx/taste-skill">github.com/Leonxlnx/taste-skill</a> · MIT</td></tr>
           <tr><td><strong>code-simplifier</strong> <span class="badge b-new">Nuovo</span></td><td>Filtro di semplificazione del codice con vincolo contro il cambio di comportamento</td><td>Progetti con over-engineering ricorrente; usare selettivamente</td><td><a class="repo" href="https://github.com/anthropics/claude-plugins-official">anthropics/claude-plugins-official</a> · Ufficiale Anthropic</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="pkg-cranot">
+    <div class="sec-hd"><span class="sec-num">11</span><h2 class="sec-title">Pacchetti — Strumento e convenzioni (bundle Cranot)</h2></div>
+    <p class="sec-sub">Quattro pacchetti derivati dal bundle di template generato dall'utente a partire dalla guida community Cranot/claude-code-guide. Il primo ha come oggetto lo strumento Claude Code stesso; gli altri tre portano convenzioni, hook e skill pronti. Integrazione 2026-07-02.</p>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>Bundle Cranot — 4 pacchetti nuovi</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Note</th></tr></thead>
+        <tbody>
+          <tr><td><strong>claude-code-handoff</strong> <span class="badge b-new">Nuovo</span></td><td>Riferimento distillato delle opzioni Claude Code (flag CLI, comandi, permessi, MCP, skills, subagent, hooks) con auto-aggiornamento: script .ps1/.sh che confronta la versione upstream e ri-distilla via claude -p, comando /refresh-handoff, workflow GitHub Actions opzionale, stato tracciato in handoff-state.json</td><td>Qualsiasi progetto; si propone all'init e quando l'utente chiede quali opzioni offre lo strumento</td><td><a class="repo" href="https://github.com/Cranot/claude-code-guide">github.com/Cranot/claude-code-guide</a> · nessuna licenza dichiarata (si distillano i contenuti fattuali, la fonte grezza resta locale). Auto-update upstream reale ma con stallo osservato (fermo da feb 2026 alla verifica del 2026-07-02): gli script rilevano lo stallo (&gt;14 giorni) e avvisano</td></tr>
+          <tr><td><strong>stack-profiles</strong> <span class="badge b-new">Nuovo</span></td><td>Profili di regole pronti per stack ricorrenti (ts-mcp, python, react, n8n, generico): convenzioni di stile, comandi tipici, controlli pre-commit, come regola modulare rules/stack-profile.md</td><td>Lo stack e' riconosciuto dai manifest del progetto; generico come fallback esplicito</td><td>Bundle Cranot, riscritto nello stile delle regole del sistema; normativo, complementare alla scheda STACK.md</td></tr>
+          <tr><td><strong>hooks-starter</strong> <span class="badge b-new">Nuovo</span></td><td>Tre hook pronti, mai attivi di default: session-context (SessionStart, contesto di ripresa automatico), protect-sensitive-files (PreToolUse Write/Edit), secret-scan (PreToolUse Bash su git commit); doppia forma .ps1/.sh, blocco via exit 2 + stderr</td><td>Automatizzare la ripresa (sez. 12) o concretizzare i guard-rail (sez. 14 di PROJECT-SYSTEM.md); attivazione sempre manuale via settings.json</td><td>Bundle Cranot, riscritto sul protocollo hook corrente; secret-scan e' difesa in profondita' (il deny baseline su git commit resta primario)</td></tr>
+          <tr><td><strong>dev-skills</strong> <span class="badge b-new">Nuovo</span></td><td>Quattro skill di sviluppo a scelta singola: test-generator (test sui pattern del progetto), mcp-tool-scaffold (tool MCP orientati all'LLM), code-review e security-review (varianti di progetto delle revisioni)</td><td>Sviluppo attivo con procedure versionate; le due di review si propongono solo dichiarando la sovrapposizione con le skill native /code-review e /security-review</td><td>Bundle Cranot; le skill omonime mettono in ombra le native nel progetto (nota naming nel README del pacchetto)</td></tr>
         </tbody>
       </table>
     </div>

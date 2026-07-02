@@ -76,9 +76,9 @@ table.src a:hover{text-decoration:underline}
     <div class="hero-meta">
       <div class="hm"><span class="hm-n">5</span><span class="hm-l">Skill</span></div>
       <div class="hm"><span class="hm-n">6</span><span class="hm-l">Regole</span></div>
-      <div class="hm"><span class="hm-n">2</span><span class="hm-l">Agenti template</span></div>
-      <div class="hm"><span class="hm-n">52</span><span class="hm-l">Pacchetti opt-in</span></div>
-      <div class="hm"><span class="hm-n">42+</span><span class="hm-l">Repo open source</span></div>
+      <div class="hm"><span class="hm-n">4</span><span class="hm-l">Agenti template</span></div>
+      <div class="hm"><span class="hm-n">56</span><span class="hm-l">Pacchetti opt-in</span></div>
+      <div class="hm"><span class="hm-n">44+</span><span class="hm-l">Repo open source</span></div>
     </div>
   </div>
 
@@ -94,7 +94,7 @@ table.src a:hover{text-decoration:underline}
       <div class="phase-title">Inizializzazione del progetto</div>
       <div class="phase-body">
         Si incolla <strong>PROMPT-nuovo-progetto.md</strong> in Claude Code nella radice del progetto. La skill <strong>init-project-system</strong> esegue l'anatomia minima: crea .claude/ con memory/, context/ e rules/, istanzia le schede tecniche vuote, popola CLAUDE.md con la procedura di ripresa. Poi legge PACKAGES.md e propone i pacchetti pertinenti uno per uno.<br><br>
-        Gate accettati in questo progetto: <em>github-mcp</em> (il progetto vive su GitHub), <em>context7</em> (si usa Express e Drizzle in evoluzione rapida), <em>playwright-mcp</em> (test E2E previsti), <em>ccusage</em> (baseline misurazione token, sempre), <em>vercel-mcp</em> (deploy su Vercel). Gate rifiutati: LaTeX, knowledge-wiki (non necessari ora).
+        Gate accettati in questo progetto: <em>github-mcp</em> (il progetto vive su GitHub), <em>context7</em> (si usa Express e Drizzle in evoluzione rapida), <em>playwright-mcp</em> (test E2E previsti), <em>ccusage</em> (baseline misurazione token, sempre), <em>vercel-mcp</em> (deploy su Vercel), <em>stack-profiles</em> (stack TypeScript riconosciuto dal package.json: il profilo ts-mcp diventa rules/stack-profile.md), <em>claude-code-handoff</em> (riferimento delle opzioni dello strumento, con auto-update dalla guida community), <em>hooks-starter</em> (si attiva il solo hook session-context: la procedura di ripresa diventa automatica). Gate rifiutati: LaTeX, knowledge-wiki (non necessari ora), le skill di review di dev-skills (duplicano le native, dichiarato al gate).
       </div>
       <div class="pills">
         <span class="pill p-core"><span class="pill-label">core</span>init-project-system</span>
@@ -104,6 +104,9 @@ table.src a:hover{text-decoration:underline}
         <span class="pill p-pkg"><span class="pill-label">opt-in</span>playwright-mcp</span>
         <span class="pill p-pkg"><span class="pill-label">opt-in</span>ccusage</span>
         <span class="pill p-pkg"><span class="pill-label">opt-in</span>vercel-mcp</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>stack-profiles</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>claude-code-handoff</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>hooks-starter</span>
       </div>
     </div>
 
@@ -291,7 +294,11 @@ table.src a:hover{text-decoration:underline}
 
       <tr class="src-group"><td colspan="4">Orchestrazione multi-agente</td></tr>
       <tr><td>multiclaude</td><td>Supervisore per 3+ feature branch paralleli con gate review</td><td><a href="https://github.com/dlorenc/multiclaude">github.com/dlorenc/multiclaude</a></td><td><span class="badge b-mit">MIT</span></td></tr>
-      <tr><td>subagent-template</td><td>code-reviewer e security-auditor come agenti template</td><td>Documentazione ufficiale Claude Code</td><td>—</td></tr>
+      <tr><td>subagent-template</td><td>code-reviewer, security-auditor, debugger ed explorer come agenti template</td><td>Documentazione ufficiale Claude Code; debugger ed explorer dal bundle Cranot</td><td>—</td></tr>
+
+      <tr class="src-group"><td colspan="4">Strumento e convenzioni (bundle Cranot)</td></tr>
+      <tr><td>claude-code-guide</td><td>Guida community auto-aggiornante alle funzionalita' di Claude Code: fonte distillata dal pacchetto claude-code-handoff e origine (via bundle dell'utente) di stack-profiles, hooks-starter e dev-skills. Auto-update upstream reale ma con stallo osservato: gli script del pacchetto lo rilevano e avvisano</td><td><a href="https://github.com/Cranot/claude-code-guide">github.com/Cranot/claude-code-guide</a></td><td>Nessuna licenza dichiarata (si distillano i contenuti fattuali)</td></tr>
+      <tr><td>create-pull-request</td><td>Action GitHub usata dal workflow opzionale di claude-code-handoff per aprire la PR di aggiornamento</td><td><a href="https://github.com/peter-evans/create-pull-request">github.com/peter-evans/create-pull-request</a></td><td><span class="badge b-mit">MIT</span></td></tr>
 
       <tr class="src-group"><td colspan="4">Ambiente, editor e multi-terminale</td></tr>
       <tr><td>psmux</td><td>Tmux nativo Windows senza WSL</td><td><a href="https://github.com/psmux/psmux">github.com/psmux/psmux</a></td><td><span class="badge b-mit">MIT</span></td></tr>
