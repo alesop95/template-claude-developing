@@ -9,6 +9,12 @@
 Data, archetipo del progetto (anonimo), cosa si e testato, esito (cosa ha funzionato e cosa no),
 perche/come/dove funziona meglio (la lezione), rifiniture derivate (eventuali cambi al sistema).
 
+## Pacchetti in attesa di validazione — progetto pilota
+
+> Sezione di lavoro, non un case-study concluso: tiene traccia dei pacchetti che nel loro stesso README dichiarano di derivare da una ricerca dell'utente non ancora esercitata su un progetto reale, in attesa di produrre la voce di validazione vera e propria secondo lo schema sopra. Il piano concordato e' lanciare un progetto pilota dedicato, distinto dai progetti di produzione, con il solo scopo di avviare il template su un caso reale e attraversare ogni feature dei pacchetti elencati qui sotto, cosi che ciascuno riceva la propria voce datata con archetipo, esito e lezione, invece di restare dichiarato "da calibrare" a tempo indeterminato.
+
+Pacchetti in attesa, aggiornati il 2026-07-02: `academic-researcher`, per le tre skill dichiarate parzialmente stub nel proprio README (`deep-paper-reading`, `gap-analysis`, `skill-autogen`), le cui soglie e orchestrazioni restano da calibrare su un corpus reale; `learning-agent`, per l'intero pacchetto, il cui livello di orchestrazione e' gia completo ma non e' mai stato eseguito su un learner reale; `codebase-learning`, per l'intero pacchetto, nella stessa condizione di `learning-agent` e con la stessa distinzione da tenere presente al momento della validazione. Quando il progetto pilota esercita un pacchetto di questo elenco, la voce corrispondente si toglie da qui e si aggiunge sotto come case-study datato, con archetipo, cosa si e' testato, esito, lezione e rifiniture derivate.
+
 ---
 
 ## 2026-06-17 — Gate dei pacchetti in allineamento
