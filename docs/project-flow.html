@@ -77,8 +77,8 @@ table.src a:hover{text-decoration:underline}
       <div class="hm"><span class="hm-n">5</span><span class="hm-l">Skill</span></div>
       <div class="hm"><span class="hm-n">6</span><span class="hm-l">Regole</span></div>
       <div class="hm"><span class="hm-n">4</span><span class="hm-l">Agenti template</span></div>
-      <div class="hm"><span class="hm-n">56</span><span class="hm-l">Pacchetti opt-in</span></div>
-      <div class="hm"><span class="hm-n">44+</span><span class="hm-l">Repo open source</span></div>
+      <div class="hm"><span class="hm-n">59</span><span class="hm-l">Pacchetti opt-in</span></div>
+      <div class="hm"><span class="hm-n">49+</span><span class="hm-l">Repo open source</span></div>
     </div>
   </div>
 
@@ -135,7 +135,8 @@ table.src a:hover{text-decoration:underline}
       <div class="phase-body">
         Ogni sessione inizia leggendo <strong>memory/index.md</strong> e <strong>current-work.md</strong>, poi <strong>sync-context</strong> misura il drift. Solo le schede pertinenti alla feature attiva vengono lette. Il <strong>RESUME-PROMPT.md</strong> (in _notes/, ignorato) viene aggiornato a fine sessione.<br><br>
         <strong>github-mcp</strong> gestisce issue e PR senza uscire da Claude Code. <strong>code-reviewer</strong> viene invocato prima di ogni PR merge: classifica i finding per severita' (CRITICAL blocca il merge). <strong>context7</strong> risolve le ambiguita' sulla documentazione di Drizzle ORM.<br><br>
-        <strong>ccusage</strong> mostra la baseline: media 45K token per sessione. Si decide di attivare <strong>ponytail</strong> per tenere il codice piu' compatto.
+        <strong>ccusage</strong> mostra la baseline: media 45K token per sessione. Si decide di attivare <strong>ponytail</strong> per tenere il codice piu' compatto.<br><br>
+        Serve un parere specialistico sull'ottimizzazione delle query PostgreSQL: invece di scrivere un agente da zero, <strong>/fetch-community-agent 0xfurai postgres-expert</strong> pesca l'agente gia' pronto dalla fonte community in <strong>.claude/agents/postgres-expert.md</strong>, con revisione del campo <code>model</code> prima dell'uso.
       </div>
       <div class="pills">
         <span class="pill p-core"><span class="pill-label">core</span>sync-context (ogni sessione)</span>
@@ -144,6 +145,7 @@ table.src a:hover{text-decoration:underline}
         <span class="pill p-pkg"><span class="pill-label">opt-in</span>context7</span>
         <span class="pill p-pkg"><span class="pill-label">opt-in</span>ccusage</span>
         <span class="pill p-pkg"><span class="pill-label">opt-in</span>ponytail</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>agent-catalog (postgres-expert)</span>
       </div>
     </div>
 
@@ -206,7 +208,8 @@ table.src a:hover{text-decoration:underline}
       <div class="phase-body">
         Prima del tag, <strong>sync-context</strong> passa in rassegna tutte le schede: tre sono marcate "da aggiornare" perche' il refactoring di settimana 3 ha spostato file coperti dalle paths. Si aggiornano solo quelle tre.<br><br>
         Il README pubblico viene scritto da Claude e poi passato a <strong>humanizer</strong>: rimuove 11 occorrenze di pattern AI. La regola <strong>interaction-style</strong> era gia' attiva sulla documentazione interna; humanizer serve per la prosa esterna.<br><br>
-        La skill <strong>onboard</strong> genera la guida per il nuovo collaboratore leggendo le schede, la storia dei commit e le decisioni architetturali.
+        La skill <strong>onboard</strong> genera la guida per il nuovo collaboratore leggendo le schede, la storia dei commit e le decisioni architetturali.<br><br>
+        Per non lasciare che le schede tornino a divergere in silenzio dopo il tag, si registra <strong>automation-starter</strong> nel Task Scheduler locale: <code>headless-run.ps1</code> lancia <em>sync-context</em> ogni lunedi' alle 6:00, autenticato dal login gia' fatto con <code>claude login</code>, mai da una chiave API a consumo.
       </div>
       <div class="pills">
         <span class="pill p-core"><span class="pill-label">core</span>sync-context (finale)</span>
@@ -214,6 +217,7 @@ table.src a:hover{text-decoration:underline}
         <span class="pill p-pkg"><span class="pill-label">opt-in</span>humanizer</span>
         <span class="pill p-core"><span class="pill-label">regola</span>interaction-style</span>
         <span class="pill p-core"><span class="pill-label">regola</span>git-commands-format</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>automation-starter</span>
       </div>
     </div>
 
@@ -299,6 +303,13 @@ table.src a:hover{text-decoration:underline}
       <tr class="src-group"><td colspan="4">Strumento e convenzioni (bundle Cranot)</td></tr>
       <tr><td>claude-code-guide</td><td>Guida community auto-aggiornante alle funzionalita' di Claude Code: fonte distillata dal pacchetto claude-code-handoff e origine (via bundle dell'utente) di stack-profiles, hooks-starter e dev-skills. Auto-update upstream reale ma con stallo osservato: gli script del pacchetto lo rilevano e avvisano</td><td><a href="https://github.com/Cranot/claude-code-guide">github.com/Cranot/claude-code-guide</a></td><td>Nessuna licenza dichiarata (si distillano i contenuti fattuali)</td></tr>
       <tr><td>create-pull-request</td><td>Action GitHub usata dal workflow opzionale di claude-code-handoff per aprire la PR di aggiornamento</td><td><a href="https://github.com/peter-evans/create-pull-request">github.com/peter-evans/create-pull-request</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+
+      <tr class="src-group"><td colspan="4">Automazione e catalogo subagent community</td></tr>
+      <tr><td>claude-code-action</td><td>Documenta il token di abbonamento (claude setup-token) per l'autenticazione GitHub Actions senza chiave API, base del workflow opzionale di automation-starter</td><td><a href="https://github.com/anthropics/claude-code-action">github.com/anthropics/claude-code-action</a></td><td>Ufficiale Anthropic</td></tr>
+      <tr><td>0xfurai/claude-code-subagents</td><td>138 subagent per stack/framework, fonte flat fetchable del pacchetto agent-catalog</td><td><a href="https://github.com/0xfurai/claude-code-subagents">github.com/0xfurai/claude-code-subagents</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>hesreallyhim/awesome-claude-code</td><td>Indice curato tracciato come fonte "meta" di agent-catalog per la scoperta di nuove fonti</td><td><a href="https://github.com/hesreallyhim/awesome-claude-code">github.com/hesreallyhim/awesome-claude-code</a></td><td>Non dichiarata</td></tr>
+      <tr><td>wshobson/agents</td><td>Marketplace di plugin nativo, 194 agent per dominio; riga di catalogo wshobson-agents</td><td><a href="https://github.com/wshobson/agents">github.com/wshobson/agents</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>VoltAgent/awesome-claude-code-subagents</td><td>Marketplace di plugin nativo, 154+ agent in 10 categorie; riga di catalogo voltagent-subagents</td><td><a href="https://github.com/VoltAgent/awesome-claude-code-subagents">github.com/VoltAgent/awesome-claude-code-subagents</a></td><td><span class="badge b-mit">MIT</span></td></tr>
 
       <tr class="src-group"><td colspan="4">Ambiente, editor e multi-terminale</td></tr>
       <tr><td>psmux</td><td>Tmux nativo Windows senza WSL</td><td><a href="https://github.com/psmux/psmux">github.com/psmux/psmux</a></td><td><span class="badge b-mit">MIT</span></td></tr>

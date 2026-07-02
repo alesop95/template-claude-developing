@@ -139,9 +139,19 @@ Il pacchetto opzionale `hooks-starter` concretizza le famiglie di hook descritte
 
 Il pacchetto opzionale `dev-skills` porta quattro skill di sviluppo da scegliere una per una al gate: `test-generator`, che genera test rilevando framework e pattern gia' presenti nel progetto invece di imporne di propri; `mcp-tool-scaffold`, che scaffolda tool di server MCP con contratto esplicito, validazione degli input e description scritte per il modello che le legge; e le due varianti di progetto `code-review` e `security-review`, che duplicano deliberatamente le skill native omonime di Claude Code e gli agenti del pacchetto `subagent-template`, e si propongono solo dichiarando questa sovrapposizione: restano utili quando si vuole un processo di revisione personalizzato e versionato col repository, indipendente dalla versione della CLI di chi clona. Il dettaglio, con la nota sul naming che mette in ombra le skill native, e' in `.claude/templates/dev-skills/README.md`.
 
+## Automazione headless e su schedulazione (automation-starter)
+
+Il pacchetto opzionale `automation-starter`, separato e alternativo a `claude-code-handoff`, copre i livelli headless e su schedulazione di Claude Code restando dentro l'uso incluso nei piani Team o Max, mai dietro una chiave `ANTHROPIC_API_KEY` a fatturazione a consumo. Offre tre vie: uno script locale `headless-run.ps1`/`.sh` che invoca `claude -p` autenticato dal login interattivo gia' fatto (`claude login`), utile per una corsa singola o registrata nel pianificatore di sistema (Task Scheduler su Windows, cron su Linux/macOS); un workflow GitHub Actions opzionale `automation-routine.yml`, autenticato con un token di abbonamento generato da `claude setup-token` invece che da una chiave API, per i progetti che vogliono la routine senza tenere una macchina accesa; e la terza via nativa, la skill `/schedule` gia' del prodotto, senza alcuna istanziazione nel repository. Lo script locale si rifiuta di girare se rileva `ANTHROPIC_API_KEY` nell'ambiente, e il default resta `--permission-mode plan`, sola lettura, per non scrivere modifiche senza una scelta esplicita. Il dettaglio completo, con l'onesta' dichiarata sui limiti di quota della terza via non ancora verificati, e' in `.claude/templates/automation-starter/README.md`.
+
 ## Agenti di progetto
 
 I subagent sono agenti con una persona specializzata, un system prompt focalizzato e un insieme ristretto di strumenti. Si definiscono come file Markdown in `.claude/agents/` del progetto, con un frontmatter YAML che specifica nome, modello e tool disponibili, e lavorano in un contesto isolato rispetto all'agente principale, riportando solo il risultato finale. Il bundle include quattro definizioni di agente pronte all'uso sotto `templates/agents/`, da scegliere una per una: `code-reviewer`, che esamina struttura, gestione degli errori e sicurezza del codice classificando i finding per severita' (CRITICAL / HIGH / MEDIUM / LOW) e concludendo con APPROVE, REQUEST_CHANGES o NEEDS_DISCUSSION; `security-auditor`, che conduce un audit sistematico per autenticazione, autorizzazione, validazione degli input, esposizione di dati, dipendenze con CVE note e segreti hardcoded; `debugger`, che investiga un bug con metodo, contesto, ipotesi ordinate, verifica mirata, root cause e fix a blast radius minimo, senza applicare nulla senza conferma; ed `explorer`, che mappa il codebase in sola lettura partendo dalle schede di contesto e restituisce una sintesi con citazioni a file e riga, dichiarando al gate che duplica in parte l'agente nativo Explore, rispetto al quale la variante di progetto e' versionata e conosce il sistema di memoria. Tutti operano esclusivamente in lettura sul repository e si copiano in `.claude/agents/` del progetto al momento dell'attivazione del pacchetto `subagent-template`.
+
+## Catalogo di subagent community (agent-catalog)
+
+Per il caso complementare a `subagent-template`, quando serve un subagent iper-specifico per uno stack o un tool preciso invece di uno dei quattro ruoli generici, il pacchetto opzionale `agent-catalog` installa un meccanismo per pescarne uno alla volta da fonti community che li distribuiscono come semplici file Markdown senza un manifest di plugin installabile. La fonte integrata come "flat" e fetchable e' `0xfurai/claude-code-subagents`, 138 agenti "expert" per singolo stack o framework (react-expert, python-expert, prisma-expert e cosi' via); tre comandi, `/list-community-agents`, `/fetch-community-agent` e `/check-agent-sources`, e i rispettivi script dual-OS elencano gli agenti disponibili, ne scaricano uno specifico dentro `.claude/agents/` registrandone la provenienza, e controllano se la fonte ha ricevuto nuovi commit dall'ultima verifica, sulla stessa strategia a costo zero (confronto di uno sha di commit, nessun consumo token) gia' usata da `claude-code-handoff`. L'indice curato `hesreallyhim/awesome-claude-code` e' tracciato come fonte "meta" solo per sapere quando vale la pena riaprirlo e cercare fonti nuove, senza essere esso stesso elencabile.
+
+Due fonti popolari e comparabili per qualita', `wshobson/agents` (194 agent) e `VoltAgent/awesome-claude-code-subagents` (154+ agent), non sono integrate in questo pacchetto perche' offrono gia' un proprio plugin marketplace nativo Claude Code: per queste il meccanismo corretto e' `/plugin marketplace add`, non un fetch grezzo che duplicherebbe una funzionalita' della piattaforma. Le due righe di catalogo corrispondenti, `wshobson-agents` e `voltagent-subagents`, vivono come voci a se' in `PACKAGES.md`, sul modello gia' usato da `code-simplifier` e `ponytail`. Il dettaglio completo, con la valutazione delle altre collezioni community esaminate e scartate con la relativa motivazione, e' in `.claude/templates/agent-catalog/README.md`.
 
 ## Token economy
 
@@ -204,6 +214,8 @@ template-claude-developing/
       stack-profiles/   pacchetto opzionale: profili di regole per stack (ts-mcp, python, react, n8n, generico), un profilo per progetto in rules/stack-profile.md
       hooks-starter/    pacchetto opzionale: 3 hook pronti .ps1/.sh mai attivi di default (session-context, protect-sensitive-files, secret-scan) + frammenti settings di attivazione
       dev-skills/       pacchetto opzionale: 4 skill di sviluppo a scelta (test-generator, mcp-tool-scaffold, code-review, security-review)
+      automation-starter/  pacchetto opzionale: headless-run .ps1/.sh (claude -p su abbonamento), workflow GitHub Actions opzionale via token setup-token, terza via nativa /schedule
+      agent-catalog/    pacchetto opzionale: fetch mirato di subagent community da fonti flat (0xfurai), 3 comandi, script check-update dual-OS con stato tracciato
       tools/     render-diagrams.mjs  latest-screenshot.ps1  check-account-hygiene  session-end-wipe  claude-incognito  README.md
 ```
 
@@ -224,6 +236,8 @@ Ogni pacchetto a cartella porta con se' un proprio `README.md` di istanziazione 
 - `stack-profiles` — profili di regole per gli stack ricorrenti: [.claude/templates/stack-profiles/README.md](.claude/templates/stack-profiles/README.md)
 - `hooks-starter` — hook di automazione pronti, mai attivi di default: [.claude/templates/hooks-starter/README.md](.claude/templates/hooks-starter/README.md)
 - `dev-skills` — skill di sviluppo (test, scaffolding MCP, review): [.claude/templates/dev-skills/README.md](.claude/templates/dev-skills/README.md)
+- `automation-starter` — headless e routine su abbonamento, senza API a consumo: [.claude/templates/automation-starter/README.md](.claude/templates/automation-starter/README.md)
+- `agent-catalog` — fetch mirato di subagent community da fonti flat: [.claude/templates/agent-catalog/README.md](.claude/templates/agent-catalog/README.md)
 
 ## Cosa non finisce nei progetti
 
@@ -307,6 +321,11 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - `repomix` di yamadashy, snapshot consolidato dell'intera codebase ottimizzato per l'AI (MIT), base del pacchetto `codebase-learning`: repomix.com
 - `deepwiki-skill` di natsu1211, generazione di documentazione con citazioni precise a riga (analyze/generate/validate), base del pacchetto `codebase-learning`: https://github.com/natsu1211/deepwiki-skill
 - DeepWiki MCP, endpoint remoto ufficiale per Q&A architetturale su repository GitHub pubbliche gia' indicizzate, gratis solo per repo pubblici, usato dal pacchetto `codebase-learning`: mcp.deepwiki.com
+- `claude-code-action` di Anthropic, documenta il meccanismo del token di abbonamento (`claude setup-token`) per l'autenticazione su GitHub Actions senza chiave API, base della seconda via del pacchetto `automation-starter`: https://github.com/anthropics/claude-code-action
+- `0xfurai/claude-code-subagents`, 138 subagent per stack/framework distribuiti come file Markdown flat senza plugin, fonte fetchable del pacchetto `agent-catalog` (licenza MIT): https://github.com/0xfurai/claude-code-subagents
+- `hesreallyhim/awesome-claude-code`, indice curato di riferimenti ad altri repository, tracciato dal pacchetto `agent-catalog` come fonte "meta" per la scoperta di nuove fonti (licenza non dichiarata dal repository): https://github.com/hesreallyhim/awesome-claude-code
+- `wshobson/agents`, marketplace di plugin nativo Claude Code con 194 agent per dominio, riga di catalogo `wshobson-agents` (licenza MIT): https://github.com/wshobson/agents
+- `VoltAgent/awesome-claude-code-subagents`, marketplace di plugin nativo Claude Code con 154+ agent in 10 categorie, riga di catalogo `voltagent-subagents` (licenza MIT): https://github.com/VoltAgent/awesome-claude-code-subagents
 
 ## Repository
 

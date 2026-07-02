@@ -82,15 +82,18 @@ a.repo:hover{text-decoration:underline}
     <a class="sl-a" href="#pkg-orch"><span class="sl-n">09</span>Orchestrazione</a>
     <a class="sl-a" href="#pkg-style"><span class="sl-n">10</span>Stile e qualita'</a>
     <a class="sl-a" href="#pkg-cranot"><span class="sl-n">11</span>Strumento e convenzioni</a>
+    <a class="sl-a" href="#pkg-community"><span class="sl-n">12</span>Automazione e community</a>
   </div>
   <div class="s-foot">
     <p>Voci <span class="badge b-new" style="font-size:9px">Nuovo</span> aggiunte nella sessione giugno 2026 dai 6 playbook.<br><br>
-    <strong>56</strong> pacchetti opt-in totali<br>
+    <strong>59</strong> pacchetti opt-in totali<br>
     <strong>22</strong> nuovi nella sessione giugno 2026<br>
     <strong>10</strong> aggiunti il 2026-07-01 (docx-to-docs, doc-ingest, academic-researcher, zotero-mcp, academix, semantic-scholar-mcp, refchecker-mcp, arxiv-cli, grobid, paperqa2)<br>
     <strong>8</strong> aggiunti il 2026-07-02 (learning-agent, knowledge-mcp, anki-mcp, codebase-learning, serena, repomix, deepwiki-skill, deepwiki-mcp)<br>
     <strong>2</strong> aggiunti il 2026-07-02 (notebooklm-bridge, notebooklm-mcp)<br>
-    <strong>4</strong> aggiunti il 2026-07-02 dal bundle Cranot (claude-code-handoff, stack-profiles, hooks-starter, dev-skills), piu' 2 agenti template (debugger, explorer)<br><br>
+    <strong>4</strong> aggiunti il 2026-07-02 dal bundle Cranot (claude-code-handoff, stack-profiles, hooks-starter, dev-skills), piu' 2 agenti template (debugger, explorer)<br>
+    <strong>1</strong> aggiunto il 2026-07-02, originale al template (automation-starter), riportato in questa pagina solo ora<br>
+    <strong>3</strong> aggiunti il 2026-07-02 (agent-catalog, wshobson-agents, voltagent-subagents)<br><br>
     Vedi anche: <a href="project-flow.html" style="color:#94A3B8;font-size:10px">project-flow.html</a></p>
   </div>
 </aside>
@@ -104,7 +107,7 @@ a.repo:hover{text-decoration:underline}
       <div class="ps"><span class="ps-n">5</span><span class="ps-l">Skill</span></div>
       <div class="ps"><span class="ps-n">6</span><span class="ps-l">Regole</span></div>
       <div class="ps"><span class="ps-n">4</span><span class="ps-l">Agenti template</span></div>
-      <div class="ps"><span class="ps-n">56</span><span class="ps-l">Pacchetti opt-in</span></div>
+      <div class="ps"><span class="ps-n">59</span><span class="ps-l">Pacchetti opt-in</span></div>
       <div class="ps"><span class="ps-n">17</span><span class="ps-l">MCP server</span></div>
     </div>
   </div>
@@ -361,6 +364,33 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>stack-profiles</strong> <span class="badge b-new">Nuovo</span></td><td>Profili di regole pronti per stack ricorrenti (ts-mcp, python, react, n8n, generico): convenzioni di stile, comandi tipici, controlli pre-commit, come regola modulare rules/stack-profile.md</td><td>Lo stack e' riconosciuto dai manifest del progetto; generico come fallback esplicito</td><td>Bundle Cranot, riscritto nello stile delle regole del sistema; normativo, complementare alla scheda STACK.md</td></tr>
           <tr><td><strong>hooks-starter</strong> <span class="badge b-new">Nuovo</span></td><td>Tre hook pronti, mai attivi di default: session-context (SessionStart, contesto di ripresa automatico), protect-sensitive-files (PreToolUse Write/Edit), secret-scan (PreToolUse Bash su git commit); doppia forma .ps1/.sh, blocco via exit 2 + stderr</td><td>Automatizzare la ripresa (sez. 12) o concretizzare i guard-rail (sez. 14 di PROJECT-SYSTEM.md); attivazione sempre manuale via settings.json</td><td>Bundle Cranot, riscritto sul protocollo hook corrente; secret-scan e' difesa in profondita' (il deny baseline su git commit resta primario)</td></tr>
           <tr><td><strong>dev-skills</strong> <span class="badge b-new">Nuovo</span></td><td>Quattro skill di sviluppo a scelta singola: test-generator (test sui pattern del progetto), mcp-tool-scaffold (tool MCP orientati all'LLM), code-review e security-review (varianti di progetto delle revisioni)</td><td>Sviluppo attivo con procedure versionate; le due di review si propongono solo dichiarando la sovrapposizione con le skill native /code-review e /security-review</td><td>Bundle Cranot; le skill omonime mettono in ombra le native nel progetto (nota naming nel README del pacchetto)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="pkg-community">
+    <div class="sec-hd"><span class="sec-num">12</span><h2 class="sec-title">Pacchetti — Automazione e catalogo subagent community</h2></div>
+    <p class="sec-sub">Quattro pacchetti del 2026-07-02: uno di automazione headless/schedulata originale al template, tre per pescare o installare subagent specializzati da fonti community senza scriverli da zero.</p>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>Automazione — originale al template</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Note</th></tr></thead>
+        <tbody>
+          <tr><td><strong>automation-starter</strong> <span class="badge b-new">Nuovo</span></td><td>Tre vie per l'automazione dentro l'uso incluso nei piani Team/Max, mai via API a consumo: script headless-run .ps1/.sh (claude -p su login locale), workflow GitHub Actions opzionale autenticato con token di abbonamento (claude setup-token), terza via nativa /schedule</td><td>Task ricorrente (drift, report, promemoria) senza tenere un terminale aperto, restando nella quota dell'abbonamento</td><td>Originale al template; documenta il meccanismo token di <a class="repo" href="https://github.com/anthropics/claude-code-action">github.com/anthropics/claude-code-action</a>; separato e alternativo a claude-code-handoff (che usa invece ANTHROPIC_API_KEY nel proprio workflow)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>Catalogo subagent community</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
+        <tbody>
+          <tr><td><strong>agent-catalog</strong> <span class="badge b-new">Nuovo</span></td><td>Pesca a richiesta, uno alla volta, subagent per stack/framework dalla fonte flat 0xfurai/claude-code-subagents (138 agenti, file Markdown senza plugin); 3 comandi (list/fetch/check) e script dual-OS con confronto commit a costo zero, stessa strategia di claude-code-handoff; hesreallyhim/awesome-claude-code tracciato come fonte "meta" per il solo drift</td><td>Serve un agente iper-specifico non coperto da un plugin marketplace nativo</td><td><a class="repo" href="https://github.com/0xfurai/claude-code-subagents">github.com/0xfurai/claude-code-subagents</a> · MIT · verificato dal vivo (list/fetch/check su 0xfurai, entrambi gli OS)</td></tr>
+          <tr><td><strong>wshobson-agents</strong> <span class="badge b-new">Nuovo</span></td><td>Marketplace di plugin nativo con 194 agent, 158 skill, 106 comandi slash per dominio</td><td>Installare unita' complete e curate per dominio con aggiornamento gestito dal plugin marketplace</td><td><a class="repo" href="https://github.com/wshobson/agents">github.com/wshobson/agents</a> · MIT · 37,4k stelle</td></tr>
+          <tr><td><strong>voltagent-subagents</strong> <span class="badge b-new">Nuovo</span></td><td>Marketplace di plugin nativo con 154+ subagent in 10 categorie (core dev, linguaggi, infra, quality/security, data/AI, DX, domini specializzati, business, meta-orchestrazione, ricerca)</td><td>Installare un intero dominio di subagent gia' curato invece di pescarli uno a uno</td><td><a class="repo" href="https://github.com/VoltAgent/awesome-claude-code-subagents">github.com/VoltAgent/awesome-claude-code-subagents</a> · MIT · 22,7k stelle</td></tr>
         </tbody>
       </table>
     </div>
