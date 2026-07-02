@@ -84,10 +84,10 @@ a.repo:hover{text-decoration:underline}
   </div>
   <div class="s-foot">
     <p>Voci <span class="badge b-new" style="font-size:9px">Nuovo</span> aggiunte nella sessione giugno 2026 dai 6 playbook.<br><br>
-    <strong>45</strong> pacchetti opt-in totali<br>
+    <strong>50</strong> pacchetti opt-in totali<br>
     <strong>22</strong> nuovi nella sessione giugno 2026<br>
     <strong>10</strong> aggiunti il 2026-07-01 (docx-to-docs, doc-ingest, academic-researcher, zotero-mcp, academix, semantic-scholar-mcp, refchecker-mcp, arxiv-cli, grobid, paperqa2)<br>
-    <strong>3</strong> aggiunti il 2026-07-02 (learning-agent, knowledge-mcp, anki-mcp)<br><br>
+    <strong>8</strong> aggiunti il 2026-07-02 (learning-agent, knowledge-mcp, anki-mcp, codebase-learning, serena, repomix, deepwiki-skill, deepwiki-mcp)<br><br>
     Vedi anche: <a href="project-flow.html" style="color:#94A3B8;font-size:10px">project-flow.html</a></p>
   </div>
 </aside>
@@ -101,8 +101,8 @@ a.repo:hover{text-decoration:underline}
       <div class="ps"><span class="ps-n">5</span><span class="ps-l">Skill</span></div>
       <div class="ps"><span class="ps-n">6</span><span class="ps-l">Regole</span></div>
       <div class="ps"><span class="ps-n">2</span><span class="ps-l">Agenti template</span></div>
-      <div class="ps"><span class="ps-n">45</span><span class="ps-l">Pacchetti opt-in</span></div>
-      <div class="ps"><span class="ps-n">13</span><span class="ps-l">MCP server</span></div>
+      <div class="ps"><span class="ps-n">50</span><span class="ps-l">Pacchetti opt-in</span></div>
+      <div class="ps"><span class="ps-n">16</span><span class="ps-l">MCP server</span></div>
     </div>
   </div>
 
@@ -247,6 +247,8 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>grobid</strong> <span class="badge b-new">Nuovo</span></td><td>Parsing di PDF scientifici in XML/TEI strutturato, incluso il parsing dei riferimenti bibliografici (F1 &gt;0.87)</td><td>Lettura profonda dei paper nel pacchetto academic-researcher; richiede Docker</td><td>Open source dal 2011, mantenuto da Luca Foppiano/Inria</td></tr>
           <tr><td><strong>paperqa2</strong> <span class="badge b-new">Nuovo</span></td><td>Framework RAG agentico per letteratura scientifica con citazioni in-testo verificate e controllo retrazioni</td><td>Risposte su un corpus di PDF nel pacchetto academic-researcher, con citazioni verificate</td><td><a class="repo" href="https://github.com/Future-House/paper-qa">github.com/Future-House/paper-qa</a> · licenza da verificare</td></tr>
           <tr><td><strong>learning-agent</strong> <span class="badge b-new">Nuovo</span></td><td>Tutor di apprendimento guidato: profilo learner, roadmap per categoria (lingua, programmazione, materia concettuale), 3 subagent (tutor, kb-retriever, examiner), 3 skill/comandi (/profile, /learn, /review), adattamenti opt-in per profilo cognitivo</td><td>Il progetto ha come scopo dichiarato l'apprendimento personale di un topic a partire da una knowledge base di file dell'utente</td><td>Deriva da ricerca dell'utente di luglio 2026; livello di orchestrazione completo, KB e spaced repetition restano MCP a gate (vedi righe sotto)</td></tr>
+          <tr><td><strong>codebase-learning</strong> <span class="badge b-new">Nuovo</span></td><td>Comando /learn-repo a 5 fasi (panoramica, astrazioni centrali, flussi, design puro, idiomi dello stack) e subagent code-tutor che cita sempre path e riga reali</td><td>Il progetto e' dichiarato finito o quasi finito di sviluppare e si vuole essere guidati a capirne l'architettura invece di continuare a modificarlo</td><td>Deriva da un handoff di ricerca dell'utente di luglio 2026, non ancora validato su un progetto reale; distinto da learning-agent (topic esterno vs repository corrente); vedi righe MCP sotto</td></tr>
+          <tr><td><strong>deepwiki-skill</strong> <span class="badge b-new">Nuovo</span></td><td>Auto-genera documentazione di apprendimento con citazioni precise a riga: pipeline analyze → generate (subagent in parallelo) → validate</td><td>Pacchetto codebase-learning, per persistere il materiale in docs/learning/ invece di consumarlo solo in sessione</td><td><a class="repo" href="https://github.com/natsu1211/deepwiki-skill">github.com/natsu1211/deepwiki-skill</a> · OSS</td></tr>
         </tbody>
       </table>
     </div>
@@ -297,6 +299,9 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>refchecker-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Verifica anti-hallucination delle citazioni</td><td>Pacchetto academic-researcher, usato da citation-tracker</td><td><a class="repo" href="https://github.com/JonasBaath/mcp-refchecker">github.com/JonasBaath/mcp-refchecker</a> · MIT</td></tr>
           <tr><td><strong>knowledge-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Knowledge base RAG ibrida vettoriale + grafo (LightRAG)</td><td>Pacchetto learning-agent, retrieval sui file dell'utente</td><td><a class="repo" href="https://github.com/olafgeibig/knowledge-mcp">github.com/olafgeibig/knowledge-mcp</a> · Community</td></tr>
           <tr><td><strong>anki-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Spaced repetition via proxy locale verso AnkiConnect</td><td>Pacchetto learning-agent, scheduling automatizzato del ripasso</td><td><a class="repo" href="https://github.com/ankimcp/anki-mcp-server">github.com/ankimcp/anki-mcp-server</a> · Community</td></tr>
+          <tr><td><strong>serena</strong> <span class="badge b-new">Nuovo</span></td><td>Grafo semantico del codice via language server: navigazione a livello di simbolo su 20-40+ linguaggi</td><td>Pacchetto codebase-learning, repo grandi o multi-linguaggio dove la ricerca testuale non basta</td><td><a class="repo" href="https://github.com/oraios/serena">github.com/oraios/serena</a> · MIT</td></tr>
+          <tr><td><strong>repomix</strong> <span class="badge b-new">Nuovo</span></td><td>Impacchetta l'intera codebase in un file consolidato ottimizzato per l'AI</td><td>Pacchetto codebase-learning, vista consolidata iniziale prima del dettaglio</td><td><a class="repo" href="https://repomix.com">repomix.com</a> · MIT</td></tr>
+          <tr><td><strong>deepwiki-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Q&amp;A architetturale su repository GitHub pubbliche gia' indicizzate</td><td>Pacchetto codebase-learning, solo se il repository e' effettivamente pubblico</td><td>Endpoint ufficiale mcp.deepwiki.com · Gratis solo repo pubblici</td></tr>
         </tbody>
       </table>
     </div>
