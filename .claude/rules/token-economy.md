@@ -49,6 +49,15 @@ l'invariato) e rigenera a ogni corsa lo scheletro di Livello 1 in un `_INDEX.md`
 strumento, non un sostituto del principio: i Livelli 2 e 3 restano disciplina di lettura
 sull'output che produce.
 
+Una variante dello stesso principio sposta il corpus non su una cache locale ma su un motore di
+recupero esterno ancorato alle fonti. Il pacchetto opzionale `notebooklm-bridge` (vedi
+`templates/notebooklm-bridge/`) tiene il corpus dentro NotebookLM, nel piano gratuito accessibile
+solo da browser, e in conversazione fa entrare solo una sintesi densa e citata invece del testo
+grezzo: e' un Livello 1 prodotto da un motore che risponde anche a domande mirate senza mai
+versare le fonti in contesto. Il risparmio e' lo stesso della disclosure progressiva, con in piu'
+l'ancoraggio alle fonti che riduce le allucinazioni; il costo e' che l'accesso resta manuale nel
+browser, o assistito via un MCP di automazione opt-in, mai un'API a pagamento.
+
 ## Deterministico prima del linguistico
 
 In una pipeline che mescola codice e LLM, si spinge il piu possibile il lavoro su codice

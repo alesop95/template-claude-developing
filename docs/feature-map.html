@@ -84,10 +84,11 @@ a.repo:hover{text-decoration:underline}
   </div>
   <div class="s-foot">
     <p>Voci <span class="badge b-new" style="font-size:9px">Nuovo</span> aggiunte nella sessione giugno 2026 dai 6 playbook.<br><br>
-    <strong>50</strong> pacchetti opt-in totali<br>
+    <strong>52</strong> pacchetti opt-in totali<br>
     <strong>22</strong> nuovi nella sessione giugno 2026<br>
     <strong>10</strong> aggiunti il 2026-07-01 (docx-to-docs, doc-ingest, academic-researcher, zotero-mcp, academix, semantic-scholar-mcp, refchecker-mcp, arxiv-cli, grobid, paperqa2)<br>
-    <strong>8</strong> aggiunti il 2026-07-02 (learning-agent, knowledge-mcp, anki-mcp, codebase-learning, serena, repomix, deepwiki-skill, deepwiki-mcp)<br><br>
+    <strong>8</strong> aggiunti il 2026-07-02 (learning-agent, knowledge-mcp, anki-mcp, codebase-learning, serena, repomix, deepwiki-skill, deepwiki-mcp)<br>
+    <strong>2</strong> aggiunti il 2026-07-02 (notebooklm-bridge, notebooklm-mcp)<br><br>
     Vedi anche: <a href="project-flow.html" style="color:#94A3B8;font-size:10px">project-flow.html</a></p>
   </div>
 </aside>
@@ -101,8 +102,8 @@ a.repo:hover{text-decoration:underline}
       <div class="ps"><span class="ps-n">5</span><span class="ps-l">Skill</span></div>
       <div class="ps"><span class="ps-n">6</span><span class="ps-l">Regole</span></div>
       <div class="ps"><span class="ps-n">2</span><span class="ps-l">Agenti template</span></div>
-      <div class="ps"><span class="ps-n">50</span><span class="ps-l">Pacchetti opt-in</span></div>
-      <div class="ps"><span class="ps-n">16</span><span class="ps-l">MCP server</span></div>
+      <div class="ps"><span class="ps-n">52</span><span class="ps-l">Pacchetti opt-in</span></div>
+      <div class="ps"><span class="ps-n">17</span><span class="ps-l">MCP server</span></div>
     </div>
   </div>
 
@@ -243,6 +244,7 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>codebase-memory-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Grafo strutturale del codice (call chain, 158 linguaggi via tree-sitter); 10x-120x meno token su query strutturali</td><td>Progetti oltre 50K righe. Complementa code-context e graphify</td><td><a class="repo" href="https://github.com/DeusData/codebase-memory-mcp">github.com/DeusData/codebase-memory-mcp</a> · MIT</td></tr>
           <tr><td><strong>claude-mem</strong> <span class="badge b-new">Nuovo</span></td><td>Memoria semantica persistente cross-sessione (SQLite + Chroma, tutto locale); retrieval a 3 livelli; web viewer su localhost:37777</td><td>Progetti multi-settimana. Complementare al deterministico .claude/memory/ gia' nel template</td><td><a class="repo" href="https://github.com/thedotmack/claude-mem">github.com/thedotmack/claude-mem</a> · MIT</td></tr>
           <tr><td><strong>academic-researcher</strong> <span class="badge b-new">Nuovo</span></td><td>Ambiente di ricerca accademica: scoping, tracciamento tripartito delle fonti, sync Zotero-JabRef del .bib, Corpus Analysis Suite (10 prompt). 5 skill complete, 3 parzialmente stub (calibrazione di dominio aperta)</td><td>Progetti di ricerca accademica, tesi, o analisi sistematica di un corpus di paper</td><td>Distillato da modulo di ricerca dedicato, integrato con un metodo esterno attribuito (screenshot @techwith.ram) per literature-search, research-scoping, deep-paper-reading e corpus-analysis; vedi righe MCP e tool esterni sotto</td></tr>
+          <tr><td><strong>notebooklm-bridge</strong> <span class="badge b-new">Nuovo</span></td><td>Loop di ricerca fondata NotebookLM gratuito + Claude a 4 passi (sintesi citata → ragionamento → verifica → stesura), con verifica di disponibilita' account Google/browser; tiene il corpus fuori dal contesto e ci fa ragionare solo la sintesi citata (leva di token economy oltre che di ricerca)</td><td>Il progetto ragiona o scrive da un corpus di fonti proprie da tenere fuori dal contesto di Claude; incrocio di token economy e ricerca</td><td>Piano gratuito tassativo (solo browser, no API Enterprise a pagamento); modo manuale conforme di default, assistito via notebooklm-mcp opt-in. Deriva da screenshot di un metodo pubblico dell'utente, non ancora validato</td></tr>
           <tr><td><strong>arxiv-cli</strong> <span class="badge b-new">Nuovo</span></td><td>CLI standalone per recupero rapido dei paper arXiv piu' recenti per categoria/query, senza demone</td><td>Primo passo veloce di literature-search nel pacchetto academic-researcher</td><td><a class="repo" href="https://github.com/AstraBert/arxiv-cli">github.com/AstraBert/arxiv-cli</a> · MIT</td></tr>
           <tr><td><strong>grobid</strong> <span class="badge b-new">Nuovo</span></td><td>Parsing di PDF scientifici in XML/TEI strutturato, incluso il parsing dei riferimenti bibliografici (F1 &gt;0.87)</td><td>Lettura profonda dei paper nel pacchetto academic-researcher; richiede Docker</td><td>Open source dal 2011, mantenuto da Luca Foppiano/Inria</td></tr>
           <tr><td><strong>paperqa2</strong> <span class="badge b-new">Nuovo</span></td><td>Framework RAG agentico per letteratura scientifica con citazioni in-testo verificate e controllo retrazioni</td><td>Risposte su un corpus di PDF nel pacchetto academic-researcher, con citazioni verificate</td><td><a class="repo" href="https://github.com/Future-House/paper-qa">github.com/Future-House/paper-qa</a> · licenza da verificare</td></tr>
@@ -302,6 +304,7 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>serena</strong> <span class="badge b-new">Nuovo</span></td><td>Grafo semantico del codice via language server: navigazione a livello di simbolo su 20-40+ linguaggi</td><td>Pacchetto codebase-learning, repo grandi o multi-linguaggio dove la ricerca testuale non basta</td><td><a class="repo" href="https://github.com/oraios/serena">github.com/oraios/serena</a> · MIT</td></tr>
           <tr><td><strong>repomix</strong> <span class="badge b-new">Nuovo</span></td><td>Impacchetta l'intera codebase in un file consolidato ottimizzato per l'AI</td><td>Pacchetto codebase-learning, vista consolidata iniziale prima del dettaglio</td><td><a class="repo" href="https://repomix.com">repomix.com</a> · MIT</td></tr>
           <tr><td><strong>deepwiki-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Q&amp;A architetturale su repository GitHub pubbliche gia' indicizzate</td><td>Pacchetto codebase-learning, solo se il repository e' effettivamente pubblico</td><td>Endpoint ufficiale mcp.deepwiki.com · Gratis solo repo pubblici</td></tr>
+          <tr><td><strong>notebooklm-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Pilota il NotebookLM gratuito nel browser via automazione (Patchright), riusa un profilo Chrome con login Google, legge le citazioni dal DOM</td><td>Pacchetto notebooklm-bridge, modo assistito opt-in; l'utente vuole che Claude piloti NotebookLM invece del copia-incolla manuale</td><td><a class="repo" href="https://github.com/PleasePrompto/notebooklm-mcp">github.com/PleasePrompto/notebooklm-mcp</a> · MIT · Community, NON ufficiale; automazione del browser sul piano gratuito in zona grigia dei ToS</td></tr>
         </tbody>
       </table>
     </div>
