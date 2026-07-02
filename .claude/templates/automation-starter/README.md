@@ -122,6 +122,15 @@ terza via, le routine cloud native, e' segnalata nella sezione precedente come n
 suoi limiti specifici: va controllata direttamente prima di farvi affidamento per un task
 importante.
 
+Attrito osservato dal vivo (pilota 2026-07-02): la prima corsa di `headless-run` su una cartella
+che Claude Code non ha ancora aperto interattivamente stampa "Ignoring N permissions.allow
+entries... this workspace has not been trusted", perche' il dialogo di trust del workspace non e'
+mai stato accettato per quella directory. La corsa prosegue comunque con i permessi di base (non
+si blocca), ma ignora la allowlist personalizzata del progetto finche' il workspace non risulta
+fidato: aprire una volta il progetto in modo interattivo con `claude` e accettare il dialogo, oppure
+impostare `projects["<percorso>"].hasTrustDialogAccepted: true` nel file di configurazione
+dell'account, prima di affidarsi a una allowlist su una macchina o un progetto mai visti prima.
+
 ## Recap dei comandi
 
 - Corsa locale singola: `./tools/headless-run.sh "<prompt>"` (default sola lettura).

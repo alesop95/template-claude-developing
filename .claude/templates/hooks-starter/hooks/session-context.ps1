@@ -11,13 +11,18 @@ if ($root -and (Test-Path $root)) { Set-Location $root }
 
 Write-Output "=== Contesto di ripresa (hook session-context) ==="
 
-$branch = git rev-parse --abbrev-ref HEAD
+$branch = git branch --show-current
+if (-not $branch) { $branch = git rev-parse --abbrev-ref HEAD }
 if (-not $branch) { $branch = "n/a" }
 Write-Output "Branch: $branch"
 
 Write-Output "Ultimi commit:"
-$log = git log --oneline -3
-if ($log) { Write-Output $log } else { Write-Output "  (nessuna storia git)" }
+git rev-parse --verify HEAD *> $null
+if ($?) {
+    Write-Output (git log --oneline -3)
+} else {
+    Write-Output "  (nessuna storia git: nessun commit ancora)"
+}
 
 $changed = git status --short | Select-Object -First 20
 if ($changed) {
@@ -30,7 +35,7 @@ if ($changed) {
 $indexPath = ".claude\memory\index.md"
 if (Test-Path $indexPath) {
     Write-Output "--- .claude/memory/index.md (testa) ---"
-    Get-Content $indexPath -TotalCount 40
+    Get-Content $indexPath -TotalCount 40 -Encoding UTF8
     Write-Output "--- (leggere il file completo per la tabella di sincronizzazione) ---"
 } else {
     Write-Output "Nota: .claude/memory/index.md non trovato (sistema non ancora inizializzato?)."

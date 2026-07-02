@@ -37,6 +37,10 @@ L'attivazione e' una modifica al `settings.json` del progetto e segue la stessa 
 
 Un hook e' codice che gira automaticamente a ogni evento, quindi vale la disciplina della sezione 10 dell'handoff Claude Code e delle docs ufficiali: variabili sempre quotate, path validati, timeout ragionevoli, e nessun hook che esegua contenuto arrivato dall'esterno. I tre script del pacchetto sono di sola lettura sul repository (leggono git e i file di memoria, non scrivono nulla) e non fanno rete.
 
+## Attriti osservati dal vivo (pilota 2026-07-02)
+
+La prima esecuzione reale di `session-context.ps1` su un repository allo stato zero (nessun commit ancora) ha fatto emergere e correggere tre difetti mai esercitati prima: `git rev-parse --abbrev-ref HEAD` su un branch senza commit restituisce letteralmente la stringa "HEAD" invece del nome del branch, sostituito con `git branch --show-current` (che invece funziona correttamente anche su un branch non ancora "nato"); `Get-Content` senza `-Encoding UTF8` produceva testo accentato corrotto leggendo `.claude/memory/index.md`; `git log --oneline` su un repository senza commit lasciava passare un messaggio "fatal: ..." di git su stderr dentro l'output iniettato in sessione, ora prevenuto con un controllo esplicito (`git rev-parse --verify HEAD`) prima di richiamare il log. La variante POSIX (`session-context.sh`) non e' stata riesercitata con questi stessi casi limite e andrebbe verificata alla prossima occasione utile.
+
 ## Recap dei comandi
 
 - Verificare gli hook registrati: `/hooks` dentro la sessione, oppure `claude --debug` per la diagnosi.

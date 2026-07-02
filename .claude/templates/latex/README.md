@@ -32,3 +32,13 @@ fontspec/unicode-math passare a lualatex/xelatex modificando `.latexmkrc` e il m
 
 La distribuzione TinyTeX (default `%APPDATA%\TinyTeX` su Windows, `~/.TinyTeX` su Unix) e il PDF e
 gli ausiliari di compilazione sono derivati: restano fuori da git.
+
+## Attriti osservati dal vivo (pilota 2026-07-02)
+
+Su un TinyTeX gia' installato ma non aggiornato di recente, `tlmgr install <pacchetto>` puo'
+rifiutarsi con "tlmgr itself needs to be updated": va lanciato prima `tlmgr update --self`, che
+puo' restare silenzioso per una manciata di secondi prima di completare, poi si ripete il comando
+di installazione. Inoltre, un documento che unisce `psnfss`/`times` a `\texttt` su un preambolo
+`fontenc` T1 fallisce con "Font T1/pcr/.../not loadable: Metric (TFM) file not found" se manca il
+pacchetto `courier`: TinyTeX, a differenza di una TeX Live completa, non lo installa di default
+insieme a `psnfss`. Il manifesto base in `tex-packages.txt` documenta ora questa coppia.
