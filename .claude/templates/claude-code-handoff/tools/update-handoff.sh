@@ -47,7 +47,7 @@ log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"; }
 # --- Versione locale tracciata ---
 local_version=""
 if [ -f "$STATE" ]; then
-  local_version="$(grep -oE '"upstream_release"[^,}]*' "$STATE" | sed -E 's/.*:[[:space:]]*"?([^"]*)"?.*/\1/' || true)"
+  local_version="$(grep -oE '"upstream_release"[^,}]*' "$STATE" | sed -E 's/^"[^"]+"[[:space:]]*:[[:space:]]*"?([^"]*)"?.*/\1/' || true)"
 fi
 
 # --- Versione upstream ---
@@ -55,8 +55,8 @@ tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
 upstream_version=""
 upstream_last_check=""
 if curl -fsSL --max-time 30 "$RAW_BASE/.update-state.json" -o "$tmp/state.json" 2>/dev/null; then
-  upstream_version="$(grep -oE '"last_release"[^,}]*' "$tmp/state.json" | sed -E 's/.*:[[:space:]]*"?([^"]*)"?.*/\1/' || true)"
-  upstream_last_check="$(grep -oE '"last_check"[^,}]*' "$tmp/state.json" | sed -E 's/.*:[[:space:]]*"?([^"]*)"?.*/\1/' || true)"
+  upstream_version="$(grep -oE '"last_release"[^,}]*' "$tmp/state.json" | sed -E 's/^"[^"]+"[[:space:]]*:[[:space:]]*"?([^"]*)"?.*/\1/' || true)"
+  upstream_last_check="$(grep -oE '"last_check"[^,}]*' "$tmp/state.json" | sed -E 's/^"[^"]+"[[:space:]]*:[[:space:]]*"?([^"]*)"?.*/\1/' || true)"
 else
   log "Avviso: stato upstream non leggibile. Procedo solo con --force."
 fi

@@ -10,7 +10,9 @@ cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
 
 echo "=== Contesto di ripresa (hook session-context) ==="
 
-branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'n/a')"
+branch="$(git branch --show-current 2>/dev/null)"
+if [ -z "$branch" ]; then branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"; fi
+if [ -z "$branch" ]; then branch="n/a"; fi
 echo "Branch: $branch"
 
 echo "Ultimi commit:"

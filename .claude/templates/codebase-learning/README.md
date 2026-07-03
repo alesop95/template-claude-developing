@@ -40,6 +40,12 @@ Il documento di riferimento cita altre alternative locali equivalenti a `serena`
 
 Per codice proprietario il pacchetto resta per default sui tool locali (`serena`, `repomix`, `code-context`, `codebase-memory-mcp`, `graphify`, `deepwiki-skill`): nessuno di questi invia codice a un servizio esterno. `deepwiki-mcp` e `context7` fanno entrambi chiamate esterne e restano confinati rispettivamente a repository effettivamente pubbliche e a docs pubbliche dello stack, mai al codice del progetto. Come per ogni server MCP del catalogo, la versione va pinnata all'attivazione invece di lasciare un tag mobile come `@latest`.
 
+## Verificato dal vivo (pilota 2026-07-02/03)
+
+Un primo tentativo di esercitare la Fase 1 di `/learn-repo` tramite una corsa headless di `automation-starter` in `-PermissionMode plan` non ha completato: il modello ha correttamente deciso di delegare al subagent `code-tutor` come da procedura, ma delegare a un subagent e' un'azione multi-passo che in modalita' piano richiede di uscire dal piano con `ExitPlanMode`, tool non abilitato in un contesto headless. La corsa si e' fermata con un piano scritto su disco, senza mai invocare `code-tutor`. Non e' un difetto di questo pacchetto: e' un limite generale di `-PermissionMode plan` in `claude -p`, documentato nel README di `automation-starter`.
+
+Ripetuto con `-PermissionMode acceptEdits`, il test e' riuscito per intero: il subagent `code-tutor` e' stato effettivamente invocato tramite il tool `Agent` (non simulato in-process), ha esplorato il repository con 9 chiamate a tool e restituito la Fase 1 (panoramica dello stack) con citazioni reali `file:riga` per ogni affermazione (stack, moduli, entry point, paradigma), le due domande di autovalutazione previste, e si e' fermato correttamente senza proseguire alla fase successiva ne' modificare alcun file, come da vincolo della skill. Il subagent ha girato su `claude-sonnet-4-6`, un modello diverso da quello della sessione orchestrante, confermando che il frontmatter del subagent viene rispettato anche in esecuzione headless.
+
 ## Recap dei comandi
 
 - Avviare o riprendere la sessione guidata: `/learn-repo`, opzionalmente con un modulo, un servizio o una cartella come argomento per restringere il focus.

@@ -25,6 +25,10 @@ Nota sul naming: istanziare `code-review` o `security-review` con questi nomi me
 
 Le skill si attivano da sole quando la richiesta corrisponde alla loro description, oppure si invocano esplicitamente: `/test-generator` sul modulo da coprire, `/mcp-tool-scaffold` con il contratto del tool da creare, `/code-review` sul diff corrente o su file specifici, `/security-review` sul modulo da auditare. Tutte e quattro rispettano i vincoli del sistema: le due di review non modificano mai il codice, `test-generator` non introduce un framework di test nuovo se ne esiste gia' uno, e nessuna esegue operazioni git.
 
+## Verificato dal vivo (pilota 2026-07-02)
+
+`test-generator` e `mcp-tool-scaffold` sono stati esercitati per davvero, via corsa headless (`automation-starter`) su un piccolo server MCP TypeScript, non solo istanziati. Entrambi hanno prodotto codice corretto e coerente con `stack-profile.md`: `test-generator` ha aggiunto quattro casi reali su una funzione esistente, tutti verdi; `mcp-tool-scaffold` ha scaffoldato un secondo tool MCP completo (validazione zod, naming snake_case, errore strutturato), codice che compila e i cui test preesistenti restano verdi, anche se la corsa non e' arrivata a scrivere i test del nuovo tool prima di esaurire i turni assegnati (vedi il vincolo su `-MaxTurns` nel README di `automation-starter`). `code-review` e `security-review` non sono state esercitate in questo pilota: la sovrapposizione dichiarata con `/code-review` e `/security-review` native le rende a priorita' piu' bassa per un secondo giro di validazione.
+
 ## Riferimenti e crediti
 
 Le quattro skill derivano dal bundle di template generato dall'utente a partire dalla guida community `Cranot/claude-code-guide` (https://github.com/Cranot/claude-code-guide), adattate alle regole e ai vincoli di questo sistema; `mcp-tool-scaffold` incorpora le best practice del pattern mcp-builder citato nel bundle. I crediti completi sono nella sezione "Riferimenti e strumenti open source" del `README.md` di radice del template.
