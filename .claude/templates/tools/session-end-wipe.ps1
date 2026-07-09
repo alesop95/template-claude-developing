@@ -16,23 +16,24 @@
 #        } ] } ] }
 #
 # COSA PRESERVA, sempre:
-#   - i progetti il cui slug inizia con $keepPrefix. Il prefisso e SPECIFICO della
-#     macchina: dove i progetti di sviluppo stanno su un disco dedicato (su questa
-#     macchina D:, quindi slug 'D--') si imposta quello, su un'altra macchina si cambia.
+#   - i progetti il cui slug inizia con uno dei prefissi in $keepPrefixes. L'insieme
+#     e SPECIFICO della macchina: un prefisso per ogni disco dove stanno i progetti
+#     di sviluppo (es. 'D--' se i progetti stanno su D:, 'E--' se anche su E:, e cosi
+#     via se lo sviluppo e distribuito su piu dischi).
 #   - configurazione, login, skill, plugin: settings.json, .credentials.json,
 #     .claude.json, skills\, plugins\, hooks\  -> mai toccati
 #   - i file dei progetti su disco (E:\, D:\, ...) -> mai toccati: si agisce
 #     solo dentro la home dell'account.
 # ============================================================================
 $ErrorActionPreference = 'SilentlyContinue'
-$base = '<CLAUDE_CONFIG_DIR>'   # <-- sostituire col path assoluto dell'account
-$keepPrefix = 'D--'             # prefisso slug da preservare; SPECIFICO DELLA MACCHINA (qui D:)
+$base = '<CLAUDE_CONFIG_DIR>'         # <-- sostituire col path assoluto dell'account
+$keepPrefixes = @('D--')              # prefissi slug da preservare; SPECIFICI DELLA MACCHINA (un prefisso per disco)
 
-# --- 1) progetti: rimuovi transcript + memoria nascosta di tutto tranne $keepPrefix* ---
+# --- 1) progetti: rimuovi transcript + memoria nascosta di tutto tranne i prefissi preservati ---
 $projects = Join-Path $base 'projects'
 if (Test-Path $projects) {
   Get-ChildItem -LiteralPath $projects -Directory |
-    Where-Object { $_.Name -notlike "$keepPrefix*" } |
+    Where-Object { $name = $_.Name; -not ($keepPrefixes | Where-Object { $name -like "$_*" }) } |
     ForEach-Object { Remove-Item -LiteralPath $_.FullName -Recurse -Force }
 }
 

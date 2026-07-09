@@ -3,7 +3,8 @@
 # session-end-wipe.sh  (TEMPLATE, variante POSIX di session-end-wipe.ps1)
 # Eseguito da un hook SessionEnd di Claude Code a OGNI chiusura di sessione.
 # Pulisce il magazzino nascosto dell'account preservando:
-#   - i progetti il cui slug inizia con $KEEP_PREFIX (specifico della macchina)
+#   - i progetti il cui slug inizia con uno dei prefissi in $KEEP_PREFIXES (specifici
+#     della macchina, uno per ogni disco dove stanno i progetti di sviluppo)
 #   - configurazione, login, skill, plugin, hooks  -> mai toccati
 #   - i file dei progetti su disco                  -> mai toccati
 #
@@ -17,15 +18,19 @@
 #        } ] } ] }
 # ============================================================================
 set -u
-BASE="<CLAUDE_CONFIG_DIR>"   # path assoluto della home dell'account
-KEEP_PREFIX="D--"            # prefisso degli slug da preservare; dipende dalla macchina
+BASE="<CLAUDE_CONFIG_DIR>"          # path assoluto della home dell'account
+KEEP_PREFIXES="D--"                 # prefissi degli slug da preservare, separati da spazio; dipende dalla macchina (es. "D-- E--" su piu dischi)
 
-# --- 1) progetti: rimuovi transcript + memoria nascosta di tutto tranne $KEEP_PREFIX* ---
+# --- 1) progetti: rimuovi transcript + memoria nascosta di tutto tranne i prefissi preservati ---
 if [ -d "$BASE/projects" ]; then
   for p in "$BASE/projects"/*/; do
     [ -d "$p" ] || continue
     b="$(basename "$p")"
-    case "$b" in "$KEEP_PREFIX"*) continue ;; esac
+    keep=0
+    for prefix in $KEEP_PREFIXES; do
+      case "$b" in "$prefix"*) keep=1; break ;; esac
+    done
+    [ "$keep" -eq 1 ] && continue
     rm -rf "$p"
   done
 fi
