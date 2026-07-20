@@ -103,6 +103,25 @@ Per i progetti dove si accumula conoscenza trasversale (ricerca, studio di un do
 
 Per i progetti con libri o PDF tecnici di riferimento, il pacchetto opzionale `book-to-skill` installa la skill `book-digest`, che trasforma un PDF in una skill-libro densa e interrogabile on-demand: durante il lavoro `/<slug> argomento` restituisce la sintesi del tema senza rileggere il PDF. Le skill-libro nascono dentro il progetto (`.claude/skills/<slug>/`, versionate), perche ogni progetto puo avere libri suoi; si possono promuovere al contesto globale di Claude (`~/.claude/skills/`) solo su conferma esplicita e tracciando la scelta. La stessa skill-libro ha un doppio uso: resta una skill che gli agenti consultano (path A), oppure, se il progetto ha `knowledge-wiki`, alimenta la wiki accumulatoria copiando i file capitolo in `knowledge/sources/books/<slug>/` (path B). Dettaglio e comandi in `.claude/templates/book-to-skill/README.md`.
 
+## Bibliografia da libri fisici o scansionati (book-bib-extract)
+
+Per i progetti che costruiscono una bibliografia a partire da libri fisici o scansionati senza
+DOI, per esempio libri di studio posseduti dall'autore di un manoscritto, il pacchetto opzionale
+`book-bib-extract` installa una skill che estrae autore, titolo, anno, editore, edizione e ISBN
+dal frontespizio/colophon di un libro gia' ingerito da `doc-ingest`, propone una citekey, e
+aggiorna un registro unificato `_notes/book-bib-registry.json` a tre stati (verificata,
+da-verificare, scartata) prima di scrivere qualunque voce nel `.bib` reale del progetto, sempre
+dopo conferma umana esplicita contro il colophon. Copre un vuoto tra `doc-ingest`, che estrae
+struttura ma non anagrafica, e `academic-researcher`, pensato per paper con DOI verificabili
+contro database esterni, un metodo non applicabile a un libro senza DOI. Per i PDF scansionati
+senza testo nativo, dove l'OCR di `doc-ingest` e' spesso inaffidabile su scansioni di bassa
+qualita', il pacchetto standardizza l'estrazione di poche pagine di frontespizio/colophon come
+immagini PNG (via `pdftoppm`/Poppler) per la verifica visiva diretta, mai un OCR sull'intero
+corpus. Se il progetto ha anche `book-to-skill` attivo, i due pacchetti condividono lo stesso
+registro invece di due sistemi di stato paralleli: `book-bib-extract` possiede il campo
+`bib_status`, `book-digest` possiede `skill_status`. Il dettaglio e' in
+`.claude/templates/book-bib-extract/README.md`.
+
 ## Ricerca accademica (academic-researcher)
 
 Per i progetti di ricerca accademica, di tesi, o di analisi sistematica di un corpus di paper, il pacchetto opzionale `academic-researcher` scaffolda un intero ambiente di ricerca assistita: scoping del topic con le domande di gate corrette (dominio disciplinare, libreria Zotero esistente o meno, output LaTeX o Word, livello di autonomia), tracciamento tripartito di ogni fonte come verificata, da verificare o scartata, sincronizzazione di `research-vault/bibliography.bib` tra Zotero come libreria di lavoro e JabRef come validatore umano finale, e la Corpus Analysis Suite, dieci prompt collaudati (Intake Protocol, Contradiction Finder, Citation Chain, Gap Scanner, Methodology Audit, Master Synthesis, Assumption Killer, Knowledge Map Builder, So What Test, Canon Update) per analizzare un corpus di paper gia' caricato in conversazione. Il pacchetto e' distillato da un modulo di ricerca dedicato, che si instanzia insieme al pacchetto come riferimento consultabile in `research-vault/reference/`, integrato con un metodo esterno attribuito (screenshot di un post pubblico, account `@techwith.ram`) per la parte di ricerca letteratura, lo scoping di progetto, la lettura profonda e l'ultima delle dieci modalita' della Corpus Analysis Suite.
@@ -206,6 +225,7 @@ template-claude-developing/
       latex/           pacchetto opzionale per progetti LaTeX, con script .ps1 e .sh
       knowledge-wiki/  pacchetto opzionale LLM Wiki (sources/ + wiki/ + schema + skill wiki-digest)
       book-to-skill/   pacchetto opzionale: skill book-digest (PDF in skill on-demand, locale)
+      book-bib-extract/  pacchetto opzionale: skill book-bib-extract (anagrafica bibliografica da libri fisici/scansionati senza DOI), tools extract-titlepages.py e render-bib-registry.py, registro unificato con book-digest
       academic-researcher/  pacchetto opzionale: 8 skill di ricerca (5 complete, 3 parzialmente stub), regola no-uncited-claims, documento di riferimento
       notebooklm-bridge/  pacchetto opzionale: loop di ricerca fondata NotebookLM gratuito + Claude, skill notebooklm-bridge, strumenti di verifica notebooklm-check.ps1/.sh
       learning-agent/   pacchetto opzionale: tutor di apprendimento guidato, 3 agent (tutor, kb-retriever, examiner), 3 skill/comandi (profile, learn, review), LEARNER_PROFILE.md, documento di riferimento
@@ -226,6 +246,7 @@ Ogni pacchetto a cartella porta con se' un proprio `README.md` di istanziazione 
 - `latex` — ambiente di build LaTeX: [.claude/templates/latex/README.md](.claude/templates/latex/README.md)
 - `knowledge-wiki` — LLM Wiki accumulatoria: [.claude/templates/knowledge-wiki/README.md](.claude/templates/knowledge-wiki/README.md)
 - `book-to-skill` — PDF tecnico in skill on-demand: [.claude/templates/book-to-skill/README.md](.claude/templates/book-to-skill/README.md)
+- `book-bib-extract` — anagrafica bibliografica da libri fisici/scansionati senza DOI: [.claude/templates/book-bib-extract/README.md](.claude/templates/book-bib-extract/README.md)
 - `docx-to-docs` — `.docx` in albero `docs/` versionato: [.claude/templates/docx-to-docs/README.md](.claude/templates/docx-to-docs/README.md)
 - `doc-ingest` — ingestione incrementale di un corpus a zero token: [.claude/templates/doc-ingest/README.md](.claude/templates/doc-ingest/README.md)
 - `academic-researcher` — ambiente di ricerca accademica: [.claude/templates/academic-researcher/README.md](.claude/templates/academic-researcher/README.md)

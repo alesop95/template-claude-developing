@@ -188,3 +188,45 @@ Nessun bug in `agent-catalog` (varianti `.sh`, secondo agente scaricato, e la fo
 **Perche/come/dove funziona meglio.** Tre lezioni distinte. La prima: un bug di parsing regex puo' restare invisibile per mesi su una piattaforma (Linux/macOS) mentre la variante sull'altra piattaforma (Windows, con un parser vero invece di una regex) funziona correttamente, e nessuna revisione statica lo trova finche' qualcuno non esegue quello specifico script contro quello specifico dato (un timestamp con piu' di due `:`); il rischio delle regex "estraggo tutto dopo l'ultimo separatore" su formati che possono ripetere quel separatore internamente e' generale, non specifico di questo script. La seconda: `-PermissionMode plan` in `claude -p` e' sicuro solo per compiti che rispondono senza agire; nel momento in cui il compito richiede un'azione multi-passo (delegare a un subagent, eseguire una skill che scrive), il modello puo' scegliere di pianificare invece di eseguire, e in un contesto headless quel piano non ha mai modo di essere approvato: la corsa si conclude "con successo" (nessun errore) ma senza aver fatto nulla di quanto richiesto, il che e' piu' insidioso di un fallimento esplicito perche' va letto il contenuto della risposta, non solo il codice di uscita, per accorgersi che non e' successo nulla. La terza: "la build riesce" e "l'output finisce dove dovrebbe" sono due verifiche distinte, e il primo giro del pilota aveva controllato solo la prima; un wrapper attorno a uno strumento esterno (latexmk) puo' avere un comportamento di default (scrivere nella cwd, non accanto al sorgente) che il messaggio finale dello script dichiara in modo scorretto senza che nessun errore lo segnali.
 
 **Rifiniture derivate.** `templates/hooks-starter/hooks/session-context.sh`: stesso fix della variante Windows (branch via `git branch --show-current`). `templates/claude-code-handoff/tools/update-handoff.sh`: pattern sed ancorato all'inizio riga per non essere piu' greedy sull'ultimo `:` (tre occorrenze). `templates/latex/scripts/build.ps1` e `build.sh`: aggiunto `-cd` a ogni invocazione di `latexmk`, e il messaggio finale ora calcola il path atteso invece di assumerlo uguale a `$Main` con estensione cambiata. `templates/hooks-starter/README.md`, `templates/claude-code-handoff/README.md`, `templates/automation-starter/README.md`, `templates/latex/README.md`, `templates/dev-skills/README.md`, `templates/codebase-learning/README.md`: onesta' aggiornata con gli esiti sopra. `codebase-learning` e' uscito dall'elenco dei pacchetti in attesa di validazione (con lo scope limitato dichiarato sopra). `.claude/rules/interaction-style.md`: estesa la regola sull'a capo manuale, gia' in vigore per i file `.md`, anche al testo scritto direttamente in sessione nel terminale, su segnalazione dell'utente durante questo stesso giro di lavoro.
+
+---
+
+## 2026-07-20 — Nuovo pacchetto book-bib-extract su un progetto-libro con bibliografia da scansioni
+
+**Archetipo.** Progetto di scrittura di un libro, con `doc-ingest` gia' attivo, che costruisce la
+propria bibliografia a partire da libri di studio posseduti dall'autore, in gran parte PDF
+scansionati senza OCR affidabile (fotocopie o scansioni datate di manuali di teoria/strumento).
+
+**Cosa si e' testato.** L'intero ciclo di una skill nata su questo progetto per colmare il vuoto
+tra `doc-ingest` (struttura, non anagrafica) e `academic-researcher` (paper con DOI, non libri):
+estrazione dell'anagrafica dal colophon, proposta di citekey, registro unificato a tre stati
+condiviso con la coda di `book-digest` (pattern `book-to-skill`), e il caso limite di una fonte
+identificata solo da un ISBN trovato online, non ancora fisicamente acquisita ne' scansionata.
+
+**Esito.** Il registro unificato ha retto su scala reale (153 voci su piu' corpus), con lo stato a
+tre valori (verificata/da-verificare/scartata) sufficiente a non perdere lavoro tra sessioni anche
+dopo un'interruzione imprevista (riavvio forzato della macchina). Il fallback OCR di `doc-ingest`
+e' uscito a zero parole estratte sull'unico campione osservato: la verifica visiva mirata del
+colophon (poche pagine renderizzate via `pdftoppm`, mai l'intero libro) si e' confermata l'unica
+via pratica per questo tipo di scansioni. Il caso della fonte identificata ma non ingerita ha
+richiesto una chiave di registro alternativa (`manual-<identificatore>` al posto dello sha256),
+non previsto nella prima stesura della skill e ora generalizzato nel `SKILL.md` del pacchetto.
+
+**Perche/come/dove funziona meglio.** Un registro condiviso tra due pacchetti che operano sullo
+stesso corpus (qui e `book-digest`) evita la sincronizzazione manuale tra due sistemi di stato, a
+patto che ciascun pacchetto scriva solo il proprio campo e legga l'altro in sola lettura: la
+disciplina va dichiarata esplicitamente nel `SKILL.md` di entrambi, non lasciata implicita.
+L'estensione dello stesso principio dalla sola anagrafica alla ricerca di contenuto in un corpus
+gia' ingerito (estrazione testuale deterministica prima, lettura visiva mirata solo sui file
+rimasti senza testo) e' emersa come pattern generale, non specifico al dominio di questo progetto.
+
+**Rifiniture derivate.** Nuovo pacchetto `templates/book-bib-extract/` (skill, due script,
+README), riga in `PACKAGES.md`, sezione dedicata e voce nell'indice dei README in `README.md` di
+radice. `templates/doc-ingest/README.md`: aggiunta l'esperienza reale sul fallback OCR inaffidabile
+su scansioni di bassa qualita', con rimando a `book-bib-extract` per l'alternativa pratica.
+`.claude/skills/sync-context/SKILL.md`: chiarito il comportamento quando `covers-paths` e' vuoto
+(nessun confronto di drift, non un confronto contro l'intero repository), ambiguita' reale della
+skill anche indipendente da questo pacchetto. `.claude/rules/token-economy.md`: nuova sezione di
+cautela sul costo dei workflow di verifica adversariale a piu' voti (per esempio `deep-research`),
+osservato esaurire il limite di sessione in meno di un minuto su circa 40 affermazioni da
+verificare.
