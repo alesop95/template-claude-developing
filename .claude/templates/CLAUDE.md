@@ -57,9 +57,6 @@ Voci brevi e datate per le decisioni e le scoperte operative che non hanno ancor
 
 ## Vincoli di team
 
-Le operazioni di `git add`, commit e push restano sempre manuali dell'utente: l'agente prepara i
-file, non committa. L'identità git è impostata a livello locale del repo secondo
-`.claude/rules/git-identity-and-repo.md`. Lo stile di documentazione e di interazione è quello di
-`.claude/rules/interaction-style.md`. Claude non scrive autonomamente nei file di memoria e di
+Le operazioni di `git add`, commit e push restano sempre manuali dell'utente: l'agente prepara i file, non committa. L'identità git è impostata a livello locale del repo secondo `.claude/rules/git-identity-and-repo.md`. Lo stile di documentazione e di interazione è quello di `.claude/rules/interaction-style.md`, la cui sezione "Formattazione dei file Markdown" vincola anche la forma dei file `.md`: paragrafi su una riga sorgente continua, senza a capo manuali a metà frase. Dove è istanziato lo strumento `tools/md-unwrap.py` la convenzione si attua eseguendolo sul file appena scritto, e si verifica prima di un commit con `python tools/md-unwrap.py --check .`. Claude non scrive autonomamente nei file di memoria e di
 contesto: li aggiorna solo su richiesta esplicita, così il versionamento resta sotto controllo
 umano.
