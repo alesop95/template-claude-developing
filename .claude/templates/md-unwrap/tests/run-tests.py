@@ -230,6 +230,17 @@ def test_cli():
         report(read(os.path.join(protetto, 'intoccabile.md')) == prima,
                'il marcatore vale anche sul file passato per nome', out)
 
+        # --only-tracked: fuori da un repository git nessun file e' tracciato,
+        # quindi nulla viene scritto e tutto viene dichiarato.
+        shutil.copy(os.path.join(FIXTURES, 'citazione', 'input.md'),
+                    os.path.join(tmp, 'senza-git.md'))
+        prima = read(os.path.join(tmp, 'senza-git.md'))
+        code, out = run_cli(['--only-tracked', '.'], tmp)
+        report(read(os.path.join(tmp, 'senza-git.md')) == prima and
+               'non tracciati da git' in out,
+               '--only-tracked non scrive i file senza rete di recupero', out)
+        os.remove(os.path.join(tmp, 'senza-git.md'))  # non sporcare i controlli seguenti
+
         code, out = run_cli(['--check', '--oracle', 'require', '.'], tmp)
         expected_code = 0 if mu.get_oracle() else 2
         report(code == expected_code,

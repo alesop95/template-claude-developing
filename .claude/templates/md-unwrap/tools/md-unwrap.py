@@ -21,6 +21,7 @@ import difflib
 import fnmatch
 import os
 import re
+import subprocess
 import sys
 
 TAB_STOP = 4
@@ -47,6 +48,13 @@ RE_SETEXT = re.compile(r'^(?:=+|-+)[ \t]*$')
 RE_BQ_CHAIN = re.compile(r'^(?: {0,3}>[ \t]?)+')
 RE_LIST = re.compile(r'^([-+*]|\d{1,9}[.)])(?:([ \t]+)(.*)|[ \t]*)$')
 RE_LINKDEF = re.compile(r'^\[(?:[^\[\]\\]|\\.)*\]:(.*)$')
+# Destinazione di una definizione di link: un solo token senza spazi, o fra
+# parentesi angolari, con titolo facoltativo. Se il resto della riga non ha
+# questa forma, quella riga non e' una definizione di link ma testo etichettato,
+# tipicamente una nota a pie' di pagina `[^n]: testo ...`.
+RE_LINK_DEST = re.compile(
+    r'^[ \t]*(?:<[^<>]*>|[^\s<>]+)(?:[ \t]+(?:"[^"]*"|\'[^\']*\'|\([^)]*\)))?[ \t]*$'
+)
 RE_TABLE_DELIM = re.compile(r'^\|?[ \t]*:?-+:?[ \t]*(?:\|[ \t]*:?-+:?[ \t]*)*\|?[ \t]*$')
 RE_TITLE_ONLY = re.compile(r'''^[ \t]*(?:"[^"]*"|'[^']*'|\([^)]*\))[ \t]*$''')
 RE_TRAILING_SPACES = re.compile(r'( {2,})$')
@@ -78,7 +86,7 @@ HTML_KINDS = ('html-raw', 'html-comment', 'html-pi', 'html-decl', 'html-cdata', 
 # continuazione. `html-standalone` (tipo 7) e `code-indent` non interrompono un
 # paragrafo secondo CommonMark, quindi non sono qui.
 BLOCK_STARTERS = frozenset(
-    ('fence', 'atx', 'tbreak', 'list', 'bq', 'linkdef', 'table-delim') + HTML_KINDS
+    ('fence', 'atx', 'tbreak', 'list', 'bq', 'linkdef', 'label-text', 'table-delim') + HTML_KINDS
 )
 
 
@@ -151,8 +159,12 @@ def block_kind(s: str) -> str:
         return 'list'
     if is_table_delim(s):
         return 'table-delim'
-    if RE_LINKDEF.match(s):
-        return 'linkdef'
+    m = RE_LINKDEF.match(s)
+    if m:
+        rest = m.group(1)
+        if not rest.strip() or RE_LINK_DEST.match(rest):
+            return 'linkdef'
+        return 'label-text'
     if RE_HTML_STANDALONE.match(s):
         return 'html-standalone'
     return 'text'
@@ -253,6 +265,11 @@ class Scanner:
                 i += 1
             elif kind == 'linkdef':
                 i = self.consume_linkdef(i, bq, s)
+            elif kind == 'label-text':
+                # Nota a pie' di pagina o testo etichettato: si comporta come una
+                # voce di elenco, cioe' assorbe le proprie righe di continuazione
+                # conservando il prefisso `[etichetta]: `.
+                i = self.collect_run(i, bq, base)
             elif self.table_starts_at(i, bq, s):
                 i = self.consume_table(i, bq)
             elif kind == 'list':
@@ -624,6 +641,42 @@ def collect_files(paths, exts, excludes):
     return unique, marked
 
 
+_TRACKED_CACHE = {}
+
+
+def tracked_files(dirpath: str):
+    """Insieme dei file tracciati da git nel repository che contiene `dirpath`,
+    in percorsi assoluti normalizzati. Insieme vuoto se non e' un repository o se
+    git non e' disponibile. Il risultato e' memoizzato per radice."""
+    try:
+        top = subprocess.run(
+            ['git', '-C', dirpath, 'rev-parse', '--show-toplevel'],
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+        )
+    except OSError:
+        return set()
+    if top.returncode != 0:
+        return set()
+    root = os.path.abspath(top.stdout.decode('utf-8', 'replace').strip())
+    if root in _TRACKED_CACHE:
+        return _TRACKED_CACHE[root]
+    listing = subprocess.run(
+        ['git', '-C', root, 'ls-files', '-z'],
+        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+    )
+    entries = listing.stdout.decode('utf-8', 'replace').split('\0') if listing.returncode == 0 else []
+    result = {
+        os.path.normcase(os.path.join(root, entry.replace('/', os.sep)))
+        for entry in entries if entry
+    }
+    _TRACKED_CACHE[root] = result
+    return result
+
+
+def is_tracked(path: str) -> bool:
+    return os.path.normcase(os.path.abspath(path)) in tracked_files(os.path.dirname(os.path.abspath(path)))
+
+
 def build_parser():
     p = argparse.ArgumentParser(
         prog='md-unwrap',
@@ -641,6 +694,9 @@ def build_parser():
                    help='non applicare la lista di esclusioni di default')
     p.add_argument('--ext', action='append', default=[], metavar='.EST',
                    help='estensione da processare, ripetibile (default: .md, .markdown)')
+    p.add_argument('--only-tracked', action='store_true',
+                   help='processa solo i file tracciati da git, cosi ogni scrittura '
+                        'ha una rete di recupero; salta gli altri dichiarandoli')
     p.add_argument('--oracle', choices=('auto', 'require', 'off'), default='auto',
                    help='oracolo di rendering: auto (se disponibile), require, off')
     p.add_argument('-v', '--verbose', action='store_true', help='una riga per file')
@@ -662,7 +718,7 @@ def main(argv=None) -> int:
         return 2
 
     files, marked = collect_files(args.paths or ['.'], exts, excludes)
-    examined = changed = errors = total_joins = 0
+    examined = changed = errors = total_joins = untracked = 0
     messages = []
 
     for entry in files:
@@ -672,6 +728,11 @@ def main(argv=None) -> int:
             continue
         path = entry
         rel = os.path.relpath(path)
+        if args.only_tracked and not is_tracked(path):
+            untracked += 1
+            if args.verbose:
+                messages.append('salta   %s: non tracciato da git' % rel)
+            continue
         try:
             before = read_text(path)
         except UnicodeDecodeError:
@@ -732,6 +793,8 @@ def main(argv=None) -> int:
         if args.oracle == 'off':
             oracle_note = 'oracolo di rendering disattivato'
         marked_note = ', %d ignorati per marcatore %s' % (marked, IGNORE_MARKER) if marked else ''
+        if untracked:
+            marked_note += ', %d non tracciati da git' % untracked
         print('%d file esaminati, %d %s, %d righe unite, %d saltati%s; %s' % (
             examined, changed,
             'da modificare' if (args.check or args.diff) else 'modificati',

@@ -36,28 +36,11 @@ A inizio sessione lo stato si recupera leggendo per primo `.claude/memory/index.
 
 ## Ingestione di documenti voluminosi (.docx, .pdf e affini)
 
-Un documento di contesto voluminoso non si legge mai per intero, sia esso `.docx` o `.pdf`. Si
-estrae il contenuto una sola volta in una cartella scratch ignorata e si caricano solo le
-porzioni utili al task. La data di riconciliazione, il nome del documento sorgente e l'esito si
-annotano in `memory/progress.md`. Sono previste anche le direzioni inverse, da repository a Word
-per i deliverable e da Word a mirror Markdown versionato quando il Word e la fonte di verita
-umana.
+Un documento di contesto voluminoso non si legge mai per intero, sia esso `.docx` o `.pdf`. Si estrae il contenuto una sola volta in una cartella scratch ignorata e si caricano solo le porzioni utili al task. La data di riconciliazione, il nome del documento sorgente e l'esito si annotano in `memory/progress.md`. Sono previste anche le direzioni inverse, da repository a Word per i deliverable e da Word a mirror Markdown versionato quando il Word e la fonte di verita umana.
 
-Quando i documenti da consultare sono piu di uno, il pacchetto opzionale `doc-ingest` (vedi
-`.claude/templates/doc-ingest/`) automatizza l'estrazione a corpus intero: converte `.pdf`,
-`.docx`, `.pptx`, `.xlsx` e `.html` in una cache Markdown locale con un manifest a content-hash
-che salta i file invariati tra una corsa e l'altra, e rigenera a ogni corsa un indice `_INDEX.md`
-con titoli, conteggi e stato di ciascun documento: lo scheletro di Livello 1 della disclosure
-progressiva descritta nella sezione "Token economy" qui sotto. E interamente locale e a zero
-consumo di token; una modalita accurata e un fallback OCR sono disponibili come flag opzionali
-per i PDF piu difficili.
+Quando i documenti da consultare sono piu di uno, il pacchetto opzionale `doc-ingest` (vedi `.claude/templates/doc-ingest/`) automatizza l'estrazione a corpus intero: converte `.pdf`, `.docx`, `.pptx`, `.xlsx` e `.html` in una cache Markdown locale con un manifest a content-hash che salta i file invariati tra una corsa e l'altra, e rigenera a ogni corsa un indice `_INDEX.md` con titoli, conteggi e stato di ciascun documento: lo scheletro di Livello 1 della disclosure progressiva descritta nella sezione "Token economy" qui sotto. E interamente locale e a zero consumo di token; una modalita accurata e un fallback OCR sono disponibili come flag opzionali per i PDF piu difficili.
 
-Quando invece il `.docx` va trasformato in documentazione tecnica navigabile e versionata, e non
-solo letto a fette, il pacchetto opzionale `docx-to-docs` (vedi `.claude/templates/docx-to-docs/`)
-automatizza questa direzione: converte il documento in un albero `docs/` con un file per sezione,
-`README.md` indice generati che linkano ai figli e un hub `DEVELOPMENT.md`, con conversione
-deterministica e livelli curati (banner LEGACY, redazioni, pulizia `--clean`) che sopravvivono
-alla rigenerazione. Entrambi i pacchetti si offrono al gate dei pacchetti.
+Quando invece il `.docx` va trasformato in documentazione tecnica navigabile e versionata, e non solo letto a fette, il pacchetto opzionale `docx-to-docs` (vedi `.claude/templates/docx-to-docs/`) automatizza questa direzione: converte il documento in un albero `docs/` con un file per sezione, `README.md` indice generati che linkano ai figli e un hub `DEVELOPMENT.md`, con conversione deterministica e livelli curati (banner LEGACY, redazioni, pulizia `--clean`) che sopravvivono alla rigenerazione. Entrambi i pacchetti si offrono al gate dei pacchetti.
 
 ## Igiene del version control e identita git
 
@@ -111,22 +94,7 @@ Per i progetti con libri o PDF tecnici di riferimento, il pacchetto opzionale `b
 
 ## Bibliografia da libri fisici o scansionati (book-bib-extract)
 
-Per i progetti che costruiscono una bibliografia a partire da libri fisici o scansionati senza
-DOI, per esempio libri di studio posseduti dall'autore di un manoscritto, il pacchetto opzionale
-`book-bib-extract` installa una skill che estrae autore, titolo, anno, editore, edizione e ISBN
-dal frontespizio/colophon di un libro gia' ingerito da `doc-ingest`, propone una citekey, e
-aggiorna un registro unificato `_notes/book-bib-registry.json` a tre stati (verificata,
-da-verificare, scartata) prima di scrivere qualunque voce nel `.bib` reale del progetto, sempre
-dopo conferma umana esplicita contro il colophon. Copre un vuoto tra `doc-ingest`, che estrae
-struttura ma non anagrafica, e `academic-researcher`, pensato per paper con DOI verificabili
-contro database esterni, un metodo non applicabile a un libro senza DOI. Per i PDF scansionati
-senza testo nativo, dove l'OCR di `doc-ingest` e' spesso inaffidabile su scansioni di bassa
-qualita', il pacchetto standardizza l'estrazione di poche pagine di frontespizio/colophon come
-immagini PNG (via `pdftoppm`/Poppler) per la verifica visiva diretta, mai un OCR sull'intero
-corpus. Se il progetto ha anche `book-to-skill` attivo, i due pacchetti condividono lo stesso
-registro invece di due sistemi di stato paralleli: `book-bib-extract` possiede il campo
-`bib_status`, `book-digest` possiede `skill_status`. Il dettaglio e' in
-`.claude/templates/book-bib-extract/README.md`.
+Per i progetti che costruiscono una bibliografia a partire da libri fisici o scansionati senza DOI, per esempio libri di studio posseduti dall'autore di un manoscritto, il pacchetto opzionale `book-bib-extract` installa una skill che estrae autore, titolo, anno, editore, edizione e ISBN dal frontespizio/colophon di un libro gia' ingerito da `doc-ingest`, propone una citekey, e aggiorna un registro unificato `_notes/book-bib-registry.json` a tre stati (verificata, da-verificare, scartata) prima di scrivere qualunque voce nel `.bib` reale del progetto, sempre dopo conferma umana esplicita contro il colophon. Copre un vuoto tra `doc-ingest`, che estrae struttura ma non anagrafica, e `academic-researcher`, pensato per paper con DOI verificabili contro database esterni, un metodo non applicabile a un libro senza DOI. Per i PDF scansionati senza testo nativo, dove l'OCR di `doc-ingest` e' spesso inaffidabile su scansioni di bassa qualita', il pacchetto standardizza l'estrazione di poche pagine di frontespizio/colophon come immagini PNG (via `pdftoppm`/Poppler) per la verifica visiva diretta, mai un OCR sull'intero corpus. Se il progetto ha anche `book-to-skill` attivo, i due pacchetti condividono lo stesso registro invece di due sistemi di stato paralleli: `book-bib-extract` possiede il campo `bib_status`, `book-digest` possiede `skill_status`. Il dettaglio e' in `.claude/templates/book-bib-extract/README.md`.
 
 ## Ricerca accademica (academic-researcher)
 
