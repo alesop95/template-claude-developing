@@ -20,6 +20,16 @@ Prerequisiti: Node e un browser Edge o Chrome. Alla prima esecuzione `npx` scari
 
 I `.svg` prodotti sono versionati accanto ai `.mmd` sorgente, secondo l'anatomia canonica del sistema di progetto.
 
+## lint-md-commands.py
+
+Percorre i blocchi di codice di shell dentro i file Markdown e segnala i comandi che non si possono copiare in una riga sola: continuazioni di riga (backslash di bash, backtick di PowerShell, caret di cmd), heredoc multi-riga e comandi git che proseguono sulla riga seguente. Esiste perche' `md-unwrap` per contratto lascia verbatim il contenuto dei blocchi recintati, quindi un comando spezzato dentro un blocco di codice non viene corretto da nessuno strumento e va trovato a parte. Attua la verifica richiesta dalla regola `.claude/rules/git-commands-format.md`.
+
+```
+python tools/lint-md-commands.py .
+```
+
+E' in sola lettura e non scrive nulla: esce 0 se non trova niente, 1 altrimenti, quindi si puo' usare come gate in pre-commit o in CI accanto a `md-unwrap --check`. Un blocco viene considerato shell solo se lo dichiara la info string (`bash`, `powershell`, `sh`, `console` e simili) oppure se non ha info string e contiene comandi: un blocco `markdown` o `text` che cita un comando resta prosa, e la prosa puo' finire legittimamente con un backtick di code span. Le continuazioni backslash dentro un blocco dichiarato `bash` restano segnalate ma sono legittime se il comando e' specifico di quella shell e non e' destinato al copia-incolla cross-piattaforma: la segnalazione serve a decidere, non a imporre.
+
 ## check-account-hygiene.ps1
 
 Verifica, in sola lettura, che l'account Claude Code attivo rispetti l'igiene del magazzino nascosto richiesta dal sistema: `autoMemoryEnabled: false` e un hook `SessionEnd` che esegue `session-end-wipe`. Si esegue al Passo 0 dell'inizializzazione o dell'allineamento di un progetto, e non modifica nulla: stampa un report PASS/FAIL e, se l'account non e' in regola, indica cosa aggiungere. Vedi PROJECT-SYSTEM.md sezione 15.

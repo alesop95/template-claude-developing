@@ -4,7 +4,10 @@
 
 ## Stato raggiunto
 
-Data: <YYYY-MM-DD> Branch / commit: <branch> / <hash> Dove siamo: <una o due frasi sul punto raggiunto> Prossimo passo: <azione concreta da cui ripartire>
+- Data: <YYYY-MM-DD>
+- Branch / commit: <branch> / <hash>
+- Dove siamo: <una o due frasi sul punto raggiunto>
+- Prossimo passo: <azione concreta da cui ripartire>
 
 ## Da incollare a Claude alla riapertura
 
