@@ -124,6 +124,26 @@ def test_render_oracle():
         report(reason is None, 'oracolo %s' % name, detail)
 
 
+def test_guarded_pass():
+    """La passata prudente non unisce i blocchi attraversati da un code span."""
+    src = read(os.path.join(FIXTURES, 'code-span-su-piu-righe', 'input.md'))
+    normale, _ = mu.unwrap(src)
+    prudente, _ = mu.unwrap(src, guard_spans=True)
+    report(normale != src, 'la passata normale unisce il blocco con il code span')
+    prima_riga = prudente.splitlines()[0]
+    report(prima_riga.endswith('e va') or 'CHIAVE=valore' not in prima_riga,
+           'la passata prudente lascia il code span intatto', prima_riga)
+    report(mu.render_equal(src, prudente) is None,
+           'anche la passata prudente supera l\'oracolo')
+
+    # Il paragrafo con lo schema a caratteri non si unisce in nessuna delle due.
+    art = read(os.path.join(FIXTURES, 'schema-a-caratteri', 'input.md'))
+    for etichetta, guard in (('normale', False), ('prudente', True)):
+        out, _ = mu.unwrap(art, guard_spans=guard)
+        report('|   Telefono   |        |   DAC USB    |' in out,
+               'lo schema a caratteri sopravvive alla passata %s' % etichetta)
+
+
 def test_oracle_catches_corruption():
     """L'oracolo deve bocciare una trasformazione che cambia il rendering."""
     before = 'Titolo\n------\n'
@@ -256,6 +276,7 @@ def main():
     test_fixtures()
     test_idempotence()
     test_render_oracle()
+    test_guarded_pass()
     test_oracle_catches_corruption()
     test_cli()
     print('')

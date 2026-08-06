@@ -186,6 +186,23 @@ def has_hard_break(body: str) -> bool:
 
 RE_BACKTICK_RUN = re.compile(r'(?<!\\)(`+)')
 
+# Caratteri con cui si disegnano gli schemi a caratteri: box drawing, blocchi e
+# forme geometriche. Nella prosa non compaiono praticamente mai, mentre le frecce
+# (`->`, U+2192) sono comuni e restano fuori di proposito.
+RE_ART_CHARS = re.compile(r'[─-╿▀-▟■-◿]')
+RE_ART_ASCII = re.compile(r'^[ \t]*\||^[ \t]*\+[-=+]|\+--|--\+')
+
+
+def looks_like_diagram(body: str) -> bool:
+    """Vero se la riga sembra parte di uno schema disegnato a caratteri.
+
+    Uno schema ASCII scritto fuori da un blocco di codice e' un paragrafo come
+    gli altri per CommonMark, quindi il rendering non cambia se lo si unisce: e'
+    gia' collassato anche prima. Nel sorgente pero' l'allineamento e' l'intero
+    contenuto informativo del disegno, e unirlo lo distrugge. Quando una riga di
+    un blocco di testo sembra un disegno, il blocco si emette verbatim."""
+    return bool(RE_ART_CHARS.search(body) or RE_ART_ASCII.search(body))
+
 
 def code_span_crosses_line(text: str) -> bool:
     """Vero se nel testo un code span inline attraversa un a capo.
@@ -219,8 +236,9 @@ class Scanner:
     blocchi di testo. Ogni riga e' una coppia (corpo, terminatore), cosi il
     terminatore originale di ogni riga sopravvissuta resta quello del file."""
 
-    def __init__(self, lines):
+    def __init__(self, lines, guard_spans=False):
         self.lines = lines
+        self.guard_spans = guard_spans
         self.n = len(lines)
         self.out = []
         self.joins = 0
@@ -479,11 +497,17 @@ class Scanner:
             term = self.lines[j][1]
             j += 1
 
-        # Deciso l'intervallo del blocco, si guarda se un code span lo attraversa:
-        # in quel caso non si unisce nulla e le righe restano come sono.
+        # Deciso l'intervallo del blocco, due controlli sull'insieme delle sue
+        # righe. Uno schema disegnato a caratteri ferma sempre l'unione, perche'
+        # il rendering non lo protegge: e' il sorgente a perderci. Un code span
+        # che attraversa un a capo la ferma solo nella passata prudente, quella
+        # di riserva, perche' quasi sempre unire e' innocuo e l'arbitro giusto e'
+        # l'oracolo di rendering, non un'euristica.
         if not verbatim and j > i + 1:
-            raw = '\n'.join(self.lines[k][0] for k in range(i, j))
-            if code_span_crosses_line(raw):
+            bodies = [self.lines[k][0] for k in range(i, j)]
+            if any(looks_like_diagram(b) for b in bodies):
+                verbatim = True
+            elif self.guard_spans and code_span_crosses_line('\n'.join(bodies)):
                 verbatim = True
 
         if verbatim or len(pieces) == 1:
@@ -510,12 +534,16 @@ def split_lines(text: str):
     return lines
 
 
-def unwrap(text: str):
-    """Restituisce (testo srotolato, numero di righe unite)."""
+def unwrap(text: str, guard_spans: bool = False):
+    """Restituisce (testo srotolato, numero di righe unite).
+
+    Con `guard_spans` non si uniscono i blocchi attraversati da un code span
+    inline: e' la passata prudente di riserva, usata quando l'oracolo boccia il
+    risultato della passata normale."""
     bom = ''
     if text.startswith('\ufeff'):
         bom, text = '\ufeff', text[1:]
-    out, joins = Scanner(split_lines(text)).run()
+    out, joins = Scanner(split_lines(text), guard_spans).run()
     return bom + ''.join(body + term for body, term in out), joins
 
 
@@ -591,8 +619,21 @@ def write_text(path: str, text: str) -> None:
         fh.write(text.encode('utf-8'))
 
 
+def display_path(path: str) -> str:
+    """Percorso da mostrare: relativo se possibile, altrimenti assoluto. Su Windows
+    `relpath` solleva un'eccezione quando il file sta su un altro disco rispetto
+    alla cartella corrente, ed e' un caso normale, non un errore."""
+    try:
+        return os.path.relpath(path)
+    except ValueError:
+        return path
+
+
 def is_excluded(path: str, root: str, patterns) -> bool:
-    rel = os.path.relpath(path, root).replace(os.sep, '/')
+    try:
+        rel = os.path.relpath(path, root).replace(os.sep, '/')
+    except ValueError:
+        rel = path.replace(os.sep, '/')
     parts = rel.split('/')
     for pat in patterns:
         if any(fnmatch.fnmatch(p, pat) for p in parts):
@@ -795,7 +836,7 @@ def main(argv=None) -> int:
             say('ERRORE  %s' % entry[1])
             continue
         path = entry
-        rel = os.path.relpath(path)
+        rel = display_path(path)
         if args.only_tracked and not is_tracked(path):
             untracked += 1
             if args.verbose:
@@ -820,6 +861,18 @@ def main(argv=None) -> int:
             continue
 
         reason = verify(before, after, args.oracle)
+        if reason:
+            # Ripiego prudente: si rifa' la passata senza unire i blocchi
+            # attraversati da un code span inline, che e' l'unico costrutto in
+            # grado di cambiare il reso pur restando dentro un solo paragrafo.
+            after, joins = unwrap(before, guard_spans=True)
+            if after == before:
+                # Non e' un errore: il file e' gia' nella forma migliore ottenibile
+                # senza cambiare il reso, e non c'e' altro da unire in sicurezza.
+                if not args.quiet:
+                    say('intatto %s: nulla da unire senza cambiare il rendering' % rel)
+                continue
+            reason = verify(before, after, args.oracle)
         if reason:
             errors += 1
             say('SALTATO %s: %s' % (rel, reason))
