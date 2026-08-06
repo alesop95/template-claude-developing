@@ -184,6 +184,32 @@ def has_hard_break(body: str) -> bool:
     return hard_break_suffix(body) is not None
 
 
+RE_BACKTICK_RUN = re.compile(r'(?<!\\)(`+)')
+
+
+def code_span_crosses_line(text: str) -> bool:
+    """Vero se nel testo un code span inline attraversa un a capo.
+
+    Un code span si apre con una sequenza di backtick e si chiude con una
+    sequenza della stessa lunghezza esatta; le sequenze di lunghezza diversa
+    incontrate dentro un code span sono contenuto, e una sequenza che non si
+    chiude mai e' testo letterale. Solo un code span che si apre su una riga e si
+    chiude su un'altra e' un problema: CommonMark normalizza lo spazio ai bordi
+    di un code span, quindi unire quelle righe ne cambierebbe il contenuto reso.
+    In quel caso il paragrafo si emette verbatim, perche' un code span vive
+    dentro un solo blocco e la sua estensione e' quella del paragrafo."""
+    open_len, open_end = 0, -1
+    for match in RE_BACKTICK_RUN.finditer(text):
+        run = len(match.group(1))
+        if open_len == 0:
+            open_len, open_end = run, match.end()
+        elif run == open_len:
+            if '\n' in text[open_end:match.start()]:
+                return True
+            open_len = 0
+    return False
+
+
 # --------------------------------------------------------------------------- #
 # Scanner                                                                     #
 # --------------------------------------------------------------------------- #
@@ -411,11 +437,16 @@ class Scanner:
     def collect_run(self, i: int, bq: bool, base: int) -> int:
         """Raccoglie un blocco di testo e le sue righe di continuazione."""
         head_body, head_term = self.lines[i]
+        if has_hard_break(head_body):
+            # Interruzione voluta sulla riga di apertura: resta da sola, e la riga
+            # seguente ricomincia un blocco per conto proprio.
+            self.emit(i, i + 1)
+            return i + 1
         pieces = [head_body.rstrip()]
         term = head_term
-        verbatim = has_hard_break(head_body)
+        verbatim = False
         j = i + 1
-        while not verbatim and j < self.n:
+        while j < self.n:
             prev_body = self.lines[j - 1][0]
             if has_hard_break(prev_body):
                 break
@@ -447,6 +478,13 @@ class Scanner:
             pieces.append(piece)
             term = self.lines[j][1]
             j += 1
+
+        # Deciso l'intervallo del blocco, si guarda se un code span lo attraversa:
+        # in quel caso non si unisce nulla e le righe restano come sono.
+        if not verbatim and j > i + 1:
+            raw = '\n'.join(self.lines[k][0] for k in range(i, j))
+            if code_span_crosses_line(raw):
+                verbatim = True
 
         if verbatim or len(pieces) == 1:
             end = j if verbatim else i + 1
@@ -592,10 +630,33 @@ def dir_is_marked(dirpath: str) -> bool:
     return marked
 
 
-def collect_files(paths, exts, excludes):
+def collect_files(paths, exts, excludes, only_tracked=False):
     found, marked = [], 0
     for target in paths:
         target = os.path.abspath(target)
+        if only_tracked and os.path.isdir(target):
+            # Enumerare da git invece che dal filesystem: in un repository che
+            # contiene un corpus non tracciato di centinaia di migliaia di file,
+            # camminare l'albero costa minuti e serve a nulla, perche' i file da
+            # processare sono solo quelli che git conosce.
+            prefix = os.path.normcase(target + os.sep)
+            entries = tracked_files(target)
+            if not entries:
+                found.append(('__nogit__',
+                              '--only-tracked: %s non e un repository git, o git non e '
+                              'disponibile; nessun file processato' % target))
+                continue
+            for key in sorted(entries):
+                if not key.startswith(prefix) or not key.endswith(tuple(exts)):
+                    continue
+                path = entries[key]
+                if dir_is_marked(os.path.dirname(path)):
+                    marked += 1
+                    continue
+                if is_excluded(path, target, excludes):
+                    continue
+                found.append(path)
+            continue
         if os.path.isfile(target):
             if target.lower().endswith(tuple(exts)):
                 if dir_is_marked(os.path.dirname(target)):
@@ -645,18 +706,20 @@ _TRACKED_CACHE = {}
 
 
 def tracked_files(dirpath: str):
-    """Insieme dei file tracciati da git nel repository che contiene `dirpath`,
-    in percorsi assoluti normalizzati. Insieme vuoto se non e' un repository o se
-    git non e' disponibile. Il risultato e' memoizzato per radice."""
+    """File tracciati da git nel repository che contiene `dirpath`, come dizionario
+    dal percorso assoluto normalizzato (per il confronto, che su Windows va fatto
+    senza distinzione di maiuscole) al percorso reale (per aprire il file e per
+    scriverlo nei messaggi con il nome giusto). Dizionario vuoto se non e' un
+    repository o se git non e' disponibile. Memoizzato per radice."""
     try:
         top = subprocess.run(
             ['git', '-C', dirpath, 'rev-parse', '--show-toplevel'],
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
         )
     except OSError:
-        return set()
+        return {}
     if top.returncode != 0:
-        return set()
+        return {}
     root = os.path.abspath(top.stdout.decode('utf-8', 'replace').strip())
     if root in _TRACKED_CACHE:
         return _TRACKED_CACHE[root]
@@ -665,10 +728,12 @@ def tracked_files(dirpath: str):
         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
     )
     entries = listing.stdout.decode('utf-8', 'replace').split('\0') if listing.returncode == 0 else []
-    result = {
-        os.path.normcase(os.path.join(root, entry.replace('/', os.sep)))
-        for entry in entries if entry
-    }
+    result = {}
+    for entry in entries:
+        if not entry:
+            continue
+        real = os.path.join(root, entry.replace('/', os.sep))
+        result[os.path.normcase(real)] = real
     _TRACKED_CACHE[root] = result
     return result
 
@@ -717,50 +782,53 @@ def main(argv=None) -> int:
               '(pip install markdown-it-py)')
         return 2
 
-    files, marked = collect_files(args.paths or ['.'], exts, excludes)
+    files, marked = collect_files(args.paths or ['.'], exts, excludes, args.only_tracked)
     examined = changed = errors = total_joins = untracked = 0
-    messages = []
+
+    def say(line):
+        """Stampa subito: su un corpus grande una corsa silenziosa sembra bloccata."""
+        print(line, flush=True)
 
     for entry in files:
         if isinstance(entry, tuple):
             errors += 1
-            messages.append('ERRORE  %s' % entry[1])
+            say('ERRORE  %s' % entry[1])
             continue
         path = entry
         rel = os.path.relpath(path)
         if args.only_tracked and not is_tracked(path):
             untracked += 1
             if args.verbose:
-                messages.append('salta   %s: non tracciato da git' % rel)
+                say('salta   %s: non tracciato da git' % rel)
             continue
         try:
             before = read_text(path)
         except UnicodeDecodeError:
             errors += 1
-            messages.append('SALTATO %s: non e UTF-8 valido' % rel)
+            say('SALTATO %s: non e UTF-8 valido' % rel)
             continue
         except OSError as exc:
             errors += 1
-            messages.append('SALTATO %s: %s' % (rel, exc.strerror or exc))
+            say('SALTATO %s: %s' % (rel, exc.strerror or exc))
             continue
 
         examined += 1
         after, joins = unwrap(before)
         if after == before:
             if args.verbose:
-                messages.append('ok      %s' % rel)
+                say('ok      %s' % rel)
             continue
 
         reason = verify(before, after, args.oracle)
         if reason:
             errors += 1
-            messages.append('SALTATO %s: %s' % (rel, reason))
+            say('SALTATO %s: %s' % (rel, reason))
             continue
 
         again, _ = unwrap(after)
         if again != after:
             errors += 1
-            messages.append('SALTATO %s: la trasformazione non e idempotente' % rel)
+            say('SALTATO %s: la trasformazione non e idempotente' % rel)
             continue
 
         changed += 1
@@ -778,14 +846,11 @@ def main(argv=None) -> int:
                 errors += 1
                 changed -= 1
                 total_joins -= joins
-                messages.append('SALTATO %s: %s' % (rel, exc.strerror or exc))
+                say('SALTATO %s: %s' % (rel, exc.strerror or exc))
                 continue
         if not args.quiet:
             verb = 'cambierebbe' if (args.check or args.diff) else 'scritto'
-            messages.append('%-11s %s (%d righe unite)' % (verb, rel, joins))
-
-    for line in messages:
-        print(line)
+            say('%-11s %s (%d righe unite)' % (verb, rel, joins))
 
     if not args.quiet:
         oracle_note = 'oracolo di rendering attivo' if get_oracle() else \

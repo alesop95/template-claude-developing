@@ -236,8 +236,8 @@ def test_cli():
                     os.path.join(tmp, 'senza-git.md'))
         prima = read(os.path.join(tmp, 'senza-git.md'))
         code, out = run_cli(['--only-tracked', '.'], tmp)
-        report(read(os.path.join(tmp, 'senza-git.md')) == prima and
-               'non tracciati da git' in out,
+        report(read(os.path.join(tmp, 'senza-git.md')) == prima and code == 2 and
+               'non e un repository git' in out,
                '--only-tracked non scrive i file senza rete di recupero', out)
         os.remove(os.path.join(tmp, 'senza-git.md'))  # non sporcare i controlli seguenti
 
