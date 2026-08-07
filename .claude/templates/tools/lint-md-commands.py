@@ -74,37 +74,62 @@ def check_block(path, info, start, block):
     # comando resta prosa, e la prosa puo' legittimamente finire con un backtick.
     if not is_shell and not (not info and has_cmd):
         return []
+    # Una continuazione di riga e' un problema quando rompe il copia-incolla sulla
+    # shell dichiarata: il backslash dentro un blocco `bash` e' idiomatico e vale
+    # come avviso, non come errore, mentre lo stesso backslash in un blocco
+    # `powershell` non funziona affatto. Gli avvisi non cambiano il codice di uscita.
+    info_l = info.lower()
+    shell_ps = bool(re.match(r'^(powershell|pwsh|ps1)\b', info_l))
     out = []
     for n, (idx, line) in enumerate(block):
         body = line.rstrip()
         if body.endswith('\\'):
-            out.append((path, idx, 'continuazione con backslash', body))
+            # Mai un errore di per se': o e' la continuazione idiomatica di bash,
+            # o e' un percorso Windows che finisce con la barra rovesciata, come in
+            # `git add docs\`. I due casi non si distinguono con certezza da qui, e
+            # quando si tratta davvero di un comando git spezzato lo intercetta il
+            # controllo apposta, piu' sotto.
+            out.append((path, idx, 'continuazione con backslash', body, False))
         elif body.endswith('`'):
-            out.append((path, idx, 'continuazione con backtick PowerShell', body))
+            out.append((path, idx, 'continuazione con backtick PowerShell', body, not shell_ps))
         elif body.endswith('^'):
-            out.append((path, idx, 'continuazione con caret cmd', body))
+            out.append((path, idx, 'continuazione con caret cmd', body, True))
         if '<<' in body and re.search(r'<<-?\s*[\'"]?\w+', body):
-            out.append((path, idx, 'heredoc multi-riga', body))
-        # Comando git che prosegue sulla riga dopo senza essere un nuovo comando
+            out.append((path, idx, 'heredoc multi-riga', body, True))
+        # Comando git che prosegue sulla riga dopo senza essere un nuovo comando.
+        # Si segnala solo quando la riga seguente ha davvero la forma di una
+        # continuazione, cioe' comincia con un'opzione oppure e' rientrata rispetto
+        # al comando: altrimenti una riga di stringa in un blocco PowerShell, che e'
+        # un'istruzione a se', verrebbe scambiata per continuazione.
         if GIT_START.match(body) and n + 1 < len(block):
             nxt = block[n + 1][1].rstrip()
-            if nxt and not CMD_START.match(nxt) and not nxt.startswith('#') \
+            rientrata = len(nxt) - len(nxt.lstrip()) > len(body) - len(body.lstrip())
+            pare_opzione = nxt.lstrip().startswith('-')
+            if nxt and (rientrata or pare_opzione) and not CMD_START.match(nxt) \
+               and not nxt.lstrip().startswith('#') \
                and not body.endswith(('|', '&&', '(', '{', ';')):
-                out.append((path, block[n + 1][0], 'comando git che continua sulla riga seguente', nxt))
+                out.append((path, block[n + 1][0], 'comando git che continua sulla riga seguente', nxt, True))
     return out
 
 
 def main():
     roots = sys.argv[1:] or ['.']
-    total = 0
+    errori = avvisi = 0
     for root in roots:
         for path in walk(root):
-            for p, idx, kind, body in lint(path):
-                total += 1
-                print('%s:%d  %-42s %s' % (os.path.relpath(p, root), idx, kind, body.strip()[:90]))
+            for p, idx, kind, body, grave in lint(path):
+                if grave:
+                    errori += 1
+                else:
+                    avvisi += 1
+                print('%s:%d  %-8s %-42s %s' % (os.path.relpath(p, root), idx,
+                      'ERRORE' if grave else 'avviso', kind, body.strip()[:80]))
     print('')
-    print('%d comandi non copiabili in una riga sola' % total)
-    return 1 if total else 0
+    print('%d errori, %d avvisi' % (errori, avvisi))
+    if avvisi and not errori:
+        print('Gli avvisi sono continuazioni idiomatiche della shell dichiarata: '
+              'non rompono il copia-incolla su quella shell.')
+    return 1 if errori else 0
 
 
 if __name__ == '__main__':

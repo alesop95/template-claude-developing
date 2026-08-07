@@ -2,6 +2,9 @@
 .claude/settings.local.json
 CLAUDE.local.md
 
+# Livello privato e verboso: appunti, stati di lavorazione, materiale transitorio
+_notes/
+
 # Artefatti di sistema operativo e di sincronizzazione
 Thumbs.db
 desktop.ini
