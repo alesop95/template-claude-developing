@@ -178,7 +178,7 @@ def run_cli(args, cwd):
 
 def test_cli():
     with tempfile.TemporaryDirectory() as tmp:
-        # Albero di prova: due file da cambiare, uno gia' a posto, uno in una
+        # Albero di prova: due file da cambiare, uno già a posto, uno in una
         # cartella esclusa di default, uno con estensione non trattata.
         changing = ['paragrafo-hard-wrapped', 'elenco-numerato']
         for name in changing + ['gia-srotolato']:
@@ -250,7 +250,7 @@ def test_cli():
         report(read(os.path.join(protetto, 'intoccabile.md')) == prima,
                'il marcatore vale anche sul file passato per nome', out)
 
-        # --only-tracked: fuori da un repository git nessun file e' tracciato,
+        # --only-tracked: fuori da un repository git nessun file è tracciato,
         # quindi nulla viene scritto e tutto viene dichiarato.
         shutil.copy(os.path.join(FIXTURES, 'citazione', 'input.md'),
                     os.path.join(tmp, 'senza-git.md'))

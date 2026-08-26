@@ -1,6 +1,6 @@
 # Pacchetto knowledge-wiki
 
-> Pacchetto opzionale del sistema di progetto. Scaffolda una LLM Wiki nel progetto: input grezzo immutabile, pagine compilate dall'LLM, e uno schema che governa come la wiki opera. La manutenzione (sintesi, collegamenti, contraddizioni) la fa l'LLM tramite la skill di ingestione, non l'utente a mano. E' il pattern LLM Wiki (Karpathy). Si offre al gate dei pacchetti (vedi ../PACKAGES.md) ai progetti dove si accumula conoscenza trasversale nel tempo, e non si propone quando il progetto ha gia una propria knowledge base nativa.
+> Pacchetto opzionale del sistema di progetto. Scaffolda una LLM Wiki nel progetto: input grezzo immutabile, pagine compilate dall'LLM, e uno schema che governa come la wiki opera. La manutenzione (sintesi, collegamenti, contraddizioni) la fa l'LLM tramite la skill di ingestione, non l'utente a mano. È il pattern LLM Wiki (Karpathy). Si offre al gate dei pacchetti (vedi ../PACKAGES.md) ai progetti dove si accumula conoscenza trasversale nel tempo, e non si propone quando il progetto ha gia una propria knowledge base nativa.
 
 ## Mappa di istanziazione
 
@@ -16,15 +16,15 @@ templates/knowledge-wiki/skills/wiki-digest/  ->  <radice>/.claude/skills/wiki-d
 
 ## I tre layer
 
-`sources/` e' input immutabile e append-only: il registro grezzo di cio che si e' ingerito, mai modificato a mano. `wiki/` e' il prodotto compilato dall'LLM: concetti, entita, riassunti per fonte, con i collegamenti tra pagine. `WIKI-SCHEMA.md` e' la costituzione del sistema: dice quali tipi di pagina esistono, come si linkano, quando si aggiornano e come si gestiscono le contraddizioni.
+`sources/` è input immutabile e append-only: il registro grezzo di cio che si è ingerito, mai modificato a mano. `wiki/` è il prodotto compilato dall'LLM: concetti, entita, riassunti per fonte, con i collegamenti tra pagine. `WIKI-SCHEMA.md` è la costituzione del sistema: dice quali tipi di pagina esistono, come si linkano, quando si aggiornano e come si gestiscono le contraddizioni.
 
 ## Ingestione
 
-Si aggiunge una fonte mettendo il file in `sources/`, poi si invoca la skill `wiki-digest`: legge il nuovo file, aggiorna o crea le pagine in `wiki/` secondo `WIKI-SCHEMA.md`, collega i concetti e appende una voce a `log.md`. La skill e' a invocazione manuale: l'utente decide quando ingerire.
+Si aggiunge una fonte mettendo il file in `sources/`, poi si invoca la skill `wiki-digest`: legge il nuovo file, aggiorna o crea le pagine in `wiki/` secondo `WIKI-SCHEMA.md`, collega i concetti e appende una voce a `log.md`. La skill è a invocazione manuale: l'utente decide quando ingerire.
 
 ## Tracciamento git
 
-`wiki/`, `WIKI-SCHEMA.md` e `log.md` sono tracciati, perche sono la conoscenza recuperabile da un clone. `sources/` e' tracciato di default; le fonti sensibili o solo personali vanno invece in `_notes/` o aggiunte al `.gitignore`, secondo il principio dei due livelli del sistema.
+`wiki/`, `WIKI-SCHEMA.md` e `log.md` sono tracciati, perche sono la conoscenza recuperabile da un clone. `sources/` è tracciato di default; le fonti sensibili o solo personali vanno invece in `_notes/` o aggiunte al `.gitignore`, secondo il principio dei due livelli del sistema.
 
 ## Ponte con book-to-skill
 

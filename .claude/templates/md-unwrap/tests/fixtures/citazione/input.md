@@ -1,5 +1,5 @@
 > Una citazione che prosegue
-> su piu' righe, con il prefisso
+> su più righe, con il prefisso
 > conservato.
 >
 > Secondo paragrafo della citazione, con una

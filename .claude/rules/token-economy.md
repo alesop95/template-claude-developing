@@ -4,7 +4,7 @@
 
 ## Principi nativi
 
-Il sistema e' gia progettato per non sprecare contesto, e queste pratiche valgono sempre.
+Il sistema è gia progettato per non sprecare contesto, e queste pratiche valgono sempre.
 
 Densita sopra completezza: una sintesi densa vale piu di un estratto lungo. Si scrive e si legge per segnale, non per volume.
 
@@ -16,7 +16,7 @@ Si legge un file quando serve davvero, e solo la porzione necessaria, non l'inte
 
 ## Disclosure progressiva su documenti voluminosi
 
-Un corpus documentale e' troppo grande per entrare in contesto: cento documenti possono valere oltre un milione di token, e l'ottanta per cento serve come riferimento ricercabile, non come materiale di ragionamento attivo. Invece di caricare tutto, si accede ai documenti per livelli crescenti di dettaglio, scendendo solo dove serve.
+Un corpus documentale è troppo grande per entrare in contesto: cento documenti possono valere oltre un milione di token, e l'ottanta per cento serve come riferimento ricercabile, non come materiale di ragionamento attivo. Invece di caricare tutto, si accede ai documenti per livelli crescenti di dettaglio, scendendo solo dove serve.
 
 Livello 1, scheletro: solo titolo, gerarchia delle intestazioni e conteggi per sezione, una manciata di token per documento. Permette di vedere un'intera cartella in poche decine di migliaia di token e decidere dove guardare.
 
@@ -28,7 +28,7 @@ Operativamente si parte sempre dal Livello 1 sull'intera cartella, si sale al Li
 
 Il pacchetto opzionale `doc-ingest` (vedi `templates/doc-ingest/`) e l'implementazione di riferimento di questo principio su un corpus di piu documenti: converte `.pdf`, `.docx`, `.pptx`, `.xlsx` e `.html` in una cache Markdown locale con manifest a content-hash (non riconverte l'invariato) e rigenera a ogni corsa lo scheletro di Livello 1 in un `_INDEX.md`. Resta uno strumento, non un sostituto del principio: i Livelli 2 e 3 restano disciplina di lettura sull'output che produce.
 
-Una variante dello stesso principio sposta il corpus non su una cache locale ma su un motore di recupero esterno ancorato alle fonti. Il pacchetto opzionale `notebooklm-bridge` (vedi `templates/notebooklm-bridge/`) tiene il corpus dentro NotebookLM, nel piano gratuito accessibile solo da browser, e in conversazione fa entrare solo una sintesi densa e citata invece del testo grezzo: e' un Livello 1 prodotto da un motore che risponde anche a domande mirate senza mai versare le fonti in contesto. Il risparmio e' lo stesso della disclosure progressiva, con in piu' l'ancoraggio alle fonti che riduce le allucinazioni; il costo e' che l'accesso resta manuale nel browser, o assistito via un MCP di automazione opt-in, mai un'API a pagamento.
+Una variante dello stesso principio sposta il corpus non su una cache locale ma su un motore di recupero esterno ancorato alle fonti. Il pacchetto opzionale `notebooklm-bridge` (vedi `templates/notebooklm-bridge/`) tiene il corpus dentro NotebookLM, nel piano gratuito accessibile solo da browser, e in conversazione fa entrare solo una sintesi densa e citata invece del testo grezzo: è un Livello 1 prodotto da un motore che risponde anche a domande mirate senza mai versare le fonti in contesto. Il risparmio è lo stesso della disclosure progressiva, con in più l'ancoraggio alle fonti che riduce le allucinazioni; il costo è che l'accesso resta manuale nel browser, o assistito via un MCP di automazione opt-in, mai un'API a pagamento.
 
 ## Deterministico prima del linguistico
 
@@ -52,13 +52,13 @@ Il principio "un task, una chat" mantiene il contesto sempre fresco: invece di u
 
 ## Cautela sui workflow multi-agente costosi
 
-Alcuni workflow integrati (per esempio `deep-research`) fanno verificare ogni affermazione estratta da piu agenti indipendenti in parallelo: con qualche decina di affermazioni il numero di chiamate di verifica sale rapidamente a svariate decine, con un consumo di token che puo esaurire il limite di sessione in pochi secondi, prima ancora che il workflow completi la sintesi finale. Non e' un errore del workflow: e' il costo intrinseco della verifica adversariale a piu voti, esperienza gia osservata sul campo. Quando succede, non insistere rilanciando lo stesso workflow identico: o si restringe la domanda a un angolo di ricerca piu stretto per lancio, invece di chiedere tutto insieme, o si riprende con il meccanismo di resume del workflow (che rilegge dalla cache gli stadi gia completati e paga solo cio che manca), oppure si scende a una verifica manuale mirata delle sole fonti primarie gia trovate nella fase di ricerca, con una singola chiamata di recupero pagina per fonte invece del panel a piu voti: quest'ultima via e' quasi sempre la piu economica quando restano poche affermazioni da controllare.
+Alcuni workflow integrati (per esempio `deep-research`) fanno verificare ogni affermazione estratta da piu agenti indipendenti in parallelo: con qualche decina di affermazioni il numero di chiamate di verifica sale rapidamente a svariate decine, con un consumo di token che puo esaurire il limite di sessione in pochi secondi, prima ancora che il workflow completi la sintesi finale. Non è un errore del workflow: è il costo intrinseco della verifica adversariale a piu voti, esperienza gia osservata sul campo. Quando succede, non insistere rilanciando lo stesso workflow identico: o si restringe la domanda a un angolo di ricerca piu stretto per lancio, invece di chiedere tutto insieme, o si riprende con il meccanismo di resume del workflow (che rilegge dalla cache gli stadi gia completati e paga solo cio che manca), oppure si scende a una verifica manuale mirata delle sole fonti primarie gia trovate nella fase di ricerca, con una singola chiamata di recupero pagina per fonte invece del panel a piu voti: quest'ultima via è quasi sempre la piu economica quando restano poche affermazioni da controllare.
 
 ## Strumenti esterni, a scelta
 
 Quando il risparmio nativo non basta, per esempio in sessioni operative molto lunghe e ricche di output, si possono valutare strumenti esterni open source, sempre offerti come scelta al gate dei pacchetti e mai imposti.
 
-`caveman` riduce i token di output facendo rispondere l'agente in modo telegrafico, senza toccare il ragionamento. E' utile nelle sessioni operative pesanti, ma va tenuto spento quando il progetto produce documentazione o prosa leggibile, perche ne degraderebbe lo stile. Vive come tool di sessione, non come stato del progetto. Vedi la voce `caveman` in `templates/PACKAGES.md`.
+`caveman` riduce i token di output facendo rispondere l'agente in modo telegrafico, senza toccare il ragionamento. È utile nelle sessioni operative pesanti, ma va tenuto spento quando il progetto produce documentazione o prosa leggibile, perche ne degraderebbe lo stile. Vive come tool di sessione, non come stato del progetto. Vedi la voce `caveman` in `templates/PACKAGES.md`.
 
 Per esigenze piu spinte esistono alternative come un server MCP di compressione e caching del contesto (per esempio `token-optimizer-mcp`). Si adottano solo se il guadagno giustifica la dipendenza, valutando caso per caso.
 

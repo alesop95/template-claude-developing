@@ -1,6 +1,6 @@
 <div class="nota">
 Testo dentro un blocco HTML
-che resta come e'.
+che resta come è.
 </div>
 
 Paragrafo che va unito.

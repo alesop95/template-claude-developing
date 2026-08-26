@@ -1,4 +1,4 @@
-# Prompt riusabile — Inizializzazione di un PROGETTO NUOVO (greenfield)
+# Prompt riusabile - Inizializzazione di un PROGETTO NUOVO (greenfield)
 
 > Da incollare in Claude Code dentro la radice di un progetto nuovo o quasi vuoto. È un prompt fisso: si usa sempre identico. La fonte di verità dello standard vive nel bundle di riferimento in E: e non va modificata da qui; questo prompt la importa e basta.
 

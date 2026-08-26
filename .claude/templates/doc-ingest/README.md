@@ -1,6 +1,6 @@
 # Pacchetto doc-ingest
 
-> Pacchetto opzionale del sistema di progetto. Estrae un corpus di documenti voluminosi, in `.pdf`, `.docx`, `.pptx`, `.xlsx` o `.html`, in una cache Markdown locale e ignorata da git, con ingest incrementale a content-hash e un indice di Livello 1 rigenerato a ogni corsa. Zero consumo di token: l'estrazione e' interamente locale e deterministica, nessuna chiamata LLM. Si offre al gate dei pacchetti (vedi ../PACKAGES.md) ai progetti che hanno o riceveranno piu documenti voluminosi da consultare durante il lavoro, senza bisogno di versionarli. Non si propone dove basta l'ingestione manuale di un singolo documento gia descritta nel README di radice, ne dove serve produrre una documentazione tecnica versionata da un `.docx`: per quel caso c'e il pacchetto `docx-to-docs`.
+> Pacchetto opzionale del sistema di progetto. Estrae un corpus di documenti voluminosi, in `.pdf`, `.docx`, `.pptx`, `.xlsx` o `.html`, in una cache Markdown locale e ignorata da git, con ingest incrementale a content-hash e un indice di Livello 1 rigenerato a ogni corsa. Zero consumo di token: l'estrazione è interamente locale e deterministica, nessuna chiamata LLM. Si offre al gate dei pacchetti (vedi ../PACKAGES.md) ai progetti che hanno o riceveranno piu documenti voluminosi da consultare durante il lavoro, senza bisogno di versionarli. Non si propone dove basta l'ingestione manuale di un singolo documento gia descritta nel README di radice, ne dove serve produrre una documentazione tecnica versionata da un `.docx`: per quel caso c'e il pacchetto `docx-to-docs`.
 
 ## Rapporto con l'ingestione manuale e con docx-to-docs
 
@@ -8,7 +8,7 @@ Tre strumenti distinti coprono lo stesso principio, la disclosure progressiva de
 
 ## Mappa di istanziazione
 
-L'istanziazione copia lo script nella cartella `tools/` del progetto; la cache si crea alla prima esecuzione, sotto `_notes/`, gia' ignorato da git secondo `.claude/PROJECT-SYSTEM.md`.
+L'istanziazione copia lo script nella cartella `tools/` del progetto; la cache si crea alla prima esecuzione, sotto `_notes/`, già ignorato da git secondo `.claude/PROJECT-SYSTEM.md`.
 
 ```
 templates/doc-ingest/doc-ingest.py  ->  <radice>/tools/doc-ingest.py        (tracciato)
@@ -23,7 +23,7 @@ Al termine della corsa lo script rigenera `_INDEX.md` nella cartella di cache: p
 
 Due modalita opzionali estendono il motore di default, entrambe importate solo quando richieste esplicitamente, cosi che l'installazione minima resti leggera. Il flag `--engine docling` sposta l'estrazione dei soli `.pdf` su `Docling` (IBM Research, codice open source), che usa modelli di analisi del layout per i casi dove `markitdown` degrada: tabelle complesse, colonne multiple, documenti accademici densi. E una dipendenza piu pesante, da installare solo quando il motore di default produce output visibilmente rotto su un file specifico. Il flag `--ocr` tenta un fallback via `pytesseract` sui `.pdf` il cui testo nativo estratto risulta sotto una soglia minima, sintomo tipico di uno scan senza livello di testo; richiede il binario di sistema `tesseract-ocr` installato a parte, e se manca lo script segnala il file nell'indice invece di interrompere l'intera corsa.
 
-Esperienza reale da un progetto che ha usato il pacchetto su un corpus di libri di studio in gran parte fotocopiati o scansionati datati: il fallback OCR e' uscito a zero parole estratte, perche' l'OCR su scansioni di bassa qualita' e' spesso inaffidabile o rumoroso, non un problema di attivazione del flag. Quando serve solo l'anagrafica bibliografica di un libro (non il testo integrale), la via pratica alternativa e' la lettura visiva mirata di poche pagine di frontespizio/colophon, standardizzata nel pacchetto opzionale `book-bib-extract`, non un nuovo tentativo di OCR sull'intero corpus.
+Esperienza reale da un progetto che ha usato il pacchetto su un corpus di libri di studio in gran parte fotocopiati o scansionati datati: il fallback OCR è uscito a zero parole estratte, perché l'OCR su scansioni di bassa qualità è spesso inaffidabile o rumoroso, non un problema di attivazione del flag. Quando serve solo l'anagrafica bibliografica di un libro (non il testo integrale), la via pratica alternativa è la lettura visiva mirata di poche pagine di frontespizio/colophon, standardizzata nel pacchetto opzionale `book-bib-extract`, non un nuovo tentativo di OCR sull'intero corpus.
 
 ## Uso
 

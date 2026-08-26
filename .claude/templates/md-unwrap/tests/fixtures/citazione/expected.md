@@ -1,4 +1,4 @@
-> Una citazione che prosegue su piu' righe, con il prefisso conservato.
+> Una citazione che prosegue su più righe, con il prefisso conservato.
 >
 > Secondo paragrafo della citazione, con una lazy continuation senza marcatore.
 

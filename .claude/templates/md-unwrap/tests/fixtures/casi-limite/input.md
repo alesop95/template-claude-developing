@@ -10,7 +10,7 @@ codice
 ```
 
 Paragrafo seguito da un titolo ATX
-# non e' una continuazione
+# non è una continuazione
 
 Paragrafo seguito da una citazione
-> nemmeno questa e' una continuazione
+> nemmeno questa è una continuazione

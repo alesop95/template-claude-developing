@@ -1,4 +1,4 @@
-# Prompt riusabile — ALLINEAMENTO di un progetto ESISTENTE allo standard
+# Prompt riusabile - ALLINEAMENTO di un progetto ESISTENTE allo standard
 
 > Da incollare in Claude Code dentro la radice di un progetto che ha già codice e storia git. È un prompt fisso: si usa sempre identico. La fonte di verità dello standard vive nel bundle di riferimento in E: e non va modificata da qui; questo prompt la importa e ci si confronta.
 

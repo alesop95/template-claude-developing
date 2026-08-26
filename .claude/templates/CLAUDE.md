@@ -35,7 +35,7 @@ Regole modulari caricate su necessità, sotto `.claude/rules/`, e skill richiama
 
 ## Apprendimenti recenti
 
-Voci brevi e datate per le decisioni e le scoperte operative che non hanno ancora una casa definitiva: un comando che funziona diversamente da come documentato, un gotcha dell'ambiente, una scelta presa al volo. La voce nasce qui e migra appena possibile nella sede propria, `memory/decisions.md` se e' una decisione architetturale, la scheda di contesto pertinente se e' conoscenza strutturale, e si cancella da qui una volta migrata: questa sezione e' un buffer, non un archivio.
+Voci brevi e datate per le decisioni e le scoperte operative che non hanno ancora una casa definitiva: un comando che funziona diversamente da come documentato, un gotcha dell'ambiente, una scelta presa al volo. La voce nasce qui e migra appena possibile nella sede propria, `memory/decisions.md` se è una decisione architetturale, la scheda di contesto pertinente se è conoscenza strutturale, e si cancella da qui una volta migrata: questa sezione è un buffer, non un archivio.
 
 ```
 - [<YYYY-MM-DD>] <decisione o scoperta, una riga>
