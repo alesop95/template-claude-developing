@@ -44,6 +44,45 @@ import os
 import re
 import sys
 
+
+# Le macro LaTeX il cui argomento e' un identificatore e non prosa. Il loro contenuto
+# non va mai accentato ne' normalizzato: un'etichetta accentata compila soltanto se
+# ogni riferimento viene riscritto insieme a essa, e un riferimento rimasto indietro
+# produce due punti di domanda nel PDF senza che nulla lo segnali. E' lo stesso
+# principio per cui nei file Markdown si salta il contenuto dei blocchi recintati:
+# dentro un file convivono due linguaggi, e soltanto uno dei due vuole gli accenti.
+IDENTIFICATORI_TEX = re.compile(
+    r"\\(?:label|ref|pageref|eqref|autoref|cite|nocite|input|include"
+    r"|includegraphics|bibitem|hypertarget|hyperlink|url|href|usepackage"
+    r"|documentclass|newcommand|renewcommand|newenvironment|begin|end)"
+    r"(?:\[[^\]]*\])?"
+    r"\{[^{}]*\}")
+
+
+def maschera_identificatori(testo):
+    """Sostituisce gli argomenti-identificatore con segnaposto inerti.
+
+    Il segnaposto non contiene lettere accentabili, apostrofi ne' trattini, quindi
+    nessuna regola degli strumenti lo tocca. Restituisce il testo mascherato e la
+    lista degli originali, nell'ordine in cui vanno ripristinati.
+    """
+    salvati = []
+
+    def sostituisci(m):
+        salvati.append(m.group(0))
+        return "%sTEXID%d%s" % (SEGNAPOSTO, len(salvati) - 1, SEGNAPOSTO)
+
+    return IDENTIFICATORI_TEX.sub(sostituisci, testo), salvati
+
+
+def ripristina_identificatori(testo, salvati):
+    for i, originale in enumerate(salvati):
+        testo = testo.replace("%sTEXID%d%s" % (SEGNAPOSTO, i, SEGNAPOSTO), originale)
+    return testo
+
+
+SEGNAPOSTO = chr(0)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ESCLUSIONI = os.path.join(ROOT, "tools", "dashes-exclude.txt")
 
@@ -137,6 +176,14 @@ def elabora(percorso, conteggio):
     crlf = b"\r\n" in corpo
     testo = corpo.decode("utf-8").replace("\r\n", "\n")
 
+    # Su un file .tex gli identificatori si mascherano prima di convertire: il nome di
+    # un'etichetta o di una chiave bibliografica non e' prosa, e riscriverlo produce un
+    # riferimento irrisolto silenzioso invece di un errore.
+    tex = percorso.lower().endswith((".tex", ".sty", ".cls", ".lytex"))
+    salvati = []
+    if tex:
+        testo, salvati = maschera_identificatori(testo)
+
     if percorso.lower().endswith(".py"):
         nuovo = converti_python(testo, conteggio)
     elif percorso.lower().endswith(".md"):
@@ -144,6 +191,9 @@ def elabora(percorso, conteggio):
     else:
         nuovo = sostituisci(testo, conteggio)
 
+    if tex:
+        nuovo = ripristina_identificatori(nuovo, salvati)
+        testo = ripristina_identificatori(testo, salvati)
     if nuovo == testo:
         return False, None
     uscita = nuovo.replace("\n", "\r\n") if crlf else nuovo

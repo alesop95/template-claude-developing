@@ -60,6 +60,45 @@ import os
 import re
 import sys
 
+
+# Le macro LaTeX il cui argomento e' un identificatore e non prosa. Il loro contenuto
+# non va mai accentato ne' normalizzato: un'etichetta accentata compila soltanto se
+# ogni riferimento viene riscritto insieme a essa, e un riferimento rimasto indietro
+# produce due punti di domanda nel PDF senza che nulla lo segnali. E' lo stesso
+# principio per cui nei file Markdown si salta il contenuto dei blocchi recintati:
+# dentro un file convivono due linguaggi, e soltanto uno dei due vuole gli accenti.
+IDENTIFICATORI_TEX = re.compile(
+    r"\\(?:label|ref|pageref|eqref|autoref|cite|nocite|input|include"
+    r"|includegraphics|bibitem|hypertarget|hyperlink|url|href|usepackage"
+    r"|documentclass|newcommand|renewcommand|newenvironment|begin|end)"
+    r"(?:\[[^\]]*\])?"
+    r"\{[^{}]*\}")
+
+
+def maschera_identificatori(testo):
+    """Sostituisce gli argomenti-identificatore con segnaposto inerti.
+
+    Il segnaposto non contiene lettere accentabili, apostrofi ne' trattini, quindi
+    nessuna regola degli strumenti lo tocca. Restituisce il testo mascherato e la
+    lista degli originali, nell'ordine in cui vanno ripristinati.
+    """
+    salvati = []
+
+    def sostituisci(m):
+        salvati.append(m.group(0))
+        return "%sTEXID%d%s" % (SEGNAPOSTO, len(salvati) - 1, SEGNAPOSTO)
+
+    return IDENTIFICATORI_TEX.sub(sostituisci, testo), salvati
+
+
+def ripristina_identificatori(testo, salvati):
+    for i, originale in enumerate(salvati):
+        testo = testo.replace("%sTEXID%d%s" % (SEGNAPOSTO, i, SEGNAPOSTO), originale)
+    return testo
+
+
+SEGNAPOSTO = chr(0)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # ---------------------------------------------------------------------------
@@ -189,10 +228,21 @@ def segmenta_markdown(testo):
     """
     tratti = []
     dentro_recinto = False
+    # Il front matter e' metadato e non prosa: un tag accentato e' un tag diverso, e
+    # due tag che differiscono per un accento non si uniscono in alcun indice. Si
+    # riconosce solo in apertura di file, perche' altrove tre trattini sono una linea.
+    dentro_front = testo.startswith('---' + chr(10))
+    prima_riga = True
     recinto = None
     # Si itera conservando l'a capo dentro la riga, così la concatenazione è esatta.
     for riga in testo.splitlines(keepends=True):
         nudo = riga.rstrip("\n")
+        if dentro_front:
+            tratti.append(("verbatim", riga))
+            if not prima_riga and nudo.strip() == '---':
+                dentro_front = False
+            prima_riga = False
+            continue
         m = re.match(r"^\s*(`{3,}|~{3,})", nudo)
         if not dentro_recinto and m:
             dentro_recinto, recinto = True, m.group(1)[0] * 3
@@ -255,6 +305,14 @@ def elabora(percorso, statistiche, residui, ambigui):
     crlf = b"\r\n" in corpo
     testo = corpo.decode("utf-8").replace("\r\n", "\n")
 
+    # Su un file .tex gli identificatori si mascherano prima di convertire: il nome di
+    # un'etichetta o di una chiave bibliografica non e' prosa, e riscriverlo produce un
+    # riferimento irrisolto silenzioso invece di un errore.
+    tex = percorso.lower().endswith((".tex", ".sty", ".cls", ".lytex"))
+    salvati = []
+    if tex:
+        testo, salvati = maschera_identificatori(testo)
+
     if percorso.lower().endswith(".py"):
         nuovo = converti_python(testo, statistiche, residui, ambigui)
     elif percorso.lower().endswith(".md"):
@@ -270,6 +328,9 @@ def elabora(percorso, statistiche, residui, ambigui):
     else:
         nuovo = converti_prosa(testo, statistiche, residui, ambigui)
 
+    if tex:
+        nuovo = ripristina_identificatori(nuovo, salvati)
+        testo = ripristina_identificatori(testo, salvati)
     if nuovo == testo:
         return False, None
     uscita = nuovo.replace("\n", "\r\n") if crlf else nuovo
@@ -569,7 +630,11 @@ def main():
         tot = sum(statistiche.values())
         print("\n%d sostituzioni, %d forme distinte:" % (tot, len(statistiche)))
         for k, v in sorted(statistiche.items(), key=lambda x: -x[1])[:25]:
-            reso = ACUTO.get(k) or GRAVE.get(k)
+            # La resa va cercata anche nella regola dei suffissi, non solo nelle mappe
+            # esplicite: le parole in -ita', -eta' e simili sono convertite dalla regola e
+            # non compaiono in ACUTO ne' in GRAVE, quindi senza questo terzo tentativo il
+            # report le mostrerebbe come None pur avendole sostituite correttamente.
+            reso = ACUTO.get(k) or GRAVE.get(k) or per_suffisso(k) or "?"
             print("  %-16s -> %-16s x%d" % (k + "'", reso, v))
     if ambigui:
         print("\nda decidere a mano, non convertite:")

@@ -63,6 +63,45 @@ import os
 import re
 import sys
 
+
+# Le macro LaTeX il cui argomento e' un identificatore e non prosa. Il loro contenuto
+# non va mai accentato ne' normalizzato: un'etichetta accentata compila soltanto se
+# ogni riferimento viene riscritto insieme a essa, e un riferimento rimasto indietro
+# produce due punti di domanda nel PDF senza che nulla lo segnali. E' lo stesso
+# principio per cui nei file Markdown si salta il contenuto dei blocchi recintati:
+# dentro un file convivono due linguaggi, e soltanto uno dei due vuole gli accenti.
+IDENTIFICATORI_TEX = re.compile(
+    r"\\(?:label|ref|pageref|eqref|autoref|cite|nocite|input|include"
+    r"|includegraphics|bibitem|hypertarget|hyperlink|url|href|usepackage"
+    r"|documentclass|newcommand|renewcommand|newenvironment|begin|end)"
+    r"(?:\[[^\]]*\])?"
+    r"\{[^{}]*\}")
+
+
+def maschera_identificatori(testo):
+    """Sostituisce gli argomenti-identificatore con segnaposto inerti.
+
+    Il segnaposto non contiene lettere accentabili, apostrofi ne' trattini, quindi
+    nessuna regola degli strumenti lo tocca. Restituisce il testo mascherato e la
+    lista degli originali, nell'ordine in cui vanno ripristinati.
+    """
+    salvati = []
+
+    def sostituisci(m):
+        salvati.append(m.group(0))
+        return "%sTEXID%d%s" % (SEGNAPOSTO, len(salvati) - 1, SEGNAPOSTO)
+
+    return IDENTIFICATORI_TEX.sub(sostituisci, testo), salvati
+
+
+def ripristina_identificatori(testo, salvati):
+    for i, originale in enumerate(salvati):
+        testo = testo.replace("%sTEXID%d%s" % (SEGNAPOSTO, i, SEGNAPOSTO), originale)
+    return testo
+
+
+SEGNAPOSTO = chr(0)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # ---------------------------------------------------------------------------
@@ -278,8 +317,19 @@ def converti_prosa(testo, fatte, viste):
 
 def converti_markdown(testo, fatte, viste):
     fuori, dentro, recinto = [], False, None
+    # Il front matter e' metadato e non prosa: vedi la nota in segmenta_markdown di
+    # fix-accents. Un tag accentato e' un tag diverso, e la relazione che portava
+    # sparisce senza segnalazione.
+    dentro_front = testo.startswith('---' + chr(10))
+    prima_riga = True
     for riga in testo.splitlines(keepends=True):
         nudo = riga.rstrip("\n")
+        if dentro_front:
+            fuori.append(riga)
+            if not prima_riga and nudo.strip() == '---':
+                dentro_front = False
+            prima_riga = False
+            continue
         m = RECINTO.match(nudo)
         if not dentro and m:
             dentro, recinto = True, m.group(1)[0] * 3
@@ -320,15 +370,25 @@ def elabora(percorso, fatte, viste):
     testo = corpo.decode("utf-8").replace("\r\n", "\n")
 
     basso = percorso.lower()
+    # Su un file .tex gli identificatori si mascherano prima di convertire: il nome di
+    # un'etichetta o di una chiave bibliografica non e' prosa, e accentarlo produce un
+    # riferimento irrisolto silenzioso invece di un errore.
+    tex = basso.endswith((".tex", ".sty", ".cls", ".lytex"))
+    salvati = []
+    if tex:
+        testo_lavoro, salvati = maschera_identificatori(testo)
+    else:
+        testo_lavoro = testo
     if basso.endswith(".ly"):
         return False, None
     if basso.endswith(".py"):
-        nuovo = converti_python(testo, fatte, viste)
+        nuovo = converti_python(testo_lavoro, fatte, viste)
     elif basso.endswith((".md", ".lytex")):
-        nuovo = converti_markdown(testo, fatte, viste)
+        nuovo = converti_markdown(testo_lavoro, fatte, viste)
     else:
-        nuovo = converti_prosa(testo, fatte, viste)
+        nuovo = converti_prosa(testo_lavoro, fatte, viste)
 
+    nuovo = ripristina_identificatori(nuovo, salvati) if tex else nuovo
     if nuovo == testo:
         return False, None
     uscita = nuovo.replace("\n", "\r\n") if crlf else nuovo
