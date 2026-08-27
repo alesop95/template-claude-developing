@@ -30,6 +30,6 @@ La skill-libro resta locale al progetto. Se l'utente vuole renderla disponibile 
 
 ## Vincoli
 
-Densita sopra completezza: una sintesi da mille token vale piu di un estratto da diecimila. Mai testo grezzo: sempre estrazione di segnale. On-demand: i capitoli si caricano solo quando servono. Non eseguire `git add`, `commit` o `push`: restano all'utente.
+Densità sopra completezza: una sintesi da mille token vale più di un estratto da diecimila. Mai testo grezzo: sempre estrazione di segnale. On-demand: i capitoli si caricano solo quando servono. Non eseguire `git add`, `commit` o `push`: restano all'utente.
 
 Idempotenza: rilanciare `book-digest` sullo stesso slug aggiorna la skill-libro esistente in luogo, senza duplicarla.

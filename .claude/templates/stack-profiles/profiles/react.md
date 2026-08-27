@@ -16,7 +16,7 @@ Le label sono associate ai controlli, i ruoli ARIA[^1] si usano dove la semantic
 
 ## Test
 
-Con Testing Library si testa il comportamento visibile all'utente, non l'implementazione: si interroga il DOM per ruolo e testo, non per classi o struttura interna, cosi i test sopravvivono ai refactor.
+Con Testing Library si testa il comportamento visibile all'utente, non l'implementazione: si interroga il DOM per ruolo e testo, non per classi o struttura interna, così i test sopravvivono ai refactor.
 
 ## Prima di committare
 

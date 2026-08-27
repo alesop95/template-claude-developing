@@ -2,7 +2,7 @@
 
 ## render-diagrams.mjs
 
-Rende i diagrammi Mermaid di `.claude/context/diagrams/*.mmd` nei corrispondenti `.svg`, riusando il browser Chromium-based gia installato sul sistema (Edge o Chrome). Non scarica il Chromium di Puppeteer: il download e disattivato e si punta al browser locale, cosi la generazione resta snella e ogni progetto e autonomo.
+Rende i diagrammi Mermaid di `.claude/context/diagrams/*.mmd` nei corrispondenti `.svg`, riusando il browser Chromium-based già installato sul sistema (Edge o Chrome). Non scarica il Chromium di Puppeteer: il download e disattivato e si punta al browser locale, così la generazione resta snella e ogni progetto e autonomo.
 
 Uso:
 
@@ -54,26 +54,26 @@ Companion di `session-end-wipe`: rimuove da `.claude.json` le sole voci di `proj
 node scrub-claude-json.js <percorso .claude.json> <prefisso> [<prefisso> ...]
 ```
 
-I prefissi sono percorsi e non slug, passati come argomenti distinti perche i percorsi con spazi non richiedano accorgimenti: su Windows di norma la radice del disco dei progetti (`D:`, `E:`), su POSIX la radice della cartella di sviluppo (`/home/utente/dev`). Il confronto e case-insensitive, che e cio che serve su Windows dove lo stesso progetto compare a volte come `e:/x` e a volte come `E:/x`, ed e comunque il verso prudente per uno script distruttivo. Attenzione a una trappola nel provarlo da Git Bash su Windows: la shell converte gli argomenti che sembrano percorsi POSIX in percorsi Windows prima di passarli a `node.exe`, quindi per un test con prefissi in forma `/home/...` serve `MSYS2_ARG_CONV_EXCL='*'`.
+I prefissi sono percorsi e non slug, passati come argomenti distinti perché i percorsi con spazi non richiedano accorgimenti: su Windows di norma la radice del disco dei progetti (`D:`, `E:`), su POSIX la radice della cartella di sviluppo (`/home/utente/dev`). Il confronto e case-insensitive, che è cio che serve su Windows dove lo stesso progetto compare a volte come `e:/x` e a volte come `E:/x`, ed è comunque il verso prudente per uno script distruttivo. Attenzione a una trappola nel provarlo da Git Bash su Windows: la shell converte gli argomenti che sembrano percorsi POSIX in percorsi Windows prima di passarli a `node.exe`, quindi per un test con prefissi in forma `/home/...` serve `MSYS2_ARG_CONV_EXCL='*'`.
 
-Il passaggio e in Node e non in PowerShell per una ragione precisa: `ConvertFrom-Json` di PowerShell 5.1 tratta le chiavi JSON come case-insensitive e va in errore su un `.claude.json` che contenga sia `e:/progetto` sia `E:/progetto`, condizione tutt'altro che rara. `JSON.parse`/`JSON.stringify` e invece la stessa semantica che Claude Code applica al proprio file. Poiche il file custodisce il login, non viene mai riscritto alla cieca: lo script verifica che l'oggetto in memoria contenga ancora `oauthAccount` e `userID`, valida il JSON prodotto, scrive su un file temporaneo, lo rilegge da disco e solo allora sostituisce l'originale; qualsiasi anomalia annulla tutto, lasciando il file intatto e senza residui. Se Node non e disponibile il wipe salta il passaggio senza toccare nulla.
+Il passaggio e in Node e non in PowerShell per una ragione precisa: `ConvertFrom-Json` di PowerShell 5.1 tratta le chiavi JSON come case-insensitive e va in errore su un `.claude.json` che contenga sia `e:/progetto` sia `E:/progetto`, condizione tutt'altro che rara. `JSON.parse`/`JSON.stringify` e invece la stessa semantica che Claude Code applica al proprio file. Poiché il file custodisce il login, non viene mai riscritto alla cieca: lo script verifica che l'oggetto in memoria contenga ancora `oauthAccount` e `userID`, valida il JSON prodotto, scrive su un file temporaneo, lo rilegge da disco e solo allora sostituisce l'originale; qualsiasi anomalia annulla tutto, lasciando il file intatto e senza residui. Se Node non è disponibile il wipe salta il passaggio senza toccare nulla.
 
 ## latest-screenshot.ps1
 
-Restituisce il percorso dell'immagine piu recente nella cartella di cattura di Screenpresso e la sua eta in secondi, perche l'agente legga lo screenshot appena catturato dall'utente per un passo manuale e visivo dello sviluppo. Si usa insieme alla regola `.claude/rules/manual-screenshots.md`, che stabilisce quando l'agente deve chiedere uno screenshot.
+Restituisce il percorso dell'immagine più recente nella cartella di cattura di Screenpresso e la sua eta in secondi, perché l'agente legga lo screenshot appena catturato dall'utente per un passo manuale e visivo dello sviluppo. Si usa insieme alla regola `.claude/rules/manual-screenshots.md`, che stabilisce quando l'agente deve chiedere uno screenshot.
 
 ```
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/latest-screenshot.ps1
 ```
 
-Cartella di default `%USERPROFILE%\Pictures\Screenpresso`, sovrascrivibile con `-Folder`. Con `-MaxAgeSeconds N` pretende che l'immagine piu recente sia stata salvata da meno di N secondi, per non leggere per errore uno screenshot vecchio. Esce 0 se trova un'immagine valida, 1 altrimenti.
+Cartella di default `%USERPROFILE%\Pictures\Screenpresso`, sovrascrivibile con `-Folder`. Con `-MaxAgeSeconds N` pretende che l'immagine più recente sia stata salvata da meno di N secondi, per non leggere per errore uno screenshot vecchio. Esce 0 se trova un'immagine valida, 1 altrimenti.
 
 ## claude-incognito.ps1 / claude-incognito.sh
 
-Avvia una sessione Claude Code effimera: redirige `HOME` e le cartelle XDG su una directory temporanea e azzera `CLAUDE_CONFIG_DIR`, cosi la sessione non legge ne scrive nell'account reale e parte vergine; la temp si rimuove alla chiusura. Complementa `session-end-wipe` (quello pulisce dopo, questo non scrive nemmeno) ed è utile per lavorare su materiale sensibile.
+Avvia una sessione Claude Code effimera: redirige `HOME` e le cartelle XDG su una directory temporanea e azzera `CLAUDE_CONFIG_DIR`, così la sessione non legge ne scrive nell'account reale e parte vergine; la temp si rimuove alla chiusura. Complementa `session-end-wipe` (quello pulisce dopo, questo non scrive nemmeno) ed è utile per lavorare su materiale sensibile.
 
 ```
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/claude-incognito.ps1 -ProjectDir "<percorso>"
 ```
 
-Su Linux la variante e `claude-incognito.sh` (`bash claude-incognito.sh <percorso>`). La tecnica si basa sulla specifica XDG Base Directory piu la redirezione di `HOME`; vedi PROJECT-SYSTEM.md sezione 15.
+Su Linux la variante e `claude-incognito.sh` (`bash claude-incognito.sh <percorso>`). La tecnica si basa sulla specifica XDG Base Directory più la redirezione di `HOME`; vedi PROJECT-SYSTEM.md sezione 15.

@@ -50,7 +50,7 @@ Pacchetto opzionale per progetti LaTeX, da istanziare solo se il progetto produc
 templates/latex/               ->  scripts/, tex-packages.txt, .latexmkrc, .claude/skills/latex-build/
 ```
 
-Pacchetto opzionale per una LLM Wiki, da istanziare nei progetti dove si accumula conoscenza trasversale nel tempo e che non hanno gia una knowledge base nativa. Crea la cartella `knowledge/` con `sources/` immutabile, `wiki/` compilata dall'LLM e lo schema `WIKI-SCHEMA.md`, piu la skill di ingestione `wiki-digest`. La mappa di dettaglio e le note stanno in `templates/knowledge-wiki/README.md`.
+Pacchetto opzionale per una LLM Wiki, da istanziare nei progetti dove si accumula conoscenza trasversale nel tempo e che non hanno già una knowledge base nativa. Crea la cartella `knowledge/` con `sources/` immutabile, `wiki/` compilata dall'LLM e lo schema `WIKI-SCHEMA.md`, più la skill di ingestione `wiki-digest`. La mappa di dettaglio e le note stanno in `templates/knowledge-wiki/README.md`.
 
 ```
 templates/knowledge-wiki/  ->  knowledge/ (WIKI-SCHEMA.md, log.md, sources/, wiki/) e .claude/skills/wiki-digest/
@@ -93,14 +93,14 @@ Pacchetto opzionale dei subagent di esempio, da scegliere uno per uno al gate: `
 templates/agents/<agente>.md  ->  .claude/agents/<agente>.md
 ```
 
-Pacchetto opzionale per la resa dei diagrammi, da istanziare se il progetto contiene diagrammi Mermaid sotto `.claude/context/diagrams/`. Lo script rende i `.mmd` nei corrispondenti `.svg` riusando il browser Chromium-based di sistema (Edge o Chrome), senza scaricare un Chromium di Puppeteer, cosi ogni progetto e autonomo nella generazione.
+Pacchetto opzionale per la resa dei diagrammi, da istanziare se il progetto contiene diagrammi Mermaid sotto `.claude/context/diagrams/`. Lo script rende i `.mmd` nei corrispondenti `.svg` riusando il browser Chromium-based di sistema (Edge o Chrome), senza scaricare un Chromium di Puppeteer, così ogni progetto e autonomo nella generazione.
 
 ```
 templates/tools/render-diagrams.mjs ->  <radice>/tools/render-diagrams.mjs   (tracciato, opzionale)
 templates/tools/README.md           ->  <radice>/tools/README.md             (tracciato, opzionale)
 ```
 
-Strumento per i passi manuali e visivi, da istanziare nel progetto quando lo sviluppo richiede riscontri visivi che l'agente non puo osservare. Restituisce l'immagine piu recente nella cartella di cattura di Screenpresso, perche l'agente legga lo screenshot appena fatto dall'utente. Si abbina alla regola `rules/manual-screenshots.md`, gia presente sotto `.claude/rules/` e copiata con essa.
+Strumento per i passi manuali e visivi, da istanziare nel progetto quando lo sviluppo richiede riscontri visivi che l'agente non può osservare. Restituisce l'immagine più recente nella cartella di cattura di Screenpresso, perché l'agente legga lo screenshot appena fatto dall'utente. Si abbina alla regola `rules/manual-screenshots.md`, già presente sotto `.claude/rules/` e copiata con essa.
 
 ```
 templates/tools/latest-screenshot.ps1 ->  <radice>/tools/latest-screenshot.ps1  (tracciato, opzionale)

@@ -1,6 +1,6 @@
 # Pacchetto stack-profiles
 
-> Pacchetto opzionale del sistema di progetto. Fornisce profili di regole già scritti per gli stack ricorrenti, da istanziare come regola modulare `.claude/rules/stack-profile.md` al momento dell'inizializzazione o dell'allineamento, quando il gate riconosce lo stack del progetto. Un profilo fissa le convenzioni di stile, i comandi tipici e i controlli pre-commit di quello stack, cosi che un progetto nuovo parta con le convenzioni giuste invece di scriverle a mano da zero e di riscoprirle a ogni progetto. Deriva dal bundle di template generato dall'utente a partire dalla guida community `Cranot/claude-code-guide`.
+> Pacchetto opzionale del sistema di progetto. Fornisce profili di regole già scritti per gli stack ricorrenti, da istanziare come regola modulare `.claude/rules/stack-profile.md` al momento dell'inizializzazione o dell'allineamento, quando il gate riconosce lo stack del progetto. Un profilo fissa le convenzioni di stile, i comandi tipici e i controlli pre-commit di quello stack, così che un progetto nuovo parta con le convenzioni giuste invece di scriverle a mano da zero e di riscoprirle a ogni progetto. Deriva dal bundle di template generato dall'utente a partire dalla guida community `Cranot/claude-code-guide`.
 
 ## Rapporto con STACK.md e con le regole esistenti
 
@@ -16,7 +16,7 @@ Il profilo `ts-mcp` copre TypeScript/Node con sviluppo di server MCP[^1]: strict
 templates/stack-profiles/profiles/<profilo>.md  ->  <radice>/.claude/rules/stack-profile.md   (tracciato)
 ```
 
-Si istanzia un solo profilo per progetto, quello dello stack principale; il file istanziato prende sempre il nome `stack-profile.md`, cosi che il `CLAUDE.md` e le altre regole possano riferirlo con un percorso stabile. In un monorepo con più stack conviene istanziare il profilo dello stack dominante e annotare le convenzioni degli stack secondari nella scheda `STACK.md`, oppure, se davvero servono due profili completi, istanziare il secondo come `stack-profile-<nome>.md` dichiarandolo nel `CLAUDE.md`. Il profilo istanziato è un punto di partenza, non un contratto immutabile: si adatta al progetto man mano che le convenzioni reali emergono, e le personalizzazioni sopravvivono perché il file vive nel repository del progetto, non nel template.
+Si istanzia un solo profilo per progetto, quello dello stack principale; il file istanziato prende sempre il nome `stack-profile.md`, così che il `CLAUDE.md` e le altre regole possano riferirlo con un percorso stabile. In un monorepo con più stack conviene istanziare il profilo dello stack dominante e annotare le convenzioni degli stack secondari nella scheda `STACK.md`, oppure, se davvero servono due profili completi, istanziare il secondo come `stack-profile-<nome>.md` dichiarandolo nel `CLAUDE.md`. Il profilo istanziato è un punto di partenza, non un contratto immutabile: si adatta al progetto man mano che le convenzioni reali emergono, e le personalizzazioni sopravvivono perché il file vive nel repository del progetto, non nel template.
 
 ## Come si usa, passo per passo
 

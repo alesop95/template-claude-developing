@@ -1,7 +1,7 @@
 ---
 name: corpus-analysis
 description: >
-  Applica una o piu delle dieci modalita della Corpus Analysis Suite a un corpus di paper gia
+  Applica una o più delle dieci modalità della Corpus Analysis Suite a un corpus di paper già
   caricati nella conversazione corrente: Intake Protocol, Contradiction Finder, Citation Chain,
   Gap Scanner, Methodology Audit, Master Synthesis, Assumption Killer, Knowledge Map Builder, So
   What Test, e Canon Update per quando arriva un paper nuovo dopo che il corpus è già stato

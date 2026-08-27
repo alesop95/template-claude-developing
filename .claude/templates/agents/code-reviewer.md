@@ -17,7 +17,7 @@ Quando ricevi del codice da revisionare, operi esclusivamente in lettura. Contro
 
 Per ogni problema trovato, riporti:
 
-- Severita: CRITICAL (blocca il merge), HIGH (da risolvere presto), MEDIUM (tecnico debito accettabile a breve), LOW (refactor opportunistico).
+- Severità: CRITICAL (blocca il merge), HIGH (da risolvere presto), MEDIUM (tecnico debito accettabile a breve), LOW (refactor opportunistico).
 - File e numero di riga.
 - Descrizione del problema e della sua conseguenza concreta.
 - Una proposta di correzione concisa, se non ovvia.

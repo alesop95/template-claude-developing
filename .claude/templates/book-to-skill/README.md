@@ -4,7 +4,7 @@
 
 ## La scelta: locale per default, globale solo su conferma
 
-In riferimento al repo book-to-skill, adottiamo la capacita di creare skill da un subset di libri ma non la rendiamo globale a Claude per default. Ogni progetto puo aver bisogno di libri specifici, quindi le skill-libro nascono dentro il progetto, sotto `.claude/skills/<slug>/`, versionate e trasportate dal repo. Si puo comunque promuovere una skill-libro al contesto globale di Claude (`~/.claude/skills/<slug>/`), ma solo su conferma esplicita dell'utente e tracciando la scelta. Il default e locale; il globale e una scelta cosciente e registrata, per i libri di riferimento usati in piu progetti.
+In riferimento al repo book-to-skill, adottiamo la capacità di creare skill da un subset di libri ma non la rendiamo globale a Claude per default. Ogni progetto può aver bisogno di libri specifici, quindi le skill-libro nascono dentro il progetto, sotto `.claude/skills/<slug>/`, versionate e trasportate dal repo. Si può comunque promuovere una skill-libro al contesto globale di Claude (`~/.claude/skills/<slug>/`), ma solo su conferma esplicita dell'utente e tracciando la scelta. Il default e locale; il globale e una scelta cosciente e registrata, per i libri di riferimento usati in più progetti.
 
 ## Cosa produce
 
@@ -20,7 +20,7 @@ La skill `book-digest`, dato un PDF o documento tecnico, genera in `.claude/skil
 └── cheatsheet.md     tabelle decisionali e regole di riferimento rapido
 ```
 
-I capitoli non si caricano finche non servono: la skill resta densa e a basso costo di contesto.
+I capitoli non si caricano finché non servono: la skill resta densa e a basso costo di contesto.
 
 ## Il doppio path
 

@@ -391,12 +391,16 @@ def raccogli(percorsi, estensioni):
     # i suoi casi di prova contengono di proposito le sequenze che cerca, e una corsa su
     # se stesso li altererebbe. E' accaduto due volte durante lo sviluppo, e la difesa
     # e' strutturale invece che mnemonica.
+    # Gli strumenti tipografici della stessa famiglia si escludono a vicenda, non solo se
+    # stessi: i loro casi di prova contengono di proposito le sequenze che cercano, e una
+    # corsa incrociata li altera. E' accaduto tre volte durante lo sviluppo.
+    FAMIGLIA = {"fix-accents.py", "fix-missing-accents.py", "fix-dashes.py"}
     IO_STESSO = os.path.abspath(__file__)
     file = []
     for p in percorsi:
         ap = p if os.path.isabs(p) else os.path.join(ROOT, p)
         if os.path.isfile(ap):
-            if os.path.abspath(ap) != IO_STESSO:
+            if os.path.abspath(ap) != IO_STESSO and os.path.basename(ap) not in FAMIGLIA:
                 file.append(ap)
             continue
         for radice, cartelle, nomi in os.walk(ap):
@@ -406,7 +410,7 @@ def raccogli(percorsi, estensioni):
             for n in sorted(nomi):
                 if os.path.splitext(n)[1].lower() in estensioni:
                     completo = os.path.join(radice, n)
-                    if os.path.abspath(completo) != IO_STESSO:
+                    if os.path.abspath(completo) != IO_STESSO and n not in FAMIGLIA:
                         file.append(completo)
     return file
 

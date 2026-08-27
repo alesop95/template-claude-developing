@@ -10,16 +10,16 @@ disable-model-invocation: true
 
 ## Premessa
 
-Questa skill applica lo schema in `knowledge/WIKI-SCHEMA.md`, che è la fonte di verita del comportamento della wiki. Leggerlo per primo: i tipi di pagina, le regole di collegamento, di aggiornamento e di gestione delle contraddizioni sono definiti li, non qui.
+Questa skill applica lo schema in `knowledge/WIKI-SCHEMA.md`, che è la fonte di verità del comportamento della wiki. Leggerlo per primo: i tipi di pagina, le regole di collegamento, di aggiornamento e di gestione delle contraddizioni sono definiti li, non qui.
 
 ## Quando si invoca
 
-Dopo aver aggiunto una o piu fonti in `knowledge/sources/` (note, articoli, PDF, oppure output di book-to-skill in `sources/books/<slug>/`). L'utente decide quando ingerire: la skill non parte da sola.
+Dopo aver aggiunto una o più fonti in `knowledge/sources/` (note, articoli, PDF, oppure output di book-to-skill in `sources/books/<slug>/`). L'utente decide quando ingerire: la skill non parte da sola.
 
 ## Procedura
 
-1. Determinare le fonti nuove o cambiate tramite un ingest-state: un piccolo file `knowledge/.ingest-state.json` che mappa ogni fonte all'hash SHA256 del suo contenuto e alla data di ingestione. Si calcola l'hash dei file in `knowledge/sources/` e si ingeriscono solo quelli nuovi o con hash diverso da quello registrato. È un rilevamento piu robusto del semplice confronto col `log.md`, che resta il giornale leggibile delle ingestioni.
-2. Per ciascuna fonte nuova: leggerla, estrarne concetti, entita e punti chiave, e produrre o aggiornare la pagina `wiki/sources/<fonte>.md` con il riassunto denso della fonte.
+1. Determinare le fonti nuove o cambiate tramite un ingest-state: un piccolo file `knowledge/.ingest-state.json` che mappa ogni fonte all'hash SHA256 del suo contenuto e alla data di ingestione. Si calcola l'hash dei file in `knowledge/sources/` e si ingeriscono solo quelli nuovi o con hash diverso da quello registrato. È un rilevamento più robusto del semplice confronto col `log.md`, che resta il giornale leggibile delle ingestioni.
+2. Per ciascuna fonte nuova: leggerla, estrarne concetti, entità e punti chiave, e produrre o aggiornare la pagina `wiki/sources/<fonte>.md` con il riassunto denso della fonte.
 3. Aggiornare o creare le pagine in `wiki/concepts/` e `wiki/entities/` toccate dalla fonte, secondo lo schema, con i collegamenti reciproci.
 4. Gestire le contraddizioni come prescritto dallo schema: registrare la divergenza con le fonti e la data, senza sovrascrivere in silenzio.
 5. Appendere a `knowledge/log.md` una voce con la data, la fonte ingerita e le pagine toccate.

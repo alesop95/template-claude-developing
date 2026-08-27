@@ -16,7 +16,7 @@ comandi: un blocco `markdown` o `text` che cita un comando resta prosa, e la pro
 può legittimamente finire con un backtick.
 
 Uso: python tools/lint-md-commands.py <cartella> [...]
-Esce 0 se non trova nulla, 1 altrimenti, cosi si può usare come gate.
+Esce 0 se non trova nulla, 1 altrimenti, così si può usare come gate.
 """
 import os
 import re

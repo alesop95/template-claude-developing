@@ -1,6 +1,6 @@
 # fix-typography
 
-Due strumenti che attuano meccanicamente le convenzioni tipografiche della regola `interaction-style.md`: gli accenti scritti con l'apostrofo diventano accenti veri secondo la grammatica italiana, e i trattini lunghi diventano trattini brevi. Sono complementari a `md-unwrap`, che attua la convenzione della riga sorgente unica, e nascono dalla stessa constatazione: una convenzione dichiarata e non verificata non viene rispettata.
+Tre strumenti che attuano meccanicamente le convenzioni tipografiche della regola `interaction-style.md`: gli accenti scritti con l'apostrofo diventano accenti veri secondo la grammatica italiana, quelli mancanti del tutto vengono ripristinati dove la parola senza accento non esiste, e i trattini lunghi diventano trattini brevi. Sono complementari a `md-unwrap`, che attua la convenzione della riga sorgente unica, e nascono dalla stessa constatazione: una convenzione dichiarata e non verificata non viene rispettata.
 
 ## Perché serve
 
@@ -22,6 +22,16 @@ Nei file Markdown salta i blocchi di codice recintati e i code span in linea, pe
 
 Lo strumento esclude infine il proprio sorgente, perché i suoi casi di prova contengono di proposito le sequenze che cerca, e una corsa su se stesso li altererebbe. È accaduto due volte, e la difesa è strutturale invece che mnemonica.
 
+## Che cosa fa `fix-missing-accents.py`
+
+È il terzo strumento e affronta il caso più insidioso: le parole a cui l'accento manca del tutto, senza apostrofo né alcun altro segno che le denunci. Nel materiale ereditato si leggono frasi come «è già progettato», «densità sopra completezza», «più di un estratto», dove nulla distingue a prima vista un errore da una parola corretta. Il primo strumento non le vede, perché cerca l'apostrofo.
+
+La strategia è l'unica onesta possibile, e va detta invece di lasciarla scoprire: si converte soltanto dove la forma senza accento non è una parola italiana. *Più* senza accento non esiste, quindi può solo essere *più*; lo stesso per *già*, *così*, *può*, *perché*, *cioè*, e per le uscite in *-ità* e *-età* che senza accento non significano nulla. Su queste la conversione è sicura per costruzione, non per euristica. Tutto il resto si conta e si riporta con `--ambigue`, e la decisione resta a chi conosce il testo.
+
+Sulla *e* isolata lo strumento converte solo tre contesti in cui la congiunzione è grammaticalmente impossibile: dopo una negazione, che pretende un verbo; dopo la congiunzione *ed*, che non può precederne un'altra; e dopo il relativo *che*. Un quarto criterio, basato sulla parola che segue, è stato tentato e rimosso, e vale registrare perché: l'idea era che la *e* seguita da un aggettivo predicativo dovesse essere il verbo, dato che una congiunzione non regge un aggettivo isolato. Nel corpus reale quell'assunto cade sulle coordinazioni, dove il secondo membro è proprio un aggettivo: in «documentato byte per byte e verificato» la congiunzione coordina due participi, e convertirla cambia il significato della frase. Il difetto è strutturale e non si aggiusta accorciando la lista, perché distinguere i due casi richiede di sapere se ciò che precede la *e* sia un soggetto o un altro aggettivo. Quella distinzione non si fa con un'espressione regolare, e uno strumento che non può decidere non decide.
+
+Fra le forme che sembravano sicure e non lo sono, il gruppo da conoscere è quello dei sostantivi in *-ità* che coincidono con la terza persona di un verbo in *-itare*: `eredita`, `necessita`, `facilita`, `mobilita`, `nobilita`, `abilita`. Nei testi di questi progetti sono quasi sempre il verbo, come in «un pezzo che si eredita adottando una libreria», e accentarli sarebbe un errore. Fuori da quel gruppo restano `onesta`, che è anche l'aggettivo femminile, e `unita`, che è anche il participio di unire.
+
 ## Che cosa fa `fix-dashes.py`
 
 Normalizza cinque segni distinti che a video somigliano a un trattino: il trattino em, il trattino en, la barra orizzontale, il trattino da cifre e il segno meno matematico. Quest'ultimo è il più insidioso in un testo tecnico, perché è un operatore e non punteggiatura, e chi copia una formula che lo contiene ottiene un carattere che nessun compilatore accetta.
@@ -30,10 +40,11 @@ Le esclusioni si dichiarano in `dashes-exclude.txt`, una per riga con il motivo 
 
 ## Come si installa
 
-Si copiano i due script e il file delle esclusioni in `tools/` del progetto. Non hanno dipendenze oltre alla libreria standard.
+Si copiano i tre script e il file delle esclusioni in `tools/` del progetto. Non hanno dipendenze oltre alla libreria standard.
 
 ```
 cp .claude/templates/fix-typography/tools/fix-accents.py tools/
+cp .claude/templates/fix-typography/tools/fix-missing-accents.py tools/
 cp .claude/templates/fix-typography/tools/fix-dashes.py tools/
 cp .claude/templates/fix-typography/tools/dashes-exclude.txt tools/
 ```
@@ -52,8 +63,19 @@ L'autotest verifica che lo strumento funzioni in questo ambiente. Il controllo a
 
 ```
 python tools/fix-accents.py --da-indicativo --ext .md,.tex,.py .
+python tools/fix-missing-accents.py .
 python tools/fix-dashes.py --ext .md,.tex,.py .
 ```
+
+Il secondo strumento ha una sua fase di lettura che vale la pena non saltare, perché' produce l'unico elenco che nessuno strumento potra' mai risolvere.
+
+```
+python tools/fix-missing-accents.py --autotest
+python tools/fix-missing-accents.py --check .
+python tools/fix-missing-accents.py --ambigue .
+```
+
+L'ultimo comando elenca le forme che restano indecidibili, con il motivo accanto a ciascuna: la congiunzione contro il verbo essere, l'articolo contro l'avverbio di luogo, il pronome contro l'affermazione. Su un corpus di media grandezza sono migliaia di occorrenze, e la sola cosa sensata e' leggerle quando si rilegge il testo per altre ragioni, non tutte in una volta.
 
 ## Verifiche dopo l'applicazione
 

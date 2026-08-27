@@ -11,7 +11,7 @@ della sorgente. Un manifest a content-hash (sha256) evita di riconvertire i file
 invariati tra una corsa e l'altra. Al termine rigenera _INDEX.md: lo scheletro di
 Livello 1 della disclosure progressiva descritta in ../../rules/token-economy.md,
 con titolo, albero delle intestazioni, conteggi (parole, tabelle, immagini) e stato
-di ciascun documento, cosi che un agente possa decidere cosa leggere per intero senza
+di ciascun documento, così che un agente possa decidere cosa leggere per intero senza
 aprire l'intero corpus.
 
 Motore di default: markitdown (MIT). Con --engine docling si usa Docling sui soli

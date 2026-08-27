@@ -4,7 +4,7 @@
 
 ## Perché questa regola esiste
 
-Piu fonti indipendenti, raccolte nella ricerca alla base di questo pacchetto, documentano tassi di allucinazione delle citazioni tra il 14% e il 95% a seconda del modello e del dominio, e stimano oltre 146.000 citazioni allucinate nel solo 2025 su arXiv, bioRxiv, SSRN e PubMed Central. Il fenomeno persiste anche nei sistemi con accesso al web, dove tra il 3% e il 13% degli URL citati risultano fabbricati pur in presenza di una ricerca effettivamente eseguita. Nessun output di Claude su una citazione va quindi fidato senza verifica esterna, indipendentemente da quanto l'affermazione sembri plausibile.
+Più fonti indipendenti, raccolte nella ricerca alla base di questo pacchetto, documentano tassi di allucinazione delle citazioni tra il 14% e il 95% a seconda del modello e del dominio, e stimano oltre 146.000 citazioni allucinate nel solo 2025 su arXiv, bioRxiv, SSRN e PubMed Central. Il fenomeno persiste anche nei sistemi con accesso al web, dove tra il 3% e il 13% degli URL citati risultano fabbricati pur in presenza di una ricerca effettivamente eseguita. Nessun output di Claude su una citazione va quindi fidato senza verifica esterna, indipendentemente da quanto l'affermazione sembri plausibile.
 
 ## Il principio operativo: tre stati, mai due
 
@@ -22,7 +22,7 @@ Le credenziali di accesso istituzionale a riviste ed editori a pagamento non van
 
 Le dieci modalità della skill `corpus-analysis` restano fedeli al vincolo "solo dai paper caricati nella conversazione corrente": non vanno mai arricchite con conoscenza generale del modello, anche quando sembrerebbe utile completare un punto lasciato incompleto dal corpus fornito.
 
-Una nuova skill specializzata si crea solo quando un topic è ricorrente e specialistico attraverso piu sessioni, non per ogni singola query di ricerca: altrimenti si genera uno sprawl di skill poco mantenibili.
+Una nuova skill specializzata si crea solo quando un topic è ricorrente e specialistico attraverso più sessioni, non per ogni singola query di ricerca: altrimenti si genera uno sprawl di skill poco mantenibili.
 
 ## Il controllo umano finale resta JabRef
 

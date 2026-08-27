@@ -16,7 +16,7 @@ Copre un vuoto lasciato da `doc-ingest` (estrae struttura, non anagrafica) e da 
 
 Richiede che `doc-ingest` sia già stato eseguito sul file bersaglio: la skill legge il mirror Markdown già in cache e il `.manifest.json` della cartella di cache indicata. Se il file non risulta nel manifest, la skill si ferma e chiede di far girare prima `tools/doc-ingest.py` sulla cartella sorgente, invece di leggere il PDF originale essa stessa.
 
-Per i PDF scansionati senza testo nativo (il mirror Markdown esce vuoto o quasi), la precondizione non basta: vedi la sezione "Verifica visiva per PDF scansionati" piu sotto.
+Per i PDF scansionati senza testo nativo (il mirror Markdown esce vuoto o quasi), la precondizione non basta: vedi la sezione "Verifica visiva per PDF scansionati" più sotto.
 
 ## Quando si invoca
 

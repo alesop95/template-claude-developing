@@ -2,34 +2,34 @@
 # -*- coding: utf-8 -*-
 """Normalizza i trattini lunghi nel trattino breve, come prescrive la regola di stile.
 
-Perché esiste
+Perché' esiste
 --------------
 La regola `interaction-style` dice che i trattini lunghi non si usano e che sono ammessi
 solo quelli brevi. La regola c'era, la verifica no, e nel repository se ne contano
 centinaia: la maggior parte nel materiale ereditato dal template e negli handoff scritti
 prima che la regola fosse scritta. Questo strumento la applica e la rende verificabile.
 
-I segni che tocca, e perché sono più di uno
+I segni che tocca, e perché' sono più' di uno
 ---------------------------------------------
 Non basta cercare il trattino em. Nei testi che passano da un elaboratore di testo o da
 un generatore compaiono almeno cinque segni distinti che a video somigliano a un
 trattino: il trattino em, il trattino en, la barra orizzontale, il trattino da cifre e il
-segno meno matematico. Il segno meno merita una nota, perché è il più insidioso: è un
+segno meno matematico. Il segno meno merita una nota, perché' e' il più' insidioso: e' un
 operatore matematico, non punteggiatura, e in un testo tecnico un lettore che copia una
 formula ottiene un carattere che nessun compilatore accetta.
 
-Il caso che non si tocca, e perché è importante
+Il caso che non si tocca, e perché' e' importante
 ------------------------------------------------
 Esiste nel repository uno strumento la cui tabella di sostituzione contiene proprio
-questi caratteri, perché il suo compito è rimuoverli dai documenti convertiti. Passare
-questo strumento su quello lo renderebbe incapace di riconoscere ciò che deve
-sostituire: è lo stesso genere di errore per cui `fix-accents.py` esclude il proprio
+questi caratteri, perché' il suo compito e' rimuoverli dai documenti convertiti. Passare
+questo strumento su quello lo renderebbe incapace di riconoscere cio' che deve
+sostituire: e' lo stesso genere di errore per cui `fix-accents.py` esclude il proprio
 sorgente. Le esclusioni si dichiarano in `tools/dashes-exclude.txt`, una per riga con il
 motivo dopo un cancelletto, e un'esclusione senza motivo viene rifiutata.
 
 Che cosa non tocca comunque
 ---------------------------
-Nei Markdown salta i blocchi di codice recintati, perché là un trattino può essere un
+Nei Markdown salta i blocchi di codice recintati, perché' la' un trattino può' essere un
 dato o un frammento di output e non prosa. Nei file Python lavora solo su commenti,
 docstring e stringhe a doppi apici. Conserva fine riga, BOM e newline finale.
 
@@ -151,12 +151,57 @@ def elabora(percorso, conteggio):
     return True, (b"\xef\xbb\xbf" + dati) if bom else dati
 
 
+def autotest():
+    """Prove interne: i cinque segni si normalizzano, il verbatim resta intatto."""
+    casi = [
+        ("un testo — con em dash", "un testo - con em dash"),
+        ("pagine 10–12", "pagine 10-12"),
+        ("valore −5", "valore -5"),
+        ("barra ― orizzontale", "barra - orizzontale"),
+        ("cifre ‒ separate", "cifre - separate"),
+        ("un trattino - normale resta", "un trattino - normale resta"),
+    ]
+    fallite = 0
+    for ingresso, atteso in casi:
+        c = {}
+        ottenuto = sostituisci(ingresso, c)
+        if ottenuto != atteso:
+            print("  FALLITO  %r -> %r, atteso %r" % (ingresso, ottenuto, atteso))
+            fallite += 1
+
+    # Il blocco recintato non si tocca: la' un trattino puo' essere un dato.
+    c = {}
+    # Il documento di prova si costruisce concatenando, invece di scriverlo come
+    # letterale multiriga: gli a capo dentro una stringa letterale renderebbero il
+    # sorgente non valido, e il segno cercato si passa per codepoint cosi' che questo
+    # file non contenga il carattere che lo strumento normalizza.
+    EM = "\u2014"
+    doc = ("prosa " + EM + " qui\n\n```\n"
+           "codice " + EM + " la\n```\n\n"
+           "altra " + EM + " prosa\n")
+    reso = converti_markdown(doc, c)
+    if "codice " + EM + " la" not in reso:
+        print("  FALLITO  il blocco recintato e' stato modificato")
+        fallite += 1
+    if "prosa - qui" not in reso or "altra - prosa" not in reso:
+        print("  FALLITO  la prosa fuori dal recinto non e' stata normalizzata")
+        fallite += 1
+
+    print("autotest: %d casi, %d falliti" % (len(casi) + 2, fallite))
+    return 1 if fallite else 0
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("percorsi", nargs="*", default=["."])
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--autotest", action="store_true",
+                    help="esegue le prove interne")
     ap.add_argument("--ext", default=".md,.tex,.txt,.py")
     args = ap.parse_args()
+
+    if args.autotest:
+        return autotest()
 
     estensioni = set(e if e.startswith(".") else "." + e for e in args.ext.split(","))
     esclusi, malformate = leggi_esclusioni()
@@ -166,6 +211,10 @@ def main():
             print("  %s" % r)
         return 1
 
+    # Gli strumenti tipografici della stessa famiglia si escludono a vicenda, non solo se
+    # stessi: i loro casi di prova contengono di proposito le sequenze che cercano, e una
+    # corsa incrociata li altera. E' accaduto tre volte durante lo sviluppo.
+    FAMIGLIA = {"fix-accents.py", "fix-missing-accents.py", "fix-dashes.py"}
     io_stesso = os.path.abspath(__file__)
     file = []
     for p in args.percorsi or ["."]:
@@ -184,7 +233,8 @@ def main():
     conteggio, cambiati, saltati = {}, [], []
     for percorso in file:
         rel = os.path.normpath(os.path.relpath(percorso, ROOT))
-        if os.path.abspath(percorso) == io_stesso or rel in esclusi:
+        if (os.path.abspath(percorso) == io_stesso
+                or os.path.basename(percorso) in FAMIGLIA or rel in esclusi):
             saltati.append(rel)
             continue
         try:
@@ -207,7 +257,13 @@ def main():
     if saltati and args.check:
         print("\nesclusi per dichiarazione:")
         for r in saltati:
-            print("  %s: %s" % (r, esclusi.get(r, "è questo strumento")))
+            motivo = esclusi.get(r)
+            if motivo is None:
+                motivo = ("e' questo strumento"
+                          if os.path.basename(r) == os.path.basename(__file__)
+                          else "e' uno strumento della stessa famiglia tipografica, i cui "
+                               "casi di prova contengono di proposito i segni cercati")
+            print("  %s: %s" % (r, motivo))
     return 0
 
 

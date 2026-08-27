@@ -12,7 +12,7 @@ I test girano con pytest. L'I/O esterno si isola nelle fixture, e i test unitari
 
 ## Pipeline RAG
 
-Nei progetti RAG[^1] le quattro fasi, ingestion, indexing, retrieval e generation, restano moduli separati con confini espliciti, e le fonti recuperate si loggano sempre insieme alla risposta generata, cosi che ogni output sia riconducibile a ciò che lo ha fondato. Vale il principio della regola `token-economy`: il lavoro deterministico va in script, l'LLM si chiama solo per il salto semantico.
+Nei progetti RAG[^1] le quattro fasi, ingestion, indexing, retrieval e generation, restano moduli separati con confini espliciti, e le fonti recuperate si loggano sempre insieme alla risposta generata, così che ogni output sia riconducibile a ciò che lo ha fondato. Vale il principio della regola `token-economy`: il lavoro deterministico va in script, l'LLM si chiama solo per il salto semantico.
 
 ## Comandi tipici
 
