@@ -1,12 +1,16 @@
 # community-sources
 
-Pacchetto per le fonti che vivono dentro canali di conversazione di community, cioè quelle che nessuno strumento di sessione raggiunge e che per certi domini tecnici sono la sola documentazione esistente. Contiene oggi un solo strumento, il lettore di canali Discord attraverso un bot account ufficiale, e la sua ragione d'essere è meno ovvia di quanto sembri: non è che leggere un canale sia difficile, è che le vie per farlo sono tre e due di esse hanno conseguenze che vale conoscere prima di scegliere.
+Pacchetto per le fonti che vivono dentro canali di conversazione di community, cioè quelle che nessuno strumento di sessione raggiunge e che per certi domini tecnici sono la sola documentazione esistente. La sua ragione d'essere è meno ovvia di quanto sembri: non è che leggere un canale sia difficile, è che le vie per farlo sono tre e due di esse hanno conseguenze che vale conoscere prima di scegliere.
+
+Contiene due strumenti, che servono due bisogni distinti e non si sostituiscono a vicenda. Il primo, `fetch-discord.py`, legge un canale attraverso un bot account ufficiale e tiene un cursore, quindi è quello degli aggiornamenti frequenti dove un bot è stato invitato. Il secondo, `export-discord.py`, orchestra un esportatore di terze parti su un insieme di canali scelti e motivati, quindi è quello delle esportazioni ampie e rare, comprese quelle sui server dove un bot non può entrare.
 
 La regola che le distingue è `.claude/rules/web-sources-not-fetchable.md`, che appartiene alle regole sempre caricate e non a questo pacchetto: il pacchetto è lo strumento, la regola è il criterio. Chi istanzia questo pacchetto senza quella regola si ritrova con un programma che funziona e senza il vocabolario per decidere quando usarlo.
 
 ## Che cosa istanzia
 
-Un solo file, `tools/fetch-discord.py`, che va copiato in `tools/` del progetto ospite. Python 3, sola libreria standard, nessuna dipendenza.
+Due file, da copiare in `tools/` del progetto ospite. Python 3, sola libreria standard, nessuna dipendenza installata.
+
+`fetch-discord.py` funziona da solo. `export-discord.py` invoca un programma esterno, DiscordChatExporter, che non è una dipendenza del repository e vive fuori da esso: la procedura per procurarselo è più sotto. E porta una tabella dei canali che all'istanziazione va sostituita, perché quella che il file contiene è un esempio della forma e non una configurazione di partenza.
 
 ## Perché un programma e non un server MCP
 
@@ -16,7 +20,45 @@ Qui il compito è un altro: leggere una fonte e trasferirne la sintesi nel regis
 
 Le due vie non si escludono, perché usano il medesimo bot account: un progetto che avesse entrambe le esigenze può istanziare questo strumento e configurare un server MCP con lo stesso token.
 
-## Le tre vie di accesso, e quale implementa questo strumento
+## Il secondo strumento, e la disciplina che porta con sé
+
+`export-discord.py` non esporta: orchestra. Riceve la scelta dei canali dalla propria tabella interna, invoca l'esportatore esterno una volta per canale, salta ciò che è già stato esportato, prosegue quando un canale fallisce e riferisce alla fine. Ha una prova a vuoto che stampa che cosa farebbe senza eseguire e senza chiedere alcuna credenziale.
+
+La parte riusabile di quello strumento non è il codice ma la disciplina della sua tabella, e va conservata all'istanziazione: **ogni canale dichiara a quale domanda aperta del progetto risponde.** La ragione è che un canale scelto per argomento produce materiale da leggere, mentre un canale scelto per domanda produce risposte, e la differenza si vede al momento di leggere l'export, quando è troppo tardi per cambiarla. La tabella è anche il documento che, fra sei mesi, dirà se un canale vale ancora la pena.
+
+Da questa disciplina discendono due proprietà pratiche. I canali si raggruppano per priorità, cosicché si esporti il gruppo che risponde a una domanda invece di tutto insieme: su un server di sviluppo maturo i canali sono decine e quelli utili sono pochi, e l'esperienza registrata è di trenta canali scelti su quasi quattrocento. E i server esclusi si dichiarano con il motivo, perché una esclusione senza motivo è indistinguibile da una dimenticanza e verrà riaperta dalla prossima sessione.
+
+Il token si chiede in modo interattivo, e la ragione va conosciuta perché è un errore facile: PowerShell registra la cronologia dei comandi in un file di testo in chiaro, il cui percorso si ottiene con `(Get-PSReadlineOption).HistorySavePath`, quindi una credenziale passata come argomento finisce su disco senza che nessuno l'abbia scritta lì, e ripulirla richiede di modificare quel file a mano. La richiesta interattiva non lascia quella traccia.
+
+## Procurarsi l'esportatore esterno
+
+DiscordChatExporter è un programma di terze parti, maturo e diffuso, che esporta la cronologia di un canale in HTML, testo, JSON o CSV e scarica gli allegati. Il repository è `https://github.com/Tyrrrz/DiscordChatExporter` e i file pronti stanno nella pagina dei rilasci, `https://github.com/Tyrrrz/DiscordChatExporter/releases/latest`. Sono autonomi e non richiedono di installare alcun ambiente di esecuzione.
+
+Gli archivi hanno un nome che dichiara piattaforma e architettura, e la scelta va fatta guardando quello invece di prendere il primo. Le voci il cui nome contiene `.Cli.` sono la riga di comando, ed è quella che serve a questo pacchetto; quelle senza sono l'interfaccia grafica, comoda la prima volta per percorrere molti server e capire quali canali esistano. Il suffisso dichiara il sistema, cioè `win`, `linux` oppure `osx`, e l'architettura, cioè `x64` per i processori Intel e AMD, `arm64` per i processori ARM, `x86` per i sistemi a trentadue bit. Esiste anche una immagine Docker, che è la via da preferire dove non si voglia estrarre nulla.
+
+Il programma non entra nel repository, perché sono decine di megabyte di binari senza rapporto con il version control, e conviene collocarlo in una cartella condivisa dai progetti che ne hanno bisogno. Il percorso dell'eseguibile si passa a `export-discord.py` con `--dce`, oppure si mette una volta per macchina nella variabile d'ambiente `DCE_PATH`.
+
+## La procedura completa, dall'inizio alla fine
+
+Sette passi, e i primi tre si fanno una volta sola.
+
+Primo, si sceglie la via: un bot account se i canali che servono stanno su server propri o su server il cui amministratore acconsente, la credenziale personale altrimenti, con la decisione registrata come tale. Il criterio è nella regola sulle fonti non recuperabili e il paragrafo seguente di questo README ne riassume il limite.
+
+Secondo, si procura l'esportatore secondo la sezione precedente e si istanziano i due strumenti in `tools/`.
+
+Terzo, si sostituisce la tabella dei canali di `export-discord.py` con la propria. Per compilarla servono gli identificativi, e si ottengono con i comandi dell'esportatore stesso: `guilds` elenca i server accessibili, `channels -g ID` i canali di uno di essi. Conviene salvare quei due elenchi in un file locale con annotata accanto la pertinenza di ciascuna voce, perché è il documento su cui si compila la tabella e serve di nuovo alla revisione successiva.
+
+Quarto, si guarda che cosa farebbe, con la prova a vuoto: non chiede credenziali e non esegue nulla.
+
+Quinto, si esporta un gruppo per volta, cominciando da quello che risponde alla domanda più urgente. Un export lungo rallenta da sé, perché l'esportatore rispetta i limiti di frequenza del servizio: è il comportamento corretto e va lasciato girare invece di interrotto e rilanciato.
+
+Sesto, si riduce l'export a materiale leggibile e citabile. Il formato JSON è quello che uno strumento di conversione digerisce; quello HTML serve alla lettura umana, e sullo stesso canale conviene produrre entrambi perché sono due usi diversi del medesimo materiale.
+
+Settimo, e è il passo che dà senso ai precedenti, si legge e si trasferisce: la sintesi con l'attribuzione entra nel registro delle fonti del progetto con la profondità che rende il file grezzo sacrificabile, e il grezzo si elimina quando non porta più informazione che non sia scritta altrove. Un export conservato accanto alla propria sintesi produce il dubbio su quale sia quella buona, e il dubbio costa più di quanto valga la copia.
+
+Una avvertenza chiude la procedura e riguarda il metodo, non lo strumento: la ricerca per parola chiave su un export è un filtro cieco alla domanda, mentre la ricerca interna al canale fatta da chi conosce la domanda incorpora la domanda. L'esperienza registrata è che la seconda renda più della prima; ne segue che un export in blocco non sostituisce la ricerca mirata ma la precede, e che i termini da cercare vanno scelti prima di lanciare il filtro.
+
+## Le tre vie di accesso, e quale implementa il primo strumento
 
 La prima via è il token del proprio account personale, cioè il self-bot. Funziona tecnicamente e non richiede il permesso di nessuno, perché l'account è già dentro il server. È vietata dalle condizioni d'uso di Discord, che dedicano alla questione una pagina di supporto, e la sanzione dichiarata è la terminazione dell'account senza distinzione di intenzioni. Va aggiunto un argomento che di solito manca nella valutazione: un token utente dà accesso a tutto ciò che vede l'account, messaggi privati compresi, quindi il danno di una sua fuga è incomparabilmente più ampio di quello di un token con permessi ristretti.
 
@@ -104,4 +146,6 @@ Se il server non è proprio, va inoltre considerato che la comunità ha diritto 
 
 ## Che cosa manca a questo pacchetto
 
-Tre strumenti della stessa famiglia esistono su un progetto reale e non sono ancora qui, e l'assenza è dichiarata perché la regola li nomina: il lettore dell'API di Reddit a sole credenziali applicative, il convertitore di un export di chat Discord o Telegram in Markdown filtrato, e il ripulitore dei sottotitoli di un video. Vanno portati con lo stesso metodo usato per questo, cioè copiando il file e adattando la sola prosa, così che le due copie non divergano nella logica.
+Tre strumenti della stessa famiglia esistono su un progetto reale e non sono ancora qui, e l'assenza è dichiarata perché entrambi gli strumenti presenti li nominano nella propria catena. Il convertitore di un export di chat in Markdown filtrato è quello che manca di più, perché è il sesto passo della procedura descritta sopra: senza di esso un export in JSON resta un file che nessuno legge. Gli altri due sono il lettore dell'API di Reddit a sole credenziali applicative e il ripulitore dei sottotitoli di un video, che servono alle altre due vie della medesima regola.
+
+Vanno portati con il metodo usato per questi due, che vale registrare perché è la ragione per cui le copie non divergeranno: il file si copia e si sostituisce la sola prosa, con una tabella di sostituzioni esplicita, e la verifica è un confronto delle righe di codice dopo aver escluso commenti e stringhe di documentazione. Sul lettore hanno differito tredici righe su cinquecentocinquanta e nessuna di logica; sull'orchestratore sei righe di funzione, più la tabella dei canali che è stata deliberatamente sostituita da un esempio perché è conoscenza del progetto ospite e non codice riusabile.
