@@ -226,6 +226,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 - `doc-ingest` - ingestione incrementale di un corpus a zero token: [.claude/templates/doc-ingest/README.md](.claude/templates/doc-ingest/README.md)
 - `academic-researcher` - ambiente di ricerca accademica: [.claude/templates/academic-researcher/README.md](.claude/templates/academic-researcher/README.md)
 - `notebooklm-bridge` - ricerca fondata NotebookLM gratuito + Claude: [.claude/templates/notebooklm-bridge/README.md](.claude/templates/notebooklm-bridge/README.md)
+- `community-sources` - lettore di canali di community con un bot account ufficiale: [.claude/templates/community-sources/README.md](.claude/templates/community-sources/README.md)
 - `learning-agent` - tutor di apprendimento guidato di un topic: [.claude/templates/learning-agent/README.md](.claude/templates/learning-agent/README.md)
 - `codebase-learning` - comprensione guidata di un progetto finito: [.claude/templates/codebase-learning/README.md](.claude/templates/codebase-learning/README.md)
 - `claude-code-handoff` - riferimento auto-aggiornante delle opzioni di Claude Code: [.claude/templates/claude-code-handoff/README.md](.claude/templates/claude-code-handoff/README.md)
