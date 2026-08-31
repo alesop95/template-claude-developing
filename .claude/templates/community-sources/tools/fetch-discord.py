@@ -48,8 +48,10 @@ Come si allestisce, una volta sola
    quale quell'intent richiede una revisione è di diecimila utenti, non di cento server:
    i cento server sono la soglia della verifica formale dell'applicazione, che è cosa
    diversa, e confondere le due porta a credere di dover chiedere un'approvazione che non
-   serve. Conviene spegnere Public Bot, cosicché nessun altro possa installare
-   l'applicazione, e lasciare spento Requires OAuth2 Code Grant, che romperebbe l'invito.
+   serve. Requires OAuth2 Code Grant va lasciato spento, perché romperebbe l'invito. Su
+   Public Bot la scelta dipende da chi deve invitare il bot e la sezione seguente la
+   spiega: spento soltanto il proprietario dell'applicazione può installarla, quindi un
+   amministratore di un server altrui non potrebbe farlo.
 3. Si genera l'URL di invito con i soli permessi di lettura, cioè View Channels e Read
    Message History, che sommati danno 66560, ossia 1024 più 65536. Lo strumento non scrive
    nulla e non ha bisogno di altro.
@@ -63,6 +65,23 @@ Come si allestisce, una volta sola
    e nel sistema di progetto di questo template lo fanno, l'agente non può creare né
    leggere quel file nemmeno come modello: va scritto a mano, e la variabile che serve è
    quella sola.
+
+L'unica operazione che non è una lettura, e perché esiste
+---------------------------------------------------------
+Il comando `leave` fa uscire il bot da un server, e va dichiarato perché è la sola cosa che
+questo strumento fa oltre a leggere. Esiste per una conseguenza dell'allestimento che non è
+evidente: perché un amministratore di un server altrui possa invitare il bot,
+l'applicazione deve essere pubblica, e con essa pubblica chiunque abbia il link di invito
+può aggiungerla a un proprio server. Da un server di cui non si è amministratori non si può
+cacciare il proprio bot, quindi la sola via è che il bot esca da sé.
+
+Conviene tenere l'applicazione pubblica soltanto mentre le richieste di invito sono in
+corso, e rimetterla privata quando gli inviti sono stati concessi: il comando `guilds` dice
+in ogni momento dove il bot si trova, e un server inatteso in quell'elenco è il segnale che
+serve. Se l'applicazione sia pubblica lo dice il comando `stato`, che legge la
+configurazione dal servizio e non dalla schermata del portale: una schermata mostra ciò che
+il browser ha in cache, e un salvataggio non premuto ha l'aspetto di uno premuto. Il comando pretende `--conferma`, perché l'uscita non si annulla da qui e il
+rientro richiede un invito nuovo.
 
 Il presidio contro l'uso di un token personale
 ----------------------------------------------
@@ -80,12 +99,14 @@ cui l'errore si produce e non in quello in cui si manifesta.
 
 Uso
 ---
+    python tools/fetch-discord.py stato
     python tools/fetch-discord.py guilds
     python tools/fetch-discord.py channels <id del server>
     python tools/fetch-discord.py fetch <id del canale> --limit 500
     python tools/fetch-discord.py fetch <id del canale> --limit 0 --nuovi
     python tools/fetch-discord.py fetch <id del canale> --grep "link cable" --grep checksum
     python tools/fetch-discord.py fetch <id> --append --out _notes/fonti/2026-01-31-canale.md
+    python tools/fetch-discord.py leave <id del server> --conferma
     python tools/fetch-discord.py --self-test
 
 `--limit 0` significa nessun tetto, e ha senso soltanto insieme a `--nuovi`: senza cursore
@@ -237,10 +258,16 @@ class TrasportoHTTP:
         self.token = token
 
     def get(self, percorso, parametri=None):
+        return self._richiesta("GET", percorso, parametri)
+
+    def delete(self, percorso):
+        return self._richiesta("DELETE", percorso, None)
+
+    def _richiesta(self, metodo, percorso, parametri=None):
         url = BASE + percorso
         if parametri:
             url += "?" + urllib.parse.urlencode(parametri)
-        richiesta = urllib.request.Request(url, headers={
+        richiesta = urllib.request.Request(url, method=metodo, headers={
             # La forma dell'intestazione è il presidio: si dichiara sempre un bot, mai un
             # account utente, e non esiste un'opzione per cambiarla.
             "Authorization": "Bot " + self.token,
@@ -252,7 +279,11 @@ class TrasportoHTTP:
         try:
             with urllib.request.urlopen(richiesta, timeout=30) as risposta:
                 intestazioni = {k.lower(): v for k, v in risposta.headers.items()}
-                return 200, json.loads(risposta.read().decode("utf-8")), intestazioni
+                corpo = risposta.read().decode("utf-8")
+                # Una cancellazione riuscita risponde senza corpo, e chiedere a un
+                # decodificatore JSON di leggere il vuoto è un errore evitabile.
+                dati = json.loads(corpo) if corpo.strip() else {}
+                return 200, dati, intestazioni
         except urllib.error.HTTPError as e:
             corpo = e.read().decode("utf-8", errors="replace")
             try:
@@ -289,6 +320,13 @@ class TrasportoFinto:
         self.intestazioni = intestazioni or {}
         self.chiamate = []
         self.attese = []
+        self.cancellazioni = []
+
+    def delete(self, percorso):
+        self.cancellazioni.append(percorso)
+        if self.programma:
+            return self.programma.pop(0)
+        return 200, {}, {}
 
     def get(self, percorso, parametri=None):
         self.chiamate.append((percorso, dict(parametri or {})))
@@ -348,12 +386,20 @@ def attesa_preventiva(intestazioni, trasporto):
             dormi(fra, trasporto)
 
 
-def chiama(trasporto, percorso, parametri=None):
-    """Una richiesta, con le tre difese: attesa preventiva, rifiuto, guasto transitorio."""
+def chiama(trasporto, percorso, parametri=None, metodo="GET"):
+    """Una richiesta, con le tre difese: attesa preventiva, rifiuto, guasto transitorio.
+
+    Il metodo è un parametro perché la sola operazione non di lettura dello strumento, cioè
+    l'uscita da un server, deve godere delle medesime difese: un guasto di rete a metà di
+    quella richiesta lascerebbe altrimenti il bot dove non deve stare.
+    """
     attesa = ATTESA_INIZIALE
     codice, dati = None, {}
     for _ in range(TENTATIVI):
-        codice, dati, intestazioni = trasporto.get(percorso, parametri)
+        if metodo == "DELETE":
+            codice, dati, intestazioni = trasporto.delete(percorso)
+        else:
+            codice, dati, intestazioni = trasporto.get(percorso, parametri)
 
         if codice == 200:
             attesa_preventiva(intestazioni, trasporto)
@@ -842,7 +888,18 @@ def self_test():
                 "timestamp": "2026-01-01T00:03:00",
                 "author": {"id": "4", "username": "d"}}], 42, "bot"))
 
-    # 15. I filtri.
+    # 15. L'uscita da un server: usa il metodo di cancellazione, sull'indirizzo giusto, e
+    #     gode delle stesse difese contro i guasti transitori.
+    t = TrasportoFinto(bot)
+    chiama(t, "/users/@me/guilds/" + "9" * 18, metodo="DELETE")
+    prova("uscita, indirizzo corretto",
+          t.cancellazioni == ["/users/@me/guilds/" + "9" * 18], str(t.cancellazioni))
+    t = TrasportoFinto(bot, programma=[(GUASTO, {"message": "TimeoutError"}, {}),
+                                       (200, {}, {})])
+    chiama(t, "/users/@me/guilds/1", metodo="DELETE")
+    prova("uscita, ripresa dopo un guasto", t.attese == [1.0], str(t.attese))
+
+    # 16. I filtri.
     campione = [
         {"id": "1", "content": "parla del link cable", "timestamp": "2026-01-01T00:00:00",
          "author": {"id": "1", "username": "a"}},
@@ -858,7 +915,7 @@ def self_test():
     prova("filtro per data",
           [m["id"] for m in filtra(campione, None, 0, "2026-01-01")] == ["1", "2"])
 
-    # 16. La resa conserva l'identificativo dell'autore, che serve alla cancellazione
+    # 17. La resa conserva l'identificativo dell'autore, che serve alla cancellazione
     #     mirata, e sa omettere l'intestazione per aggiungersi in coda a un file.
     reso = markdown(campione, 42, "lettore-di-fonti")
     prova("la resa conserva l'identificativo dell'autore", "(1)" in reso and "(3)" in reso)
@@ -884,11 +941,18 @@ def main():
                     help="prova la logica contro un trasporto finto, senza credenziali")
     sub = ap.add_subparsers(dest="comando")
 
+    sub.add_parser("stato", help="la configurazione dell'applicazione, letta dal servizio")
+
     sub.add_parser("guilds", help="i server in cui il bot è stato invitato")
 
     p_ch = sub.add_parser("channels",
                           help="i canali leggibili di un server, discussioni comprese")
     p_ch.add_argument("guild")
+
+    p_l = sub.add_parser("leave", help="fa uscire il bot da un server")
+    p_l.add_argument("guild")
+    p_l.add_argument("--conferma", action="store_true",
+                     help="richiesto: senza questa opzione il comando non agisce")
 
     p_f = sub.add_parser("fetch", help="la cronologia di un canale o di una discussione")
     p_f.add_argument("canale")
@@ -916,9 +980,39 @@ def main():
         trasporto = TrasportoHTTP(leggi_token())
         nome_bot = verifica_identita(trasporto)
 
+        if a.comando == "stato":
+            # La configurazione si legge dal servizio e non dalla schermata del portale,
+            # per la stessa ragione per cui un PDF si verifica sui byte: una schermata
+            # mostra ciò che il browser ha in cache, e un salvataggio non premuto ha
+            # l'aspetto di uno premuto.
+            app = chiama(trasporto, "/oauth2/applications/@me")
+            pubblica = bool(app.get("bot_public"))
+            print("applicazione:        " + str(app.get("name", "?")))
+            print("identificativo:      " + str(app.get("id", "?")))
+            print("bot pubblico:        " + ("sì" if pubblica else "no") +
+                  ("  (un amministratore di un server altrui può invitarlo)" if pubblica
+                   else "  (solo il proprietario può installarla: un amministratore di un "
+                        "server altrui riceverebbe un errore)"))
+            print("richiede code grant: " +
+                  ("sì  ATTENZIONE: romperebbe il link di invito, va spento"
+                   if app.get("bot_require_code_grant") else "no"))
+            return 0
+
         if a.comando == "guilds":
             for g in chiama(trasporto, "/users/@me/guilds"):
                 print(str(g.get("id", "?")) + "  " + str(g.get("name", "?")))
+            return 0
+
+        if a.comando == "leave":
+            guild = identificativo(a.guild, "del server")
+            if not a.conferma:
+                print("questo comando fa uscire il bot dal server " + guild + " e l'uscita "
+                      "non si annulla da qui: per rientrare serve un nuovo invito da chi "
+                      "amministra quel server.\nRilanciare con --conferma se è ciò che si "
+                      "vuole.")
+                return 1
+            chiama(trasporto, "/users/@me/guilds/" + guild, metodo="DELETE")
+            print("il bot è uscito dal server " + guild)
             return 0
 
         if a.comando == "channels":
