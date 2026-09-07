@@ -1,16 +1,24 @@
 # community-sources
 
-Pacchetto per le fonti che vivono dentro canali di conversazione di community, cioè quelle che nessuno strumento di sessione raggiunge e che per certi domini tecnici sono la sola documentazione esistente. La sua ragione d'essere è meno ovvia di quanto sembri: non è che leggere un canale sia difficile, è che le vie per farlo sono tre e due di esse hanno conseguenze che vale conoscere prima di scegliere.
+Pacchetto per le fonti che nessuno strumento di sessione raggiunge e che per certi domini tecnici sono la sola documentazione esistente: quelle che vivono dentro canali di conversazione di community, e quelle che vivono dentro catene di discussioni pubbliche che si citano a vicenda. La ragione d'essere del pacchetto è meno ovvia di quanto sembri, ed è la stessa per entrambe le famiglie: non è che leggerle sia difficile, è che le vie per farlo sono più d'una e alcune hanno conseguenze che vale conoscere prima di scegliere.
 
-Contiene due strumenti, che servono due bisogni distinti e non si sostituiscono a vicenda. Il primo, `fetch-discord.py`, legge un canale attraverso un bot account ufficiale e tiene un cursore, quindi è quello degli aggiornamenti frequenti dove un bot è stato invitato. Il secondo, `export-discord.py`, orchestra un esportatore di terze parti su un insieme di canali scelti e motivati, quindi è quello delle esportazioni ampie e rare, comprese quelle sui server dove un bot non può entrare.
+Contiene tre strumenti, che servono bisogni distinti e non si sostituiscono a vicenda. Il primo, `fetch-discord.py`, legge un canale attraverso un bot account ufficiale e tiene un cursore, quindi è quello degli aggiornamenti frequenti dove un bot è stato invitato. Il secondo, `export-discord.py`, orchestra un esportatore di terze parti su un insieme di canali scelti e motivati, quindi è quello delle esportazioni ampie e rare, comprese quelle sui server dove un bot non può entrare. Il terzo, `fetch-reddit.py`, attraversa il grafo dei rinvii a partire da un post di Reddit e ne produce una copia leggibile con la mappa di chi linka che cosa, quindi è quello delle fonti che non stanno in un canale ma in una catena di discussioni che si citano a vicenda.
 
 La regola che le distingue è `.claude/rules/web-sources-not-fetchable.md`, che appartiene alle regole sempre caricate e non a questo pacchetto: il pacchetto è lo strumento, la regola è il criterio. Chi istanzia questo pacchetto senza quella regola si ritrova con un programma che funziona e senza il vocabolario per decidere quando usarlo.
 
 ## Che cosa istanzia
 
-Due file, da copiare in `tools/` del progetto ospite. Python 3, sola libreria standard, nessuna dipendenza installata.
+Tre file, da copiare in `tools/` del progetto ospite, insieme o separatamente perché non dipendono l'uno dall'altro. Python 3, sola libreria standard, nessuna dipendenza installata.
 
 `fetch-discord.py` funziona da solo. `export-discord.py` invoca un programma esterno, DiscordChatExporter, che non è una dipendenza del repository e vive fuori da esso: la procedura per procurarselo è più sotto. E porta una tabella dei canali che all'istanziazione va sostituita, perché quella che il file contiene è un esempio della forma e non una configurazione di partenza.
+
+`fetch-reddit.py` è il più semplice da istanziare dei tre, e vale dire perché invece di lasciarlo scoprire: non porta alcuna tabella da sostituire, perché il punto di partenza è un argomento di riga di comando e i filtri sono opzioni, quindi nel file non c'è conoscenza del progetto ospite; e non richiede nulla in `.env`, perché la via che percorre non usa credenziali. L'unico segnaposto da sostituire è lo user agent, come negli altri due. La radice si ricava dalla posizione del file, cioè la cartella che contiene `tools/`, quindi copiato in `<progetto>/tools/` scrive sotto `<progetto>/_notes/fonti/` senza che nessuno configuri un percorso; eseguito invece dove vive nel template quel calcolo cadrebbe dentro il pacchetto, e per quel solo caso esiste l'opzione `--radice`.
+
+Resta una voce di permesso da aggiungere a mano nel progetto ospite, e non sta nel `settings.json` di base perché quella baseline non elenca gli strumenti dei pacchetti opzionali e non è questo il posto per cominciare. Senza di essa nulla si rompe: si conferma a ogni invocazione, che è attrito e non un ostacolo.
+
+```
+Bash(python tools/fetch-reddit.py:*)
+```
 
 ## Perché un programma e non un server MCP
 
@@ -29,6 +37,38 @@ La parte riusabile di quello strumento non è il codice ma la disciplina della s
 Da questa disciplina discendono due proprietà pratiche. I canali si raggruppano per priorità, cosicché si esporti il gruppo che risponde a una domanda invece di tutto insieme: su un server di sviluppo maturo i canali sono decine e quelli utili sono pochi, e l'esperienza registrata è di trenta canali scelti su quasi quattrocento. E i server esclusi si dichiarano con il motivo, perché una esclusione senza motivo è indistinguibile da una dimenticanza e verrà riaperta dalla prossima sessione.
 
 Il token si chiede in modo interattivo, e la ragione va conosciuta perché è un errore facile: PowerShell registra la cronologia dei comandi in un file di testo in chiaro, il cui percorso si ottiene con `(Get-PSReadlineOption).HistorySavePath`, quindi una credenziale passata come argomento finisce su disco senza che nessuno l'abbia scritta lì, e ripulirla richiede di modificare quel file a mano. La richiesta interattiva non lascia quella traccia.
+
+## Il terzo strumento, e la via che si è aperta dopo un vicolo cieco
+
+`fetch-reddit.py` risolve un problema di forma diversa dagli altri due. Là la fonte è un canale e il compito è leggerne la cronologia; qui la fonte è un post che dice poco di suo e rinvia a decine di altri post, ciascuno dei quali rinvia altrove, quindi la conoscenza sta nel grafo e non nel nodo di partenza. Leggere il solo post che si ha in mano significa leggere l'indice e credere di aver letto il libro.
+
+La via merita di essere raccontata perché la regola sulle fonti non recuperabili dichiarava Reddit un vicolo cieco, e quella dichiarazione era vera quando è stata scritta. Gli endpoint che restituiscono JSON rifiutano, i frontend alternativi e i proxy di lettura rifiutano, il crawler del modello dichiara di non poter raggiungere il dominio, e l'API ufficiale a sole credenziali applicative è rimasta inaccessibile perché la registrazione dell'applicazione è stata rifiutata dal server senza motivo dichiarato. Una sola cosa è cambiata rispetto a quel registro, ed è più insidiosa di un rifiuto: la pagina HTML oggi risponde con un codice di successo, ma quegli ottomila byte sono la pagina di verifica anti-bot e non contengono nulla.
+
+La via che si è aperta è un archivio pubblico di terze parti, Arctic Shift, successore di Pushshift, che pubblica di propria iniziativa un'API documentata sul proprio archivio di Reddit e non chiede alcuna credenziale. È un caso che il criterio di legittimità della regola non copriva, e vale enunciare come vi rientra: non è il canale di automazione del fornitore del servizio, e non c'è alcun meccanismo di consenso perché non c'è nulla da autorizzare; ciò che la rende legittima è che si interroga un servizio che ha costruito quel canale per l'accesso programmatico, con limiti di frequenza pensati per traffico automatico, chiedendogli i propri dati e non quelli di Reddit. Il costo si sposta di conseguenza dal permesso alla fedeltà, ed è la sola cosa che va sorvegliata.
+
+Le due debolezze sono opposte e vanno conosciute prima di usare lo strumento, non dopo. Un archivio ha latenza, quindi un post molto recente può non essere ancora indicizzato: l'assenza di un post dallo strumento non prova che il post non esista, ed è la ragione per cui quell'esito si chiama assente e non inesistente. E un archivio conserva anche ciò che su Reddit è stato cancellato, quindi il materiale prodotto può contenere testo che il suo autore ha rimosso: l'intestazione di ogni file dichiara perciò la provenienza e il momento di archiviazione del record, e l'identificativo dell'autore viaggia accanto al contenuto, che è il primo dei quattro accorgimenti descritti più sotto.
+
+L'attraversamento è in ampiezza, per due ragioni che non sono di gusto. La prima è economica: l'archivio accetta fino a cinquecento identificativi in una sola richiesta, quindi raccogliere tutti i post di un livello prima di chiamare trasforma centinaia di richieste in una manciata. La seconda riguarda la qualità di ciò che resta fuori quando un tetto si esaurisce, perché in ampiezza si taglia il materiale più lontano dal punto di partenza, che è quasi sempre il meno pertinente, mentre in profondità si taglierebbe a caso.
+
+I tetti esistono perché il grafo non ha un confine naturale, e introducono un difetto proprio che va presidiato invece che accettato: una corsa troncata è indistinguibile da una completa, e chi ne legge il risultato crede di avere tutto. Il presidio è che ciò che il tetto ha escluso non scompare ma finisce elencato come non raggiunto nell'indice e come pendente nello stato su disco, cosicché la copertura parziale resti dichiarata e un rilancio con il tetto alzato prosegua invece di ricominciare.
+
+Lo stesso principio governa i collegamenti esterni, che finiscono in uno di tre stati da non confondere. Scaricato è la pagina letta e ridotta a testo. Catalogato è l'indirizzo registrato con il motivo per cui non si scarica, cioè un video di cui servirebbe la trascrizione, un documento che vive dentro uno scheletro JavaScript, un file binario, una pagina che richiede autenticazione, un dominio escluso da chi ha lanciato la corsa. Fallito è il tentativo fatto e non riuscito, con il codice osservato. Contare un catalogato come uno scaricato produrrebbe esattamente quella falsa impressione di copertura che i tetti dichiarati cercano di evitare.
+
+L'uscita è una cartella per corsa, sotto `_notes/fonti/`, e i due file da cui si parte rispondono a domande diverse. `_INDEX.md` dice che cosa c'è, cioè l'elenco dei nodi con i loro dati e il loro esito, ed è il Livello 1 della disclosure progressiva che `token-economy.md` prescrive. `MAPPA.md` dice come le fonti si tengono, cioè quale contenuto rinvia a quale altro e con che parole, ed è la sola forma in cui si vede dove la catena si interrompe, perché un nodo catalogato o non raggiunto compare comunque nell'albero nel punto in cui qualcuno lo ha citato. L'albero non è il grafo ma una sua lettura, perché i post di un raccoglitore si citano a vicenda e quindi il grafo ha cicli: un nodo già comparso si segnala come tale invece di essere espanso una seconda volta, e il grafo vero, senza quella semplificazione, sta in `mappa.json` per l'uso da programma. Accanto resta il JSON grezzo di ogni post e l'HTML grezzo di ogni pagina, perché l'estrattore di testo che sta nel file è minimo per scelta e il grezzo permette di rifare meglio il lavoro senza ri-scaricare nulla.
+
+Verso l'archivio non c'è nulla da negoziare, perché si governa da sé con i limiti di frequenza che dichiara nelle intestazioni. Verso un sito qualunque, invece, lo strumento è un programma che visita pagine altrui e si comporta di conseguenza: legge `robots.txt` una volta per host e ne rispetta il divieto, attende un intervallo minimo fra due richieste allo stesso host, dichiara uno user agent descrittivo e rifiuta le risposte oltre un tetto di dimensione. Non esiste un'opzione per disattivare nulla di questo, per la stessa ragione per cui il primo strumento non espone un modo per inviare un'intestazione da account personale.
+
+```
+python tools/fetch-reddit.py --self-test
+python tools/fetch-reddit.py crawl <url o id> --dry-run
+python tools/fetch-reddit.py crawl <url o id> --max-post 50 --max-profondita 1
+python tools/fetch-reddit.py crawl <url o id> --max-post 500 --esterni
+python tools/fetch-reddit.py crawl <url o id> --esterni --dominio-escluso youtube.com
+python tools/fetch-reddit.py riprendi <cartella> --max-post 1000
+python tools/fetch-reddit.py post <id>
+```
+
+La prova a vuoto non è quella dell'orchestratore di export, e la differenza va detta perché altrimenti si prende per una promessa non mantenuta: quella non chiama nulla, questa chiama una volta, perché il grafo di un crawler non si conosce senza guardare il primo nodo. Scarica il solo punto di partenza e riferisce la frontiera che genererebbe al primo livello, con il costo in richieste, senza scrivere nulla su disco. Su un post raccoglitore conviene sempre precedere con essa una corsa piena, perché è là che si scopre se la frontiera del primo livello ha decine di elementi o centinaia.
 
 ## Procurarsi l'esportatore esterno
 
@@ -104,6 +144,14 @@ python tools/fetch-discord.py --self-test
 
 Il cursore di `--nuovi` vive in `_notes/.discord-cursori.json` e avanza fino all'ultimo messaggio letto e non all'ultimo scritto, cosicché un filtro restrittivo non faccia rileggere ogni volta i messaggi che ha scartato. È la sola parte del costo che dipende da chi legge.
 
+## I server piccoli, esportati interi
+
+Le due tabelle dell'orchestratore non sono alternative di gusto e la scelta fra loro segue una regola. `CANALI` elenca i canali scelti uno per uno e produce un archivio leggibile, perché trenta canali scelti si leggono e un server intero no: è la via preferibile ogni volta che gli identificativi dei canali si conoscono. `GUILDS` elenca i server da esportare interi, si appoggia al sottocomando `exportguild` dell'esportatore esterno e non richiede alcun identificativo di canale.
+
+Il caso che rende necessaria la seconda tabella è quello in cui gli identificativi non si conoscono, e vale enunciare perché non si risolve indovinandoli: il servizio, quando riceve un identificativo che non è un numero valido, risponde con un errore sul corpo della richiesta che non nomina il campo sbagliato, cioè con un messaggio che somiglia a un problema di permessi e non lo è. Davanti a identificativi ignoti la scelta corretta non è tentare, è cambiare granularità.
+
+L'uscita di questa via è una cartella per server invece di un file per canale, perché i nomi dei canali si conoscono soltanto a esportazione avvenuta: l'esportatore esterno, quando riceve una cartella come destinazione, nomina da sé i file. La protezione contro la sovrascrittura è la stessa dell'altra via, cioè una cartella che esiste e non è vuota viene saltata a meno di `--forza`.
+
 ## Il presidio, e il principio che esemplifica
 
 Lo strumento invia sempre l'intestazione di autorizzazione nella forma prevista per i bot, e prima di qualunque lettura verifica che l'account autenticato sia dichiarato tale, arrestandosi con la ragione se non lo è. Un token personale inserito per errore in quella variabile non produce quindi una lettura riuscita ma un rifiuto.
@@ -134,6 +182,16 @@ E la scrittura può aggiungersi in coda a un file esistente invece di sovrascriv
 
 `--self-test` esercita l'intera logica contro un trasporto finto e non richiede credenziali: trentasette controlli, quattro dei quali negativi, cioè che fallirebbero se un presidio venisse rimosso. Il trasporto finto accetta un programma di risposte, cosicché un rifiuto o un guasto si possano collocare in una posizione precisa della sequenza e si verifichi non soltanto che la lettura riesca, ma quanto si è atteso e quante richieste sono state fatte.
 
+`fetch-reddit.py` porta la propria suite con la stessa forma e lo stesso principio: ottantadue controlli contro un trasporto finto, dei quali tredici negativi. Il trasporto finto risponde da quattro tabelle, cioè post, alberi di commenti, collegamenti brevi e pagine esterne con i loro `robots.txt`, e questo permette di esercitare la parte che nessun servizio reale renderebbe riproducibile: un grafo con un ciclo, un tetto che si esaurisce a metà di un livello, un divieto di `robots.txt`, un rifiuto per eccesso di frequenza collocato in una posizione precisa della sequenza, e una ripresa che deve saltare ciò che è già fatto. Contro il servizio reale sono stati esercitati il recupero di un post, l'albero completo dei commenti, il lotto di più identificativi in una richiesta, la ricorsione su un post figlio e la forma della risposta di errore per un campo non selezionabile; restano non osservati il limite di frequenza sotto traffico prolungato e il tasso di fallimento sui domini esterni protetti.
+
+Tre difetti sono emersi solo all'uso reale, e nessuno di essi sarebbe stato preso dalla suite: è il genere di errore che sopravvive a un collaudo verde, e per questo vale registrarli.
+
+Il primo è di logica. Il campo dell'indirizzo di un post di testo contiene il permalink del post stesso, quindi seguirlo significa seguire sé stessi, e il confronto va fatto sulla chiave canonica e non sul prefisso della stringa perché le due forme dello stesso indirizzo differiscono per lo spezzone di titolo che una delle due porta dentro.
+
+Gli altri due sono di scala, e si sono visti soltanto portando una corsa fino in fondo su un grafo di quasi settemila nodi. Il budget di sei tentativi con attesa crescente, che è giusto verso l'archivio perché quelle richieste sono la spina dorsale della corsa, su una pagina esterna che non risponde costa minuti, e con centinaia di collegamenti esterni quella somma domina la durata: le pagine esterne hanno quindi un budget proprio e molto più piccolo. E i due file di sintesi crescevano quanto il materiale che riassumono, cioè un indice da quasi tre megabyte e una mappa da quasi sette, che è il modo esatto in cui un Livello 1 smette di essere un Livello 1; oltre una soglia i catalogati si raggruppano per host e motivo, i non raggiunti si contano per motivo e per profondità, e l'elenco piano degli archi resta nel solo file destinato a un programma. Nella stessa occasione il materiale grezzo è passato a JSON compatto, che su un albero di commenti di un thread popolare dimezza il file senza togliergli un dato.
+
+La lezione comune ai due difetti di scala è che un collaudo su un apparato piccolo non misura né i tempi né le dimensioni, e che entrambi hanno una soglia oltre la quale una scelta corretta diventa sbagliata.
+
 Contro il servizio sono stati esercitati, su un progetto reale, l'elenco dei server, l'elenco dei canali e delle discussioni attive, la lettura della cronologia con il testo presente, i filtri, l'aggiunta in coda e il cursore. Restano non osservati sul servizio l'impaginazione oltre i cento messaggi, le due attese sui limiti di frequenza, la ripresa dopo un guasto e la lettura di una discussione popolata: tutto questo è provato contro il trasporto finto, e la distinzione fra i due stati è dichiarata nella nota di collaudo dentro il file e va conservata.
 
 ## Che cosa resta da rispettare comunque
@@ -146,6 +204,8 @@ Se il server non è proprio, va inoltre considerato che la comunità ha diritto 
 
 ## Che cosa manca a questo pacchetto
 
-Tre strumenti della stessa famiglia esistono su un progetto reale e non sono ancora qui, e l'assenza è dichiarata perché entrambi gli strumenti presenti li nominano nella propria catena. Il convertitore di un export di chat in Markdown filtrato è quello che manca di più, perché è il sesto passo della procedura descritta sopra: senza di esso un export in JSON resta un file che nessuno legge. Gli altri due sono il lettore dell'API di Reddit a sole credenziali applicative e il ripulitore dei sottotitoli di un video, che servono alle altre due vie della medesima regola.
+Due strumenti della stessa famiglia mancano ancora, e l'assenza è dichiarata perché gli strumenti presenti li nominano nella propria catena. Il convertitore di un export di chat in Markdown filtrato è quello che manca di più, perché è il sesto passo della procedura descritta sopra: senza di esso un export in JSON resta un file che nessuno legge. L'altro è il ripulitore dei sottotitoli di un video, e la sua assenza non è più teorica da quando esiste il terzo strumento: ogni collegamento a un video incontrato in un grafo di Reddit finisce catalogato con quella ragione accanto, quindi il buco è visibile in ogni indice prodotto.
+
+Il terzo mancante era il lettore dell'API di Reddit a sole credenziali applicative, e non manca più, ma non è quello che era stato dichiarato: `fetch-reddit.py` non usa credenziali applicative perché quella via è risultata inaccessibile, e passa per un archivio pubblico di terze parti. La sostituzione va registrata invece che nascosta, perché le due vie non sono equivalenti: quella dichiarata avrebbe letto Reddit, questa legge una copia di Reddit, e la differenza è la latenza dell'indicizzazione e la sopravvivenza di ciò che è stato cancellato. Se un giorno la registrazione dell'applicazione dovesse riuscire, la via ufficiale resterebbe preferibile per fedeltà, e questo strumento resterebbe utile per ciò che l'API non dà, cioè il materiale più vecchio dei limiti di ricerca.
 
 Vanno portati con il metodo usato per questi due, che vale registrare perché è la ragione per cui le copie non divergeranno: il file si copia e si sostituisce la sola prosa, con una tabella di sostituzioni esplicita, e la verifica è un confronto delle righe di codice dopo aver escluso commenti e stringhe di documentazione. Sul lettore hanno differito tredici righe su cinquecentocinquanta e nessuna di logica; sull'orchestratore sei righe di funzione, più la tabella dei canali che è stata deliberatamente sostituita da un esempio perché è conoscenza del progetto ospite e non codice riusabile.

@@ -12,13 +12,15 @@ Da qui la regola in due parti. La prima è che ogni voce non letta va etichettat
 
 La prima via è il recupero locale con `curl` dal terminale. Vale la pena provarla sempre, perché è indipendente dal crawler del modello: sono due agenti diversi, con due indirizzi diversi e due reputazioni diverse, e capita spesso che un dominio blocchi l'uno e non l'altro. Molti siti rispondono a `curl` solo con uno user agent da browser.
 
-La seconda via è l'automazione del browser reale dell'utente, dove è disponibile. È la via che funziona su quasi tutto, perché è un browser vero con la sessione dell'utente, e per questo va usata con misura: apre schede nel browser della persona e richiede che i permessi per quel sito siano concessi. Si chiede prima, non si fa e poi si dice.
+La seconda via, quando la fonte è una piattaforma abbastanza grande da averne uno, è un archivio pubblico di terze parti che ne esponga il contenuto con un'API propria. È la meno cara di tutte quelle che richiedono qualcosa, perché non chiede credenziali, non apre schede nel browser di nessuno e non consuma il tempo dell'utente, e va quindi provata subito dopo `curl`. Il suo costo non è di allestimento ma di fedeltà, e sta più sotto nel caso Reddit: un archivio ha latenza verso il presente e memoria di ciò che l'originale ha cancellato, quindi ciò che se ne ricava si annota come tratto da un archivio e non dalla fonte viva.
 
-La terza via è l'API ufficiale del servizio, quando esiste, con credenziali dell'utente. È la più solida e la più costosa da allestire, e ha senso solo per le fonti che il progetto consulta ripetutamente. Le credenziali stanno in `.env`, che il `.gitignore` esclude, e non entrano mai in un file tracciato né in una conversazione.
+La terza via è l'automazione del browser reale dell'utente, dove è disponibile. È la via che funziona su quasi tutto, perché è un browser vero con la sessione dell'utente, e per questo va usata con misura: apre schede nel browser della persona e richiede che i permessi per quel sito siano concessi. Si chiede prima, non si fa e poi si dice.
+
+La quarta via è l'API ufficiale del servizio, quando esiste, con credenziali dell'utente. È la più solida e la più costosa da allestire, e ha senso solo per le fonti che il progetto consulta ripetutamente. Le credenziali stanno in `.env`, che il `.gitignore` esclude, e non entrano mai in un file tracciato né in una conversazione.
 
 Un dettaglio operativo che vale registrare, perché altrimenti sembra una dimenticanza: dove le regole di permesso del progetto negano i percorsi che corrispondono a `.env*`, e in questo sistema lo fanno, l'agente non può creare né leggere quel file, nemmeno il modello `.env.example`. Il modello va quindi creato a mano dall'utente, e le variabili che servono sono documentate nel docstring dello strumento che le consuma. È una limitazione voluta e non va aggirata.
 
-Se nessuna delle tre è praticabile, resta l'ultima, che non è una sconfitta: si chiede all'utente di procurare il contenuto. È la stessa logica della regola sugli screenshot, cioè quando l'agente non può vedere una cosa la chiede invece di inventarla, e la richiesta va fatta mirata su un contenuto preciso e non come lamentela generica.
+Se nessuna delle quattro è praticabile, resta l'ultima, che non è una sconfitta: si chiede all'utente di procurare il contenuto. È la stessa logica della regola sugli screenshot, cioè quando l'agente non può vedere una cosa la chiede invece di inventarla, e la richiesta va fatta mirata su un contenuto preciso e non come lamentela generica.
 
 ## Il criterio che separa le vie legittime da quelle vietate
 
@@ -28,7 +30,7 @@ Non è la quantità di dati raccolti a distinguere una via legittima da una viet
 
 Da questo criterio discende una conseguenza che va enunciata perché è ciò che lo rende onesto invece di autoassolutorio: proprio il meccanismo di consenso che rende lecita una via la rende inapplicabile dove il consenso non si ottiene. Una via lecita non è una via disponibile, e confondere le due cose è il modo in cui una regola viene aggirata senza che nessuno se ne accorga.
 
-## Il caso Reddit, e un vicolo cieco documentato
+## Il caso Reddit, un vicolo cieco documentato e la via che lo ha aggirato
 
 Reddit merita una scheda propria perché è una fonte tecnica di prima qualità su molti domini, e perché la sua indisponibilità è facile da attribuire alla causa sbagliata. Non è un problema di configurazione del progetto: è la somma di due fatti indipendenti, entrambi fuori dal controllo di chi lavora.
 
@@ -36,16 +38,28 @@ Reddit merita una scheda propria perché è una fonte tecnica di prima qualità 
 |---|---|
 | recupero dal crawler del modello | rifiutato: il dominio non è accessibile allo user agent |
 | ricerca con dominio consentito | rifiutata allo stesso modo |
-| `curl` locale, con e senza user agent da browser | HTTP 403 |
-| endpoint JSON del frontend storico | HTTP 302 verso la pagina di accesso |
+| `curl` locale sugli endpoint JSON, con e senza user agent da browser | HTTP 403 |
+| `curl` locale sulla pagina HTML | HTTP 200, ma il corpo è la pagina di verifica anti-bot |
+| endpoint JSON del frontend storico | HTTP 302 verso la pagina di accesso, poi HTTP 403 |
 | frontend alternativi | HTTP 403, oppure sfida JavaScript di verifica del browser |
-| proxy di lettura | HTTP 403 |
+| proxy di lettura | HTTP 403, oppure poche centinaia di byte senza contenuto |
+| archivio pubblico di terze parti | riuscito, senza credenziali |
+
+Una riga di quella tabella merita attenzione più delle altre, perché è la sola che inganna. La pagina HTML risponde oggi con un codice di successo, e chi si ferma al codice conclude di avere il contenuto: gli ottomila byte che arrivano sono la pagina di verifica del browser, con un titolo generico, nessun link ai commenti e nessun testo. Un successo vuoto costa più di un rifiuto, perché il rifiuto si nota e questo no, e la lezione generale è che l'esito di un recupero si verifica sul corpo e non sul codice.
 
 I risultati di ricerca continuano a restituire indirizzi di Reddit, e quelli sono utili: dicono che una discussione esiste e su cosa. Ma il titolo di un thread non è il suo contenuto, e va trattato come un puntatore da verificare.
 
-Sulla terza via, cioè l'API ufficiale, va registrato un modo di fallire che consuma tempo e sembra un errore di compilazione. L'API ha un flusso a sole credenziali applicative, senza account collegato, che basterebbe per leggere contenuto pubblico; la registrazione dell'applicazione avviene su una pagina dedicata, e su almeno un account osservato la creazione è stata rifiutata dal server ricaricando il form senza alcun errore accanto ai campi. Le due cause ipotizzate erano l'email non verificata e la mancanza di una registrazione preventiva dell'uso: entrambe sono state escluse per verifica diretta, la prima controllando lo stato dell'email e la seconda leggendo la documentazione ufficiale, che dichiara quel modulo necessario alle sole richieste commerciali, aziendali, accademiche o di superamento dei limiti.
+Sulla via dell'API ufficiale va registrato un modo di fallire che consuma tempo e sembra un errore di compilazione. L'API ha un flusso a sole credenziali applicative, senza account collegato, che basterebbe per leggere contenuto pubblico; la registrazione dell'applicazione avviene su una pagina dedicata, e su almeno un account osservato la creazione è stata rifiutata dal server ricaricando il form senza alcun errore accanto ai campi. Le due cause ipotizzate erano l'email non verificata e la mancanza di una registrazione preventiva dell'uso: entrambe sono state escluse per verifica diretta, la prima controllando lo stato dell'email e la seconda leggendo la documentazione ufficiale, che dichiara quel modulo necessario alle sole richieste commerciali, aziendali, accademiche o di superamento dei limiti.
 
-Ne segue la conclusione onesta, che vale come regola e non come resoconto: se il rifiuto persiste dopo aver escluso le cause note, quella via non è disponibile su quell'account e non vale la pena insistere. Restano la seconda e la quarta, e la seconda ha dimostrato di funzionare bene.
+Ne segue la conclusione onesta, che vale come regola e non come resoconto: se il rifiuto persiste dopo aver escluso le cause note, quella via non è disponibile su quell'account e non vale la pena insistere.
+
+Restano l'automazione del browser dell'utente, che ha dimostrato di funzionare bene, e la consegna manuale. Ma non sono più le sole, e questa parte va letta come la correzione di una conclusione che era vera quando è stata scritta e oggi non lo è più. Esiste una quinta via che le quattro non contemplavano, perché non è né un canale del fornitore del servizio né una consegna manuale: l'archivio pubblico di terze parti, che nel caso di Reddit è Arctic Shift, successore di Pushshift. Pubblica di propria iniziativa un'API documentata sul proprio archivio, non chiede credenziali, e restituisce un post con il suo corpo intero e l'albero completo dei commenti. Il pacchetto `community-sources` la implementa in `fetch-reddit.py`, che attraversa anche il grafo dei rinvii a partire da un post.
+
+Il criterio enunciato sopra non copriva questo caso e va esteso, perché applicato alla lettera lo escluderebbe per la ragione sbagliata. Le due proprietà che rendono legittima una via erano l'esistenza di un canale costruito per l'automazione e l'esistenza di un meccanismo di consenso. Qui la prima c'è, mentre la seconda non c'è e non può esserci, perché non c'è nulla da autorizzare: non si entra in casa di nessuno, si interroga un servizio chiedendogli i propri dati. Il consenso è il presidio giusto quando si chiede a una piattaforma l'accesso a ciò che custodisce; davanti a un terzo che ha già pubblicato il proprio archivio, il presidio si sposta altrove, e diventa la fedeltà.
+
+Fedeltà significa due cose opposte, ed entrambe vanno dichiarate ogni volta che una fonte proviene da un archivio invece che dall'originale. L'archivio ha latenza, quindi un contenuto recente può mancare: la sua assenza non prova che non esista, e va scritto così. E l'archivio conserva ciò che sull'originale è stato cancellato, quindi il materiale può contenere testo che il suo autore ha rimosso: valgono qui, e con più forza, i quattro accorgimenti dell'ultimo paragrafo di questa regola, a partire dalla conservazione dell'identificativo dell'autore accanto al contenuto. Ne segue che una citazione tratta da un archivio si annota come tale, con il momento di archiviazione del record accanto, e non come una citazione della fonte viva.
+
+La lezione di metodo, che vale oltre il caso di Reddit, è che una tabella di vie tentate è una fotografia datata e non un verdetto. Riaprirla è costato sei richieste; lasciarla chiusa sarebbe costato una fonte.
 
 ## Il caso Discord, e le tre vie di cui una si dimentica
 
