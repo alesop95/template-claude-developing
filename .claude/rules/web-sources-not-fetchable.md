@@ -83,7 +83,7 @@ Un'ultima avvertenza vale per il caso in cui la fonte sia una community di svilu
 
 ## Come l'utente consegna il materiale, e in che formato
 
-Quando la via resta la quarta, cioè l'utente procura il contenuto, il modo di consegnarlo non è incollarlo in conversazione: è salvarlo su disco in una cartella concordata, perché così resta disponibile anche nelle sessioni successive e non consuma contesto due volte. La cartella è `_notes/fonti/`, locale e non versionata, e la convenzione di nome è la data seguita da una parola che identifica la fonte.
+Quando la via resta l'ultima, cioè l'utente procura il contenuto, il modo di consegnarlo non è incollarlo in conversazione: è salvarlo su disco in una cartella concordata, perché così resta disponibile anche nelle sessioni successive e non consuma contesto due volte. La cartella è `_notes/fonti/`, locale e non versionata, e la convenzione di nome è la data seguita da una parola che identifica la fonte.
 
 Sui formati, in ordine di preferenza. Il testo semplice o Markdown è il migliore, perché è cercabile, diffabile e non porta rumore: per una discussione basta il corpo dei messaggi con l'autore e la data, senza la struttura di navigazione del sito. Il salvataggio della pagina come singolo file HTML va bene e si legge, ma contiene molto rumore. Il PDF è accettabile. Uno screenshot è l'ultima scelta, perché non è cercabile né citabile parola per parola, e va riservato ai casi in cui il contenuto è grafico.
 
