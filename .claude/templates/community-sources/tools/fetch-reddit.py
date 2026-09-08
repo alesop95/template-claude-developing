@@ -60,6 +60,9 @@ Tutto vive sotto `_notes/fonti/reddit-<sub>-<id>-<data>/`, che il `.gitignore` d
     raw/posts/<id>.json              il record così come l'archivio lo ha restituito
     raw/tree/<id>.json               l'albero dei commenti grezzo
     raw/esterni/<hash>.html          la pagina esterna grezza
+    .md-unwrap-ignore                il marcatore che esenta la cartella dal normalizzatore
+
+Il marcatore che chiude l'elenco non è un dettaglio di comodo: i file scritti qui riportano prosa di terzi verbatim, e la convenzione di un paragrafo per riga sorgente è una regola sui documenti che scriviamo noi e non una licenza a riscrivere il testo di qualcun altro. Senza di esso il controllo pre-commit proporrebbe di unire righe dentro le citazioni, che è precisamente cio che l'eccezione dichiarata dalla regola di stile vieta per il materiale copiato da una fonte esterna.
 
 L'indice è il Livello 1 della disclosure progressiva che `token-economy.md` prescrive: si legge quello per decidere dove guardare, e si aprono i singoli file solo dopo. Il grezzo resta accanto al derivato per una ragione precisa e non per completezza: permette di rigenerare meglio in seguito, per esempio con un convertitore vero al posto dell'estrattore minimo che sta qui dentro, senza ri-scaricare nulla.
 
@@ -88,7 +91,7 @@ La radice si ricava dalla posizione del file, cioè la cartella che contiene `to
 Stato di collaudo
 -----------------
 
-Provati contro il trasporto finto, senza rete: la formazione dei lotti di identificativi, la deduplicazione delle cinque forme di indirizzo dello stesso post, la risoluzione dei collegamenti brevi, l'ordine in ampiezza e il conteggio della profondità, i tetti con i pendenti registrati, il rifiuto per eccesso di frequenza con l'attesa dichiarata dal servizio, il guasto transitorio con l'attesa raddoppiata, il budget di tentativi ridotto per le pagine esterne, la risposta di errore che arriva con un codice 200, il divieto di `robots.txt`, l'intervallo fra richieste allo stesso host, la protezione del testo di terzi che aprirebbe un'intestazione, la classificazione di un host da catalogare, il riconoscimento di uno scheletro JavaScript, la registrazione degli archi della mappa anche verso i nodi che non verranno letti, e la ripresa che salta cio che è fatto.
+Provati contro il trasporto finto, senza rete: la formazione dei lotti di identificativi, la deduplicazione delle cinque forme di indirizzo dello stesso post, la risoluzione dei collegamenti brevi, l'ordine in ampiezza e il conteggio della profondità, i tetti con i pendenti registrati, il rifiuto per eccesso di frequenza con l'attesa dichiarata dal servizio, il guasto transitorio con l'attesa raddoppiata, il budget di tentativi ridotto per le pagine esterne, la risposta di errore che arriva con un codice 200, il divieto di `robots.txt`, l'intervallo fra richieste allo stesso host, la protezione del testo di terzi che aprirebbe un'intestazione, la classificazione di un host da catalogare, il riconoscimento di uno scheletro JavaScript, la registrazione degli archi della mappa anche verso i nodi che non verranno letti, la ripresa che salta cio che è fatto, e la scrittura del marcatore che esenta la cartella della corsa dal normalizzatore di Markdown.
 
 Provati contro il servizio reale: il recupero di un post, l'albero completo dei suoi commenti, il lotto di più identificativi in una richiesta, la ricorsione su un post figlio, la forma della risposta di errore per un campo non selezionabile, e una corsa su un grafo di alcune centinaia di nodi con le pagine esterne attive.
 
@@ -1425,6 +1428,16 @@ class Corsa:
 
     def salva(self):
         self.stato["aggiornato"] = data_di(time.time())
+        # Il marcatore che esenta questo sottoalbero dal normalizzatore di Markdown del sistema.
+        # Non è un dettaglio di comodo: i file scritti qui riportano prosa di terzi verbatim, e
+        # la convenzione di questo sistema, cioè un paragrafo per riga sorgente, è una regola
+        # sui documenti che scriviamo noi e non una licenza a riscrivere il testo di qualcun
+        # altro. Senza il marcatore il controllo pre-commit proporrebbe di unire righe dentro le
+        # citazioni, che è esattamente ciò che l'eccezione dichiarata dalla regola di stile
+        # vieta per il materiale copiato da una fonte esterna.
+        scrivi(os.path.join(self.cartella, ".md-unwrap-ignore"),
+               "Materiale di terzi riportato verbatim: la convenzione di un paragrafo per riga\n"
+               "sorgente vale per i documenti di questo progetto e non per le citazioni.\n")
         scrivi(self.percorso_stato(),
                json.dumps(self.stato, indent=2, ensure_ascii=False) + "\n")
         scrivi(os.path.join(self.cartella, "_INDEX.md"), markdown_indice(self.stato))
@@ -2166,6 +2179,9 @@ def collaudo():
         prova("la pagina esterna ha il suo HTML grezzo",
               os.path.isfile(os.path.join(cartella, "raw", "esterni",
                                           impronta("https://aperto.it/a") + ".html")))
+        prova("la cartella porta il marcatore che la esenta dal normalizzatore di Markdown, "
+              "perché contiene prosa di terzi verbatim",
+              os.path.isfile(os.path.join(cartella, ".md-unwrap-ignore")))
         with open(os.path.join(cartella, "_INDEX.md"), encoding="utf-8") as f:
             indice = f.read()
         prova("l'indice dichiara i non raggiunti", "## Non raggiunti" in indice and

@@ -48,6 +48,8 @@ Uso
     python tools/export-discord.py --tier 1
     python tools/export-discord.py --tier 1 --html
     python tools/export-discord.py --server NomeDelServer
+    python tools/export-discord.py --guilds --dry-run
+    python tools/export-discord.py --guilds
 
 Il percorso dell'eseguibile di DiscordChatExporter si passa con `--dce` oppure si mette
 nella variabile d'ambiente DCE_PATH. Non è una dipendenza del repository e non vi entra: la
@@ -100,6 +102,27 @@ CANALI = [
      "una seconda domanda, in un gruppo di priorità inferiore"),
 ]
 
+# ---------------------------------------------------------------------------------------
+# I server da esportare interi, invece che canale per canale. Servono al caso in cui la
+# selezione costerebbe più di quanto risparmi: un server piccolo e monotematico, oppure uno
+# di cui non si conoscono gli identificativi dei canali. Il meccanismo è exportguild di
+# DiscordChatExporter, che non richiede alcun identificativo di canale.
+#
+# La regola per scegliere fra le due tabelle, che è la parte riusabile: dove gli
+# identificativi dei canali si conoscono, la selezione per canale resta preferibile, perché
+# un archivio di trenta canali scelti è leggibile e uno di un server intero no. Dove non si
+# conoscono, la scelta corretta non è indovinarli, perché un identificativo inventato produce
+# un errore che non nomina il campo sbagliato: è cambiare granularità.
+#
+# Schema: (server, id del server, sigla, domanda a cui serve)
+# ---------------------------------------------------------------------------------------
+GUILDS = [
+    # Anche queste voci sono un esempio da sostituire, come quelle di CANALI.
+    ("NomeDelServerPiccolo", "000000000000000002", "SIGLA",
+     "la domanda a cui questo server risponde, e la ragione per cui si esporta intero "
+     "invece che per canali scelti"),
+]
+
 # I server esclusi, con il motivo, perché una esclusione senza motivo è indistinguibile
 # da una dimenticanza e verrà riaperta dalla prossima sessione. Anche questa tabella è un
 # esempio da sostituire.
@@ -149,15 +172,76 @@ def elenco():
             print("  id " + cid)
             print("  " + perche)
     print("")
+    print("=== Server esportati interi")
+    for srv, gid, track, perche in GUILDS:
+        print("")
+        print("  " + srv + "  [" + track + "]")
+        print("  id " + gid)
+        print("  " + perche)
+    print("")
     print("=== Server esclusi")
     for srv, motivo in ESCLUSI.items():
         print("  " + srv + ": " + motivo)
+
+
+def interi(a):
+    """Esporta interi i server di GUILDS, ciascuno in una cartella propria.
+
+    Il percorso di destinazione è una cartella e non un file: DiscordChatExporter, quando
+    riceve una cartella, nomina da sé i file dei singoli canali, ed è precisamente ciò che
+    serve qui, perché i nomi dei canali non li conosciamo in anticipo.
+    """
+    scelti = [g for g in GUILDS if not a.server or g[0] in a.server]
+    if not scelti:
+        sys.exit("nessun server corrisponde ai criteri; provare --elenco")
+
+    exe = eseguibile(a.dce) if not a.dry_run else (a.dce or "<percorso di DCE>")
+    t = None if a.dry_run else token()
+
+    fatti, falliti = 0, 0
+    for i, (srv, gid, _track, _perche) in enumerate(scelti, 1):
+        cartella = os.path.join(USCITA, srv)
+        etichetta = "[" + str(i) + "/" + str(len(scelti)) + "] " + srv + " -> " + cartella
+        if os.path.isdir(cartella) and os.listdir(cartella) and not a.forza:
+            print(etichetta + ": la cartella esiste e non è vuota, salto; "
+                  "con --forza si riesporta")
+            continue
+        comando = [exe, "exportguild", "-t", "<token>" if a.dry_run else t,
+                   "-g", gid, "-f", "Json", "-o", cartella + os.sep]
+        if a.after:
+            comando += ["--after", a.after]
+        if a.media:
+            comando += ["--media"]
+        print(etichetta)
+        if a.dry_run:
+            continue
+        # La cartella si crea soltanto quando si esporta davvero, e non una riga prima: una
+        # prova a vuoto che lasciasse dietro di sé le cartelle di destinazione non sarebbe una
+        # prova a vuoto, ed è l'ordine che il percorso per canali tiene già in `main()`.
+        os.makedirs(cartella, exist_ok=True)
+        esito = subprocess.run(comando)
+        if esito.returncode == 0:
+            fatti += 1
+        else:
+            print("   non riuscito, codice " + str(esito.returncode) +
+                  "; si prosegue con gli altri")
+            falliti += 1
+
+    if a.dry_run:
+        print("")
+        print("nulla eseguito: " + str(len(scelti)) + " server sarebbero stati esportati")
+        return 0
+    print("")
+    print("server esportati " + str(fatti) + ", non riusciti " + str(falliti))
+    return 1 if falliti else 0
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--elenco", action="store_true",
                     help="stampa la scelta dei canali con la ragione di ciascuno")
+    ap.add_argument("--guilds", action="store_true",
+                    help="esporta interi i server della tabella GUILDS, invece dei canali")
     ap.add_argument("--tier", type=int, action="append",
                     help="quale gruppo esportare; ripetibile")
     ap.add_argument("--server", action="append", help="limita a questi server; ripetibile")
@@ -176,6 +260,9 @@ def main():
     if a.elenco:
         elenco()
         return 0
+
+    if a.guilds:
+        return interi(a)
 
     scelti = [c for c in CANALI
               if (not a.tier or c[0] in a.tier)
