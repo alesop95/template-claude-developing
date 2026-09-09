@@ -235,6 +235,9 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 - `dev-skills` - skill di sviluppo (test, scaffolding MCP, review): [.claude/templates/dev-skills/README.md](.claude/templates/dev-skills/README.md)
 - `automation-starter` - headless e routine su abbonamento, senza API a consumo: [.claude/templates/automation-starter/README.md](.claude/templates/automation-starter/README.md)
 - `agent-catalog` - fetch mirato di subagent community da fonti flat: [.claude/templates/agent-catalog/README.md](.claude/templates/agent-catalog/README.md)
+- `anonymization` - guard-rail sui dati che identificano persone e infrastrutture reali: [.claude/templates/anonymization/README.md](.claude/templates/anonymization/README.md)
+- `fix-typography` - accenti, accenti mancanti e trattini secondo le convenzioni tipografiche: [.claude/templates/fix-typography/README.md](.claude/templates/fix-typography/README.md)
+- `alignment` - controllo eseguibile delle affermazioni che invecchiano: scadenze, freschezza delle misure, domande aperte e invarianti: [.claude/templates/alignment/README.md](.claude/templates/alignment/README.md)
 
 ## Cosa non finisce nei progetti
 
