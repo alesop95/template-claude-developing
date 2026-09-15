@@ -17,8 +17,11 @@ templates/gitignore.snippet    ->  da unire al <radice>/.gitignore       (tracci
 templates/settings.json        ->  <radice>/.claude/settings.json        (tracciato)
 templates/memory/*.md          ->  <radice>/.claude/memory/*.md          (tracciato)
 templates/context/*.md         ->  <radice>/.claude/context/*.md         (tracciato)
+templates/context/sub-subproject.md ->  <radice>/.claude/context/<nome-sottoprogetto>.md  (tracciato, una copia per sottoprogetto)
 templates/_notes/*.md          ->  <radice>/_notes/*.md                  (ignorato; solo dopo che _notes e ignorato)
 ```
+
+Una precisazione sulla riga delle schede di contesto, perché la forma con l'asterisco la nasconde: `sub-subproject.md` non è una scheda che si copia una volta con il proprio nome, ma un modello che si istanzia una volta per ogni sottoprogetto, rinominandolo con il nome di quello e compilandone il `covers-paths` con la sua cartella. Le istruzioni di istanziazione stanno dentro il modello, e comprendono il passo che si dimentica più spesso, cioè estendere il `covers-paths` delle schede trasversali alla cartella nuova: senza quel passo il motore di riconciliazione non guarda mai il sottoprogetto appena aggiunto.
 
 Anatomia di radice opzionale: README pubblico per GitHub, da istanziare su gate esplicito.
 
@@ -106,12 +109,18 @@ Strumento per i passi manuali e visivi, da istanziare nel progetto quando lo svi
 templates/tools/latest-screenshot.ps1 ->  <radice>/tools/latest-screenshot.ps1  (tracciato, opzionale)
 ```
 
-Strumenti di igiene dell'account, non del progetto: agiscono sulla home dell'account Claude Code, non sul repository. Non si istanziano nella radice del progetto; restano nel bundle e si invocano da li, mentre `session-end-wipe.ps1` e il suo companion `scrub-claude-json.js` si installano insieme nella home dell'account. Vedi PROJECT-SYSTEM.md sezione 15.
+Strumenti di igiene dell'account, non del progetto: agiscono sulla home dell'account Claude Code, non sul repository. Non si istanziano nella radice del progetto; restano nel bundle e si invocano da li, mentre `session-end-wipe.ps1` e il suo companion `scrub-claude-json.js` si installano insieme nella home dell'account. Lo script di wipe non si installa mai così com'è: porta segnaposto al posto dei prefissi da preservare, e prima di compilarlo si elencano gli slug realmente presenti con il suo modo di sola lettura e si chiede all'utente quali radici tenere, perché quei prefissi dipendono dalla macchina e su Linux non hanno nemmeno la forma di una lettera di disco. Vedi PROJECT-SYSTEM.md sezione 15.
 
 ```
 templates/tools/check-account-hygiene.ps1 ->  si esegue dal bundle al Passo 0   (verifica, non istanziato)
-templates/tools/session-end-wipe.ps1      ->  <CLAUDE_CONFIG_DIR>/hooks/session-end-wipe.ps1   (installato per-account)
+templates/tools/session-end-wipe.ps1      ->  <CLAUDE_CONFIG_DIR>/hooks/session-end-wipe.ps1   (installato per-account, da compilare)
 templates/tools/scrub-claude-json.js      ->  <CLAUDE_CONFIG_DIR>/hooks/scrub-claude-json.js   (installato per-account)
+```
+
+Strumento di rilevazione dei profili SSH, anch'esso di macchina e non di progetto: si esegue dal bundle al Passo 0.5 per leggere gli alias verso GitHub realmente configurati, con le chiavi che selezionano e l'identità git corrente, così che il remoto si agganci a un profilo che esiste invece che a uno preso da un'altra installazione. Non ha varianti per sistema operativo, perché il formato di `ssh_config` non ne ha.
+
+```
+templates/tools/detect-ssh-profiles.py    ->  si esegue dal bundle al Passo 0.5  (rilevazione, non istanziato)
 ```
 
 ## Ancoraggio al primo commit

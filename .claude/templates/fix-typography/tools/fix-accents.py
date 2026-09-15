@@ -60,6 +60,45 @@ import os
 import re
 import sys
 
+
+# Le macro LaTeX il cui argomento e' un identificatore e non prosa. Il loro contenuto
+# non va mai accentato ne' normalizzato: un'etichetta accentata compila soltanto se
+# ogni riferimento viene riscritto insieme a essa, e un riferimento rimasto indietro
+# produce due punti di domanda nel PDF senza che nulla lo segnali. E' lo stesso
+# principio per cui nei file Markdown si salta il contenuto dei blocchi recintati:
+# dentro un file convivono due linguaggi, e soltanto uno dei due vuole gli accenti.
+IDENTIFICATORI_TEX = re.compile(
+    r"\\(?:label|ref|pageref|eqref|autoref|cite|nocite|input|include"
+    r"|includegraphics|bibitem|hypertarget|hyperlink|url|href|usepackage"
+    r"|documentclass|newcommand|renewcommand|newenvironment|begin|end)"
+    r"(?:\[[^\]]*\])?"
+    r"\{[^{}]*\}")
+
+
+def maschera_identificatori(testo):
+    """Sostituisce gli argomenti-identificatore con segnaposto inerti.
+
+    Il segnaposto non contiene lettere accentabili, apostrofi ne' trattini, quindi
+    nessuna regola degli strumenti lo tocca. Restituisce il testo mascherato e la
+    lista degli originali, nell'ordine in cui vanno ripristinati.
+    """
+    salvati = []
+
+    def sostituisci(m):
+        salvati.append(m.group(0))
+        return "%sTEXID%d%s" % (SEGNAPOSTO, len(salvati) - 1, SEGNAPOSTO)
+
+    return IDENTIFICATORI_TEX.sub(sostituisci, testo), salvati
+
+
+def ripristina_identificatori(testo, salvati):
+    for i, originale in enumerate(salvati):
+        testo = testo.replace("%sTEXID%d%s" % (SEGNAPOSTO, i, SEGNAPOSTO), originale)
+    return testo
+
+
+SEGNAPOSTO = chr(0)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # ---------------------------------------------------------------------------
@@ -161,6 +200,18 @@ def per_suffisso(parola):
 # non seguita da un'altra lettera (per non colpire l'elisione come dell'area).
 CANDIDATO = re.compile(r"\b([A-Za-z]+)['’](?![A-Za-z])")
 
+# Il residuo della doppia correzione, che nessuna delle due liste sopra può cogliere
+# perché la parola non finisce più con una lettera ASCII. Nasce così: un testo scritto
+# nella convenzione con l'apostrofo, per esempio perche', riceve prima la correzione
+# degli accenti mancanti, che accenta la vocale e lascia l'apostrofo dov'era, e il
+# risultato è perché seguito da apostrofo. In italiano quella sequenza non esiste mai,
+# perché l'apostrofo dopo una vocale già accentata non sostituisce nulla e non elide
+# nulla, quindi la correzione è togliere l'apostrofo e non decidere fra due letture.
+# La causa è stata rimossa in `fix-missing-accents.py`, che ora non tocca una parola
+# seguita da apostrofo; questo resta perché i file corrotti prima di quella correzione
+# esistono, e un difetto senza il suo rimedio è un difetto che si porta a mano.
+RESIDUO_DOPPIA_CORREZIONE = re.compile(r"([àèéìòù])['’](?![A-Za-z])")
+
 # Impostata dalla riga di comando. Quando è vera, dà viene trattata
 # come indicativo e convertita. Resta falsa per default perché la
 # scelta prudente è non decidere al posto di chi conosce il testo.
@@ -189,10 +240,21 @@ def segmenta_markdown(testo):
     """
     tratti = []
     dentro_recinto = False
+    # Il front matter e' metadato e non prosa: un tag accentato e' un tag diverso, e
+    # due tag che differiscono per un accento non si uniscono in alcun indice. Si
+    # riconosce solo in apertura di file, perche' altrove tre trattini sono una linea.
+    dentro_front = testo.startswith('---' + chr(10))
+    prima_riga = True
     recinto = None
     # Si itera conservando l'a capo dentro la riga, così la concatenazione è esatta.
     for riga in testo.splitlines(keepends=True):
         nudo = riga.rstrip("\n")
+        if dentro_front:
+            tratti.append(("verbatim", riga))
+            if not prima_riga and nudo.strip() == '---':
+                dentro_front = False
+            prima_riga = False
+            continue
         m = re.match(r"^\s*(`{3,}|~{3,})", nudo)
         if not dentro_recinto and m:
             dentro_recinto, recinto = True, m.group(1)[0] * 3
@@ -209,6 +271,22 @@ def segmenta_markdown(testo):
                 continue
             tratti.append(("verbatim" if pezzo.startswith("`") else "prosa", pezzo))
     return tratti
+
+
+def togli_residuo(testo, statistiche):
+    """Toglie l'apostrofo rimasto dopo una vocale gia' accentata.
+
+    Non decide nulla e non ha casi ambigui, che e' la ragione per cui non riporta
+    residui: una vocale accentata seguita da apostrofo non e' una forma dell'italiano,
+    quindi l'unica lettura possibile e' che l'apostrofo sia di troppo. Il conteggio
+    entra nelle statistiche sotto una chiave propria, cosicche' una corsa dichiari
+    quante volte ha riparato invece di quante volte ha convertito.
+    """
+    def sostituisci(m):
+        statistiche["residuo-apostrofo"] = statistiche.get("residuo-apostrofo", 0) + 1
+        return m.group(1)
+
+    return RESIDUO_DOPPIA_CORREZIONE.sub(sostituisci, testo)
 
 
 def converti_prosa(testo, statistiche, residui, ambigui, per_regola=None):
@@ -242,7 +320,8 @@ def converti_prosa(testo, statistiche, residui, ambigui, per_regola=None):
         residui[chiave] = residui.get(chiave, 0) + 1
         return m.group(0)
 
-    return CANDIDATO.sub(sostituisci, testo)
+    testo = CANDIDATO.sub(sostituisci, testo)
+    return togli_residuo(testo, statistiche)
 
 
 def elabora(percorso, statistiche, residui, ambigui):
@@ -254,6 +333,14 @@ def elabora(percorso, statistiche, residui, ambigui):
     corpo = grezzo[3:] if bom else grezzo
     crlf = b"\r\n" in corpo
     testo = corpo.decode("utf-8").replace("\r\n", "\n")
+
+    # Su un file .tex gli identificatori si mascherano prima di convertire: il nome di
+    # un'etichetta o di una chiave bibliografica non e' prosa, e riscriverlo produce un
+    # riferimento irrisolto silenzioso invece di un errore.
+    tex = percorso.lower().endswith((".tex", ".sty", ".cls", ".lytex"))
+    salvati = []
+    if tex:
+        testo, salvati = maschera_identificatori(testo)
 
     if percorso.lower().endswith(".py"):
         nuovo = converti_python(testo, statistiche, residui, ambigui)
@@ -270,6 +357,9 @@ def elabora(percorso, statistiche, residui, ambigui):
     else:
         nuovo = converti_prosa(testo, statistiche, residui, ambigui)
 
+    if tex:
+        nuovo = ripristina_identificatori(nuovo, salvati)
+        testo = ripristina_identificatori(testo, salvati)
     if nuovo == testo:
         return False, None
     uscita = nuovo.replace("\n", "\r\n") if crlf else nuovo
@@ -344,7 +434,8 @@ def converti_lista_bianca(testo, statistiche, residui, ambigui):
         residui[chiave] = residui.get(chiave, 0) + 1
         return m.group(0)
 
-    return CANDIDATO_CODICE.sub(sostituisci, testo)
+    testo = CANDIDATO_CODICE.sub(sostituisci, testo)
+    return togli_residuo(testo, statistiche)
 
 
 def converti_python(testo, statistiche, residui, ambigui):
@@ -569,7 +660,19 @@ def main():
         tot = sum(statistiche.values())
         print("\n%d sostituzioni, %d forme distinte:" % (tot, len(statistiche)))
         for k, v in sorted(statistiche.items(), key=lambda x: -x[1])[:25]:
-            reso = ACUTO.get(k) or GRAVE.get(k)
+            # La riparazione del residuo non è una conversione e non ha una forma di
+            # partenza da mostrare: si dichiara con una riga propria, altrimenti il
+            # riquadro le applicherebbe la regola dei suffissi e ne stamperebbe una resa
+            # inventata, che è quanto è accaduto alla prima corsa di questa funzione.
+            if k == "residuo-apostrofo":
+                print("  %-16s    %-26s x%d"
+                      % ("(riparazione)", "apostrofo di troppo tolto", v))
+                continue
+            # La resa va cercata anche nella regola dei suffissi, non solo nelle mappe
+            # esplicite: le parole in -ita', -eta' e simili sono convertite dalla regola e
+            # non compaiono in ACUTO ne' in GRAVE, quindi senza questo terzo tentativo il
+            # report le mostrerebbe come None pur avendole sostituite correttamente.
+            reso = ACUTO.get(k) or GRAVE.get(k) or per_suffisso(k) or "?"
             print("  %-16s -> %-16s x%d" % (k + "'", reso, v))
     if ambigui:
         print("\nda decidere a mano, non convertite:")

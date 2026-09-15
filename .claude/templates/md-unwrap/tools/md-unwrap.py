@@ -649,7 +649,7 @@ _MARKER_CACHE = {}
 def dir_is_marked(dirpath: str) -> bool:
     """Vero se la cartella, o una qualsiasi delle sue antenate, contiene il file
     marcatore `.md-unwrap-ignore`: quel sottoalbero non si tocca. Serve a proteggere
-    materiale che deve restare byte per byte com'è', per esempio le fixture di test."""
+    materiale che deve restare byte per byte com'è, per esempio le fixture di test."""
     dirpath = os.path.abspath(dirpath)
     chain = []
     current = dirpath
@@ -868,7 +868,7 @@ def main(argv=None) -> int:
             after, joins = unwrap(before, guard_spans=True)
             if after == before:
                 # Non è un errore: il file è già nella forma migliore ottenibile
-                # senza cambiare il reso, e non c'è' altro da unire in sicurezza.
+                # senza cambiare il reso, e non c'è altro da unire in sicurezza.
                 if not args.quiet:
                     say('intatto %s: nulla da unire senza cambiare il rendering' % rel)
                 continue

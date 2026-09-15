@@ -160,13 +160,20 @@ SICURE = {
 }
 
 # Composte in cui la forma senza accento non esiste: si convertono senza dubbio.
+# Il guardiano di apostrofo ripete qui la correzione del 2026-09-09 spiegata sotto a
+# `costruisci_regex`, e la ripete perche' la prima volta non arrivo' fin qui: queste
+# forme non passano da quella funzione ma da una tabella propria, dove il confine di
+# parola finale e' soddisfatto anche da un apostrofo. Senza il guardiano una forma
+# gia' scritta con l'apostrofo diventa la vocale accentata con l'apostrofo ancora
+# attaccato, che e' esattamente la forma inesistente che quella correzione doveva
+# eliminare. La prova discriminante sta in `test-tipografia.py`.
 COMPOSTE = {
-    r"\bc'e\b": "c'è",
-    r"\bC'e\b": "C'è",
-    r"\bdov'e\b": "dov'è",
-    r"\bDov'e\b": "Dov'è",
-    r"\bcom'e\b": "com'è",
-    r"\bCom'e\b": "Com'è",
+    r"\bc'e\b(?![\w'\u2019])": "c'è",
+    r"\bC'e\b(?![\w'\u2019])": "C'è",
+    r"\bdov'e\b(?![\w'\u2019])": "dov'è",
+    r"\bDov'e\b(?![\w'\u2019])": "Dov'è",
+    r"\bcom'e\b(?![\w'\u2019])": "com'è",
+    r"\bCom'e\b(?![\w'\u2019])": "Com'è",
 }
 
 # ---------------------------------------------------------------------------
@@ -249,9 +256,18 @@ DOCSTRING = re.compile(r'"""(?:.|\n)*?"""')
 # Il candidato: parola intera, senza distinzione di maiuscole, non attaccata a trattini o
 # a caratteri di parola. Il trattino conta come confine perche' nei nomi di file compaiono
 # forme come identita-pokemon, che sono identificatori e non prosa.
+# L'apostrofo dopo la parola la esclude, ed e' la correzione del 2026-09-09. Una parola
+# scritta come perche' non ha l'accento mancante: ha l'accento reso con l'apostrofo,
+# che e' la convenzione di cui si occupa `fix-accents.py`. Senza questa esclusione i due
+# strumenti si sovrappongono nel verso peggiore, perche' questo accenta la vocale e
+# lascia l'apostrofo dov'era, producendo perche con l'acuto seguito da apostrofo: una
+# forma che in italiano non esiste, che nessuno dei due strumenti sapeva piu' cogliere
+# perche' la parola non finisce piu' con una lettera ASCII, e che ha corrotto in silenzio
+# trentasei punti dei file del template copiati in questo progetto piu' undici dei suoi
+# strumenti. La riparazione di cio' che e' gia' corrotto sta in `fix-accents.py`.
 def costruisci_regex(chiavi):
     alternative = "|".join(sorted(chiavi, key=len, reverse=True))
-    return re.compile(r"(?<![\w\-])(" + alternative + r")(?![\w\-])", re.I)
+    return re.compile(r"(?<![\w\-])(" + alternative + r")(?![\w\-'’])", re.I)
 
 
 SICURE_RE = costruisci_regex(SICURE)

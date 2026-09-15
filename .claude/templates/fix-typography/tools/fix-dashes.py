@@ -2,26 +2,26 @@
 # -*- coding: utf-8 -*-
 """Normalizza i trattini lunghi nel trattino breve, come prescrive la regola di stile.
 
-Perché' esiste
+Perché esiste
 --------------
 La regola `interaction-style` dice che i trattini lunghi non si usano e che sono ammessi
 solo quelli brevi. La regola c'era, la verifica no, e nel repository se ne contano
 centinaia: la maggior parte nel materiale ereditato dal template e negli handoff scritti
 prima che la regola fosse scritta. Questo strumento la applica e la rende verificabile.
 
-I segni che tocca, e perché' sono più' di uno
+I segni che tocca, e perché sono più di uno
 ---------------------------------------------
 Non basta cercare il trattino em. Nei testi che passano da un elaboratore di testo o da
 un generatore compaiono almeno cinque segni distinti che a video somigliano a un
 trattino: il trattino em, il trattino en, la barra orizzontale, il trattino da cifre e il
-segno meno matematico. Il segno meno merita una nota, perché' e' il più' insidioso: e' un
+segno meno matematico. Il segno meno merita una nota, perché e' il più insidioso: e' un
 operatore matematico, non punteggiatura, e in un testo tecnico un lettore che copia una
 formula ottiene un carattere che nessun compilatore accetta.
 
-Il caso che non si tocca, e perché' e' importante
+Il caso che non si tocca, e perché e' importante
 ------------------------------------------------
 Esiste nel repository uno strumento la cui tabella di sostituzione contiene proprio
-questi caratteri, perché' il suo compito e' rimuoverli dai documenti convertiti. Passare
+questi caratteri, perché il suo compito e' rimuoverli dai documenti convertiti. Passare
 questo strumento su quello lo renderebbe incapace di riconoscere cio' che deve
 sostituire: e' lo stesso genere di errore per cui `fix-accents.py` esclude il proprio
 sorgente. Le esclusioni si dichiarano in `tools/dashes-exclude.txt`, una per riga con il
@@ -29,7 +29,7 @@ motivo dopo un cancelletto, e un'esclusione senza motivo viene rifiutata.
 
 Che cosa non tocca comunque
 ---------------------------
-Nei Markdown salta i blocchi di codice recintati, perché' la' un trattino può' essere un
+Nei Markdown salta i blocchi di codice recintati, perché la' un trattino può essere un
 dato o un frammento di output e non prosa. Nei file Python lavora solo su commenti,
 docstring e stringhe a doppi apici. Conserva fine riga, BOM e newline finale.
 
@@ -43,6 +43,45 @@ import argparse
 import os
 import re
 import sys
+
+
+# Le macro LaTeX il cui argomento e' un identificatore e non prosa. Il loro contenuto
+# non va mai accentato ne' normalizzato: un'etichetta accentata compila soltanto se
+# ogni riferimento viene riscritto insieme a essa, e un riferimento rimasto indietro
+# produce due punti di domanda nel PDF senza che nulla lo segnali. E' lo stesso
+# principio per cui nei file Markdown si salta il contenuto dei blocchi recintati:
+# dentro un file convivono due linguaggi, e soltanto uno dei due vuole gli accenti.
+IDENTIFICATORI_TEX = re.compile(
+    r"\\(?:label|ref|pageref|eqref|autoref|cite|nocite|input|include"
+    r"|includegraphics|bibitem|hypertarget|hyperlink|url|href|usepackage"
+    r"|documentclass|newcommand|renewcommand|newenvironment|begin|end)"
+    r"(?:\[[^\]]*\])?"
+    r"\{[^{}]*\}")
+
+
+def maschera_identificatori(testo):
+    """Sostituisce gli argomenti-identificatore con segnaposto inerti.
+
+    Il segnaposto non contiene lettere accentabili, apostrofi ne' trattini, quindi
+    nessuna regola degli strumenti lo tocca. Restituisce il testo mascherato e la
+    lista degli originali, nell'ordine in cui vanno ripristinati.
+    """
+    salvati = []
+
+    def sostituisci(m):
+        salvati.append(m.group(0))
+        return "%sTEXID%d%s" % (SEGNAPOSTO, len(salvati) - 1, SEGNAPOSTO)
+
+    return IDENTIFICATORI_TEX.sub(sostituisci, testo), salvati
+
+
+def ripristina_identificatori(testo, salvati):
+    for i, originale in enumerate(salvati):
+        testo = testo.replace("%sTEXID%d%s" % (SEGNAPOSTO, i, SEGNAPOSTO), originale)
+    return testo
+
+
+SEGNAPOSTO = chr(0)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ESCLUSIONI = os.path.join(ROOT, "tools", "dashes-exclude.txt")
@@ -137,6 +176,14 @@ def elabora(percorso, conteggio):
     crlf = b"\r\n" in corpo
     testo = corpo.decode("utf-8").replace("\r\n", "\n")
 
+    # Su un file .tex gli identificatori si mascherano prima di convertire: il nome di
+    # un'etichetta o di una chiave bibliografica non e' prosa, e riscriverlo produce un
+    # riferimento irrisolto silenzioso invece di un errore.
+    tex = percorso.lower().endswith((".tex", ".sty", ".cls", ".lytex"))
+    salvati = []
+    if tex:
+        testo, salvati = maschera_identificatori(testo)
+
     if percorso.lower().endswith(".py"):
         nuovo = converti_python(testo, conteggio)
     elif percorso.lower().endswith(".md"):
@@ -144,6 +191,9 @@ def elabora(percorso, conteggio):
     else:
         nuovo = sostituisci(testo, conteggio)
 
+    if tex:
+        nuovo = ripristina_identificatori(nuovo, salvati)
+        testo = ripristina_identificatori(testo, salvati)
     if nuovo == testo:
         return False, None
     uscita = nuovo.replace("\n", "\r\n") if crlf else nuovo

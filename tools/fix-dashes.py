@@ -2,26 +2,26 @@
 # -*- coding: utf-8 -*-
 """Normalizza i trattini lunghi nel trattino breve, come prescrive la regola di stile.
 
-Perché' esiste
+Perché esiste
 --------------
 La regola `interaction-style` dice che i trattini lunghi non si usano e che sono ammessi
 solo quelli brevi. La regola c'era, la verifica no, e nel repository se ne contano
 centinaia: la maggior parte nel materiale ereditato dal template e negli handoff scritti
 prima che la regola fosse scritta. Questo strumento la applica e la rende verificabile.
 
-I segni che tocca, e perché' sono più' di uno
+I segni che tocca, e perché sono più di uno
 ---------------------------------------------
 Non basta cercare il trattino em. Nei testi che passano da un elaboratore di testo o da
 un generatore compaiono almeno cinque segni distinti che a video somigliano a un
 trattino: il trattino em, il trattino en, la barra orizzontale, il trattino da cifre e il
-segno meno matematico. Il segno meno merita una nota, perché' e' il più' insidioso: e' un
+segno meno matematico. Il segno meno merita una nota, perché e' il più insidioso: e' un
 operatore matematico, non punteggiatura, e in un testo tecnico un lettore che copia una
 formula ottiene un carattere che nessun compilatore accetta.
 
-Il caso che non si tocca, e perché' e' importante
+Il caso che non si tocca, e perché e' importante
 ------------------------------------------------
 Esiste nel repository uno strumento la cui tabella di sostituzione contiene proprio
-questi caratteri, perché' il suo compito e' rimuoverli dai documenti convertiti. Passare
+questi caratteri, perché il suo compito e' rimuoverli dai documenti convertiti. Passare
 questo strumento su quello lo renderebbe incapace di riconoscere cio' che deve
 sostituire: e' lo stesso genere di errore per cui `fix-accents.py` esclude il proprio
 sorgente. Le esclusioni si dichiarano in `tools/dashes-exclude.txt`, una per riga con il
@@ -29,7 +29,7 @@ motivo dopo un cancelletto, e un'esclusione senza motivo viene rifiutata.
 
 Che cosa non tocca comunque
 ---------------------------
-Nei Markdown salta i blocchi di codice recintati, perché' la' un trattino può' essere un
+Nei Markdown salta i blocchi di codice recintati, perché la' un trattino può essere un
 dato o un frammento di output e non prosa. Nei file Python lavora solo su commenti,
 docstring e stringhe a doppi apici. Conserva fine riga, BOM e newline finale.
 

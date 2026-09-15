@@ -30,7 +30,9 @@ Prima di eseguire i passi, determinare la modalità. Se `.claude/` e la memoria 
 
 Questo passo precede ogni altra azione, perché il resto del lavoro va svolto con l'account giusto e perché su questa classe di macchine sono configurati più profili isolati tramite la variabile d'ambiente `CLAUDE_CONFIG_DIR` (un profilo per directory di configurazione). La variabile viene letta solo all'avvio del processo: una sessione già in corso non può cambiare account da sola. Questa skill quindi rileva e indirizza, ma non commuta l'account.
 
-Eseguire, tramite il tool PowerShell, i comandi seguenti e presentare l'esito all'utente.
+Prima dei comandi, chiedere se si sviluppa su Windows o su Linux, perché da questo dipendono la variante degli strumenti di igiene, la sintassi degli hook, gli script di setup e build, e il forzare o meno `core.sshCommand`. La risposta non si deduce dalla piattaforma su cui gira la sessione senza dirlo: la si dichiara, e da quel momento si usa una sola variante.
+
+Su Windows, eseguire tramite il tool PowerShell i comandi seguenti e presentare l'esito all'utente.
 
 ```powershell
 "=== Account attivo in QUESTA sessione (process) ==="
@@ -41,35 +43,42 @@ $env:CLAUDE_CONFIG_DIR
 Get-ChildItem "$env:USERPROFILE" -Directory -Filter ".claude*" | Select-Object -ExpandProperty Name
 ```
 
+Su Linux, gli stessi tre dati si ottengono così.
+
+```bash
+echo "=== Account attivo in QUESTA sessione ==="; echo "${CLAUDE_CONFIG_DIR:-(non impostata: si usa ~/.claude)}"
+echo "=== Profili di configurazione presenti sulla macchina ==="; ls -d "$HOME"/.claude* 2>/dev/null
+```
+
 Interpretazione dell'esito e azione:
 
 1. Contare le directory `.claude*` trovate. Ognuna e un profilo Claude Code isolato (credenziali, cronologia, impostazioni). La presenza della directory predefinita `.claude` accanto a una o più `.claude-accountN` va segnalata come possibile profilo residuo, perché può confondere la diagnosi.
-2. Identificare l'account attivo in questa sessione dal valore di `$env:CLAUDE_CONFIG_DIR` di processo. Mappatura nota su questa macchina, da trattare come riferimento e non come dato universale: `.claude-account1` corrisponde ad <email-account1> (default di VS Code e del comando `claude` nudo), `.claude-account2` corrisponde a <email-account2>. Su una macchina diversa cambiano i nomi utente e le associazioni: in tal caso riportare solo i percorsi rilevati senza inventare le email. Questa corrispondenza nome-account non è nemmeno stabile nel tempo: al rinnovo di un token scaduto Claude può ri-vincolare in modo silenzioso una directory all'account attivo nel browser su claude.ai, quindi va verificata con `/status` a inizio sessione e mai dedotta dal nome (meccanismo descritto in `git-identity-and-repo.md`, sezione sul re-auth silenzioso).
-3. Se esiste un solo profilo, dichiarare quale account e in uso e proseguire al Passo 1.
-4. Se esistono più profili, chiedere all'utente con quale account intende inizializzare il progetto, mostrando quello attualmente attivo. Se l'utente indica un account diverso da quello attivo, NON proseguire: spiegare che il cambio richiede di rilanciare Claude Code con la funzione del profilo desiderato (ad esempio `claude-account2` in un nuovo terminale, oppure modificando la variabile utente e riavviando VS Code), perché la variabile e letta solo all'avvio del processo. Proseguire solo quando l'account attivo coincide con quello voluto.
+2. Identificare l'account attivo in questa sessione dal valore di processo di `CLAUDE_CONFIG_DIR`. Il binding fra una directory e un account non si deduce mai dal nome della directory: si legge con `/status` o dal campo `emailAddress` di `<dir>/.claude.json`, e va riletto a ogni sessione, perché al rinnovo di un token scaduto Claude può ri-vincolare in modo silenzioso una directory all'account attivo nel browser su claude.ai (meccanismo descritto in `git-identity-and-repo.md`, sezione sul re-auth silenzioso). Dove una macchina adotti una numerazione, per esempio `.claude-account1` e `.claude-account2`, quella è una convenzione locale: riportare i percorsi rilevati e le email lette, senza inventare associazioni.
+3. Se esiste un solo profilo, dichiarare quale account e in uso e proseguire al punto 5.
+4. Se esistono più profili, chiedere all'utente con quale account intende inizializzare il progetto, mostrando quello attualmente attivo. Se l'utente indica un account diverso da quello attivo, NON proseguire: spiegare che il cambio richiede di rilanciare Claude Code con quella directory di configurazione, perché la variabile e letta solo all'avvio del processo. Proseguire solo quando l'account attivo coincide con quello voluto.
+5. Eseguire il check di igiene dell'account nella variante del sistema dichiarato, `templates/tools/check-account-hygiene.ps1` su Windows e `.sh` su Linux. Verifica che l'account abbia `autoMemoryEnabled: false`, l'hook `SessionEnd` di wipe, e che lo script di wipe installato sia configurato per questa macchina e non per un'altra.
+6. Se il terzo controllo risulta FAIL, non correggerlo per conto proprio. Elencare gli slug realmente presenti eseguendo lo script di wipe in sola lettura, `-List` su Windows e `--list` su Linux, e chiedere all'utente quali radici di sviluppo vadano preservate, mostrandogli l'elenco: su una macchina diversa da quella dove il template è stato scritto i prefissi non sono `D--` ed `E--`, e su Linux non hanno nemmeno quella forma, perché gli slug derivano dal percorso assoluto. Solo dopo la risposta si scrivono i prefissi nello script installato, si prova con `-DryRun` oppure `--dry-run`, e si registra l'hook, mai senza conferma sul `settings.json` dell'account.
 
 ## Passo 0.5 - Selezione dell'identità git e del remote
 
 Subito dopo l'account Claude, e prima del runbook, decidere con quale identità git verranno firmati i commit e a quale repository GitHub agganciare il remoto. Identità git e account Claude sono cose distinte: la prima e la coppia user.name/user.email più la chiave SSH, la seconda e il profilo di configurazione di Claude Code. Il dettaglio autoritativo della procedura, dei profili disponibili e del caso repo con README e in `rules/git-identity-and-repo.md`.
 
-Eseguire, tramite tool, la rilevazione dei profili e dello stato corrente.
+La rilevazione si fa leggendo la configurazione SSH reale della macchina, mai citando alias a memoria: gli alias sono una convenzione della singola installazione e su una macchina diversa hanno altri nomi, altri percorsi e altre chiavi. Lo strumento è lo stesso su Windows e su Linux, perché il formato di `ssh_config` lo è.
 
-```powershell
-"=== Alias host SSH definiti ==="
-Get-Content "$env:USERPROFILE\.ssh\config" | Select-String "^Host "
-"=== Identita git locale di questo repo (se gia inizializzato) ==="
-git config --local user.name; git config --local user.email; git config --local remote.origin.url
-"=== Protezione globale ==="
-git config --global user.useConfigOnly
 ```
+python .claude/templates/tools/detect-ssh-profiles.py --repo .
+```
+
+Stampa gli alias verso `github.com` con la chiave che ciascuno seleziona e se quel file esiste, le chiavi presenti in `~/.ssh` che nessun alias richiama, gli eventuali blocchi `Match` non interpretati, l'identità git globale con `user.useConfigOnly`, e identità locale, remoto e `core.sshCommand` del repository. Esce con codice diverso da zero se non trova alcun alias verso GitHub.
 
 Azione:
 
-1. Presentare i profili ricavati dagli alias SSH e chiedere all'utente quale identità usare per questo progetto (ad esempio lavoro via alias `github-corp`, oppure personale via `github-personal`) e, se il repo va creato o riagganciato, il nome owner/repo di destinazione.
-2. Impostare l'identità a livello locale del repo, mai globale: `git config --local user.name`, `git config --local user.email`, e su Windows `git config --local core.sshCommand` verso l'OpenSSH di sistema. Collegare il remoto con l'alias scelto, ad esempio `git remote add origin git@github-personal:<owner>/<repo>.git`. Su Linux omettere `core.sshCommand`.
-3. Se `user.useConfigOnly` globale non è impostata, proporre di abilitarla (`git config --global user.useConfigOnly true`) per impedire commit con l'identità sbagliata; essendo globale, eseguirla solo su conferma esplicita.
-4. Verificare con `git config --local --list` filtrato su `user.`, `remote.`, `core.ssh`.
-5. Non eseguire commit ne push. Indicare all'utente i comandi manuali del primo commit/push e, se il repo remoto ha già un README o una licenza, il `git pull origin main --rebase` prima del push, come da regola.
+1. Presentare all'utente gli alias trovati così come sono stati letti, senza attribuire a nessuno un'identità: il nome di un blocco `Host` è una mnemonica di chi ha configurato quella macchina e non dice per chi è. Se un alias ha la chiave mancante, dirlo prima di proporlo. Se il rilevamento non trova alcun alias, fermarsi e spiegare che il profilo va creato prima di proseguire, senza generarne uno di iniziativa.
+2. Chiedere, in una sola domanda e senza lasciare niente al caso, tutti i valori che serviranno: quale alias usare, quale `user.name` e quale `user.email` firmeranno i commit di questo progetto, e quale sia l'owner GitHub e il nome del repository di destinazione. Su una macchina che non è quella dove il template è stato scritto, questa domanda si pone anche quando gli alias sembrano familiari.
+3. Impostare l'identità a livello locale del repo, mai globale: `git config --local user.name`, `git config --local user.email`, e su Windows `git config --local core.sshCommand` verso l'OpenSSH di sistema. Collegare il remoto con l'alias scelto, nella forma `git remote add origin git@<alias>:<owner>/<repo>.git`. Su Linux omettere `core.sshCommand`.
+4. Se `user.useConfigOnly` globale non è impostata, proporre di abilitarla (`git config --global user.useConfigOnly true`) per impedire commit con l'identità sbagliata; essendo globale, eseguirla solo su conferma esplicita.
+5. Verificare rilanciando lo strumento con `--repo .`, che rilegge identità locale, remoto e `core.sshCommand` in un colpo solo, e confermare la raggiungibilità del profilo con `ssh -T git@<alias>`, confrontando l'utente che GitHub dichiara di riconoscere con l'owner del remoto appena impostato.
+6. Non eseguire commit ne push. Indicare all'utente i comandi manuali del primo commit/push e, se il repo remoto ha già un README o una licenza, il `git pull origin main --rebase` prima del push, come da regola.
 
 ## Template canonici
 

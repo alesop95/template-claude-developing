@@ -200,6 +200,18 @@ def per_suffisso(parola):
 # non seguita da un'altra lettera (per non colpire l'elisione come dell'area).
 CANDIDATO = re.compile(r"\b([A-Za-z]+)['’](?![A-Za-z])")
 
+# Il residuo della doppia correzione, che nessuna delle due liste sopra può cogliere
+# perché la parola non finisce più con una lettera ASCII. Nasce così: un testo scritto
+# nella convenzione con l'apostrofo, per esempio perche', riceve prima la correzione
+# degli accenti mancanti, che accenta la vocale e lascia l'apostrofo dov'era, e il
+# risultato è perché seguito da apostrofo. In italiano quella sequenza non esiste mai,
+# perché l'apostrofo dopo una vocale già accentata non sostituisce nulla e non elide
+# nulla, quindi la correzione è togliere l'apostrofo e non decidere fra due letture.
+# La causa è stata rimossa in `fix-missing-accents.py`, che ora non tocca una parola
+# seguita da apostrofo; questo resta perché i file corrotti prima di quella correzione
+# esistono, e un difetto senza il suo rimedio è un difetto che si porta a mano.
+RESIDUO_DOPPIA_CORREZIONE = re.compile(r"([àèéìòù])['’](?![A-Za-z])")
+
 # Impostata dalla riga di comando. Quando è vera, dà viene trattata
 # come indicativo e convertita. Resta falsa per default perché la
 # scelta prudente è non decidere al posto di chi conosce il testo.
@@ -261,6 +273,22 @@ def segmenta_markdown(testo):
     return tratti
 
 
+def togli_residuo(testo, statistiche):
+    """Toglie l'apostrofo rimasto dopo una vocale gia' accentata.
+
+    Non decide nulla e non ha casi ambigui, che e' la ragione per cui non riporta
+    residui: una vocale accentata seguita da apostrofo non e' una forma dell'italiano,
+    quindi l'unica lettura possibile e' che l'apostrofo sia di troppo. Il conteggio
+    entra nelle statistiche sotto una chiave propria, cosicche' una corsa dichiari
+    quante volte ha riparato invece di quante volte ha convertito.
+    """
+    def sostituisci(m):
+        statistiche["residuo-apostrofo"] = statistiche.get("residuo-apostrofo", 0) + 1
+        return m.group(1)
+
+    return RESIDUO_DOPPIA_CORREZIONE.sub(sostituisci, testo)
+
+
 def converti_prosa(testo, statistiche, residui, ambigui, per_regola=None):
     if per_regola is None:
         per_regola = set()
@@ -292,7 +320,8 @@ def converti_prosa(testo, statistiche, residui, ambigui, per_regola=None):
         residui[chiave] = residui.get(chiave, 0) + 1
         return m.group(0)
 
-    return CANDIDATO.sub(sostituisci, testo)
+    testo = CANDIDATO.sub(sostituisci, testo)
+    return togli_residuo(testo, statistiche)
 
 
 def elabora(percorso, statistiche, residui, ambigui):
@@ -405,7 +434,8 @@ def converti_lista_bianca(testo, statistiche, residui, ambigui):
         residui[chiave] = residui.get(chiave, 0) + 1
         return m.group(0)
 
-    return CANDIDATO_CODICE.sub(sostituisci, testo)
+    testo = CANDIDATO_CODICE.sub(sostituisci, testo)
+    return togli_residuo(testo, statistiche)
 
 
 def converti_python(testo, statistiche, residui, ambigui):
@@ -630,6 +660,14 @@ def main():
         tot = sum(statistiche.values())
         print("\n%d sostituzioni, %d forme distinte:" % (tot, len(statistiche)))
         for k, v in sorted(statistiche.items(), key=lambda x: -x[1])[:25]:
+            # La riparazione del residuo non è una conversione e non ha una forma di
+            # partenza da mostrare: si dichiara con una riga propria, altrimenti il
+            # riquadro le applicherebbe la regola dei suffissi e ne stamperebbe una resa
+            # inventata, che è quanto è accaduto alla prima corsa di questa funzione.
+            if k == "residuo-apostrofo":
+                print("  %-16s    %-26s x%d"
+                      % ("(riparazione)", "apostrofo di troppo tolto", v))
+                continue
             # La resa va cercata anche nella regola dei suffissi, non solo nelle mappe
             # esplicite: le parole in -ita', -eta' e simili sono convertite dalla regola e
             # non compaiono in ACUTO ne' in GRAVE, quindi senza questo terzo tentativo il

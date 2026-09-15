@@ -2,50 +2,50 @@
 """
 Guard-rail di anonimizzazione sui file del repository.
 
-Perche' esiste. Quando un repository e' pubblico, o anche solo condiviso piu' largamente di
-chi lo scrive, tutto cio' che entra in un file tracciato e' visibile per sempre, anche dopo
-una correzione successiva, perche' la storia git resta consultabile finche' non viene
-riscritta. La regola che governa la materia e' `.claude/rules/anonymization.md`, ma una
-regola scritta non impedisce un residuo: nel progetto in cui questo strumento e' nato il
+Perché esiste. Quando un repository è pubblico, o anche solo condiviso più largamente di
+chi lo scrive, tutto ciò che entra in un file tracciato è visibile per sempre, anche dopo
+una correzione successiva, perché la storia git resta consultabile finché non viene
+riscritta. La regola che governa la materia è `.claude/rules/anonymization.md`, ma una
+regola scritta non impedisce un residuo: nel progetto in cui questo strumento è nato il
 primo audit ne ha trovati centoquarantotto su ottantanove file, **nessuno introdotto di
 proposito e nessuno appartenente alla sessione che li ha scoperti**. Un residuo non si
 introduce, si eredita, e per questo il controllo si fa sull'intero perimetro e non sui soli
 file toccati.
 
-Che cosa cerca, e perche' non sono soltanto i segreti. Uno scanner di credenziali cerca
-chiavi e token, cioe' stringhe con una forma riconoscibile. Questo cerca una categoria
-diversa e piu' insidiosa, cioe' i dati che identificano persone, luoghi e infrastrutture:
+Che cosa cerca, e perché non sono soltanto i segreti. Uno scanner di credenziali cerca
+chiavi e token, cioè stringhe con una forma riconoscibile. Questo cerca una categoria
+diversa e più insidiosa, cioè i dati che identificano persone, luoghi e infrastrutture:
 indirizzi IP reali, indirizzi fisici di apparati, nomi propri di persona, caselle di posta
 personali, numeri di telefono, importi, IBAN e partite IVA. Sono dati che nessun pattern
-universale riconosce, perche' un nome proprio e' un nome proprio solo se e' di qualcuno:
-per questo l'elenco di cio' che va cercato vive fuori dallo script.
+universale riconosce, perché un nome proprio è un nome proprio solo se è di qualcuno:
+per questo l'elenco di ciò che va cercato vive fuori dallo script.
 
-Come non tradisce se stesso. Questo script e' versionato e **non contiene nessun valore
+Come non tradisce se stesso. Questo script è versionato e **non contiene nessun valore
 reale**: prefissi di rete, nomi propri, indirizzi di posta, prefissi telefonici e segreti
 letterali da cercare vivono in un file di pattern ignorato da git, accanto alla mappa dei
 segnaposto. Se quel file manca, lo script lo dice e si ferma invece di dare un esito verde
-che non ha calcolato. E' la proprieta' che rende pubblicabile lo strumento che serve a
+che non ha calcolato. È la proprietà che rende pubblicabile lo strumento che serve a
 tenere pubblicabile il repository.
 
-Il perimetro, e perche' dal 07/09/2026 non e' piu' soltanto cio' che git traccia. Fino a
-quella data lo script passava `git ls-files`, cioe' i soli file gia' tracciati, e ne
+Il perimetro, e perché dal 07/09/2026 non è più soltanto ciò che git traccia. Fino a
+quella data lo script passava `git ls-files`, cioè i soli file già tracciati, e ne
 derivava una lacuna precisa: un file **nuovo**, scritto e non ancora aggiunto all'indice,
-era invisibile al controllo proprio nel momento in cui serviva guardarlo, cioe' prima di
-pubblicarlo. E' accaduto il 04/09/2026 con tre file nuovi, e il difetto e' della stessa
-famiglia degli altri due gia' corretti in questo progetto, la cartella esclusa del delta e
-i pattern di rilevanza: non si sbaglia su cio' che si conosce, si sbaglia sul confine.
+era invisibile al controllo proprio nel momento in cui serviva guardarlo, cioè prima di
+pubblicarlo. È accaduto il 04/09/2026 con tre file nuovi, e il difetto è della stessa
+famiglia degli altri due già corretti in questo progetto, la cartella esclusa del delta e
+i pattern di rilevanza: non si sbaglia su ciò che si conosce, si sbaglia sul confine.
 
-Il perimetro predefinito e' percio' **cio' che sta per essere pubblicato**: i file tracciati
-piu' quelli non tracciati e non ignorati, che sono esattamente i candidati al prossimo
-commit. I riscontri di entrambi i gruppi sono bloccanti, perche' entrambi i gruppi finiscono
+Il perimetro predefinito è perciò **ciò che sta per essere pubblicato**: i file tracciati
+più quelli non tracciati e non ignorati, che sono esattamente i candidati al prossimo
+commit. I riscontri di entrambi i gruppi sono bloccanti, perché entrambi i gruppi finiscono
 in pubblico.
 
-Con `--tutti` entrano anche i file **ignorati**, cioe' `_notes/` e `output/`. Quelli
+Con `--tutti` entrano anche i file **ignorati**, cioè `_notes/` e `output/`. Quelli
 contengono valori reali **per costruzione e per decisione**: sono il layer narrativo locale e
-gli output degli script, ed e' il motivo per cui git li ignora. I loro riscontri vengono
+gli output degli script, ed è il motivo per cui git li ignora. I loro riscontri vengono
 quindi elencati a parte e **non sono bloccanti**: servono a sapere che cosa vive sul disco, non
-a dichiarare un difetto. Confonderli con i primi renderebbe lo script inutile, perche'
-fallirebbe sempre e nessuno lo guarderebbe piu'.
+a dichiarare un difetto. Confonderli con i primi renderebbe lo script inutile, perché
+fallirebbe sempre e nessuno lo guarderebbe più.
 
 Uso, dalla radice del progetto:
     python tools/Test-Anonymization.py             # tracciati + non tracciati non ignorati
@@ -55,7 +55,7 @@ Uso, dalla radice del progetto:
     python tools/Test-Anonymization.py --patterns <percorso>   # file di pattern altrove
 
 Codice di uscita: 0 se non ci sono riscontri nelle categorie bloccanti, 1 altrimenti. Le
-categorie non bloccanti raccolgono cio' che va guardato da un umano e che e' spesso un
+categorie non bloccanti raccolgono ciò che va guardato da un umano e che è spesso un
 falso positivo, per esempio un numero di versione che somiglia a un indirizzo.
 """
 
@@ -68,8 +68,8 @@ import re
 import subprocess
 import sys
 
-# Percorso predefinito del file di pattern. Sta in `_notes/` perche' quella cartella e'
-# ignorata da git in questo sistema di progetto: e' il layer che puo' contenere valori reali.
+# Percorso predefinito del file di pattern. Sta in `_notes/` perché quella cartella è
+# ignorata da git in questo sistema di progetto: è il layer che può contenere valori reali.
 # Si sposta con --patterns nei progetti che organizzano diversamente il proprio layer privato.
 PATTERNS_FILE = os.path.join("_notes", ".anonymization-patterns.json")
 SKIP_EXT = {".png", ".jpg", ".jpeg", ".gif", ".pdf", ".xlsx", ".docx", ".zip", ".ico", ".drawio",
@@ -78,28 +78,28 @@ SKIP_EXT = {".png", ".jpg", ".jpeg", ".gif", ".pdf", ".xlsx", ".docx", ".zip", "
             # in cui una ricerca per riga non ha alcun senso e costa solo tempo.
             ".7z", ".rar", ".msi", ".exe", ".dll", ".pyc", ".bin", ".db", ".sqlite", ".qdff",
             ".mp4", ".mov", ".xlsm", ".pptx", ".doc", ".xls", ".vsdx", ".eml", ".msg"}
-# Un file molto grande in un layer privato e' tipicamente uno storico o un dump: leggerlo
+# Un file molto grande in un layer privato è tipicamente uno storico o un dump: leggerlo
 # riga per riga costa minuti e non aggiunge segnale. Si dichiara di averlo saltato.
 LIMITE_BYTE = 5 * 1024 * 1024
 
-# Categorie che fanno fallire il controllo: sono valori reali, non ambiguita'.
+# Categorie che fanno fallire il controllo: sono valori reali, non ambiguità.
 BLOCCANTI = {"IP REALE", "MAC REALE", "NOME PROPRIO", "SEGRETO LETTERALE",
              "EMAIL PERSONALE", "TELEFONO", "IBAN", "PIVA/CF", "IMPORTO"}
 
 IPV4 = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}(?:/\d{1,2})?\b")
 MAC = re.compile(r"\b(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}\b")
 EMAIL = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
-# I prefissi telefonici da cercare non possono stare qui: un numero di telefono e' un dato
-# personale solo se e' di qualcuno, e quali prefissi appartengano al progetto lo sa il file
+# I prefissi telefonici da cercare non possono stare qui: un numero di telefono è un dato
+# personale solo se è di qualcuno, e quali prefissi appartengano al progetto lo sa il file
 # dei pattern. Se la chiave `prefissi_telefonici` manca, si ripiega sul solo formato
-# internazionale, che e' riconoscibile senza sapere nulla del progetto.
+# internazionale, che è riconoscibile senza sapere nulla del progetto.
 PHONE_FALLBACK = re.compile(r"\b\+\d{2}\s?\d{9,10}\b")
 MONEY = re.compile(r"(?:€\s?[\d.,]+|\b[\d.]+[,.]\d{2}\s?(?:€|euro|EUR)\b|\b\d+(?:[.,]\d+)?\s?euro\b)", re.I)
 IBAN = re.compile(r"\bIT\d{2}[A-Z0-9]{20,25}\b")
 PIVA = re.compile(r"\b(?:P\.?\s?IVA|partita iva|cod\.?\s?fisc|codice fiscale)\b[^\n]{0,40}\d{11,16}", re.I)
 # Domini riservati alla documentazione da RFC 2606: non esistono, non sono registrabili
-# e non possono appartenere a nessuno, quindi una casella su di essi e' un esempio e non il
-# dato di una persona. E' la stessa ammissione per costruzione che vale per i blocchi di
+# e non possono appartenere a nessuno, quindi una casella su di essi è un esempio e non il
+# dato di una persona. È la stessa ammissione per costruzione che vale per i blocchi di
 # indirizzi di RFC 5737, e la sua assenza era un'asimmetria: senza di essa ogni documento
 # che usa un indirizzo di esempio produce un riscontro bloccante, e chi scrive documentazione
 # impara a ignorare l'esito del controllo.
@@ -112,16 +112,16 @@ MAIL_PLACEHOLDER = re.compile(r"^(persona|referente|collaboratore|consulente|tir
 def trova_radice(partenza=None):
     """Risale fino alla radice del repository partendo dalla posizione di questo file.
 
-    Perche' dalla posizione del file e non dalla cartella corrente. La cartella corrente
-    dipende da chi invoca, e chi invoca puo' essere una sessione interattiva, un hook, una
-    attivita' pianificata o un altro script: sono quattro cartelle diverse per lo stesso
+    Perché dalla posizione del file e non dalla cartella corrente. La cartella corrente
+    dipende da chi invoca, e chi invoca può essere una sessione interattiva, un hook, una
+    attività pianificata o un altro script: sono quattro cartelle diverse per lo stesso
     comando, e il messaggio d'errore che ne segue parla d'altro. La posizione del file
-    invece e' un fatto. Il criterio funziona identico su Windows e su Linux perche' non
-    guarda separatori ne' lettere di unita'.
+    invece è un fatto. Il criterio funziona identico su Windows e su Linux perché non
+    guarda separatori né lettere di unità.
 
-    `.git` si cerca sia come cartella sia come file, perche' in un worktree o in un
-    sottomodulo e' un file che punta altrove: trattarla come sola cartella e' un difetto
-    che si manifesta soltanto in quei due casi, cioe' tardi.
+    `.git` si cerca sia come cartella sia come file, perché in un worktree o in un
+    sottomodulo è un file che punta altrove: trattarla come sola cartella è un difetto
+    che si manifesta soltanto in quei due casi, cioè tardi.
     """
     corrente = os.path.abspath(partenza or os.path.dirname(os.path.abspath(__file__)))
     while True:
@@ -137,13 +137,13 @@ def trova_radice(partenza=None):
 def carica_pattern(percorso=PATTERNS_FILE):
     """Carica il file di pattern, oppure si ferma dichiarandolo.
 
-    Fermarsi invece di proseguire con un elenco vuoto e' una scelta e non una svista: un
-    controllo senza pattern non trova nulla e stamperebbe un verde, che e' la peggiore
-    delle uscite possibili perche' assomiglia a un esito senza esserlo."""
+    Fermarsi invece di proseguire con un elenco vuoto è una scelta e non una svista: un
+    controllo senza pattern non trova nulla e stamperebbe un verde, che è la peggiore
+    delle uscite possibili perché assomiglia a un esito senza esserlo."""
     if not os.path.exists(percorso):
         sys.stderr.write(
             "File dei pattern non trovato: %s\n"
-            "Serve per sapere che cosa cercare, e non e' versionato perche' contiene i valori\n"
+            "Serve per sapere che cosa cercare, e non è versionato perché contiene i valori\n"
             "reali del progetto. Si costruisce dalla mappa dei segnaposto, partendo da\n"
             "patterns.example.json di questo pacchetto.\n"
             "Senza di esso questo controllo non si dichiara verde: si ferma.\n" % percorso)
@@ -170,8 +170,8 @@ def _git(*argomenti):
 def file_perimetro(includi_ignorati):
     """Restituisce [(percorso, origine)] con origine tracciato/non tracciato/ignorato.
 
-    L'ordine conta: prima cio' che e' gia' pubblico, poi cio' che sta per diventarlo, poi
-    il layer privato. E' anche l'ordine di gravita' con cui i riscontri vanno letti.
+    L'ordine conta: prima ciò che è già pubblico, poi ciò che sta per diventarlo, poi
+    il layer privato. È anche l'ordine di gravità con cui i riscontri vanno letti.
     """
     elenco = [(f, "tracciato") for f in _git("ls-files")]
     elenco += [(f, "non tracciato") for f in _git("ls-files", "--others", "--exclude-standard")]
@@ -188,9 +188,9 @@ def file_perimetro(includi_ignorati):
 
 
 def analizza(pat, files):
-    """`files` e' una lista di coppie (percorso, origine). L'origine viaggia con il
-    riscontro fino alla stampa, perche' lo stesso valore reale ha significato opposto a
-    seconda di dove sta: in un file tracciato e' un leak, in `_notes/` e' il dato."""
+    """`files` è una lista di coppie (percorso, origine). L'origine viaggia con il
+    riscontro fino alla stampa, perché lo stesso valore reale ha significato opposto a
+    seconda di dove sta: in un file tracciato è un leak, in `_notes/` è il dato."""
     trovati = collections.defaultdict(list)
     saltati = []
 
@@ -267,7 +267,7 @@ def analizza(pat, files):
             for n in nomi:
                 if n.lower() not in bassa:
                     continue
-                # un nome dentro la ragione sociale legale e' ammesso per decisione
+                # un nome dentro la ragione sociale legale è ammesso per decisione
                 if any(c.lower() in bassa for c in nomi_ctx):
                     continue
                 aggiungi("NOME PROPRIO", f, ln, riga, n, origine)
@@ -295,7 +295,7 @@ def main():
             % os.path.dirname(os.path.abspath(__file__)))
         return 2
     # Si entra nella radice: da qui in avanti ogni percorso relativo, compresi quelli
-    # che git restituisce, e' interpretabile senza sapere da dove si e' partiti.
+    # che git restituisce, è interpretabile senza sapere da dove si è partiti.
     os.chdir(radice)
 
     pat = carica_pattern(args.patterns)
@@ -314,8 +314,8 @@ def main():
         tutte = trovati.get(cat, [])
         if not tutte:
             continue
-        # La separazione e' il cuore dell'allargamento del perimetro: un valore reale in un
-        # file pubblicabile e' un difetto, lo stesso valore in `_notes/` e' il dato per cui
+        # La separazione è il cuore dell'allargamento del perimetro: un valore reale in un
+        # file pubblicabile è un difetto, lo stesso valore in `_notes/` è il dato per cui
         # `_notes/` esiste. Contarli insieme farebbe fallire lo script sempre.
         pubbliche = [v for v in tutte if v[4] != "ignorato"]
         riservate = [v for v in tutte if v[4] == "ignorato"]
@@ -353,16 +353,16 @@ def main():
         if len(per_file) > args.max:
             print("  ... e altri %d file (usare --max)" % (len(per_file) - args.max))
         print("\n  Questi file contengono valori reali per costruzione: sono il layer narrativo")
-        print("  locale e gli output degli script, ed e' la ragione per cui git li ignora. Il")
+        print("  locale e gli output degli script, ed è la ragione per cui git li ignora. Il")
         print("  numero serve a sapere che cosa vive sul disco. Diventa un problema solo se uno")
         print("  di questi percorsi venisse tracciato, e in quel caso comparirebbe qui sopra")
-        print("  come NON TRACCIATO, cioe' fra i bloccanti.")
+        print("  come NON TRACCIATO, cioè fra i bloccanti.")
 
     print("\n%d file esaminati: %d tracciati, %d non tracciati, %d ignorati." % (
         len(files), conteggio.get("tracciato", 0), conteggio.get("non tracciato", 0),
         conteggio.get("ignorato", 0)))
     if saltati:
-        print("%d file saltati perche' oltre %d MB." % (len(saltati), LIMITE_BYTE // (1024 * 1024)))
+        print("%d file saltati perché oltre %d MB." % (len(saltati), LIMITE_BYTE // (1024 * 1024)))
     if not args.tutti:
         print("Layer privato (_notes/, output/) NON esaminato: usare --tutti per contarlo.")
     print("Riscontri bloccanti: %d.  Da valutare a mano: %d.%s" % (

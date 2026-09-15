@@ -4,51 +4,51 @@
 # Controllo di allineamento: dice quali affermazioni di un progetto stanno invecchiando
 # in silenzio.
 #
-# PERCHE' ESISTE. Un'affermazione scritta in un documento non ha alcun legame con la
-# realta' che descrive: nasce vera, e il momento in cui smette di esserlo non lascia
-# traccia da nessuna parte. Il rischio di un progetto documentale non e' quindi la
-# contraddizione, che si vede, ma l'obsolescenza silenziosa, cioe' una scheda che
+# Perché ESISTE. Un'affermazione scritta in un documento non ha alcun legame con la
+# realtà che descrive: nasce vera, e il momento in cui smette di esserlo non lascia
+# traccia da nessuna parte. Il rischio di un progetto documentale non è quindi la
+# contraddizione, che si vede, ma l'obsolescenza silenziosa, cioè una scheda che
 # descrive correttamente lo stato di tre settimane fa e non dichiara di essere vecchia.
-# Nel progetto reale da cui questo strumento e' estratto, in una sola mattina se ne sono
+# Nel progetto reale da cui questo strumento è estratto, in una sola mattina se ne sono
 # misurate tre insieme, e nessuna era visibile a un lettore attento: una copia di backup
 # fuori sede ferma da sei settimane che ogni documento dava per esistente, una scheda
 # dello stack che elencava cinque script su ventuno, e una pendenza che dichiarava
-# scaduta una cadenza invece rispettata. Nello stesso passaggio si e' contato che nei
+# scaduta una cadenza invece rispettata. Nello stesso passaggio si è contato che nei
 # file tracciati vivevano sedici date di scadenza scritte in prosa, e che nessun
 # meccanismo le guardava: ogni incidente che in quel progetto aveva fatto danno era una
 # di quelle date.
 #
-# IL PRINCIPIO CHE ATTUA, e che va adottato insieme allo strumento perche' senza di
+# IL PRINCIPIO CHE ATTUA, e che va adottato insieme allo strumento perché senza di
 # esso il registro resta vuoto: ogni affermazione dei file tracciati deve avere una
 # verifica meccanica, una scadenza dichiarata dopo la quale torna automaticamente a
 # stato non verificata, oppure una marcatura esplicita di non verificabile con scritte
 # accanto la domanda da porre e la persona a cui porla. Non esiste un quarto caso.
 #
-# COSA CONTROLLA, in quattro famiglie. Le SCADENZE, cioe' le date scritte in prosa che
-# nessuno guarda. La FRESCHEZZA delle misure, cioe' l'eta' di un file di output contro
-# la cadenza dichiarata per la fonte che lo produce. Gli INVARIANTI, cioe' i confronti
-# meccanici fra cio' che i documenti affermano e cio' che sta davvero nel repository. E
-# le ASSERZIONI UMANE, quelle che nessun programma puo' verificare e che ricevono percio'
-# una validita' dichiarata: quando scade tornano come domanda.
+# COSA CONTROLLA, in quattro famiglie. Le SCADENZE, cioè le date scritte in prosa che
+# nessuno guarda. La FRESCHEZZA delle misure, cioè l'eta' di un file di output contro
+# la cadenza dichiarata per la fonte che lo produce. Gli INVARIANTI, cioè i confronti
+# meccanici fra ciò che i documenti affermano e ciò che sta davvero nel repository. E
+# le ASSERZIONI UMANE, quelle che nessun programma può verificare e che ricevono perciò
+# una validità dichiarata: quando scade tornano come domanda.
 #
 # DOVE STANNO I DATI E DOVE STA LA LOGICA. I dati stanno nel registro JSON, tracciato,
-# perche' una scadenza e' un fatto del progetto; la logica sta qui, perche' un invariante
-# e' strutturale. La divisione non e' estetica: significa che aggiungere una scadenza non
+# perché una scadenza è un fatto del progetto; la logica sta qui, perché un invariante
+# è strutturale. La divisione non è estetica: significa che aggiungere una scadenza non
 # richiede di toccare codice, e che aggiungere un invariante non richiede di toccare i
 # dati. I percorsi che il progetto usa si dichiarano nel blocco "percorsi" del registro,
-# cosi' lo strumento non porta cablata l'anatomia di nessun progetto in particolare.
+# così lo strumento non porta cablata l'anatomia di nessun progetto in particolare.
 #
-# COSA NON FA, ed e' deliberato. Non aggiorna niente e non decide niente: dice che
-# un'affermazione e' scaduta, non la corregge. Non rinfresca le misure, perche' quello
+# COSA NON FA, ed è deliberato. Non aggiorna niente e non decide niente: dice che
+# un'affermazione è scaduta, non la corregge. Non rinfresca le misure, perché quello
 # richiede credenziali e questo controllo deve restare leggibile, veloce e innocuo.
-# Non blocca: e' rumoroso all'avvio di sessione e basta. Ed esce con codice diverso da
-# zero quando trova qualcosa, cosi' che un domani possa diventare bloccante senza
+# Non blocca: è rumoroso all'avvio di sessione e basta. Ed esce con codice diverso da
+# zero quando trova qualcosa, così che un domani possa diventare bloccante senza
 # riscriverlo.
 #
 # COSA NON STAMPA. Nessun valore reale. Dei file di output legge la sola data di
 # modifica, mai il contenuto, quindi nomi host, utenti e indirizzi non entrano
 # nell'output nemmeno per errore. Il registro va tenuto pulito allo stesso modo: porta
-# date, cadenze e riferimenti a documenti, non importi ne' identificativi.
+# date, cadenze e riferimenti a documenti, non importi né identificativi.
 #
 # Uso:
 #   python <percorso>/Test-Allineamento.py               report completo
@@ -57,7 +57,7 @@
 #   python <percorso>/Test-Allineamento.py --radice X     radice del repository
 #   python <percorso>/Test-Allineamento.py --registro Y   percorso del registro JSON
 #
-# Codici di uscita: 0 allineato, 1 c'e' qualcosa di scaduto o arretrato,
+# Codici di uscita: 0 allineato, 1 c'è qualcosa di scaduto o arretrato,
 # 2 non giudicabile (registro mancante o illeggibile).
 
 import json
@@ -88,10 +88,10 @@ def risali_alla_radice(partenza):
     """La radice del repository si risale dalla posizione di questo file, non dalla
     cartella corrente.
 
-    La cartella corrente dipende da chi invoca, e chi invoca puo' essere una sessione,
+    La cartella corrente dipende da chi invoca, e chi invoca può essere una sessione,
     un hook, un'attivita' pianificata o un altro script: quattro cartelle diverse per lo
-    stesso comando. Si cerca `.git` sia come cartella sia come file, perche' in un
-    worktree o in un submodulo e' un file che punta altrove.
+    stesso comando. Si cerca `.git` sia come cartella sia come file, perché in un
+    worktree o in un submodulo è un file che punta altrove.
     """
     corrente = os.path.abspath(partenza)
     while True:
@@ -114,10 +114,10 @@ def argomento(nome, predefinito=None):
 
 RADICE = risali_alla_radice(argomento('--radice') or os.path.dirname(os.path.abspath(__file__)))
 
-# I colori si accendono solo se l'uscita e' un terminale vero. Questo controllo gira
+# I colori si accendono solo se l'uscita è un terminale vero. Questo controllo gira
 # anche dentro un hook e dentro una pipe, dove le sequenze di colore comparirebbero come
-# spazzatura in mezzo al testo: un avviso illeggibile e' un avviso che non viene letto,
-# che e' il difetto che questo script esiste per combattere.
+# spazzatura in mezzo al testo: un avviso illeggibile è un avviso che non viene letto,
+# che è il difetto che questo script esiste per combattere.
 ROSSO = GIALLO = VERDE = GRIGIO = FINE = ''
 if sys.stdout.isatty():
     ROSSO, GIALLO, VERDE, GRIGIO, FINE = '\033[31m', '\033[33m', '\033[32m', '\033[90m', '\033[0m'
@@ -189,13 +189,13 @@ def git(*argomenti):
 def solo_firma(commit, rel, campi):
     """Vero se quel commit, su quel file, ha toccato i soli campi di firma del frontmatter.
 
-    Serve al confronto del frontmatter, ed e' la parte non ovvia di tutto lo strumento.
+    Serve al confronto del frontmatter, ed è la parte non ovvia di tutto lo strumento.
     Un commit che scrive il solo `last-verified-commit` non cambia la scheda: la firma.
-    Contarlo come modifica riporta il confronto in giallo subito dopo ogni bump, cioe'
+    Contarlo come modifica riporta il confronto in giallo subito dopo ogni bump, cioè
     segnala la sessione proprio per aver rispettato la regola.
 
     Si guardano le sole righe di diff, quindi un commit che aggiunge una riga di contenuto
-    e ribumpa insieme conta come modifica di contenuto, che e' il verso prudente
+    e ribumpa insieme conta come modifica di contenuto, che è il verso prudente
     dell'errore: nel dubbio il controllo segnala.
     """
     diff = git('show', '--format=', '-U0', commit, '--', rel)
@@ -211,7 +211,7 @@ def solo_firma(commit, rel, campi):
 
 
 def ultima_modifica_di_contenuto(rel, campi):
-    """L'hash pieno del commit piu' recente che ha cambiato il contenuto del file.
+    """L'hash pieno del commit più recente che ha cambiato il contenuto del file.
 
     Risale la storia del solo file e salta i commit di sola firma. Si ferma al primo
     commit utile, quindi nel caso normale costa una o due invocazioni di git per scheda.
@@ -220,8 +220,8 @@ def ultima_modifica_di_contenuto(rel, campi):
     for commit in storia:
         if not solo_firma(commit, rel, campi):
             return commit
-    # Ogni commit del file e' di firma: caso teorico (una scheda nata col solo
-    # frontmatter), e in quel caso il piu' antico e' la sua nascita.
+    # Ogni commit del file è di firma: caso teorico (una scheda nata col solo
+    # frontmatter), e in quel caso il più antico è la sua nascita.
     return storia[-1] if storia else ''
 
 
@@ -283,10 +283,10 @@ def controlla_scadenze(reg, esito, orizzonte):
 # ---------------------------------------------------------------------------
 def controlla_freschezza(reg, esito, percorsi):
     # I marcatori di rinfresco fallito, se il progetto ha un'automazione che li scrive.
-    # Un'automazione che fallisce in silenzio produce fiducia mal riposta, che e' peggio
-    # dell'assenza di automazione: la misura resta quella vecchia e la sua eta' compare
-    # qui sotto, ma il fatto che il rinfresco non stia piu' funzionando va detto a parte,
-    # perche' l'eta' da sola non lo spiega.
+    # Un'automazione che fallisce in silenzio produce fiducia mal riposta, che è peggio
+    # dell'assenza di automazione: la misura resta quella vecchia e la sua età compare
+    # qui sotto, ma il fatto che il rinfresco non stia più funzionando va detto a parte,
+    # perché l'eta' da sola non lo spiega.
     marcatori = percorsi.get('marcatori_fallimento')
     if marcatori:
         cartella = percorso(marcatori.get('cartella', 'output'))
@@ -304,14 +304,14 @@ def controlla_freschezza(reg, esito, percorsi):
                         break
                 esito.grave("RINFRESCO FALLITO da %s giorni  fonte %s" % (eta_file(rel), fonte))
                 esito.nota("      motivo: %s" % motivo)
-                esito.nota("      la misura precedente non e' stata toccata: e' l'ultima buona")
+                esito.nota("      la misura precedente non è stata toccata: è l'ultima buona")
 
     for voce in reg.get('freschezza', []):
         rel = voce.get('percorso', '')
         cadenza = int(voce.get('cadenza_giorni', 30))
         nome = voce.get('cosa', voce.get('id', rel))
         eta = None
-        # Un file puo' dichiarare dentro di se' la data della misura, che e' piu'
+        # Un file può dichiarare dentro di sé la data della misura, che è più
         # attendibile della data di modifica quando il file viene riscritto per altro.
         if voce.get('campo_data'):
             try:
@@ -336,7 +336,7 @@ def controlla_freschezza(reg, esito, percorsi):
 
 
 # ---------------------------------------------------------------------------
-# 3. Invarianti: la logica sta qui, non nel registro, perche' sono strutturali
+# 3. Invarianti: la logica sta qui, non nel registro, perché sono strutturali
 # ---------------------------------------------------------------------------
 def file_tracciati():
     elenco = git('ls-files')
@@ -346,9 +346,9 @@ def file_tracciati():
 def invariante_script(esito, percorsi):
     """Ogni script presente deve essere citato nella scheda dello stack.
 
-    Il difetto che questo invariante trova non e' teorico: nel progetto di origine la
+    Il difetto che questo invariante trova non è teorico: nel progetto di origine la
     scheda dello stack elencava cinque script su ventuno, e nessuno se n'era accorto
-    perche' una scheda incompleta si legge esattamente come una completa.
+    perché una scheda incompleta si legge esattamente come una completa.
     """
     rel_stack = percorsi.get('stack')
     rel_script = percorsi.get('script')
@@ -361,7 +361,7 @@ def invariante_script(esito, percorsi):
         return
     stack = testo_di(rel_stack)
     if not stack:
-        esito.grave("%s non leggibile: l'inventario degli script non e' verificabile" % rel_stack)
+        esito.grave("%s non leggibile: l'inventario degli script non è verificabile" % rel_stack)
         return
     estensioni = tuple(percorsi.get('estensioni_script') or PERCORSI_DEFAULT['estensioni_script'])
     presenti = sorted(n for n in os.listdir(cartella)
@@ -381,7 +381,7 @@ def invariante_script(esito, percorsi):
 def invariante_decisioni(esito, percorsi, tracciati):
     """Ogni decisione richiamata deve esistere nel registro delle decisioni.
 
-    Un richiamo a una decisione inesistente e' peggio di un richiamo assente, perche'
+    Un richiamo a una decisione inesistente è peggio di un richiamo assente, perché
     fa credere che la ragione sia scritta da qualche parte.
     """
     rel = percorsi.get('decisioni')
@@ -411,12 +411,12 @@ def invariante_registro_voci(esito, percorsi, tracciati):
 
     Nasce da una collisione reale: due voci diverse, scritte lo stesso giorno da due
     sessioni di lavoro che non sapevano di condividere il file, sono arrivate in un
-    commit con lo stesso numero e lo stesso identificatore. Non e' un difetto di forma:
-    il numero e' il modo in cui ogni documento si riferisce a una voce, quindi due voci
+    commit con lo stesso numero e lo stesso identificatore. Non è un difetto di forma:
+    il numero è il modo in cui ogni documento si riferisce a una voce, quindi due voci
     allo stesso numero rendono ambiguo ogni richiamo, quello esistente e quello futuro.
 
-    Il numero non ammette eccezioni e la sua collisione e' percio' rossa.
-    L'identificatore ne ammette due, dichiarate, ed e' la ragione per cui il suo esito e'
+    Il numero non ammette eccezioni e la sua collisione è perciò rossa.
+    L'identificatore ne ammette due, dichiarate, ed è la ragione per cui il suo esito è
     un avviso: una riga di aggiornamento che porta un parentetico nella cella, e una riga
     di seguito numerata con un suffisso di lettera. Senza quelle due tolleranze il
     controllo segnalerebbe voci legittime a ogni esecuzione, e un controllo che segnala
@@ -451,10 +451,10 @@ def invariante_registro_voci(esito, percorsi, tracciati):
     ripetuti = sorted((n for n, quanti in per_numero.items() if quanti > 1),
                       key=lambda n: (radice_numerica(n), n))
     if ripetuti:
-        esito.grave("%d numeri assegnati a piu' di una voce di %s: %s"
+        esito.grave("%d numeri assegnati a più di una voce di %s: %s"
                     % (len(ripetuti), os.path.basename(rel), ', '.join('#' + n for n in ripetuti)))
-        esito.nota("      un numero vale per una voce sola: ogni richiamo a un numero doppio e' ambiguo")
-        esito.nota("      si rinumera la voce piu' recente, che e' quella con meno richiami da rompere")
+        esito.nota("      un numero vale per una voce sola: ogni richiamo a un numero doppio è ambiguo")
+        esito.nota("      si rinumera la voce più recente, che è quella con meno richiami da rompere")
     else:
         esito.ok("i %d numeri del registro sono tutti distinti" % len(per_numero))
 
@@ -468,10 +468,10 @@ def invariante_registro_voci(esito, percorsi, tracciati):
             esito.nota("      %-12s su %s" % (identificativo, ', '.join('#' + n for n in numeri)))
         esito.nota("      due voci distinte con lo stesso nome: da guardare, non da rinominare a scatola chiusa")
     else:
-        esito.ok("nessun identificatore e' portato da due voci distinte")
+        esito.ok("nessun identificatore è portato da due voci distinte")
 
     massimo = max(radice_numerica(n) for n in per_numero)
-    # L'ampiezza del richiamo si dichiara, e il default e' stretto per una ragione misurata:
+    # L'ampiezza del richiamo si dichiara, e il default è stretto per una ragione misurata:
     # allargandolo a quattro cifre, su un corpus reale, il controllo ha segnalato come
     # richiamo a una voce inesistente il numero di un ticket di un sistema esterno citato in
     # prosa. Un invariante che inventa un falso positivo la prima volta che viene eseguito
@@ -485,14 +485,14 @@ def invariante_registro_voci(esito, percorsi, tracciati):
             citati.update(re.findall(atteso, testo_di(altro)))
     oltre = sorted((n for n in citati if int(n) > massimo), key=int)
     if oltre:
-        # Avviso e non diagnosi: un registro cresciuto per fasi puo' portare anche una
-        # numerazione per sezione che convive con quella principale e non e' un errore.
+        # Avviso e non diagnosi: un registro cresciuto per fasi può portare anche una
+        # numerazione per sezione che convive con quella principale e non è un errore.
         # Uno strumento che non sa distinguere i due mondi lo dichiara, invece di
         # decidere al posto di chi legge.
-        # L'elenco si tronca, e non e' pigrizia. Se il massimo del registro e' molto piu'
-        # basso dei numeri citati intorno, per esempio perche' il percorso dichiarato punta
+        # L'elenco si tronca, e non è pigrizia. Se il massimo del registro è molto più
+        # basso dei numeri citati intorno, per esempio perché il percorso dichiarato punta
         # al file sbagliato, questa riga stampa cento voci e affoga tutto il resto del
-        # report: un avviso illeggibile e' un avviso che non viene letto, che e' il difetto
+        # report: un avviso illeggibile è un avviso che non viene letto, che è il difetto
         # che questo strumento esiste per combattere.
         mostrati = oltre[:12]
         coda = '' if len(oltre) == len(mostrati) else ' e altri %d' % (len(oltre) - len(mostrati))
@@ -500,32 +500,32 @@ def invariante_registro_voci(esito, percorsi, tracciati):
                      % (len(oltre), massimo, ', '.join('#' + n for n in mostrati), coda))
         esito.nota("      possono essere riferimenti a una numerazione per sezione: da guardare")
         if len(oltre) > 12:
-            esito.nota("      se sono molti, il sospetto e' il percorso: registro_voci punta al file giusto?")
+            esito.nota("      se sono molti, il sospetto è il percorso: registro_voci punta al file giusto?")
     else:
         esito.ok("nessun richiamo oltre il massimo definito (#%d)" % massimo)
 
 
 def invariante_frontmatter(esito, percorsi):
     """Il frontmatter di una scheda deve dichiarare un commit a partire dal quale il
-    contenuto della scheda non e' piu' cambiato.
+    contenuto della scheda non è più cambiato.
 
-    Questo invariante e' stato sbagliato due volte prima di essere giusto, e vale la pena
-    conservare entrambi gli errori perche' sono istruttivi.
+    Questo invariante è stato sbagliato due volte prima di essere giusto, e vale la pena
+    conservare entrambi gli errori perché sono istruttivi.
 
     Il primo confrontava il campo con HEAD: segnalava tutte le schede dopo qualunque
-    commit, anche uno che non le riguardava, cioe' un giallo perpetuo.
+    commit, anche uno che non le riguardava, cioè un giallo perpetuo.
 
     Il secondo confrontava il campo con il commit che aveva toccato la scheda per ultimo.
     Meglio, e ancora impossibile: la regola prescrive di bumpare dopo il commit, ma il
     bump scrive dentro la scheda, quindi genera un commit nuovo che la tocca e riporta il
     confronto in giallo. Una sessione veniva segnalata per aver rispettato la regola, che
-    e' la forma peggiore di avviso perpetuo perche' punisce il comportamento corretto.
+    è la forma peggiore di avviso perpetuo perché punisce il comportamento corretto.
 
-    La distinzione che scioglie il nodo e' fra una modifica e una firma. Il controllo
+    La distinzione che scioglie il nodo è fra una modifica e una firma. Il controllo
     salta i commit di sola firma, trova l'ultima modifica di contenuto, e verifica per
-    discendenza e non per uguaglianza: la scheda e' allineata se l'hash dichiarato e'
-    quel commit o un suo discendente. Cosi' resta verde anche chi rilegge una scheda
-    immutata a una data successiva e porta l'hash in avanti, che e' esattamente cio' che
+    discendenza e non per uguaglianza: la scheda è allineata se l'hash dichiarato è
+    quel commit o un suo discendente. Così resta verde anche chi rilegge una scheda
+    immutata a una data successiva e porta l'hash in avanti, che è esattamente ciò che
     la regola del bump chiede di fare.
     """
     rel_schede = percorsi.get('schede')
@@ -540,7 +540,7 @@ def invariante_frontmatter(esito, percorsi):
     campi = percorsi.get('campi_firma') or ['last-verified-commit', 'last-verified']
 
     # Il percorso si estrae separando sul primo spazio, non tagliando a posizione fissa:
-    # il taglio a posizione fissa si rompe perche' l'output viene normalizzato e lo spazio
+    # il taglio a posizione fissa si rompe perché l'output viene normalizzato e lo spazio
     # iniziale della prima riga sparisce, sfasando quella sola riga di un carattere. Nel
     # caso di una rinomina la porcelain scrive "vecchio -> nuovo": interessa il nuovo.
     sporche = set()
@@ -575,8 +575,8 @@ def invariante_frontmatter(esito, percorsi):
             continue
         pieno = git('rev-parse', '--verify', dichiarato + '^{commit}')
         if not pieno:
-            # Un hash che non risolve non e' un disallineamento ma un riferimento rotto:
-            # o e' stato scritto a mano sbagliato, o la storia e' stata riscritta sotto.
+            # Un hash che non risolve non è un disallineamento ma un riferimento rotto:
+            # o è stato scritto a mano sbagliato, o la storia è stata riscritta sotto.
             illeggibili.append((nome, dichiarato))
             continue
         discende = subprocess.run(['git', 'merge-base', '--is-ancestor', contenuto, pieno],
@@ -589,7 +589,7 @@ def invariante_frontmatter(esito, percorsi):
         for nome, dichiarato in illeggibili:
             esito.nota("      %-26s dichiara %s, che non risolve" % (nome, dichiarato))
     if disallineate:
-        esito.avviso("%d schede il cui contenuto e' cambiato dopo il commit dichiarato" % len(disallineate))
+        esito.avviso("%d schede il cui contenuto è cambiato dopo il commit dichiarato" % len(disallineate))
         for nome, dichiarato, contenuto in disallineate:
             esito.nota("      %-26s dichiara %s, contenuto cambiato in %s" % (nome, dichiarato, contenuto))
         esito.nota("      il bump va fatto dopo aver riletto la scheda, non in blocco: l'hash dichiara una rilettura")
@@ -624,7 +624,7 @@ def controlla_asserzioni(reg, esito):
             esito.nota("      chiedere a %s: %s" % (voce.get('a_chi', '?'), voce.get('domanda', '')))
             esito.nota("      dove:  %s" % voce.get('dove', ''))
         elif eta > validita:
-            esito.avviso("verificata %d giorni fa, validita' %d  %s" % (eta, validita, voce.get('afferma', '')))
+            esito.avviso("verificata %d giorni fa, validità %d  %s" % (eta, validita, voce.get('afferma', '')))
             esito.nota("      chiedere a %s: %s" % (voce.get('a_chi', '?'), voce.get('domanda', '')))
         else:
             esito.ok("verificata %d giorni fa  %s" % (eta, testa))
@@ -667,7 +667,7 @@ def main():
     try:
         reg = leggi_json(rel_registro)
     except Exception as errore:
-        print(colora("NON GIUDICABILE: %s non e' leggibile (%s)" % (rel_registro, errore), ROSSO))
+        print(colora("NON GIUDICABILE: %s non è leggibile (%s)" % (rel_registro, errore), ROSSO))
         return 2
 
     percorsi = dict(PERCORSI_DEFAULT)
@@ -684,10 +684,10 @@ def main():
     controlla_invarianti(invarianti, percorsi)
     controlla_asserzioni(reg, asserzioni)
 
-    stampa("SCADENZE  (entro %d giorni; le piu' lontane sono contate e non elencate)" % orizzonte, scadenze, silenzioso)
-    stampa("FRESCHEZZA DELLE MISURE  (eta' della misura contro la cadenza dichiarata)", freschezza, silenzioso)
-    stampa("INVARIANTI  (cio' che i documenti affermano contro cio' che c'e' davvero)", invarianti, silenzioso)
-    stampa("ASSERZIONI UMANE  (nessun programma puo' verificarle: sono domande)", asserzioni, silenzioso)
+    stampa("SCADENZE  (entro %d giorni; le più lontane sono contate e non elencate)" % orizzonte, scadenze, silenzioso)
+    stampa("FRESCHEZZA DELLE MISURE  (età della misura contro la cadenza dichiarata)", freschezza, silenzioso)
+    stampa("INVARIANTI  (ciò che i documenti affermano contro ciò che c'è davvero)", invarianti, silenzioso)
+    stampa("ASSERZIONI UMANE  (nessun programma può verificarle: sono domande)", asserzioni, silenzioso)
 
     gravi = sum(e.problemi for e in (scadenze, freschezza, invarianti, asserzioni))
     avvisi = sum(e.avvisi for e in (scadenze, freschezza, invarianti, asserzioni))
@@ -697,9 +697,9 @@ def main():
     print('')
     print('-' * 78)
     if not voci:
-        # Un registro vuoto non e' un progetto allineato, e' un progetto che non ha ancora
+        # Un registro vuoto non è un progetto allineato, è un progetto che non ha ancora
         # dichiarato nulla. Dirlo verde sarebbe il difetto che questo strumento combatte:
-        # un esito che sembra calcolato e non lo e'. Gli invarianti valgono comunque, perche'
+        # un esito che sembra calcolato e non lo è. Gli invarianti valgono comunque, perché
         # si calcolano sul repository e non sul registro.
         print(colora("REGISTRO VUOTO: nessuna scadenza, cadenza o asserzione dichiarata.", GIALLO))
         if controlli:
@@ -712,15 +712,15 @@ def main():
         print(colora("  quando si scrive la prima voce vera.", GRIGIO))
         return 1 if gravi else 0
     if gravi:
-        print(colora("ROTTO: %d voci gia' rotte e %d che stanno invecchiando, su %d controlli."
+        print(colora("ROTTO: %d voci già rotte e %d che stanno invecchiando, su %d controlli."
                      % (gravi, avvisi, controlli), ROSSO))
         return 1
     if avvisi:
-        # Il giallo non marca la sessione come fallita, ed e' una scelta: un controllo che
+        # Il giallo non marca la sessione come fallita, ed è una scelta: un controllo che
         # fallisce sempre smette di essere letto, e questo gira a ogni avvio.
-        print(colora("DA GUARDARE: %d voci su %d controlli, nessuna gia' rotta." % (avvisi, controlli), GIALLO))
-        print(colora("  Ciascuna e' un'affermazione che sta invecchiando, e l'unico modo in cui fa", GRIGIO))
-        print(colora("  danno e' che nessuno la legga.", GRIGIO))
+        print(colora("DA GUARDARE: %d voci su %d controlli, nessuna già rotta." % (avvisi, controlli), GIALLO))
+        print(colora("  Ciascuna è un'affermazione che sta invecchiando, e l'unico modo in cui fa", GRIGIO))
+        print(colora("  danno è che nessuno la legga.", GRIGIO))
         return 0
     print(colora("ALLINEATO: %d controlli, nessuna affermazione scaduta." % controlli, VERDE))
     return 0

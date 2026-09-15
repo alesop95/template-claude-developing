@@ -67,7 +67,7 @@ python tools/fix-missing-accents.py .
 python tools/fix-dashes.py --ext .md,.tex,.py .
 ```
 
-Il secondo strumento ha una sua fase di lettura che vale la pena non saltare, perché' produce l'unico elenco che nessuno strumento potra' mai risolvere.
+Il secondo strumento ha una sua fase di lettura che vale la pena non saltare, perché produce l'unico elenco che nessuno strumento potrà mai risolvere.
 
 ```
 python tools/fix-missing-accents.py --autotest
@@ -75,7 +75,7 @@ python tools/fix-missing-accents.py --check .
 python tools/fix-missing-accents.py --ambigue .
 ```
 
-L'ultimo comando elenca le forme che restano indecidibili, con il motivo accanto a ciascuna: la congiunzione contro il verbo essere, l'articolo contro l'avverbio di luogo, il pronome contro l'affermazione. Su un corpus di media grandezza sono migliaia di occorrenze, e la sola cosa sensata e' leggerle quando si rilegge il testo per altre ragioni, non tutte in una volta.
+L'ultimo comando elenca le forme che restano indecidibili, con il motivo accanto a ciascuna: la congiunzione contro il verbo essere, l'articolo contro l'avverbio di luogo, il pronome contro l'affermazione. Su un corpus di media grandezza sono migliaia di occorrenze, e la sola cosa sensata è leggerle quando si rilegge il testo per altre ragioni, non tutte in una volta.
 
 ## Verifiche dopo l'applicazione
 
