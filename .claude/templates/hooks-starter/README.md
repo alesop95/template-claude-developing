@@ -1,10 +1,26 @@
 # Pacchetto hooks-starter
 
-> Pacchetto opzionale del sistema di progetto. Fornisce tre hook di automazione pronti all'uso, in doppia forma PowerShell e shell POSIX, che concretizzano le famiglie descritte nella sezione 14 di `PROJECT-SYSTEM.md`, finora solo descrittiva: un hook di apertura sessione che automatizza la procedura di ripresa, un hook che protegge i file sensibili dalle scritture dell'agente, e un hook che scansiona i secret nel diff in stage prima di un commit. Nessun hook è attivo dopo l'istanziazione: i file esistono ma non fanno nulla finché l'utente non li registra esplicitamente nel `settings.json` del progetto, copiando i blocchi dal frammento di esempio. Deriva dal bundle di template generato dall'utente a partire dalla guida community `Cranot/claude-code-guide`, riscritto sul protocollo hook corrente e nella doppia forma per sistema operativo richiesta dal template.
+> Pacchetto opzionale del sistema di progetto. Fornisce sette hook di automazione pronti all'uso, in doppia forma PowerShell e shell POSIX, che concretizzano le famiglie descritte nella sezione 14 di `PROJECT-SYSTEM.md`, finora solo descrittiva. Si dividono in due famiglie con due scopi diversi: quattro rendono automatico ciò che altrimenti dipende dal ricordarsene, coprendo i quattro momenti del ciclo di lavoro, e tre intercettano una scrittura o un commit pericolosi. Nessun hook è attivo dopo l'istanziazione: i file esistono ma non fanno nulla finché l'utente non li registra esplicitamente nel `settings.json` del progetto, copiando i blocchi dal frammento di esempio. Deriva dal bundle di template generato dall'utente a partire dalla guida community `Cranot/claude-code-guide`, riscritto sul protocollo hook corrente e nella doppia forma per sistema operativo richiesta dal template.
 
-## I tre hook
+## I quattro hook del ciclo, che tolgono il ricordarsene
+
+Hanno in comune il modo in cui il difetto si manifesta, ed è la ragione per cui vale automatizzarli invece di prescriverli: nessuno dei quattro fallisce in modo visibile. Una prescrizione che dipende dal ricordarsene funziona finché qualcuno ricorda, e la volta che non ricorda nessuno se ne accorge.
+
+`apertura-sessione` è un hook `SessionStart` e fa due cose. La prima è eseguire la verifica di ripresa, cioè confrontare l'impronta che la sessione precedente ha registrato con lo stato reale di git, e riportare che cosa diverge. La seconda è meno ovvia e sfrutta il fatto che l'uscita di un hook `SessionStart` entra nel contesto della sessione: stampa l'istruzione di invocare `sync-context` come secondo atto. È il solo modo di rendere automatico un passo che richiede l'agente e non un programma, perché nessun hook può invocare una skill.
+
+`md-unwrap-auto` è un hook `PostToolUse` su `Write` ed `Edit`: quando il file scritto è un `.md`, ne riporta i paragrafi su riga sorgente unica. Agisce dopo la scrittura e non prima perché è una normalizzazione e non una difesa, e per contratto lo strumento rifiuta di scrivere un file il cui rendering cambierebbe, quindi il caso peggiore è che non faccia nulla.
+
+`pre-commit-checks` è un hook `PreToolUse` su `Bash`: quando il comando è un `git commit`, esegue i quattro controlli che verificano una convenzione dichiarata invece di un comportamento, cioè forma dei paragrafi, tipografia, comandi copiabili in una riga sola e riferimenti a file inesistenti, e blocca se uno fallisce. Un controllo il cui strumento non è istanziato si salta in silenzio, perché un progetto può legittimamente non avere quel pacchetto.
+
+`chiusura-sessione` è un hook `SessionEnd` e registra l'impronta di ripresa. Porta con sé un paradosso che va capito prima di attivarlo: se l'impronta la registrasse solo l'agente, una sessione caduta non la registrerebbe mai, che è il comportamento voluto; se la registra un hook, la registra anche a una chiusura di colpo, e una caduta diventerebbe indistinguibile da una chiusura ordinata. La risoluzione sta in ciò che l'hook copre davvero: un hook `SessionEnd` non gira quando il processo muore per un crash vero, quindi copre la chiusura distratta e lascia scoperta la caduta vera, che è esattamente ciò che si vuole restare visibile. Resta una rete e non il percorso principale: quello è l'agente che aggiorna il file di ripresa con lo stato raggiunto e il prossimo passo, e poi registra.
+
+## Lo stato, che è cosa diversa dalla verifica
 
 `session-context` è un hook `SessionStart`: a ogni apertura di sessione stampa il branch attivo, gli ultimi commit, i file modificati e la testa di `.claude/memory/index.md` con il punto di ripresa, e il suo output entra nel contesto della sessione. È la prima famiglia della sezione 14: trasforma la procedura di ripresa della sezione 12 da manuale ad automatica. È l'hook a più alto valore del pacchetto e l'unico che conviene attivare quasi sempre.
+
+Con `apertura-sessione` non si sovrappone e non si sostituisce, e la distinzione conta: questo stampa lo stato corrente, quello lo confronta con lo stato che la sessione precedente aveva registrato. Nessuna stampa dello stato rivela che un file di ripresa descriva un passato, perché un file di ripresa non aggiornato ha esattamente lo stesso aspetto di uno aggiornato: serve il confronto. I due si attivano insieme.
+
+## I due hook di difesa
 
 `protect-sensitive-files` è un hook `PreToolUse` su `Write` ed `Edit`: blocca le scritture su file sensibili (`.env` e varianti, chiavi `.pem` e `.key`, l'interno di `.git/`), lasciando passare `.env.example`. È difesa in profondità rispetto alle regole `deny` già presenti nel `settings.json` di baseline: le regole di permesso governano ciò che l'agente può chiedere, l'hook intercetta la chiamata anche quando i permessi sono stati allargati, per esempio in una sessione con modalità più permissiva.
 
@@ -17,6 +33,14 @@ Gli hook bloccanti usano il meccanismo più semplice e stabile del protocollo: e
 ## Mappa di istanziazione
 
 ```
+templates/hooks-starter/hooks/apertura-sessione.ps1          ->  <radice>/.claude/hooks/apertura-sessione.ps1          (tracciato; Windows)
+templates/hooks-starter/hooks/apertura-sessione.sh           ->  <radice>/.claude/hooks/apertura-sessione.sh           (tracciato; Linux/macOS, chmod +x)
+templates/hooks-starter/hooks/md-unwrap-auto.ps1             ->  <radice>/.claude/hooks/md-unwrap-auto.ps1             (tracciato; Windows)
+templates/hooks-starter/hooks/md-unwrap-auto.sh              ->  <radice>/.claude/hooks/md-unwrap-auto.sh              (tracciato; Linux/macOS, chmod +x)
+templates/hooks-starter/hooks/pre-commit-checks.ps1          ->  <radice>/.claude/hooks/pre-commit-checks.ps1          (tracciato; Windows)
+templates/hooks-starter/hooks/pre-commit-checks.sh           ->  <radice>/.claude/hooks/pre-commit-checks.sh           (tracciato; Linux/macOS, chmod +x)
+templates/hooks-starter/hooks/chiusura-sessione.ps1          ->  <radice>/.claude/hooks/chiusura-sessione.ps1          (tracciato; Windows)
+templates/hooks-starter/hooks/chiusura-sessione.sh           ->  <radice>/.claude/hooks/chiusura-sessione.sh           (tracciato; Linux/macOS, chmod +x)
 templates/hooks-starter/hooks/session-context.ps1            ->  <radice>/.claude/hooks/session-context.ps1            (tracciato; Windows)
 templates/hooks-starter/hooks/session-context.sh             ->  <radice>/.claude/hooks/session-context.sh             (tracciato; Linux/macOS, chmod +x)
 templates/hooks-starter/hooks/protect-sensitive-files.ps1    ->  <radice>/.claude/hooks/protect-sensitive-files.ps1    (tracciato; Windows)
