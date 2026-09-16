@@ -70,6 +70,34 @@ I prefissi sono percorsi e non slug, passati come argomenti distinti perché i p
 
 Il passaggio e in Node e non in PowerShell per una ragione precisa: `ConvertFrom-Json` di PowerShell 5.1 tratta le chiavi JSON come case-insensitive e va in errore su un `.claude.json` che contenga sia `e:/progetto` sia `E:/progetto`, condizione tutt'altro che rara. `JSON.parse`/`JSON.stringify` e invece la stessa semantica che Claude Code applica al proprio file. Poiché il file custodisce il login, non viene mai riscritto alla cieca: lo script verifica che l'oggetto in memoria contenga ancora `oauthAccount` e `userID`, valida il JSON prodotto, scrive su un file temporaneo, lo rilegge da disco e solo allora sostituisce l'originale; qualsiasi anomalia annulla tutto, lasciando il file intatto e senza residui. Se Node non è disponibile il wipe salta il passaggio senza toccare nulla.
 
+## lint-doc-references.py
+
+Trova nella documentazione i riferimenti a file che non esistono. Non verifica se una descrizione sia vera, che e un giudizio: verifica se l'oggetto di cui parla esista, che e il sottoinsieme controllabile del problema ed e quello che sul progetto di origine aveva prodotto un documento di contesto primario che descriveva un file mai esistito.
+
+Divide in categorie invece di produrre un elenco unico, e la ragione vale come criterio generale di ogni controllo automatico: cento segnalazioni di cui novanta legittime insegnano a ignorare le altre dieci. Sono da correggere i documenti vivi che nominano un file assente; sono storici il work-log e le schede datate, dove una voce che nomina un file poi cancellato era vera quel giorno; sono modelli i percorsi sotto `templates/`, che sono convenzioni per un progetto che non e questo. La quarta categoria si attiva solo su dichiarazione esplicita e riguarda un repository solo, cioe quello che contiene lo standard invece di averlo adottato.
+
+Le radici che identificano un percorso non si configurano: si leggono da git. Un elenco scritto a mano sarebbe un secondo posto dove vive lo stesso fatto, e divergerebbe in silenzio, perche il sintomo di una cartella non controllata e l'assenza di segnalazioni.
+
+```
+python tools/lint-doc-references.py
+python tools/lint-doc-references.py --solo-vivi
+python tools/lint-doc-references.py --bundle
+python tools/lint-doc-references.py --self-test
+```
+
+## verifica-ripresa.py
+
+Dice, alla riapertura di una sessione, se fra l'ultima e questa si e perso qualcosa. Confronta l'impronta registrata a fine sessione, cioe il commit e la forma dell'albero di lavoro in quel momento, con lo stato reale, e riporta i commit comparsi dopo l'ultima registrazione, i file rimasti a meta, i documenti di memoria che dichiarano un commit piu vecchio di HEAD e le schede ancorate a un commit che non esiste.
+
+Il danno che intercetta non e la perdita del lavoro, che sta su disco e in git, ma il fatto che una sessione nuova prenda un file di ripresa vecchio per lo stato corrente: un file di ripresa non aggiornato ha esattamente lo stesso aspetto di uno aggiornato. La skill `riprendi` e la procedura che ne interpreta l'esito.
+
+```
+python tools/verifica-ripresa.py
+python tools/verifica-ripresa.py --registra
+python tools/verifica-ripresa.py --breve
+python tools/verifica-ripresa.py --self-test
+```
+
 ## latest-screenshot.ps1
 
 Restituisce il percorso dell'immagine più recente nella cartella di cattura di Screenpresso e la sua eta in secondi, perché l'agente legga lo screenshot appena catturato dall'utente per un passo manuale e visivo dello sviluppo. Si usa insieme alla regola `.claude/rules/manual-screenshots.md`, che stabilisce quando l'agente deve chiedere uno screenshot.

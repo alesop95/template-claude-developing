@@ -5,3 +5,5 @@
 
 .claude/templates/docx-to-docs/docx-to-md.py # la sua tabella di sostituzione contiene questi caratteri per poterli rimuovere dai documenti convertiti: normalizzarli qui lo renderebbe cieco
 .claude/templates/academic-researcher/references/claude-ricercatore-universitario-completo.md # documento di riferimento copiato da fonte esterna, che per la regola di stile mantiene la formattazione originale
+.claude/templates/scientific-skills/MAPPA-SKILL-SCIENTIFICHE.md # documento generato che riporta verbatim le descrizioni inglesi delle skill a monte: i trattini lunghi sono di chi le ha scritte, e normalizzarli qui falserebbe una citazione e verrebbe comunque disfatto alla rigenerazione successiva
+.claude/templates/timeline-progetto/tools/costruisci-timeline.py # la classe di caratteri con cui riconosce il separatore di una voce deve contenere anche il trattino en, perche un work-log scritto da un editor che lo sostituisce da solo resterebbe altrimenti illeggibile: normalizzarlo qui renderebbe il parser cieco proprio al caso che deve coprire

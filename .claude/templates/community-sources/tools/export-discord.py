@@ -48,6 +48,7 @@ Uso
     python tools/export-discord.py --tier 1
     python tools/export-discord.py --tier 1 --html
     python tools/export-discord.py --server NomeDelServer
+    python tools/export-discord.py --sigla SIGLA --dry-run
     python tools/export-discord.py --guilds --dry-run
     python tools/export-discord.py --guilds
 
@@ -245,6 +246,10 @@ def main():
     ap.add_argument("--tier", type=int, action="append",
                     help="quale gruppo esportare; ripetibile")
     ap.add_argument("--server", action="append", help="limita a questi server; ripetibile")
+    ap.add_argument("--sigla", action="append",
+                    help="limita ai canali che servono questa sigla di lavoro; ripetibile. "
+                         "Serve perché i canali che servono una stessa domanda stanno su più "
+                         "gruppi di priorità, e chiederli per gruppo significa chiedere anche il resto")
     ap.add_argument("--dce", help="percorso dell'eseguibile di DiscordChatExporter")
     ap.add_argument("--html", action="store_true",
                     help="esporta anche la resa leggibile, oltre al JSON")
@@ -264,9 +269,17 @@ def main():
     if a.guilds:
         return interi(a)
 
+    # Il confronto sulla sigla è per appartenenza all'insieme e non per sottostringa, perché la
+    # colonna ne porta più d'una separate da virgola: una ricerca per sottostringa farebbe
+    # corrispondere una sigla contenuta in un'altra, che oggi magari non accade e domani sì.
+    def serve(canale):
+        sigle = set(x.strip() for x in canale[4].split(","))
+        return bool(sigle & set(a.sigla))
+
     scelti = [c for c in CANALI
               if (not a.tier or c[0] in a.tier)
-              and (not a.server or c[1] in a.server)]
+              and (not a.server or c[1] in a.server)
+              and (not a.sigla or serve(c))]
     if not scelti:
         sys.exit("nessun canale corrisponde ai criteri; provare --elenco")
 

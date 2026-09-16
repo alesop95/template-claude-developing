@@ -93,11 +93,12 @@ table.src a:hover{text-decoration:underline}
       <div class="phase-when">Giorno 0 — 30 minuti</div>
       <div class="phase-title">Inizializzazione del progetto</div>
       <div class="phase-body">
-        Si incolla <strong>PROMPT-nuovo-progetto.md</strong> in Claude Code nella radice del progetto. La skill <strong>init-project-system</strong> esegue l'anatomia minima: crea .claude/ con memory/, context/ e rules/, istanzia le schede tecniche vuote, popola CLAUDE.md con la procedura di ripresa. Poi legge PACKAGES.md e propone i pacchetti pertinenti uno per uno.<br><br>
-        Gate accettati in questo progetto: <em>github-mcp</em> (il progetto vive su GitHub), <em>context7</em> (si usa Express e Drizzle in evoluzione rapida), <em>playwright-mcp</em> (test E2E previsti), <em>ccusage</em> (baseline misurazione token, sempre), <em>vercel-mcp</em> (deploy su Vercel), <em>stack-profiles</em> (stack TypeScript riconosciuto dal package.json: il profilo ts-mcp diventa rules/stack-profile.md), <em>claude-code-handoff</em> (riferimento delle opzioni dello strumento, con auto-update dalla guida community), <em>hooks-starter</em> (si attiva il solo hook session-context: la procedura di ripresa diventa automatica). Gate rifiutati: LaTeX, knowledge-wiki (non necessari ora), le skill di review di dev-skills (duplicano le native, dichiarato al gate).
+        Si incolla <strong>PROMPT-nuovo-progetto.md</strong> in Claude Code nella radice del progetto. La skill <strong>init-project-system</strong> esegue l'anatomia minima: crea .claude/ con memory/, context/ e rules/, istanzia le schede tecniche vuote, popola CLAUDE.md con la procedura di ripresa. Poi invoca <strong>gate-pacchetti</strong>, che non scorre il catalogo riga per riga: con settantatre' pacchetti sarebbe un elenco che nessuno legge. Riconosce prima dai fatti del progetto, e dall'obiettivo appena dichiarato, a quali dei dieci settori questo progetto appartenga, li mostra con la ragione del riconoscimento perche' si possano correggere, e solo dopo apre le tabelle dei settori riconosciuti. Qui i settori riconosciuti sono quattro: fondamenta e igiene (il progetto vivra' mesi), sviluppo e qualita' del codice (si scrive TypeScript), comprensione di una codebase (in allineamento ci sarebbe gia' del codice: qui no, e il settore resta a margine), economia del contesto (sempre valutabile). Gli altri sei si dichiarano esclusi con la ragione, cosi' che la tornata successiva sappia che erano stati esclusi e non dimenticati.<br><br>
+        Ogni pacchetto arriva in tre frasi: che cosa fa, perche' a <em>questo</em> progetto, legandolo a un fatto del repository e non alla categoria generica, e che cosa costa, comprese le capacita' che duplicherebbe. Gate accettati in questo progetto: <em>github-mcp</em> (il progetto vive su GitHub), <em>context7</em> (si usa Express e Drizzle in evoluzione rapida), <em>playwright-mcp</em> (test E2E previsti), <em>ccusage</em> (baseline misurazione token, sempre), <em>vercel-mcp</em> (deploy su Vercel), <em>stack-profiles</em> (stack TypeScript riconosciuto dal package.json: il profilo ts-mcp diventa rules/stack-profile.md), <em>claude-code-handoff</em> (riferimento delle opzioni dello strumento, con auto-update dalla guida community), <em>hooks-starter</em> (si attiva il solo hook session-context: la procedura di ripresa diventa automatica). Gate rifiutati, e registrati come rifiuti con la data: LaTeX e knowledge-wiki (non necessari ora), le skill di review di dev-skills (duplicano le native, dichiarato nella stessa frase in cui sono state proposte). Un no registrato non torna identico alla tornata successiva: torna solo se il suo presupposto cambia.
       </div>
       <div class="pills">
         <span class="pill p-core"><span class="pill-label">core</span>init-project-system</span>
+        <span class="pill p-core"><span class="pill-label">skill</span>gate-pacchetti</span>
         <span class="pill p-core"><span class="pill-label">core</span>PROMPT-nuovo-progetto</span>
         <span class="pill p-pkg"><span class="pill-label">opt-in</span>github-mcp</span>
         <span class="pill p-pkg"><span class="pill-label">opt-in</span>context7</span>
@@ -221,6 +222,28 @@ table.src a:hover{text-decoration:underline}
       </div>
     </div>
 
+    <div class="phase">
+      <div class="phase-dot"><span>8</span></div>
+      <div class="phase-when">Mese 3 — Il progetto e' diventato altro</div>
+      <div class="phase-title">La tornata di allineamento, e il gate che si riesegue</div>
+      <div class="phase-body">
+        Il progetto ha preso una direzione che a giorno 0 non aveva: per documentare una integrazione si e' cominciato a raccogliere materiale di terzi, cioe' thread di discussione, un canale di community e un paio di interviste video. Nessuno lo ha dichiarato, ed e' precisamente il punto: <strong>un gate eseguito una volta sola non se ne sarebbe accorto mai</strong>.<br><br>
+        Si incolla <strong>PROMPT-allinea-progetto-esistente.md</strong> e la tornata rifa' il giro. <strong>gate-pacchetti</strong> riconosce due settori che a giorno 0 erano esclusi: <em>fonti, ricerca e corpus documentali</em>, perche' ora esiste una cartella di materiale di terzi con quaranta file, e <em>voce, audio e trascrizione</em>, perche' due delle fonti sono video senza sottotitoli. Dichiara anche che cosa e' cambiato dalla volta precedente: i settori nuovi, i pacchetti comparsi nel catalogo da allora, e le decisioni dell'altra volta che restano valide.<br><br>
+        Vengono accettati <strong>community-sources</strong> (il grafo dei rinvii a partire dai thread, poi il censimento che li trasforma in righe di registro) e <strong>voicestudio</strong> (i due video si trascrivono in locale, e il testo finisce sotto _notes/fonti/ con la provenienza davanti). Viene rifiutato <em>discord-mcp</em>: la consultazione e' periodica e non conversazionale, quindi il programma costa meno di un server connesso a ogni turno. Le voci gia' decise a giorno 0 non vengono richieste: se ne mostra la decisione e basta.
+      </div>
+      <div class="pills">
+        <span class="pill p-core"><span class="pill-label">core</span>PROMPT-allinea-progetto-esistente</span>
+        <span class="pill p-core"><span class="pill-label">skill</span>gate-pacchetti (riesecuzione)</span>
+        <span class="pill p-core"><span class="pill-label">regola</span>web-sources-not-fetchable</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>community-sources</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>voicestudio</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout">
+    <strong>Questo e' un flusso raccontato, non una procedura da seguire alla lettera.</strong> La guida pratica, con il calendario delle attivita', la tabella che va dal sintomo allo strumento e le ricette per archetipo di progetto, e' in <a href="../GUIDA-USO.md">GUIDA-USO.md</a>.
   </div>
 
   <div class="callout">
@@ -278,6 +301,14 @@ table.src a:hover{text-decoration:underline}
 
       <tr class="src-group"><td colspan="4">Diagrammi e rendering</td></tr>
       <tr><td>mermaid-cli</td><td>Resa Mermaid .mmd → .svg riusando Chromium di sistema</td><td><a href="https://github.com/mermaid-js/mermaid-cli">github.com/mermaid-js/mermaid-cli</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+
+      <tr class="src-group"><td colspan="4">Fonti di community, voce e cataloghi esterni di skill</td></tr>
+      <tr><td>community-sources</td><td>Sei strumenti per le fonti che nessuno strumento di sessione raggiunge: canale Discord via bot account, esportazione ampia, grafo dei rinvii di Reddit via archivio pubblico, e i tre che riducono (export in Markdown, sottotitoli in parlato, corsa in censimento di fonti)</td><td>Originale al template; l'archivio pubblico e' <a href="https://github.com/ArthurHeitmann/arctic_shift">Arctic Shift</a>, successore di Pushshift</td><td>&mdash;</td></tr>
+      <tr><td>DiscordChatExporter</td><td>Esportatore di terze parti orchestrato da export-discord.py per le esportazioni ampie e rare</td><td><a href="https://github.com/Tyrrrz/DiscordChatExporter">github.com/Tyrrrz/DiscordChatExporter</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>VoiceStudio</td><td>Riconoscimento e sintesi vocale in locale, 646 lingue, senza account: chiude la seconda via che la regola sulle fonti prescrive per un video, cioe' la trascrizione dove i sottotitoli automatici non esistono</td><td><a href="https://github.com/debpalash/VoiceStudio">github.com/debpalash/VoiceStudio</a></td><td>AGPL-3.0</td></tr>
+      <tr><td>scientific-agent-skills</td><td>166 skill scientifiche per lo standard aperto Agent Skills; il pacchetto non installa, genera la mappa con autore, licenza, presenza di codice eseguibile e sovrapposizioni con il catalogo</td><td><a href="https://github.com/K-Dense-AI/scientific-agent-skills">K-Dense-AI/scientific-agent-skills</a> &middot; <a href="https://arxiv.org/abs/2609.00065">arXiv:2609.00065</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>mattpocock/skills</td><td>37 skill di ingegneria; il pacchetto e' la mappa fra quelle e cio' che il sistema gia' ha, con le tre che vanno adattate perche' scrivono in file che qui hanno un altro nome</td><td><a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>certifi</td><td>Archivio di radici dei certificati aggiornato, usato da fetch-reddit.py: una radice ISRG scaduta nell'archivio di sistema rendeva irraggiungibili siti in piedi, e con essi 130 nodi di una corsa</td><td><a href="https://github.com/certifi/python-certifi">github.com/certifi/python-certifi</a></td><td>MPL-2.0</td></tr>
 
       <tr class="src-group"><td colspan="4">Risparmio token</td></tr>
       <tr><td>ccusage</td><td>Baseline consumo token per sessione e modello</td><td><a href="https://github.com/ryoppippi/ccusage">github.com/ryoppippi/ccusage</a></td><td><span class="badge b-mit">MIT</span></td></tr>

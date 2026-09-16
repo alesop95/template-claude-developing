@@ -96,21 +96,23 @@ a.repo:hover{text-decoration:underline}
     <strong>3</strong> aggiunti il 2026-07-02 (agent-catalog, wshobson-agents, voltagent-subagents)<br>
     <strong>1</strong> aggiunto il 2026-07-20, validato su un progetto reale (book-bib-extract)<br>
     <strong>1</strong> aggiunto il 2026-08-05, originale al template, validato sui file di questo repository (md-unwrap)<br><br>
-    Vedi anche: <a href="project-flow.html" style="color:#94A3B8;font-size:10px">project-flow.html</a></p>
+    <strong>12</strong> riportati il 2026-09-16: cinque di fondamenta gia' in catalogo e mai mappati (operations-log, documentazione-didattica, alignment, anonymization, fix-typography), tre di fonti di community (community-sources, discord-mcp, hermes-agent) e quattro nuovi (voicestudio, voicestudio-mcp, scientific-skills, matt-pocock-skills)<br>
+    <strong>1</strong> sezione nuova il 2026-09-16: il gate dei pacchetti per settore, che e' il modo in cui tutto il catalogo viene proposto<br><br>
+    Vedi anche: <a href="project-flow.html" style="color:#94A3B8;font-size:10px">project-flow.html</a> e <a href="../GUIDA-USO.md" style="color:#94A3B8;font-size:10px">GUIDA-USO.md</a>, la guida pratica organizzata per obiettivo: calendario delle attivita', tabella dal sintomo allo strumento, ricette per archetipo di progetto.</p>
   </div>
 </aside>
 
 <main>
   <div class="ph">
-    <div class="ph-eye">mappa delle feature · giugno 2026</div>
+    <div class="ph-eye">mappa delle feature · settembre 2026</div>
     <h1 class="ph-title">template-claude-developing</h1>
     <p class="ph-desc">Inventario completo di tutte le feature del template, con source, repository e licenza per ogni componente esterno. Le voci marcate <span class="badge b-new">Nuovo</span> sono state aggiunte in questa sessione a partire dai 6 playbook.</p>
     <div class="ph-stats">
-      <div class="ps"><span class="ps-n">5</span><span class="ps-l">Skill</span></div>
-      <div class="ps"><span class="ps-n">6</span><span class="ps-l">Regole</span></div>
+      <div class="ps"><span class="ps-n">8</span><span class="ps-l">Skill</span></div>
+      <div class="ps"><span class="ps-n">9</span><span class="ps-l">Regole</span></div>
       <div class="ps"><span class="ps-n">4</span><span class="ps-l">Agenti template</span></div>
-      <div class="ps"><span class="ps-n">61</span><span class="ps-l">Pacchetti opt-in</span></div>
-      <div class="ps"><span class="ps-n">17</span><span class="ps-l">MCP server</span></div>
+      <div class="ps"><span class="ps-n">74</span><span class="ps-l">Pacchetti opt-in</span></div>
+      <div class="ps"><span class="ps-n">20</span><span class="ps-l">MCP server</span></div><div class="ps"><span class="ps-n">10</span><span class="ps-l">Settori del gate</span></div>
     </div>
   </div>
 
@@ -138,9 +140,23 @@ a.repo:hover{text-decoration:underline}
 
   <div class="divider"></div>
 
+  <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>Due presidi nuovi del motore — 2026-09-16</div>
+      <table class="t">
+        <thead><tr><th>Strumento</th><th>Che difetto intercetta</th><th>Quando gira</th></tr></thead>
+        <tbody>
+          <tr><td><strong>verifica-ripresa.py</strong> <span class="badge b-new">Nuovo</span></td><td>Una sessione caduta a meta' lascia il progetto in uno stato che il file di ripresa non descrive, e un file di ripresa vecchio ha lo stesso aspetto di uno aggiornato. Confronta l'impronta registrata alla chiusura con lo stato reale di git: commit comparsi dopo, file rimasti a meta', memoria arretrata, schede ancorate a un commit che non esiste</td><td>Primo atto della sessione (skill <strong>riprendi</strong>); l'impronta si registra come ultimo atto, dopo i commit</td></tr>
+          <tr><td><strong>lint-doc-references.py</strong> <span class="badge b-new">Nuovo</span></td><td>Un documento che nomina un file inesistente e' una fotografia invecchiata: non produce un difetto nel codice, produce un difetto nel ragionamento di chi lo legge. Divide in categorie invece di ammucchiare, perche' cento segnalazioni di cui novanta legittime insegnano a ignorare le altre dieci</td><td>Prima di un commit; le radici si leggono da git e non si configurano</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
   <section class="sec" id="rules">
     <div class="sec-hd"><span class="sec-num">02</span><h2 class="sec-title">Regole modulari</h2></div>
-    <p class="sec-sub">Caricate su necessita'. Definiscono stile, sicurezza, identita' git e pratiche operative. Sei regole totali, tre nuove in questa sessione.</p>
+    <p class="sec-sub">Caricate su necessita'. Definiscono stile, sicurezza, identita' git e pratiche operative. Nove regole totali: alle sei storiche si sono aggiunte quella sulle fonti non recuperabili, quella sulla persistenza di cio' che si scrive in sessione, e quella sulle prove che misurano davvero un difetto.</p>
     <div class="card">
       <div class="card-hd"><span class="dot d-green"></span>Regole preesistenti</div>
       <table class="t">
@@ -182,7 +198,7 @@ a.repo:hover{text-decoration:underline}
     <div class="sec-hd"><span class="sec-num">03</span><h2 class="sec-title">Skill</h2></div>
     <p class="sec-sub">Workflow richiamabili on-demand. Il metadata costa ~30-100 token; il corpo si carica solo quando la skill e' pertinente al task.</p>
     <div class="card">
-      <div class="card-hd"><span class="dot d-green"></span>Cinque skill di sistema — lavoro originale</div>
+      <div class="card-hd"><span class="dot d-green"></span>Otto skill di sistema — lavoro originale</div>
       <table class="t">
         <thead><tr><th>Skill</th><th>Funzione</th><th>Invocazione tipica</th></tr></thead>
         <tbody>
@@ -190,6 +206,9 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>sync-context</strong></td><td>Confronta il last-verified-commit di ogni scheda con HEAD, propone delta update mirati</td><td>Inizio sessione o dopo git pull</td></tr>
           <tr><td><strong>git-sync</strong></td><td>Prepara le operazioni git (add, status, diff), mai commit ne' push</td><td>Prima di committare</td></tr>
           <tr><td><strong>repo-status</strong></td><td>Riepilogo: branch, commit recenti, file modificati, differenze non committate</td><td>Inizio sessione o on-demand</td></tr>
+          <tr><td><strong>gate-pacchetti</strong> <span class="badge b-new">Nuovo</span></td><td>Attraversa il catalogo per settore: riconosce dai fatti del progetto a quali settori appartenga, lo fa correggere, e propone i pacchetti dei soli settori riconosciuti uno per volta, con che cosa fa, perche' a questo progetto, e che cosa costa</td><td>Al Passo 4 dell'inizializzazione e a ogni tornata di allineamento</td></tr>
+          <tr><td><strong>riprendi</strong> <span class="badge b-new">Nuovo</span></td><td>Riapre una sessione verificando prima di fidarsi: confronta l'impronta registrata alla chiusura precedente con lo stato reale di git, e dice che cosa una sessione caduta a meta' non ha scritto. Solo dopo ricostruisce il punto di ripresa</td><td>Primo atto di ogni sessione nuova</td></tr>
+          <tr><td><strong>studio-didattico</strong></td><td>Tiene il livello documentale didattico: racconto evolutivo che contrappone com'era e perche' era fragile al salto di qualita', con deep-dive nel codice reale</td><td>Solo dove il progetto ha adottato la pratica; a ogni refactor o scelta non ovvia</td></tr>
           <tr><td><strong>onboard</strong></td><td>Spiegazione completa del progetto per chi parte da zero: struttura, flussi, decisioni chiave</td><td>Quando un nuovo membro o agente entra</td></tr>
         </tbody>
       </table>
@@ -217,8 +236,56 @@ a.repo:hover{text-decoration:underline}
 
   <div class="divider"></div>
 
+  <section class="sec" id="gate">
+    <div class="sec-hd"><span class="sec-num">05</span><h2 class="sec-title">Il gate dei pacchetti per settore</h2></div>
+    <p class="sec-sub">Con settantatre' pacchetti, il modo in cui si scelgono conta quanto i pacchetti stessi. La skill gate-pacchetti attraversa il catalogo per settore e non per riga: riconosce dai fatti del progetto a quali settori appartenga, dichiara il riconoscimento e lo fa correggere, e propone i soli pacchetti dei settori riconosciuti, uno per volta. Un progetto appartiene a due o tre settori su dieci: la scelta passa da settanta domande a una decina, tutte pertinenti.</p>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>Come si presenta un pacchetto — tre frasi, mai meno</div>
+      <table class="t">
+        <thead><tr><th>Frase</th><th>Che cosa deve dire</th><th>Difetto che evita</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Che cosa fa</strong></td><td>In linguaggio di chi lo usera', non di chi lo ha scritto</td><td>Una descrizione tecnica che non si capisce produce un no per incomprensione, non per scelta</td></tr>
+          <tr><td><strong>Perche' a questo progetto</strong></td><td>Legata a un fatto raccolto in questo repository, non al trigger generico del catalogo</td><td>"Utile ai progetti con molti documenti" non decide niente; "qui ci sono 40 file sotto docs/fonti/" si'</td></tr>
+          <tr><td><strong>Che cosa costa</strong></td><td>Dipendenze esterne, token che un MCP occupa a ogni turno anche inutilizzato, tabelle da sostituire, e soprattutto le capacita' che duplicherebbe</td><td>Due si' consecutivi su pacchetti sovrapposti producono una duplicazione che nessuno ha deciso</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-indigo"></span>I dieci settori, e da che cosa si riconoscono</div>
+      <table class="t">
+        <thead><tr><th>Settore</th><th>Riconosciuto da</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Fondamenta e igiene del progetto</strong></td><td>Non dal dominio ma dalla durata: un progetto che vivra' mesi e passera' di mano li vuole quasi tutti</td></tr>
+          <tr><td><strong>Scrittura, documentazione e tipografia</strong></td><td>Il progetto produce prosa destinata a qualcuno, anche quando quel qualcuno e' la sessione di fra tre mesi</td></tr>
+          <tr><td><strong>Fonti, ricerca e corpus documentali</strong></td><td>Il progetto poggia su materiale che non ha scritto; le famiglie sono tre e quasi nessun progetto le ha tutte</td></tr>
+          <tr><td><strong>Voce, audio e trascrizione</strong></td><td>Due usi opposti: leggere una fonte parlata, oppure produrre audio</td></tr>
+          <tr><td><strong>Domini scientifici e analisi dei dati</strong></td><td>L'oggetto del progetto e' scientifico; la domanda giusta e' di quale settore scientifico</td></tr>
+          <tr><td><strong>Comprensione di una codebase</strong></td><td>Il codice esiste gia' e va capito: ereditato, grande, o non toccato da mesi</td></tr>
+          <tr><td><strong>Sviluppo, qualita' e revisione del codice</strong></td><td>Si scrive codice; qui le capacita' di revisione si sovrappongono su tre piani e vanno scelte, non sommate</td></tr>
+          <tr><td><strong>Apprendimento guidato</strong></td><td>L'obiettivo dichiarato e' imparare, non produrre contenuti didattici per altri</td></tr>
+          <tr><td><strong>Economia del contesto e misura del consumo</strong></td><td>Sempre valutabile, con una regola d'ordine: prima si misura la linea di partenza, poi si installa</td></tr>
+          <tr><td><strong>Orchestrazione, sessioni e cataloghi di agenti</strong></td><td>Trigger quantitativo: sotto le tre sessioni o i tre rami paralleli costa piu' di quanto renda</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>Il gate si riesegue, e questa e' la parte che lo rende utile</div>
+      <table class="t">
+        <thead><tr><th>Quando</th><th>Che cosa cambia</th></tr></thead>
+        <tbody>
+          <tr><td>Inizializzazione</td><td>I settori si riconoscono dall'obiettivo dichiarato, perche' i fatti del repository non esistono ancora</td></tr>
+          <tr><td>Ogni tornata di allineamento</td><td>Si dichiara che cosa e' cambiato: settori nuovi perche' il progetto e' cambiato, pacchetti comparsi nel catalogo, decisioni ancora valide</td></tr>
+          <tr><td>Un no registrato</td><td>Non si ripropone identico: si mostra la decisione e si chiede solo se il presupposto e' cambiato</td></tr>
+          <tr><td>Perche' non basta una volta</td><td>Un progetto che a gennaio non raccoglieva fonti e a marzo ne raccoglie ha cambiato settore senza che nessuno lo abbia dichiarato</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
   <section class="sec" id="pkg-dev">
-    <div class="sec-hd"><span class="sec-num">05</span><h2 class="sec-title">Pacchetti — Ambiente e editor</h2></div>
+    <div class="sec-hd"><span class="sec-num">06</span><h2 class="sec-title">Pacchetti — Ambiente e editor</h2></div>
     <div class="card">
       <div class="card-hd"><span class="dot d-indigo"></span>Ambiente di sviluppo</div>
       <table class="t">
@@ -238,7 +305,7 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-know">
-    <div class="sec-hd"><span class="sec-num">06</span><h2 class="sec-title">Pacchetti — Conoscenza e navigazione</h2></div>
+    <div class="sec-hd"><span class="sec-num">07</span><h2 class="sec-title">Pacchetti — Conoscenza e navigazione</h2></div>
     <div class="card">
       <div class="card-hd"><span class="dot d-indigo"></span>Conoscenza</div>
       <table class="t">
@@ -269,7 +336,7 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-token">
-    <div class="sec-hd"><span class="sec-num">07</span><h2 class="sec-title">Pacchetti — Risparmio token</h2></div>
+    <div class="sec-hd"><span class="sec-num">08</span><h2 class="sec-title">Pacchetti — Risparmio token</h2></div>
     <p class="sec-sub">Sette tool open source, uno per fronte di consumo. Il risparmio e' cumulativo.</p>
     <div class="card">
       <div class="card-hd"><span class="dot d-indigo"></span>Stack token-saving — da claude-code-token-saving-playbook</div>
@@ -291,7 +358,7 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-mcp">
-    <div class="sec-hd"><span class="sec-num">08</span><h2 class="sec-title">Pacchetti — MCP server</h2></div>
+    <div class="sec-hd"><span class="sec-num">09</span><h2 class="sec-title">Pacchetti — MCP server</h2></div>
     <p class="sec-sub">Max 3-6 server connessi totali; preferire sempre l'implementazione ufficiale del vendor. Tutti nuovi in questa sessione (eccetto code-context, gia' presente).</p>
     <div class="card">
       <div class="card-hd"><span class="dot d-new"></span>7 server MCP aggiunti — da claude-code-mcp-servers-stack-2026</div>
@@ -323,7 +390,7 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-orch">
-    <div class="sec-hd"><span class="sec-num">09</span><h2 class="sec-title">Pacchetti — Orchestrazione multi-agente</h2></div>
+    <div class="sec-hd"><span class="sec-num">10</span><h2 class="sec-title">Pacchetti — Orchestrazione multi-agente</h2></div>
     <div class="card">
       <div class="card-hd"><span class="dot d-new"></span>Orchestrazione — da claude-code-subagents-orchestration-playbook</div>
       <table class="t">
@@ -339,7 +406,7 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-style">
-    <div class="sec-hd"><span class="sec-num">10</span><h2 class="sec-title">Pacchetti — Stile e qualita'</h2></div>
+    <div class="sec-hd"><span class="sec-num">11</span><h2 class="sec-title">Pacchetti — Stile e qualita'</h2></div>
     <div class="card">
       <div class="card-hd"><span class="dot d-indigo"></span>Stile</div>
       <table class="t">
@@ -357,7 +424,7 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-cranot">
-    <div class="sec-hd"><span class="sec-num">11</span><h2 class="sec-title">Pacchetti — Strumento e convenzioni (bundle Cranot)</h2></div>
+    <div class="sec-hd"><span class="sec-num">12</span><h2 class="sec-title">Pacchetti — Strumento e convenzioni (bundle Cranot)</h2></div>
     <p class="sec-sub">Quattro pacchetti derivati dal bundle di template generato dall'utente a partire dalla guida community Cranot/claude-code-guide. Il primo ha come oggetto lo strumento Claude Code stesso; gli altri tre portano convenzioni, hook e skill pronti. Integrazione 2026-07-02.</p>
     <div class="card">
       <div class="card-hd"><span class="dot d-new"></span>Bundle Cranot — 4 pacchetti nuovi</div>
@@ -376,7 +443,7 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-community">
-    <div class="sec-hd"><span class="sec-num">12</span><h2 class="sec-title">Pacchetti — Automazione e catalogo subagent community</h2></div>
+    <div class="sec-hd"><span class="sec-num">13</span><h2 class="sec-title">Pacchetti — Automazione e catalogo subagent community</h2></div>
     <p class="sec-sub">Quattro pacchetti del 2026-07-02: uno di automazione headless/schedulata originale al template, tre per pescare o installare subagent specializzati da fonti community senza scriverli da zero.</p>
     <div class="card">
       <div class="card-hd"><span class="dot d-new"></span>Automazione — originale al template</div>
@@ -395,6 +462,65 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>agent-catalog</strong> <span class="badge b-new">Nuovo</span></td><td>Pesca a richiesta, uno alla volta, subagent per stack/framework dalla fonte flat 0xfurai/claude-code-subagents (138 agenti, file Markdown senza plugin); 3 comandi (list/fetch/check) e script dual-OS con confronto commit a costo zero, stessa strategia di claude-code-handoff; hesreallyhim/awesome-claude-code tracciato come fonte "meta" per il solo drift</td><td>Serve un agente iper-specifico non coperto da un plugin marketplace nativo</td><td><a class="repo" href="https://github.com/0xfurai/claude-code-subagents">github.com/0xfurai/claude-code-subagents</a> · MIT · verificato dal vivo (list/fetch/check su 0xfurai, entrambi gli OS)</td></tr>
           <tr><td><strong>wshobson-agents</strong> <span class="badge b-new">Nuovo</span></td><td>Marketplace di plugin nativo con 194 agent, 158 skill, 106 comandi slash per dominio</td><td>Installare unita' complete e curate per dominio con aggiornamento gestito dal plugin marketplace</td><td><a class="repo" href="https://github.com/wshobson/agents">github.com/wshobson/agents</a> · MIT · 37,4k stelle</td></tr>
           <tr><td><strong>voltagent-subagents</strong> <span class="badge b-new">Nuovo</span></td><td>Marketplace di plugin nativo con 154+ subagent in 10 categorie (core dev, linguaggi, infra, quality/security, data/AI, DX, domini specializzati, business, meta-orchestrazione, ricerca)</td><td>Installare un intero dominio di subagent gia' curato invece di pescarli uno a uno</td><td><a class="repo" href="https://github.com/VoltAgent/awesome-claude-code-subagents">github.com/VoltAgent/awesome-claude-code-subagents</a> · MIT · 22,7k stelle</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="pkg-fondamenta">
+    <div class="sec-hd"><span class="sec-num">14</span><h2 class="sec-title">Pacchetti — Fondamenta, registri e igiene</h2></div>
+    <p class="sec-sub">Cinque pacchetti originali al template che la mappa non aveva ancora: non dipendono da che cosa il progetto faccia, ma da quanto a lungo vivra' e da quante mani lo toccheranno.</p>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>Registri, scadenze e dati che identificano</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td><strong>operations-log</strong></td><td>Registro cronologico degli interventi operativi: che cosa e' stato fatto, a che cosa serve, come e' stato verificato e con quale esito. Copre la granularita' che i file di memoria non coprono</td><td>Progetti con interventi operativi ripetuti di cui serve la traccia</td><td>Originale al template</td></tr>
+          <tr><td><strong>documentazione-didattica</strong></td><td>Accanto al registro di <em>che cosa e' accaduto</em>, il registro di <em>perche' una scelta e' migliore di un'altra</em>: racconto evolutivo che contrappone com'era e perche' era fragile al salto di qualita', con deep-dive nel codice reale</td><td>Chi lavora sul progetto vuole imparare rileggendo le proprie decisioni, non solo saperne lo stato</td><td>Originale al template; skill studio-didattico</td></tr>
+          <tr><td><strong>timeline-progetto</strong> <span class="badge b-new">Nuovo</span></td><td>Linea temporale sempre aggiornata, un microstep per voce, con accanto la ragione tecnologica di quel passo. Generata dal work-log e dal registro delle decisioni, mai scritta a mano; un passo senza ragione dichiarata resta dichiarato scoperto invece di ricevere una spiegazione inventata a posteriori</td><td>Progetti lunghi dove la storia tecnica serve per decidere il prossimo passo, o va mostrata a chi non c'era</td><td>Originale al template; artefatto e fonti vivono nel repository e mai nella directory dell'account; uscita deterministica perche' il valore non e' solo leggerla ma vederne il diff; 17 controlli</td></tr>
+          <tr><td><strong>alignment</strong></td><td>Controllo eseguibile delle affermazioni che invecchiano in silenzio: scadenze scritte in prosa con la loro conseguenza, eta' di una misura contro la cadenza dichiarata, campo di firma</td><td>Progetti che scrivono affermazioni con una data di scadenza implicita</td><td>Originale al template</td></tr>
+          <tr><td><strong>anonymization</strong></td><td>Guard-rail sui <em>dati che identificano</em> persone, luoghi e infrastrutture reali: indirizzi IP, indirizzi fisici, nomi propri, caselle di posta. Categoria distinta e complementare rispetto ai segreti</td><td>Repository che diventera' pubblico, o che contiene materiale di terzi</td><td>Originale al template; complementare a secret-scan</td></tr>
+          <tr><td><strong>fix-typography</strong></td><td>Tre strumenti che attuano le convenzioni tipografiche della regola interaction-style: accenti scritti con l'apostrofo, accenti mancanti, trattini lunghi. Mascherano gli identificatori LaTeX prima di operare</td><td>Il progetto scrive prosa in italiano</td><td>Originale al template; il secondo strumento dichiara come indecidibili i casi che richiedono di capire la frase invece di indovinarli</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="sec" id="pkg-fonti-voce">
+    <div class="sec-hd"><span class="sec-num">15</span><h2 class="sec-title">Pacchetti — Fonti di community, voce e scienza</h2></div>
+    <p class="sec-sub">Sette pacchetti su tre fronti che il template non copriva: le fonti che vivono dentro canali di conversazione e catene di discussioni, il parlato che va trasformato in testo, e i due grandi cataloghi esterni di skill. Integrazione 2026-09-16.</p>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>Fonti che nessuno strumento di sessione raggiunge</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Note</th></tr></thead>
+        <tbody>
+          <tr><td><strong>community-sources</strong> <span class="badge b-new">Nuovo</span></td><td>Sei strumenti: tre che recuperano (canale Discord via bot account con cursore, esportazione ampia via DiscordChatExporter, grafo dei rinvii a partire da un post di Reddit attraverso un archivio pubblico di terze parti) e tre che riducono (export di chat in Markdown filtrato, sottotitoli a scorrimento in parlato, corsa del lettore in censimento di fonti raggruppate per cluster)</td><td>Il progetto poggia su conoscenza che vive in canali di community o in catene di discussioni pubbliche</td><td>Originale al template · Python 3, sola libreria standard · 110 controlli sul lettore di Reddit, 14 sul censimento, contro trasporto finto</td></tr>
+          <tr><td><strong>discord-mcp</strong></td><td>Server MCP community che espone i tool per leggere e cercare in canali Discord attraverso un bot account ufficiale: la stessa via legittima di community-sources, disponibile come tool durante una sessione invece che come programma</td><td>Consultazione frequente e conversazionale di un canale, invece di una esportazione periodica</td><td>Community · vale il vincolo generale sul numero di server connessi</td></tr>
+          <tr><td><strong>hermes-agent</strong></td><td>Agente residente auto-ospitato di Nous Research: gira come servizio su una macchina propria, con gateway di messaggistica verso piu' piattaforme</td><td>Serve un agente sempre in ascolto su canali esterni, fuori da una sessione interattiva</td><td>Nous Research · strumento esterno</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>Voce e trascrizione — chiude la seconda via della regola sulle fonti</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
+        <tbody>
+          <tr><td><strong>voicestudio</strong> <span class="badge b-new">Nuovo</span></td><td>Riconoscimento e sintesi vocale in locale, senza account e senza mandare l'audio altrove, in 646 lingue. Lo strumento istanziato trascrive un file audio o video e scrive il testo sotto _notes/fonti/ con la provenienza davanti: sorgente, servizio, modello, e la dichiarazione che il testo non e' riletto</td><td>Fonti parlate per cui i sottotitoli automatici non esistono; oppure produzione di audio, audiolibri, doppiaggio, dettatura</td><td><a class="repo" href="https://github.com/debpalash/VoiceStudio">github.com/debpalash/VoiceStudio</a> · AGPL-3.0 · 19 controlli contro trasporto finto · clonare una voce richiede il permesso di chi quella voce ce l'ha</td></tr>
+          <tr><td><strong>voicestudio-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Server MCP montato sul servizio locale: sintesi, clonazione, trascrizione ed elenco delle voci come tool di sessione</td><td>La voce serve dentro il lavoro, non solo a trascrivere una fonte</td><td>Due variabili da decidere prima: OMNIVOICE_MCP_OUTPUT_MODE=files tiene l'audio fuori dal contesto, OMNIVOICE_MCP_BASE_PATH e' il confine di sicurezza. Trasporto non autenticato: resta sulla macchina</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-new"></span>I due cataloghi esterni di skill — mappati, non vendorati</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
+        <tbody>
+          <tr><td><strong>scientific-skills</strong> <span class="badge b-new">Nuovo</span></td><td>166 skill scientifiche per lo standard aperto Agent Skills, oltre 100 basi di dati. Il pacchetto non installa: genera la vista che manca a monte, cioe' ogni skill con autore, licenza, presenza di programmi eseguibili e sovrapposizione con il catalogo di questo sistema, e fissa la procedura in quattro mosse per prenderne una</td><td>Il dominio del progetto e' scientifico; oppure servono le sole skill di comunicazione scientifica, offerte per quelle e mai in blocco</td><td><a class="repo" href="https://github.com/K-Dense-AI/scientific-agent-skills">K-Dense-AI/scientific-agent-skills</a> · MIT · arXiv:2609.00065 · misurato: 106/166 portano codice eseguibile, 30 non sono della casa, 5 hanno licenza proprietaria · installa gh skill install, non il pacchetto</td></tr>
+          <tr><td><strong>matt-pocock-skills</strong> <span class="badge b-new">Nuovo</span></td><td>La mappa fra 37 skill di ingegneria e cio' che questo sistema gia' ha: quali coprono un buco reale (interrogazione che fa emergere cio' che non e' stato deciso, diagnosi disciplinata dei difetti difficili, procedura guidata per i passi solo umani, questionario per una decisione di un terzo), quali duplicano, quali vanno adattate perche' scrivono in file che qui hanno un altro nome</td><td>Il progetto scrive codice; tre skill valgono anche per un progetto documentale; il gruppo del tracciatore solo dove un tracciatore esista</td><td><a class="repo" href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a> · MIT · non si prendono entrambe le vie di installazione, o ogni skill resta in doppia copia</td></tr>
         </tbody>
       </table>
     </div>

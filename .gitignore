@@ -10,6 +10,10 @@ Thumbs.db
 desktop.ini
 .DS_Store
 
+# Copia locale di raccolte di skill di terze parti, prodotta dallo strumento del pacchetto
+# scientific-skills: materiale altrui, si rifa con un clone parziale e non si versiona.
+.tmp-skills/
+
 # Artefatti di bytecode Python, generati eseguendo gli script dei pacchetti (docx-to-docs, doc-ingest)
 __pycache__/
 *.pyc
