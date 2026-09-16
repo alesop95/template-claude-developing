@@ -477,6 +477,10 @@ def converti_python(testo, statistiche, residui, ambigui):
     return "\n".join(righe)
 
 
+# Se falso, i file sotto .claude/templates/ non si riscrivono: vedi la guardia in raccolta.
+MODELLI_AMMESSI = False
+
+
 def raccogli(percorsi, estensioni):
     # Uno strumento che riscrive testo italiano non deve riscrivere il proprio sorgente:
     # i suoi casi di prova contengono di proposito le sequenze che cerca, e una corsa su
@@ -485,12 +489,29 @@ def raccogli(percorsi, estensioni):
     # Gli strumenti tipografici della stessa famiglia si escludono a vicenda, non solo se
     # stessi: i loro casi di prova contengono di proposito le sequenze che cercano, e una
     # corsa incrociata li altera. E' accaduto tre volte durante lo sviluppo.
+    # Le copie dei modelli sotto .claude/templates/ non si correggono dentro il progetto
+    # che le ospita: sono copie di questo template, e riscriverle la' allarga la divergenza
+    # che la loro ri-propagazione esiste per chiudere. Il divieto viveva nella sola prosa di
+    # CLAUDE.md ed e' stato violato due volte nella stessa sessione, la seconda meno di un'ora
+    # dopo averlo scritto come regola: una convenzione che un comando puo' violare per
+    # distrazione va difesa dal comando, non dalla memoria di chi lo lancia. La difesa e'
+    # quindi strutturale, come l'auto-esclusione qui sopra, e parla invece di tacere.
+    def sotto_templates(percorso):
+        parti = os.path.abspath(percorso).replace("\\", "/").split("/")
+        for i in range(len(parti) - 1):
+            if parti[i] == ".claude" and parti[i + 1] == "templates":
+                return True
+        return False
+
     FAMIGLIA = {"fix-accents.py", "fix-missing-accents.py", "fix-dashes.py"}
     IO_STESSO = os.path.abspath(__file__)
     file = []
     for p in percorsi:
         ap = p if os.path.isabs(p) else os.path.join(ROOT, p)
         if os.path.isfile(ap):
+            if sotto_templates(ap) and not MODELLI_AMMESSI:
+                print(f"rifiutato, sta sotto .claude/templates/: {p}", file=sys.stderr)
+                continue
             if os.path.abspath(ap) != IO_STESSO and os.path.basename(ap) not in FAMIGLIA:
                 file.append(ap)
             continue
@@ -501,6 +522,8 @@ def raccogli(percorsi, estensioni):
             for n in sorted(nomi):
                 if os.path.splitext(n)[1].lower() in estensioni:
                     completo = os.path.join(radice, n)
+                    if sotto_templates(completo) and not MODELLI_AMMESSI:
+                        continue
                     if os.path.abspath(completo) != IO_STESSO and n not in FAMIGLIA:
                         file.append(completo)
     return file
@@ -611,12 +634,22 @@ def main():
     ap.add_argument("--da-indicativo", action="store_true",
                     help="converte dà nella forma con accento grave. Da usare solo dopo aver letto i contesti e accertato che nessuno sia un imperativo, perché l'imperativo di dare si scrive con l'apostrofo")
     ap.add_argument("percorsi", nargs="*", default=["."])
+    # L'interruttore esiste perche' la guardia ha due lati. Dentro un progetto che ospita
+    # le copie dei modelli il divieto e' giusto e va imposto. Dentro questo template quei
+    # file sono invece gli originali, ed e' proprio li' che vanno corretti: una guardia
+    # senza scappatoia avrebbe trasformato una protezione in un difetto nuovo. Il difetto
+    # e' stato visto durante la prova della guardia stessa, non dopo.
+    ap.add_argument("--includi-modelli", action="store_true",
+                    help="permette di scrivere anche sotto .claude/templates/, "
+                         "che serve nel template dove quei file sono gli originali")
     ap.add_argument("--check", action="store_true", help="non scrive, riporta")
     ap.add_argument("--residui", action="store_true",
                     help="elenca solo le forme non in lista bianca")
     ap.add_argument("--ext", default=".md,.tex,.txt",
                     help="estensioni da trattare, separate da virgola")
     args = ap.parse_args()
+    global MODELLI_AMMESSI
+    MODELLI_AMMESSI = args.includi_modelli
 
     if args.autotest:
         return autotest()

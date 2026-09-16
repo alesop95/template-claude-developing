@@ -34,6 +34,8 @@ git push
 
 Se i file da aggiungere sono molti, si usa `git add` con tutti i percorsi sulla stessa riga, separati da spazio, ciascuno tra doppi apici.
 
+Quando il repository su cui si opera non è quello aperto nella sessione, il blocco si apre sempre con il proprio `cd`, su una riga a sé, con il percorso tra doppi apici e con le barre in avanti, che entrambe le shell accettano. Non si scrive in prosa di spostarsi in un'altra cartella lasciando i comandi senza: chi copia un blocco lo incolla dove si trova, e un `git add -A` eseguito nella cartella sbagliata è un errore che si scopre dopo il commit. La prescrizione nasce da una richiesta d'uso del 2026-09-15 in un progetto istanziato, dopo due sessioni in cui i comandi per un repository gemello erano stati dati senza.
+
 La scelta si dichiara invece di restare implicita: una riga che dice per quale shell è il blocco basta a rendere verificabile il rilevamento, e a far correggere subito l'agente quando la macchina non è quella che ha creduto.
 
 ## Le due eccezioni

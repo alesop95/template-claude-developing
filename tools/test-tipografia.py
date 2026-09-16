@@ -36,6 +36,8 @@ Uso
 
 import importlib.util
 import os
+import shutil
+import subprocess
 import sys
 import tempfile
 
@@ -285,6 +287,69 @@ def prova_composte_apostrofo():
     return falliti
 
 
+def prova_guardia_modelli():
+    """La guardia che impedisce di riscrivere le copie dei modelli, e la sua scappatoia.
+
+    Vive nella raccolta dei file e non in elabora, quindi va esercitata lanciando gli
+    strumenti come processi invece di chiamarne le funzioni: una prova che chiamasse
+    elabora passerebbe sempre, perche' quel livello la guardia non lo attraversa.
+    Nasce da una violazione ripetuta due volte nella stessa sessione in un progetto
+    istanziato, la seconda meno di un'ora dopo che la regola era stata scritta in prosa.
+    """
+    AP = chr(39)
+    EM = chr(0x2014)
+    CONTENUTO = ("Perch" + "e" + AP + " la citta " + EM + " e" + AP + " cosi." + NL)
+    falliti = 0
+    base = os.path.join(ROOT, "_notes", "tmp", "guardia-modelli")
+    sotto = os.path.join(base, ".claude", "templates")
+    fuori = os.path.join(base, "docs")
+
+    def prepara():
+        if os.path.isdir(base):
+            shutil.rmtree(base)
+        os.makedirs(sotto)
+        os.makedirs(fuori)
+        for cartella in (sotto, fuori):
+            with open(os.path.join(cartella, "prova.md"), "wb") as f:
+                f.write(CONTENUTO.encode("utf-8"))
+
+    def leggi(cartella):
+        with open(os.path.join(cartella, "prova.md"), "rb") as f:
+            return f.read().decode("utf-8")
+
+    try:
+        for nome in ("fix-accents.py", "fix-missing-accents.py", "fix-dashes.py"):
+            strumento = os.path.join(ROOT, "tools", nome)
+
+            prepara()
+            subprocess.run([sys.executable, strumento, base],
+                           capture_output=True, cwd=ROOT)
+            if leggi(sotto) != CONTENUTO:
+                print("  FALLITA  guardia modelli        %s ha riscritto sotto "
+                      ".claude/templates/" % nome)
+                falliti += 1
+            if leggi(fuori) == CONTENUTO:
+                print("  FALLITA  guardia modelli        %s non ha toccato il file "
+                      "fuori dai modelli, quindi la prova non misura nulla" % nome)
+                falliti += 1
+
+            prepara()
+            subprocess.run([sys.executable, strumento, "--includi-modelli", base],
+                           capture_output=True, cwd=ROOT)
+            if leggi(sotto) == CONTENUTO:
+                print("  FALLITA  guardia modelli        %s non scrive sotto i modelli "
+                      "nemmeno con --includi-modelli" % nome)
+                falliti += 1
+    finally:
+        if os.path.isdir(base):
+            shutil.rmtree(base)
+
+    if falliti == 0:
+        print("  ok       guardia modelli          rifiuta i modelli, cede con "
+              "--includi-modelli")
+    return falliti
+
+
 def main():
     falliti = 0
     for nome in STRUMENTI:
@@ -327,6 +392,7 @@ def main():
 
     falliti += prova_residuo_apostrofo()
     falliti += prova_composte_apostrofo()
+    falliti += prova_guardia_modelli()
 
     print("test-tipografia: %d controlli falliti" % falliti)
     return 1 if falliti else 0

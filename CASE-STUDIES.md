@@ -215,6 +215,22 @@ Il secondo è la regola sull'identità git, che elencava due profili SSH concret
 
 ---
 
+## 2026-09-16 - Una regola scritta e violata un'ora dopo, e la guardia che l'ha sostituita
+
+**Archetipo.** Progetto di documentazione tecnica senza codice applicativo, istanziato da questo template, con un blocco di pagine propagato a un progetto gemello e una cartella `.claude/templates/` che ospita le copie dei pacchetti.
+
+**Cosa si è testato.** Il comportamento reale della prescrizione di `CLAUDE.md` che vieta di correggere, dentro un progetto istanziato, i file sotto `.claude/templates/`: sono copie di questo template, e riscriverle là allarga la divergenza che la loro ri-propagazione esiste per chiudere.
+
+**Esito.** La prescrizione è stata violata due volte nella stessa sessione dalla stessa persona, lanciando la catena tipografica su una cartella intera invece che sui soli file del giro di lavoro. La prima violazione ha prodotto una voce di registro e una regola scritta in prosa; la seconda è avvenuta meno di un'ora dopo, a regola già scritta. Entrambe sono state scoperte da `git status` e annullate con `git checkout --`, quindi il danno è stato nullo e il costo è stato di tempo e di attenzione.
+
+**La lezione.** Una convenzione che un comando può violare per distrazione non si difende scrivendola. Il template conteneva già la prova di questo principio e non l'aveva generalizzata: i tre strumenti tipografici escludono se stessi e si escludono a vicenda con una difesa strutturale, aggiunta dopo che la ricorsione aveva morso tre volte, e il commento nel codice lo dice apertamente. La stessa forma mancava per le copie dei modelli, che sono un caso identico, cioè un percorso che lo strumento non deve toccare e che nulla gli impediva di toccare.
+
+**Rifiniture derivate.** I tre strumenti rifiutano ora di scrivere sotto `.claude/templates/` e lo dichiarano su standard error invece di tacere, perché una protezione silenziosa sembra una svista a chi guarda l'uscita. Il rifiuto ha una scappatoia esplicita, `--includi-modelli`, e la sua assenza sarebbe stata un difetto nuovo: dentro questo template quei file sono gli originali ed è proprio là che vanno corretti, cosa vista durante la prova della guardia e non dopo. La suite `tools/test-tipografia.py` porta una prova nuova che esercita la guardia lanciando gli strumenti come processi, perché la guardia vive nella raccolta dei file e non in `elabora`: una prova che chiamasse le funzioni passerebbe sempre. La regola `git-commands-format.md` porta inoltre la prescrizione del `cd` in testa al blocco quando il repository non è quello aperto nella sessione, che viene dalla stessa sessione.
+
+**La verifica di non vacuità, e la seconda lezione che ha prodotto.** La prova nuova è stata sottoposta alla verifica prescritta da `prove-che-misurano.md`, rimettendo il difetto e osservando che cade con il messaggio atteso. Il ripristino successivo è stato però fatto con `git checkout --` su un file che conteneva anche lavoro non committato, quindi ha riportato il file all'ultimo commit invece che allo stato precedente alla prova, cancellando la guardia appena scritta. Lo ha rilevato la suite stessa, che dopo il ripristino falliva in due controlli invece di nessuno. È esattamente la ragione per cui quella regola prescrive di verificare il ripristino con uno strumento e non a memoria, e qui la prescrizione ha funzionato su se stessa.
+
+---
+
 ## 2026-09-16 - Tre pacchetti da fuori, sei strumenti che tornano da dentro, e il gate che diventa una domanda sola
 
 **Archetipo.** Due movimenti opposti nella stessa tornata. Il primo guarda fuori: tre raccolte pubbliche di terze parti da valutare per il catalogo. Il secondo guarda dentro: un progetto reale istanziato dal template mesi fa, che nel frattempo ha irrobustito sul campo gli strumenti che aveva ricevuto, e la cui esperienza andava riportata indietro. Il terzo movimento, che è la conseguenza dei primi due, è il catalogo stesso che raggiunge settantatré voci e smette di poter essere attraversato riga per riga.

@@ -477,6 +477,14 @@ def autotest():
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("percorsi", nargs="*", default=["."])
+    # L'interruttore esiste perche' la guardia ha due lati. Dentro un progetto che ospita
+    # le copie dei modelli il divieto e' giusto e va imposto. Dentro questo template quei
+    # file sono invece gli originali, ed e' proprio li' che vanno corretti: una guardia
+    # senza scappatoia avrebbe trasformato una protezione in un difetto nuovo. Il difetto
+    # e' stato visto durante la prova della guardia stessa, non dopo.
+    ap.add_argument("--includi-modelli", action="store_true",
+                    help="permette di scrivere anche sotto .claude/templates/, "
+                         "che serve nel template dove quei file sono gli originali")
     ap.add_argument("--autotest", action="store_true")
     ap.add_argument("--check", action="store_true", help="non scrive, riporta")
     ap.add_argument("--ambigue", action="store_true",
@@ -493,12 +501,28 @@ def main():
     # sequenze che gli strumenti cercano: una corsa di questo su fix-accents.py ne ha
     # convertito i dati di test e ne ha rotto otto casi. E' la terza volta che questo
     # genere di ricorsione morde, e la difesa e' strutturale.
+    # Le copie dei modelli sotto .claude/templates/ non si correggono dentro il progetto
+    # che le ospita: sono copie di questo template, e riscriverle la' allarga la divergenza
+    # che la loro ri-propagazione esiste per chiudere. Il divieto viveva nella sola prosa di
+    # CLAUDE.md ed e' stato violato due volte nella stessa sessione, la seconda meno di un'ora
+    # dopo averlo scritto come regola: una convenzione che un comando puo' violare per
+    # distrazione va difesa dal comando, non dalla memoria di chi lo lancia.
+    def sotto_templates(percorso):
+        parti = os.path.abspath(percorso).replace("\\", "/").split("/")
+        for i in range(len(parti) - 1):
+            if parti[i] == ".claude" and parti[i + 1] == "templates":
+                return True
+        return False
+
     FAMIGLIA = {"fix-accents.py", "fix-missing-accents.py", "fix-dashes.py"}
     io_stesso = os.path.abspath(__file__)
     file = []
     for p in args.percorsi or ["."]:
         ap_ = p if os.path.isabs(p) else os.path.join(ROOT, p)
         if os.path.isfile(ap_):
+            if sotto_templates(ap_) and not args.includi_modelli:
+                print(f"rifiutato, sta sotto .claude/templates/: {p}", file=sys.stderr)
+                continue
             if os.path.abspath(ap_) != io_stesso and os.path.basename(ap_) not in FAMIGLIA:
                 file.append(ap_)
             continue
@@ -510,7 +534,9 @@ def main():
                 if os.path.splitext(n)[1].lower() in estensioni:
                     completo = os.path.join(radice, n)
                     if (os.path.abspath(completo) != io_stesso
-                            and n not in FAMIGLIA):
+                            and n not in FAMIGLIA
+                            and not (sotto_templates(completo)
+                                     and not args.includi_modelli)):
                         file.append(completo)
 
     fatte, viste, cambiati = {}, {}, []
