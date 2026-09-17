@@ -18,6 +18,46 @@ Questo asse resta indipendente dall'identità git descritta sotto. Un progetto p
 
 [^2]: *OAuth*, Open Authorization - protocollo di autorizzazione con cui Claude Code ottiene e rinnova un token di accesso all'account senza conservare la password; il token ha una scadenza e si rinnova tramite un refresh token, e quando il rinnovo non va a buon fine occorre ri-autenticarsi.
 
+## GitHub CLI, il quarto asse: l'API non passa da SSH
+
+Strumento opzionale, da proporre al gate e mai installato di default: vedi più sotto la sezione sulla scelta. Quando c'è, serve a operare sulle pull request da riga di comando, e in particolare a scrivere la descrizione di una pull request prendendola da un file del repository invece di incollarla a mano nel browser.
+
+La cosa da capire prima di usarlo è che `gh` **non parla con la piattaforma via SSH**, e questo lo rende un asse a sé rispetto agli altri tre. SSH serve a `git push`, cioè a spostare oggetti fra due copie del repository; `gh` usa l'**API HTTPS con un token OAuth** conservato nel gestore credenziali del sistema operativo. Autenticare `gh` quindi non tocca né la chiave SSH, né l'alias host, né l'identità con cui i commit vengono firmati: quattro assi indipendenti che vanno verificati separatamente.
+
+La conseguenza pratica è che `gh auth status` risponde a una domanda diversa da `ssh -T git@<alias>`, e nessuna delle due risposte implica l'altra. Si può avere `gh` autenticato sull'account sbagliato mentre i push funzionano perfettamente, e il sintomo sarebbe una pull request modificata sul repository di qualcun altro.
+
+### Il comando non si chiama `gh` finché non si riapre il terminale
+
+Va detto per primo perché è il punto in cui ci si ferma, e il messaggio di errore sembra un'installazione fallita mentre l'eseguibile c'è e funziona. La causa è che **un processo eredita le variabili d'ambiente quando parte e non le rilegge mai più**: l'installatore ha aggiornato il PATH permanente della macchina, non quello del terminale già aperto. Riaprire il terminale risolve; nella sessione corrente si invoca l'eseguibile per percorso completo. È la stessa famiglia di errori descritta in `git-commands-format.md`, cioè un presupposto sullo stato dell'ambiente che nessun comando dichiara.
+
+### Autenticazione, con le due cose che NON vanno lasciate fare
+
+```powershell
+gh auth login --hostname github.com --git-protocol ssh --skip-ssh-key --web
+```
+
+I due flag non sono decorativi. `--skip-ssh-key` impedisce a `gh` di proporre la generazione e il caricamento di una chiave nuova, che su una macchina con le chiavi già configurate ne aggiungerebbe una di cui nessuno ha bisogno. E se compare la domanda "Authenticate Git with your GitHub credentials?", si risponde **No**: dire di sì installerebbe un gestore di credenziali per le operazioni git, già risolte via SSH, e si finirebbe con due meccanismi concorrenti per la stessa cosa.
+
+**Come per l'account dell'agente, l'identità adottata è quella attiva nel browser** nel momento dell'autorizzazione. Si apre la piattaforma e si verifica di essere collegati con l'identità giusta **prima** di lanciare il comando. È la stessa trappola del riconoscimento silenzioso descritta più sopra, con la stessa causa e lo stesso rimedio.
+
+La verifica va fatta e non presunta, con `gh auth status`, e deve nominare l'account atteso.
+
+### L'alias SSH rompe il riconoscimento del repository, e la soluzione non è cambiarlo
+
+`gh` ricava il repository su cui operare leggendo il remoto `origin`. Se il remoto usa un alias host definito nella configurazione SSH, quell'alias **non è un host reale** e `gh` non ha modo di sapere che cosa ci sia dietro: può non riconoscere il repository e fallire con un messaggio sul remoto non valido.
+
+La tentazione è cambiare il remoto all'host reale. **Non si fa**, perché l'alias è ciò che seleziona la chiave giusta fra quelle configurate: toglierlo romperebbe l'intero meccanismo a più identità per risolvere un problema che ha una soluzione locale. Si indica il repository esplicitamente su ogni comando con il flag `-R <owner>/<repo>`, che non scrive niente da nessuna parte e quindi non lascia stato da mantenere allineato. Esiste anche un comando che memorizza la scelta nella configurazione git locale, ma va evitato per lo stesso motivo del gestore credenziali: aggiunge una seconda fonte di verità su quale sia il repository, e prima o poi divergerà dal remoto.
+
+### Che cosa resta manuale, e perché
+
+`gh` può anche fondere una pull request. **Non lo si usa per quello.** La regola per cui commit, push e merge restano gesti dell'utente non nasce da un limite tecnico ma da una scelta: l'agente prepara il lavoro, la decisione di farlo atterrare è di una persona. **Uno strumento che rende facile automatizzare quella decisione non è una ragione per cambiarla**, ed è esattamente il momento in cui conviene ribadirla, perché la comodità è il modo in cui le regole si erodono.
+
+### La scelta di adottarlo, al gate e non per inerzia
+
+L'adozione si propone come gate esplicito in fase di inizializzazione, insieme agli altri pacchetti, e la domanda è duplice. Prima: **serve a questo progetto?** Ha senso dove le pull request hanno una descrizione lunga e curata che vive come file nel repository, o dove si consultano spesso stato e commenti senza voler aprire il browser; non ha senso dove le pull request sono poche e brevi, perché uno strumento in più da autenticare e mantenere allineato costa più di quanto renda. Seconda: **si vuole che esista su questa macchina?** L'autorizzazione crea un legame durevole fra la macchina e l'account, che va tracciato dove il progetto registra le operazioni manuali sui pannelli web, insieme al luogo in cui si revoca. Un legame che nessuno ha scritto è un legame che nessuno saprà sciogliere il giorno in cui quella macchina non servirà più.
+
+Se il progetto lo adotta, l'inizializzazione verifica che l'eseguibile risponda, che `gh auth status` nomini l'account atteso, e registra l'autorizzazione fra le operazioni manuali con la data e il collegamento alla pagina di revoca.
+
 ## I profili non si assumono: si rilevano
 
 Un profilo è la terna formata da un alias host SSH, dalla chiave che quell'alias seleziona e dall'identità git da abbinargli. Nessuno dei tre termini è una proprietà del sistema di progetto: sono scelte di chi ha configurato quella macchina, e cambiano da una macchina all'altra anche a parità di persona. Una versione precedente di questa regola elencava due profili concreti come se fossero un dato, e su una seconda macchina si è rivelata non soltanto estranea ma fuorviante, perché là gli alias hanno la forma `github.com-<utente>` e i percorsi non sono quelli di Windows. Il modo in cui un elenco del genere sbaglia è il peggiore possibile: induce a proporre un remoto che punta a un alias inesistente, e il comando fallisce solo al primo push, quando nessuno lo collega più alla configurazione.

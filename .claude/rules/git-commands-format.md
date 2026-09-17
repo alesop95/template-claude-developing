@@ -44,6 +44,20 @@ La prima eccezione è il testo destinato a essere letto altrove. Un comando scri
 
 La seconda eccezione è la richiesta esplicita. Se l'utente chiede entrambe le forme, per esempio perché deve passare i comandi a qualcun altro o perché lavora sulla stessa repository da due macchine, si danno entrambe senza discutere.
 
+## Il contesto di una shell non si deduce, si dichiara
+
+Sezione generalizzata da un progetto istanziato da questo template, dove lo stesso difetto si è ripetuto **cinque volte** con quattro cause diverse e conseguenze ogni volta differenti. Vale la pena leggerla per intero prima di consegnare il primo blocco di comandi, perché ogni singolo comando era corretto in tutti e cinque i casi: il difetto non stava nella conoscenza dei comandi ma in un **presupposto sullo stato che nessuno dei comandi dichiara**.
+
+La prima causa è il **ramo**. Due volte l'agente ha scritto "questo va diretto sul ramo principale" mentre la sessione era su un ramo di lavoro, e la documentazione è atterrata sul ramo. Conseguenza: il blocco dichiara su quale ramo va eseguito, e se il ramo corrente non è quello, il primo comando del blocco è il cambio di ramo.
+
+La seconda è lo **stato dell'albero**. Una sequenza che cambia ramo è stata consegnata con un file tracciato modificato: il cambio di ramo è stato rifiutato, e da lì i due comandi successivi hanno fallito per ragioni che sembravano scollegate, **tre errori a cascata da una sola causa**. Conseguenza: una sequenza che cambia ramo si consegna solo con l'albero pulito, e se ci sono modifiche non committate si risolvono prima, committandole, mettendole da parte, oppure scartandole quando si tratta di un file generato, perché un derivato non si mette da parte, si rigenera.
+
+La terza è la **cartella**, ed è la variante peggiore. Il blocco è stato incollato in un terminale aperto su un altro repository della stessa macchina: il primo comando ha fallito con un percorso non trovato, ma il secondo ha risposto "niente da committare" e il terzo "già aggiornato", cioè **due messaggi di successo su tre**. Chi li legge conclude che non c'era niente da committare, non che stava committando altrove, ed è per questo che l'errore si è ripetuto due volte di fila senza che nessuno se ne accorgesse. Conseguenza: il primo comando di ogni blocco è il posizionamento nella cartella del progetto, **sempre**, anche quando la sessione dell'agente è già lì, perché il terminale dell'utente è un processo diverso e la sua directory corrente non è osservabile né deducibile.
+
+La quarta è l'**ambiente**, scoperta installando uno strumento nuovo. Un comando ha fallito tre volte con "termine non riconosciuto" pur essendo l'eseguibile presente e funzionante, perché **un processo eredita le variabili d'ambiente quando parte e non le rilegge mai più**: l'installazione aveva aggiornato il PATH permanente della macchina, non quello del terminale già aperto. Conseguenza: dopo l'installazione di un programma, il primo comando che lo usa si consegna **per percorso completo** e non per nome, finché non c'è conferma che il terminale sia stato riaperto.
+
+La regola che le quattro insieme dimostrano: **un comando corretto eseguito in un contesto diverso da quello presupposto non è un comando corretto**, e il contesto di una shell, cioè cartella, ramo, stato dell'albero e variabili d'ambiente, non si deduce mai, si dichiara nel blocco stesso. La verifica costa un secondo e va fatta prima di scrivere il blocco, non dopo che qualcosa è fallito.
+
 ## Messaggio di commit
 
 Il messaggio di commit è una sola stringa tra doppi apici, al massimo 72 caratteri, che descrive le modifiche in italiano nella forma "Aggiunte X, Y" oppure "Nuova regola X: descrizione" oppure "Aggiornato Y: cosa cambia". Se il contesto richiede più dettaglio, lo si scrive nella risposta testuale prima dei comandi, non nel messaggio di commit.
