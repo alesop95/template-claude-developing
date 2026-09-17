@@ -1,8 +1,8 @@
 # Resume prompt
 
-> Privato, ignorato da git. Prompt di ripresa della sessione: si aggiorna alla fine di ogni sessione con lo stato raggiunto e con un prompt pronto da incollare alla riapertura. Lo stato canonico del progetto resta in `.claude/memory/index.md`; questo file e la comodita per ripartire in fretta, non una seconda fonte di verita.
+> Privato, ignorato da git. Prompt di ripresa della sessione: si aggiorna alla fine di ogni sessione con lo stato raggiunto e con un prompt pronto da incollare alla riapertura. Lo stato canonico del progetto resta in `.claude/memory/index.md`; questo file e la comodità per ripartire in fretta, non una seconda fonte di verità.
 
-> In coda a questo file vive l'impronta di ripresa, un commento che non si vede nel rendering e che non si scrive a mano: la registra `python tools/verifica-ripresa.py --registra` come ultimo atto della sessione, dopo i commit. Serve alla sessione successiva per sapere se questo file descriva ancora il presente, e la sua assenza non e un difetto ma la condizione che la verifica riconosce.
+> In coda a questo file vive l'impronta di ripresa, un commento che non si vede nel rendering e che non si scrive a mano: la registra `python tools/verifica-ripresa.py --registra` come ultimo atto della sessione, dopo i commit. Serve alla sessione successiva per sapere se questo file descriva ancora il presente, e la sua assenza non è un difetto ma la condizione che la verifica riconosce.
 
 ## Stato raggiunto
 

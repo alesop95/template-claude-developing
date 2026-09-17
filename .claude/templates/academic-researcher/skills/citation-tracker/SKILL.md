@@ -16,7 +16,7 @@ Questa skill implementa la sezione 7 di `research-vault/reference/claude-ricerca
 
 ## I tre stati
 
-Ogni fonte tracciata porta esattamente uno di tre stati, mai un quarto stato improvvisato. **Verificata**: titolo, autori, anno e DOI o arXiv-ID sono stati confermati contro almeno una fonte esterna, e la fonte non risulta ritirata. **Da verificare**: la fonte è stata trovata (da `literature-search`, da un upload dell'utente, o citata da un altro paper) ma non ancora incrociata. **Scartata**: la verifica ha fallito, i metadati non corrispondono, oppure la fonte risulta retracted.
+Ogni fonte tracciata porta esattamente uno di tre stati, mai un quarto stato improvvisato. *Verificata*: titolo, autori, anno e DOI o arXiv-ID sono stati confermati contro almeno una fonte esterna, e la fonte non risulta ritirata. *Da verificare*: la fonte è stata trovata (da `literature-search`, da un upload dell'utente, o citata da un altro paper) ma non ancora incrociata. *Scartata*: la verifica ha fallito, i metadati non corrispondono, oppure la fonte risulta retracted.
 
 ## Come si verifica
 

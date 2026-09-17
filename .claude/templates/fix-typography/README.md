@@ -12,7 +12,7 @@ Converte le forme con apostrofo nelle forme accentate, distinguendo l'accento ac
 
 Quest'ultima è una regola e non una lista, ed è ciò che rende lo strumento manutenibile: le decine di parole che finiscono in *-ità*, *-età*, *-erà* si convertono per suffisso, senza doverle enumerare. Le uscite in *e* restano a lista, perché lì il segno dipende dalla parola.
 
-La parte che conta davvero, però, è ciò che lo strumento **non** tocca, perché una sostituzione ingenua distruggerebbe testo corretto.
+La parte che conta davvero, però, è ciò che lo strumento non tocca, perché una sostituzione ingenua distruggerebbe testo corretto.
 
 Gli apostrofi che non sono accenti mancanti restano intatti. Il caso di scuola è `un po'`, troncamento di *poco*, che con l'accento grave diventa uno degli errori più diffusi in italiano; nella stessa categoria stanno gli imperativi tronchi `fa'`, `va'`, `sta'`, `di'`, e l'elisione, dove `dell'area` non è candidata perché all'apostrofo segue una lettera.
 

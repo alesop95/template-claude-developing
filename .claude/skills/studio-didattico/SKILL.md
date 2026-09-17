@@ -18,7 +18,7 @@ Nessuno dei due copre un bisogno diverso: capire, con dettaglio pedagogico e nel
 
 Il livello didattico vive in due tipi di documento, entrambi sotto `.claude/context/`, entrambi tracciati (sono conoscenza tecnica recuperabile da un clone, non narrativa personale da confinare in `_notes/`).
 
-Un documento *master*, punto d'ingresso unico, con un nome riconoscibile come `studio-didattico-master.md`. È un racconto evolutivo che **cresce per voci numerate in ordine cronologico**, non si riscrive né si riordina: ogni intervento nuovo aggiunge una voce in fondo. Ogni voce segue una struttura fissa in quattro parti.
+Un documento *master*, punto d'ingresso unico, con un nome riconoscibile come `studio-didattico-master.md`. È un racconto evolutivo che cresce per voci numerate in ordine cronologico, non si riscrive né si riordina: ogni intervento nuovo aggiunge una voce in fondo. Ogni voce segue una struttura fissa in quattro parti.
 
 ```
 ## N. Titolo breve e concreto della voce

@@ -59,9 +59,12 @@ Uso
 """
 
 import argparse
+import io
 import os
 import re
 import sys
+import tokenize
+import unicodedata
 
 
 # Le macro LaTeX il cui argomento e' un identificatore e non prosa. Il loro contenuto
@@ -360,9 +363,86 @@ def converti_markdown(testo, fatte, viste):
     return "".join(fuori)
 
 
-def converti_python(testo, fatte, viste):
-    testo = DOCSTRING.sub(lambda m: converti_prosa(m.group(0), fatte, viste), testo)
-    testo = STRINGA_DOPPIA.sub(lambda m: converti_prosa(m.group(0), fatte, viste), testo)
+def converti_python(testo, fatte, viste, letterali=None):
+    """Converte la prosa di un file Python senza toccare le stringhe che portano dato.
+
+    In un file Python la prosa e le stringhe si somigliano e non sono la stessa cosa. La
+    prosa sta nei commenti e nelle docstring, ed e' scritta per un lettore: la' l'accento
+    e' obbligatorio. Una stringa qualunque, invece, puo' essere una chiave di dizionario,
+    il nome di un campo, un dest di argparse o una intestazione di colonna, e accentarla
+    non corregge un testo: cambia un identificatore. La rottura che ne segue e' silenziosa,
+    esattamente come quella descritta per i file .tex: il programma continua a compilare e
+    smette di trovare la chiave, oppure due rami che dovevano differire diventano uguali.
+
+    La prima versione di questa funzione convertiva ogni stringa fra doppi apici, e su
+    censimento-fonti.py ha trasformato `n.get("profondita")` in `n.get("profondita")` gia'
+    accentato, cioe' ha reso identici il valore cercato e il suo ripiego, togliendo la
+    compatibilita' che quella riga esisteva per garantire. Il difetto e' stato visto
+    rileggendo il diff, non da una prova: nessuna prova lo cercava.
+
+    La lettura passa quindi dal tokenizzatore della libreria standard invece che da una
+    espressione regolare, perche' distinguere una docstring da una stringa qualunque
+    richiede di sapere dove sta nella grammatica, e una espressione regolare non lo sa. Si
+    convertono i commenti e le sole stringhe che sono docstring, cioe' quelle che stanno da
+    sole come istruzione. Ogni altra stringa che conterrebbe una forma da accentare non si
+    tocca e si riporta in `letterali`, perche' il caso resti visibile a chi legge invece di
+    sparire: e' la stessa scelta con cui lo strumento dichiara le forme ambigue invece di
+    deciderle. Se il file non si lascia tokenizzare, cosa che accade su un sorgente rotto o
+    scritto per una versione diversa del linguaggio, si convertono i soli commenti con una
+    lettura riga per riga, che e' la parte che non richiede grammatica.
+    """
+    try:
+        pezzi = list(tokenize.generate_tokens(io.StringIO(testo).readline))
+    except (tokenize.TokenError, IndentationError, SyntaxError):
+        return _converti_commenti_python(testo, fatte, viste)
+
+    # Una stringa e' una docstring quando e' l'intera istruzione: il token che la precede
+    # chiude una riga logica (NEWLINE, INDENT, DEDENT) oppure e' l'inizio del file, e quello
+    # che la segue chiude la sua. Il resto sono stringhe usate come valore, e non si toccano.
+    docstring = set()
+    significativi = [i for i, tk in enumerate(pezzi)
+                     if tk.type not in (tokenize.NL, tokenize.COMMENT)]
+    for n, i in enumerate(significativi):
+        if pezzi[i].type != tokenize.STRING:
+            continue
+        prima = pezzi[significativi[n - 1]].type if n > 0 else tokenize.NEWLINE
+        dopo = pezzi[significativi[n + 1]].type if n + 1 < len(significativi) else tokenize.NEWLINE
+        if (prima in (tokenize.NEWLINE, tokenize.INDENT, tokenize.DEDENT,
+                      tokenize.ENCODING, tokenize.NL)
+                and dopo in (tokenize.NEWLINE, tokenize.ENDMARKER)):
+            docstring.add(i)
+
+    # Si riscrive per posizione invece di ricomporre con untokenize, che normalizza gli spazi
+    # e restituirebbe un file diverso ovunque, cioe' un diff illeggibile su una correzione di
+    # poche lettere. Le sostituzioni si applicano dal fondo, cosi' gli offset di quelle
+    # precedenti restano validi.
+    righe = testo.split("\n")
+    sostituzioni = []
+    for i, tk in enumerate(pezzi):
+        if tk.type == tokenize.COMMENT or i in docstring:
+            nuovo = converti_prosa(tk.string, fatte, viste)
+            if nuovo != tk.string:
+                sostituzioni.append((tk.start, tk.end, nuovo))
+        elif tk.type == tokenize.STRING and letterali is not None:
+            prova = converti_prosa(tk.string, {}, {})
+            if prova != tk.string:
+                letterali.append((tk.start[0], tk.string.strip()[:70]))
+
+    for (r1, c1), (r2, c2), nuovo in sorted(sostituzioni, reverse=True):
+        if r1 != r2:
+            # Una docstring su piu' righe: si sostituisce il blocco intero, che il
+            # tokenizzatore consegna gia' completo.
+            testa = righe[r1 - 1][:c1]
+            coda = righe[r2 - 1][c2:]
+            righe[r1 - 1:r2] = (testa + nuovo + coda).split("\n")
+        else:
+            riga = righe[r1 - 1]
+            righe[r1 - 1] = riga[:c1] + nuovo + riga[c2:]
+    return "\n".join(righe)
+
+
+def _converti_commenti_python(testo, fatte, viste):
+    """Il ripiego per un file che non si tokenizza: i soli commenti, riga per riga."""
     righe = []
     for riga in testo.split("\n"):
         pos = riga.find("#")
@@ -377,13 +457,32 @@ def converti_python(testo, fatte, viste):
     return "\n".join(righe)
 
 
-def elabora(percorso, fatte, viste):
+def elabora(percorso, fatte, viste, letterali=None):
     with open(percorso, "rb") as f:
         grezzo = f.read()
     bom = grezzo.startswith(b"\xef\xbb\xbf")
     corpo = grezzo[3:] if bom else grezzo
     crlf = b"\r\n" in corpo
     testo = corpo.decode("utf-8").replace("\r\n", "\n")
+
+    # Un accento puo' essere scritto in due modi che a video sono indistinguibili: come una
+    # lettera unica, che e' la forma composta, oppure come la lettera nuda seguita da un segno
+    # combinante, che e' la forma decomposta. Lo strumento cerca la lettera nuda, quindi su un
+    # file decomposto vede `perche` la' dove il lettore vede gia' `perche'` accentato, e gli
+    # aggiunge un secondo accento: il risultato porta due segni sovrapposti ed e' corrotto.
+    # E' accaduto davvero su un file di questo repository, committato in forma decomposta.
+    #
+    # Non si normalizza per conto proprio, perche' cambiare la codifica di un file e' una
+    # modifica a sua volta, che riscriverebbe righe che nessuno ha chiesto di toccare e la
+    # nasconderebbe dentro una correzione di accenti. Si rifiuta e si dichiara, che e' la
+    # stessa scelta dell'oracolo di md-unwrap: uno strumento che non sa operare in sicurezza
+    # si ferma invece di provarci.
+    if not unicodedata.is_normalized("NFC", testo):
+        print("rifiutato, accenti in forma decomposta (NFC non normalizzato): %s"
+              % percorso, file=sys.stderr)
+        print("  si normalizza prima, poi si rilancia; convertirlo cosi' "
+              "sovrapporrebbe due accenti.", file=sys.stderr)
+        return False, None
 
     basso = percorso.lower()
     # Su un file .tex gli identificatori si mascherano prima di convertire: il nome di
@@ -398,7 +497,7 @@ def elabora(percorso, fatte, viste):
     if basso.endswith(".ly"):
         return False, None
     if basso.endswith(".py"):
-        nuovo = converti_python(testo_lavoro, fatte, viste)
+        nuovo = converti_python(testo_lavoro, fatte, viste, letterali)
     elif basso.endswith((".md", ".lytex")):
         nuovo = converti_markdown(testo_lavoro, fatte, viste)
     else:
@@ -477,6 +576,14 @@ def autotest():
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("percorsi", nargs="*", default=["."])
+    # L'interruttore esiste perche' la guardia ha due lati. Dentro un progetto che ospita
+    # le copie dei modelli il divieto e' giusto e va imposto. Dentro questo template quei
+    # file sono invece gli originali, ed e' proprio li' che vanno corretti: una guardia
+    # senza scappatoia avrebbe trasformato una protezione in un difetto nuovo. Il difetto
+    # e' stato visto durante la prova della guardia stessa, non dopo.
+    ap.add_argument("--includi-modelli", action="store_true",
+                    help="permette di scrivere anche sotto .claude/templates/, "
+                         "che serve nel template dove quei file sono gli originali")
     ap.add_argument("--autotest", action="store_true")
     ap.add_argument("--check", action="store_true", help="non scrive, riporta")
     ap.add_argument("--ambigue", action="store_true",
@@ -493,12 +600,33 @@ def main():
     # sequenze che gli strumenti cercano: una corsa di questo su fix-accents.py ne ha
     # convertito i dati di test e ne ha rotto otto casi. E' la terza volta che questo
     # genere di ricorsione morde, e la difesa e' strutturale.
-    FAMIGLIA = {"fix-accents.py", "fix-missing-accents.py", "fix-dashes.py"}
+    # Le copie dei modelli sotto .claude/templates/ non si correggono dentro il progetto
+    # che le ospita: sono copie di questo template, e riscriverle la' allarga la divergenza
+    # che la loro ri-propagazione esiste per chiudere. Il divieto viveva nella sola prosa di
+    # CLAUDE.md ed e' stato violato due volte nella stessa sessione, la seconda meno di un'ora
+    # dopo averlo scritto come regola: una convenzione che un comando puo' violare per
+    # distrazione va difesa dal comando, non dalla memoria di chi lo lancia.
+    def sotto_templates(percorso):
+        parti = os.path.abspath(percorso).replace("\\", "/").split("/")
+        for i in range(len(parti) - 1):
+            if parti[i] == ".claude" and parti[i + 1] == "templates":
+                return True
+        return False
+
+    # La famiglia non sono soltanto i tre convertitori: sono anche il banco di prova che li
+    # esercita e l'elenco delle esclusioni, perche' entrambi contengono di proposito le forme
+    # che gli strumenti cercano. Una corsa che li riscrivesse romperebbe le prove invece di
+    # correggere un testo, ed e' lo stesso genere di ricorsione che l'auto-esclusione previene.
+    FAMIGLIA = {"fix-accents.py", "fix-missing-accents.py", "fix-dashes.py",
+                "test-tipografia.py", "dashes-exclude.txt"}
     io_stesso = os.path.abspath(__file__)
     file = []
     for p in args.percorsi or ["."]:
         ap_ = p if os.path.isabs(p) else os.path.join(ROOT, p)
         if os.path.isfile(ap_):
+            if sotto_templates(ap_) and not args.includi_modelli:
+                print(f"rifiutato, sta sotto .claude/templates/: {p}", file=sys.stderr)
+                continue
             if os.path.abspath(ap_) != io_stesso and os.path.basename(ap_) not in FAMIGLIA:
                 file.append(ap_)
             continue
@@ -506,17 +634,32 @@ def main():
             cartelle[:] = [c for c in cartelle
                            if c not in (".git", "__pycache__", "node_modules",
                                         ".venv", "_notes", "build")]
+            # Una cartella marcata .md-unwrap-ignore contiene materiale di confronto byte per
+            # byte, e riscriverne anche una lettera lo invalida. Il marcatore lo rispettavano
+            # md-unwrap e il controllo dei comandi, non i tre strumenti tipografici: una
+            # protezione dichiarata che due strumenti su cinque non vedevano, cioe' nessuna
+            # protezione. Qui il ramo si pota invece di filtrare i singoli file, perche' il
+            # marcatore parla della cartella.
+            if ".md-unwrap-ignore" in nomi:
+                cartelle[:] = []
+                continue
             for n in sorted(nomi):
                 if os.path.splitext(n)[1].lower() in estensioni:
                     completo = os.path.join(radice, n)
                     if (os.path.abspath(completo) != io_stesso
-                            and n not in FAMIGLIA):
+                            and n not in FAMIGLIA
+                            and not (sotto_templates(completo)
+                                     and not args.includi_modelli)):
                         file.append(completo)
 
     fatte, viste, cambiati = {}, {}, []
+    # Le stringhe di dato che conterrebbero una forma da accentare non si toccano ma si
+    # riportano: sono il residuo dichiarato di questo strumento sui file Python, e a volte
+    # sono davvero prosa, per esempio il testo di aiuto di una opzione. Chi legge decide.
+    letterali = []
     for percorso in file:
         try:
-            cambia, dati = elabora(percorso, fatte, viste)
+            cambia, dati = elabora(percorso, fatte, viste, letterali)
         except UnicodeDecodeError:
             continue
         if cambia:
@@ -542,7 +685,22 @@ def main():
         tot = sum(viste.values())
         print("\n%d occorrenze di %d forme ambigue non toccate: rilanciare con --ambigue"
               % (tot, len(viste)))
-    return 0
+    if letterali:
+        print("\n%d stringhe Python non toccate perche' potrebbero portare dato e non prosa;"
+              % len(letterali))
+        print("si correggono a mano dove sono davvero testo per un lettore:")
+        for riga, frammento in letterali[:20]:
+            print("  riga %-5d %s" % (riga, frammento))
+    # In modalita' di verifica l'esito e' anche un codice di uscita, non solo un rapporto. Senza
+    # questa riga lo strumento usciva zero pure elencando i file da correggere, e chiunque lo
+    # usasse come controllo, l'hook pre-commit o una persona che concatena i comandi, otteneva un
+    # via libera indistinguibile da quello vero: il difetto che `prove-che-misurano.md` chiama
+    # vacuita', qui non in una prova ma nel controllo stesso. Fa fede `cambiati`, cioe' cio' che
+    # lo strumento sa correggere da se'; le forme ambigue e i residui restano un avviso, perche'
+    # nessuno puo' deciderli meccanicamente e farne cadere il controllo lo bloccherebbe per
+    # sempre. In modalita' di scrittura l'uscita resta zero: li' correggere e' il lavoro, non un
+    # difetto trovato.
+    return 1 if (args.check and cambiati) else 0
 
 
 if __name__ == "__main__":

@@ -27,8 +27,32 @@ if ($percorso -notmatch '\.md$') { exit 0 }
 if (-not (Test-Path $percorso)) { exit 0 }
 
 $radice = if ($env:CLAUDE_PROJECT_DIR) { $env:CLAUDE_PROJECT_DIR } else { (Get-Location).Path }
-$strumento = Join-Path $radice "tools\md-unwrap.py"
-if (-not (Test-Path $strumento)) { exit 0 }
+
+# Ricerca a cascata dello strumento. Le collocazioni legittime sono due e non una: in un
+# progetto istanziato gli strumenti condivisi stanno in tools\ della radice, mentre nel
+# repository che li produce, cioe' il template stesso, gli originali vivono sotto
+# .claude\templates\, dove md-unwrap ha per giunta una cartella propria. Un hook che cercasse
+# soltanto la prima uscirebbe zero senza fare nulla proprio nel repository dove quegli strumenti
+# sono nati, e non come errore ma come silenzio, che e' il modo peggiore di fallire.
+#
+# La ricerca prova le tre cartelle in quest'ordine e restituisce la prima che risponde, e dove
+# l'uscita dell'hook viene letta dichiara anche quale: un hook che sta lavorando su una copia
+# dei modelli invece che sull'originale, o viceversa, deve poterlo far vedere.
+$cartelleStrumenti = @("tools", ".claude\templates\tools", ".claude\templates\md-unwrap\tools")
+
+function Trova-Strumento([string]$nome) {
+    foreach ($cartella in $cartelleStrumenti) {
+        $candidato = Join-Path (Join-Path $radice $cartella) $nome
+        if (Test-Path $candidato) { return $candidato }
+    }
+    return $null
+}
+
+# Qui la dichiarazione tace: un hook PostToolUse che stampasse una riga a ogni scrittura
+# riempirebbe il contesto di rumore proporzionale al lavoro fatto. Chi vuole sapere dove sta lo
+# strumento lo legge dall'hook di apertura, che quella riga la stampa una volta sola.
+$strumento = Trova-Strumento "md-unwrap.py"
+if (-not $strumento) { exit 0 }
 
 # Il marcatore che esenta una cartella dalla normalizzazione lo rispetta lo strumento stesso:
 # qui non si duplica quella logica, perche' due copie della stessa regola divergono.

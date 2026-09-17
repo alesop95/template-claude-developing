@@ -15,7 +15,35 @@
 # e codice la fa la skill sync-context, e nessun hook puo' invocare una skill.
 
 RADICE="${CLAUDE_PROJECT_DIR:-$PWD}"
-STRUMENTO="$RADICE/tools/verifica-ripresa.py"
+
+# Ricerca a cascata dello strumento. Le collocazioni legittime sono due e non una: in un
+# progetto istanziato gli strumenti condivisi stanno in tools/ della radice, mentre nel
+# repository che li produce, cioe' il template stesso, gli originali vivono sotto
+# .claude/templates/, dove md-unwrap ha per giunta una cartella propria. Un hook che cercasse
+# soltanto la prima uscirebbe zero senza fare nulla proprio nel repository dove quegli strumenti
+# sono nati, e non come errore ma come silenzio, che e' il modo peggiore di fallire.
+#
+# La ricerca prova le tre cartelle in quest'ordine e restituisce la prima che risponde, e dove
+# l'uscita dell'hook viene letta dichiara anche quale: un hook che sta lavorando su una copia
+# dei modelli invece che sull'originale, o viceversa, deve poterlo far vedere.
+CARTELLE_STRUMENTI="tools .claude/templates/tools .claude/templates/md-unwrap/tools"
+
+trova_strumento() {
+    for cartella in $CARTELLE_STRUMENTI; do
+        if [ -f "$RADICE/$cartella/$1" ]; then
+            printf '%s/%s/%s' "$RADICE" "$cartella" "$1"
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Il perimetro si passa esplicitamente. Un hook non gira per contratto nella radice del
+# progetto: gira nella cartella corrente del processo che lo ospita, e le due coincidono in una
+# sessione ordinaria ma non sempre. Uno strumento che risolvesse la radice sul punto leggerebbe
+# un altro repository, o nessuno, e direbbe che il file di ripresa non esiste invece di dire che
+# lo sta cercando nel posto sbagliato: un difetto che si traveste da diagnosi.
+STRUMENTO="$(trova_strumento verifica-ripresa.py)"
 
 # L'interprete si sceglie invece di assumerlo. Su una macchina con Git Bash `python3` puo'
 # esistere sul PATH ed essere l'alias fittizio del Microsoft Store, che non esegue niente e non
@@ -31,12 +59,15 @@ done
 
 echo "=== Verifica di ripresa ==="
 
-if [ ! -f "$STRUMENTO" ] || [ -z "$PY" ]; then
-    # Il progetto non ha istanziato lo strumento: si dichiara e non si blocca niente.
-    echo "tools/verifica-ripresa.py non e' istanziato in questo progetto: la verifica"
-    echo "di ripresa non e' disponibile. Si istanzia dal pacchetto del template."
+if [ -z "$STRUMENTO" ] || [ -z "$PY" ]; then
+    # Lo strumento non si trova in nessuna delle tre cartelle: si dichiara e non si blocca
+    # niente.
+    echo "verifica-ripresa.py non e' istanziato in questo progetto, ne' in tools/ ne' sotto"
+    echo ".claude/templates/: la verifica di ripresa non e' disponibile. Si istanzia dal"
+    echo "pacchetto del template."
 else
-    USCITA="$("$PY" "$STRUMENTO" 2>&1)"
+    echo "strumento: ${STRUMENTO#$RADICE/}"
+    USCITA="$("$PY" "$STRUMENTO" --radice "$RADICE" 2>&1)"
     ESITO=$?
     echo "$USCITA"
     if [ $ESITO -ne 0 ]; then

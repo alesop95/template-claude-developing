@@ -36,6 +36,8 @@ Uso
 
 import importlib.util
 import os
+import shutil
+import subprocess
 import sys
 import tempfile
 
@@ -99,11 +101,16 @@ def argomenti_accessori(modulo):
     import inspect
     parametri = list(inspect.signature(modulo.elabora).parameters)
     accessori = parametri[1:]
+    # I contenitori non sono tutti dello stesso tipo: quelli che contano occorrenze sono
+    # dizionari, quello che raccoglie le stringhe non toccate e' una lista. Passare il tipo
+    # sbagliato non darebbe un errore di firma ma un AttributeError a meta' della corsa.
+    LISTE = ("letterali",)
+    DIZIONARI = ("fatte", "viste", "statistiche", "residui", "ambigui", "conteggio")
     for nome in accessori:
-        if nome not in ("fatte", "viste", "statistiche", "residui", "ambigui", "conteggio"):
+        if nome not in LISTE + DIZIONARI:
             raise AssertionError(
                 "parametro non riconosciuto in elabora: %s. La prova va aggiornata." % nome)
-    return [{} for _ in accessori]
+    return [[] if nome in LISTE else {} for nome in accessori]
 
 
 def prova_strumento(nome):
@@ -285,6 +292,157 @@ def prova_composte_apostrofo():
     return falliti
 
 
+def prova_guardia_modelli():
+    """La guardia che impedisce di riscrivere le copie dei modelli, e la sua scappatoia.
+
+    Vive nella raccolta dei file e non in elabora, quindi va esercitata lanciando gli
+    strumenti come processi invece di chiamarne le funzioni: una prova che chiamasse
+    elabora passerebbe sempre, perche' quel livello la guardia non lo attraversa.
+    Nasce da una violazione ripetuta due volte nella stessa sessione in un progetto
+    istanziato, la seconda meno di un'ora dopo che la regola era stata scritta in prosa.
+    """
+    AP = chr(39)
+    EM = chr(0x2014)
+    CONTENUTO = ("Perch" + "e" + AP + " la citta " + EM + " e" + AP + " cosi." + NL)
+    falliti = 0
+    base = os.path.join(ROOT, "_notes", "tmp", "guardia-modelli")
+    sotto = os.path.join(base, ".claude", "templates")
+    fuori = os.path.join(base, "docs")
+
+    def prepara():
+        if os.path.isdir(base):
+            shutil.rmtree(base)
+        os.makedirs(sotto)
+        os.makedirs(fuori)
+        for cartella in (sotto, fuori):
+            with open(os.path.join(cartella, "prova.md"), "wb") as f:
+                f.write(CONTENUTO.encode("utf-8"))
+
+    def leggi(cartella):
+        with open(os.path.join(cartella, "prova.md"), "rb") as f:
+            return f.read().decode("utf-8")
+
+    try:
+        for nome in ("fix-accents.py", "fix-missing-accents.py", "fix-dashes.py"):
+            strumento = os.path.join(ROOT, "tools", nome)
+
+            prepara()
+            subprocess.run([sys.executable, strumento, base],
+                           capture_output=True, cwd=ROOT)
+            if leggi(sotto) != CONTENUTO:
+                print("  FALLITA  guardia modelli        %s ha riscritto sotto "
+                      ".claude/templates/" % nome)
+                falliti += 1
+            if leggi(fuori) == CONTENUTO:
+                print("  FALLITA  guardia modelli        %s non ha toccato il file "
+                      "fuori dai modelli, quindi la prova non misura nulla" % nome)
+                falliti += 1
+
+            prepara()
+            subprocess.run([sys.executable, strumento, "--includi-modelli", base],
+                           capture_output=True, cwd=ROOT)
+            if leggi(sotto) == CONTENUTO:
+                print("  FALLITA  guardia modelli        %s non scrive sotto i modelli "
+                      "nemmeno con --includi-modelli" % nome)
+                falliti += 1
+    finally:
+        if os.path.isdir(base):
+            shutil.rmtree(base)
+
+    if falliti == 0:
+        print("  ok       guardia modelli          rifiuta i modelli, cede con "
+              "--includi-modelli")
+    return falliti
+
+
+# Le due prove seguenti nascono da altrettanti difetti visti il 2026-09-16 rileggendo il diff
+# di una corsa reale, non da una prova che li cercasse: nessuna li cercava, ed e' esattamente
+# la condizione che `prove-che-misurano.md` descrive. Entrambi appartengono alla stessa
+# famiglia di quello che la mascheratura degli identificatori risolve sui file .tex, cioe' un
+# testo che a video e' prosa e nel programma e' un riferimento.
+def prova_stringhe_python():
+    """Una chiave di dizionario non si accenta, un commento si.
+
+    Il difetto: la prima versione convertiva ogni stringa fra doppi apici, e su un file reale
+    ha reso accentata la chiave `profondita` in sette punti, fra cui un `get` che la cercava
+    accentata con ripiego non accentato. Accentando il ripiego i due rami sono diventati
+    identici, cioe' la compatibilita' che quella riga garantiva e' sparita senza che nulla
+    smettesse di funzionare subito.
+
+    La prova e' discriminante nei due versi: verifica che la chiave resti intatta e che il
+    commento accanto sia stato corretto. Senza la seconda meta' passerebbe anche uno strumento
+    che sui file Python non fa piu' nulla, che sarebbe un modo di superare la prova senza
+    risolvere il problema.
+    """
+    AP = chr(39)
+    E_ACUTA = chr(0x00E9)
+    A_GRAVE = chr(0x00E0)
+    CHIAVE = "profondit" + "a"
+    TRIPLO = chr(34) * 3
+    # Il sorgente di prova si compone per concatenazione come tutte le forme di questo file,
+    # perche' scritto per intero verrebbe corretto alla prima passata su questo stesso file.
+    sorgente = NL.join((
+        "# Si commenta cosi, perche" + " il lettore legga.",
+        "def f(n):",
+        "    " + TRIPLO + "Somma, perche" + " serve." + TRIPLO,
+        "    return n[" + chr(34) + CHIAVE + chr(34) + "]",
+    )) + NL
+
+    falliti = 0
+    cartella = os.path.join(ROOT, "_notes", "tmp")
+    os.makedirs(cartella, exist_ok=True)
+    handle, percorso = tempfile.mkstemp(suffix=".py", dir=cartella)
+    with os.fdopen(handle, "wb") as f:
+        f.write(sorgente.encode("utf-8"))
+    try:
+        modulo = carica("fix-missing-accents.py")
+        cambiato, dati = modulo.elabora(percorso, *argomenti_accessori(modulo))
+        dopo = dati.decode("utf-8") if cambiato else sorgente
+    finally:
+        os.unlink(percorso)
+
+    if chr(34) + CHIAVE + chr(34) not in dopo:
+        print("  FALLITA  stringhe Python          ha accentato una chiave di dizionario")
+        falliti += 1
+    if ("perch" + E_ACUTA) not in dopo or ("cos" + chr(0x00EC)) not in dopo:
+        print("  FALLITA  stringhe Python          non ha corretto la prosa del commento")
+        falliti += 1
+    if falliti == 0:
+        print("  ok       stringhe Python          chiave intatta, commento corretto")
+    return falliti
+
+
+def prova_forma_decomposta():
+    """Un accento scritto come lettera nuda piu' segno combinante non si converte.
+
+    Il difetto: lo strumento cerca la lettera nuda, quindi su un file in forma decomposta
+    vede `perche` la' dove il lettore vede gia' la parola accentata, e le aggiunge un secondo
+    accento. Il risultato porta due segni sovrapposti, ed e' accaduto davvero su un file
+    committato in questo repository. La difesa e' il rifiuto dichiarato, non la conversione.
+    """
+    COMBINANTE_ACUTO = chr(0x0301)
+    prima = "Serve perche" + COMBINANTE_ACUTO + " conta." + NL
+    falliti = 0
+    cartella = os.path.join(ROOT, "_notes", "tmp")
+    os.makedirs(cartella, exist_ok=True)
+    handle, percorso = tempfile.mkstemp(suffix=".md", dir=cartella)
+    with os.fdopen(handle, "wb") as f:
+        f.write(prima.encode("utf-8"))
+    try:
+        modulo = carica("fix-missing-accents.py")
+        cambiato, _ = modulo.elabora(percorso, *argomenti_accessori(modulo))
+    finally:
+        os.unlink(percorso)
+
+    if cambiato:
+        print("  FALLITA  forma decomposta         ha convertito un testo decomposto, "
+              "sovrapponendo due accenti")
+        falliti += 1
+    if falliti == 0:
+        print("  ok       forma decomposta         rifiutata invece di corrotta")
+    return falliti
+
+
 def main():
     falliti = 0
     for nome in STRUMENTI:
@@ -327,6 +485,9 @@ def main():
 
     falliti += prova_residuo_apostrofo()
     falliti += prova_composte_apostrofo()
+    falliti += prova_guardia_modelli()
+    falliti += prova_stringhe_python()
+    falliti += prova_forma_decomposta()
 
     print("test-tipografia: %d controlli falliti" % falliti)
     return 1 if falliti else 0

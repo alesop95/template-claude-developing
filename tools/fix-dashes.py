@@ -285,7 +285,12 @@ def main():
                 return True
         return False
 
-    FAMIGLIA = {"fix-accents.py", "fix-missing-accents.py", "fix-dashes.py"}
+    # La famiglia non sono soltanto i tre convertitori: sono anche il banco di prova che li
+    # esercita e l'elenco delle esclusioni, perche' entrambi contengono di proposito le forme
+    # che gli strumenti cercano. Una corsa che li riscrivesse romperebbe le prove invece di
+    # correggere un testo, ed e' lo stesso genere di ricorsione che l'auto-esclusione previene.
+    FAMIGLIA = {"fix-accents.py", "fix-missing-accents.py", "fix-dashes.py",
+                "test-tipografia.py", "dashes-exclude.txt"}
     io_stesso = os.path.abspath(__file__)
     file = []
     for p in args.percorsi or ["."]:
@@ -297,6 +302,15 @@ def main():
             cartelle[:] = [c for c in cartelle
                            if c not in (".git", "__pycache__", "node_modules",
                                         ".venv", "_notes")]
+            # Una cartella marcata .md-unwrap-ignore contiene materiale di confronto byte per
+            # byte, e riscriverne anche una lettera lo invalida. Il marcatore lo rispettavano
+            # md-unwrap e il controllo dei comandi, non i tre strumenti tipografici: una
+            # protezione dichiarata che due strumenti su cinque non vedevano, cioe' nessuna
+            # protezione. Qui il ramo si pota invece di filtrare i singoli file, perche' il
+            # marcatore parla della cartella.
+            if ".md-unwrap-ignore" in nomi:
+                cartelle[:] = []
+                continue
             for n in sorted(nomi):
                 if os.path.splitext(n)[1].lower() in estensioni:
                     file.append(os.path.join(radice, n))
@@ -341,7 +355,16 @@ def main():
                           else "e' uno strumento della stessa famiglia tipografica, i cui "
                                "casi di prova contengono di proposito i segni cercati")
             print("  %s: %s" % (r, motivo))
-    return 0
+    # In modalita' di verifica l'esito e' anche un codice di uscita, non solo un rapporto. Senza
+    # questa riga lo strumento usciva zero pure elencando i file da correggere, e chiunque lo
+    # usasse come controllo, l'hook pre-commit o una persona che concatena i comandi, otteneva un
+    # via libera indistinguibile da quello vero: il difetto che `prove-che-misurano.md` chiama
+    # vacuita', qui non in una prova ma nel controllo stesso. Fa fede `cambiati`, cioe' cio' che
+    # lo strumento sa correggere da se'; le forme ambigue e i residui restano un avviso, perche'
+    # nessuno puo' deciderli meccanicamente e farne cadere il controllo lo bloccherebbe per
+    # sempre. In modalita' di scrittura l'uscita resta zero: li' correggere e' il lavoro, non un
+    # difetto trovato.
+    return 1 if (args.check and cambiati) else 0
 
 
 if __name__ == "__main__":

@@ -244,6 +244,14 @@ def autotest():
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("percorsi", nargs="*", default=["."])
+    # L'interruttore esiste perche' la guardia ha due lati. Dentro un progetto che ospita
+    # le copie dei modelli il divieto e' giusto e va imposto. Dentro questo template quei
+    # file sono invece gli originali, ed e' proprio li' che vanno corretti: una guardia
+    # senza scappatoia avrebbe trasformato una protezione in un difetto nuovo. Il difetto
+    # e' stato visto durante la prova della guardia stessa, non dopo.
+    ap.add_argument("--includi-modelli", action="store_true",
+                    help="permette di scrivere anche sotto .claude/templates/, "
+                         "che serve nel template dove quei file sono gli originali")
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--autotest", action="store_true",
                     help="esegue le prove interne")
@@ -264,7 +272,25 @@ def main():
     # Gli strumenti tipografici della stessa famiglia si escludono a vicenda, non solo se
     # stessi: i loro casi di prova contengono di proposito le sequenze che cercano, e una
     # corsa incrociata li altera. E' accaduto tre volte durante lo sviluppo.
-    FAMIGLIA = {"fix-accents.py", "fix-missing-accents.py", "fix-dashes.py"}
+    # Le copie dei modelli sotto .claude/templates/ non si correggono dentro il progetto
+    # che le ospita: sono copie di questo template, e riscriverle la' allarga la divergenza
+    # che la loro ri-propagazione esiste per chiudere. Il divieto viveva nella sola prosa di
+    # CLAUDE.md ed e' stato violato due volte nella stessa sessione, la seconda meno di un'ora
+    # dopo averlo scritto come regola: una convenzione che un comando puo' violare per
+    # distrazione va difesa dal comando, non dalla memoria di chi lo lancia.
+    def sotto_templates(percorso):
+        parti = os.path.abspath(percorso).replace("\\", "/").split("/")
+        for i in range(len(parti) - 1):
+            if parti[i] == ".claude" and parti[i + 1] == "templates":
+                return True
+        return False
+
+    # La famiglia non sono soltanto i tre convertitori: sono anche il banco di prova che li
+    # esercita e l'elenco delle esclusioni, perche' entrambi contengono di proposito le forme
+    # che gli strumenti cercano. Una corsa che li riscrivesse romperebbe le prove invece di
+    # correggere un testo, ed e' lo stesso genere di ricorsione che l'auto-esclusione previene.
+    FAMIGLIA = {"fix-accents.py", "fix-missing-accents.py", "fix-dashes.py",
+                "test-tipografia.py", "dashes-exclude.txt"}
     io_stesso = os.path.abspath(__file__)
     file = []
     for p in args.percorsi or ["."]:
@@ -276,6 +302,15 @@ def main():
             cartelle[:] = [c for c in cartelle
                            if c not in (".git", "__pycache__", "node_modules",
                                         ".venv", "_notes")]
+            # Una cartella marcata .md-unwrap-ignore contiene materiale di confronto byte per
+            # byte, e riscriverne anche una lettera lo invalida. Il marcatore lo rispettavano
+            # md-unwrap e il controllo dei comandi, non i tre strumenti tipografici: una
+            # protezione dichiarata che due strumenti su cinque non vedevano, cioe' nessuna
+            # protezione. Qui il ramo si pota invece di filtrare i singoli file, perche' il
+            # marcatore parla della cartella.
+            if ".md-unwrap-ignore" in nomi:
+                cartelle[:] = []
+                continue
             for n in sorted(nomi):
                 if os.path.splitext(n)[1].lower() in estensioni:
                     file.append(os.path.join(radice, n))
@@ -284,7 +319,13 @@ def main():
     for percorso in file:
         rel = os.path.normpath(os.path.relpath(percorso, ROOT))
         if (os.path.abspath(percorso) == io_stesso
-                or os.path.basename(percorso) in FAMIGLIA or rel in esclusi):
+                or os.path.basename(percorso) in FAMIGLIA or rel in esclusi
+                or (sotto_templates(percorso) and not args.includi_modelli)):
+            if sotto_templates(percorso) and not args.includi_modelli:
+                # Il rifiuto si dichiara invece di confondersi con le altre esclusioni:
+                # una protezione silenziosa sembra una svista a chi guarda l'uscita.
+                print("rifiutato, sta sotto .claude/templates/: {}".format(rel),
+                      file=sys.stderr)
             saltati.append(rel)
             continue
         try:
@@ -314,7 +355,16 @@ def main():
                           else "e' uno strumento della stessa famiglia tipografica, i cui "
                                "casi di prova contengono di proposito i segni cercati")
             print("  %s: %s" % (r, motivo))
-    return 0
+    # In modalita' di verifica l'esito e' anche un codice di uscita, non solo un rapporto. Senza
+    # questa riga lo strumento usciva zero pure elencando i file da correggere, e chiunque lo
+    # usasse come controllo, l'hook pre-commit o una persona che concatena i comandi, otteneva un
+    # via libera indistinguibile da quello vero: il difetto che `prove-che-misurano.md` chiama
+    # vacuita', qui non in una prova ma nel controllo stesso. Fa fede `cambiati`, cioe' cio' che
+    # lo strumento sa correggere da se'; le forme ambigue e i residui restano un avviso, perche'
+    # nessuno puo' deciderli meccanicamente e farne cadere il controllo lo bloccherebbe per
+    # sempre. In modalita' di scrittura l'uscita resta zero: li' correggere e' il lavoro, non un
+    # difetto trovato.
+    return 1 if (args.check and cambiati) else 0
 
 
 if __name__ == "__main__":

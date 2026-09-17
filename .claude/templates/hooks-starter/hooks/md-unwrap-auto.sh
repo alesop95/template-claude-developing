@@ -29,8 +29,34 @@ esac
 [ -f "$PERCORSO" ] || exit 0
 
 RADICE="${CLAUDE_PROJECT_DIR:-$PWD}"
-STRUMENTO="$RADICE/tools/md-unwrap.py"
-[ -f "$STRUMENTO" ] || exit 0
+
+# Ricerca a cascata dello strumento. Le collocazioni legittime sono due e non una: in un
+# progetto istanziato gli strumenti condivisi stanno in tools/ della radice, mentre nel
+# repository che li produce, cioe' il template stesso, gli originali vivono sotto
+# .claude/templates/, dove md-unwrap ha per giunta una cartella propria. Un hook che cercasse
+# soltanto la prima uscirebbe zero senza fare nulla proprio nel repository dove quegli strumenti
+# sono nati, e non come errore ma come silenzio, che e' il modo peggiore di fallire.
+#
+# La ricerca prova le tre cartelle in quest'ordine e restituisce la prima che risponde, e dove
+# l'uscita dell'hook viene letta dichiara anche quale: un hook che sta lavorando su una copia
+# dei modelli invece che sull'originale, o viceversa, deve poterlo far vedere.
+CARTELLE_STRUMENTI="tools .claude/templates/tools .claude/templates/md-unwrap/tools"
+
+trova_strumento() {
+    for cartella in $CARTELLE_STRUMENTI; do
+        if [ -f "$RADICE/$cartella/$1" ]; then
+            printf '%s/%s/%s' "$RADICE" "$cartella" "$1"
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Qui la dichiarazione tace: un hook PostToolUse che stampasse una riga a ogni scrittura
+# riempirebbe il contesto di rumore proporzionale al lavoro fatto. Chi vuole sapere dove sta lo
+# strumento lo legge dall'hook di apertura, che quella riga la stampa una volta sola.
+STRUMENTO="$(trova_strumento md-unwrap.py)"
+[ -n "$STRUMENTO" ] || exit 0
 
 # L'interprete si sceglie invece di assumerlo. Su una macchina con Git Bash `python3` puo'
 # esistere sul PATH ed essere l'alias fittizio del Microsoft Store, che non esegue niente e non

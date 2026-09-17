@@ -12,7 +12,7 @@ Il motore è questo: una memoria del progetto versionata dentro il repository, s
 
 Niente in questo sistema è automatico appena installato. Gli hook esistono come file e non fanno nulla finché qualcuno non li registra nel `settings.json` del progetto, e questa non è una svista ma una scelta: un hook è codice che gira senza che nessuno lo chieda, e un pacchetto che ne attivasse sette di sua iniziativa sarebbe un pacchetto che esegue programmi sulla macchina di chi lo installa.
 
-Ne segue la distinzione che governa tutta questa guida, e che va tenuta a mente ogni volta che qui si legge "parte da solo": significa che parte da solo **dopo che lo hai registrato una volta**. La registrazione si fa una volta per progetto, si verifica con `/hooks`, ed è il singolo investimento che trasforma una lista di buone pratiche in un comportamento.
+Ne segue la distinzione che governa tutta questa guida, e che va tenuta a mente ogni volta che qui si legge "parte da solo": significa che parte da solo dopo che lo hai registrato una volta. La registrazione si fa una volta per progetto, si verifica con `/hooks`, ed è il singolo investimento che trasforma una lista di buone pratiche in un comportamento.
 
 ## Che cosa parte da solo, e a quale condizione
 
@@ -26,15 +26,15 @@ Ne segue la distinzione che governa tutta questa guida, e che va tenuta a mente 
 | Ogni `git commit` dell'agente | Il diff in stage viene scansionato alla ricerca di segreti | hook `secret-scan`, evento `PreToolUse` su `Bash` | registrarlo una volta |
 | Ogni scrittura su un file sensibile | La scrittura viene bloccata | hook `protect-sensitive-files`, evento `PreToolUse` | registrarlo una volta |
 | Chiusura sessione | L'impronta di ripresa viene registrata | hook `chiusura-sessione`, evento `SessionEnd` | registrarlo una volta |
-| Chiusura sessione | Il magazzino nascosto dell'account viene ripulito | hook `session-end-wipe`, registrato **nell'account** e non nel progetto | installarlo una volta per macchina |
+| Chiusura sessione | Il magazzino nascosto dell'account viene ripulito | hook `session-end-wipe`, registrato *nell'account* e non nel progetto | installarlo una volta per macchina |
 
 Tre avvertenze rendono questa tabella onesta invece che ottimistica.
 
-La prima è che **nessun hook può invocare una skill**. Un hook esegue un comando di shell, e una skill è una procedura che esegue l'agente. Per questo l'apertura di sessione non invoca `sync-context`: stampa in contesto l'istruzione di invocarla, e l'agente la esegue. È automatico nella pratica e non garantito nel meccanismo, e la differenza va conosciuta: se una sessione salta quel passo, lo si vede perché il recap iniziale non nomina il drift.
+La prima è che nessun hook può invocare una skill. Un hook esegue un comando di shell, e una skill è una procedura che esegue l'agente. Per questo l'apertura di sessione non invoca `sync-context`: stampa in contesto l'istruzione di invocarla, e l'agente la esegue. È automatico nella pratica e non garantito nel meccanismo, e la differenza va conosciuta: se una sessione salta quel passo, lo si vede perché il recap iniziale non nomina il drift.
 
-La seconda è che i due hook sul `git commit` vedono **il commit dell'agente**, non il tuo. In questo sistema le operazioni git restano dell'utente, quindi il caso normale è che i tuoi commit non passino di lì. Per coprirli serve un hook nativo di git, cioè `core.hooksPath`, e il README di `hooks-starter` spiega come. Finché non lo si fa, quei due hook valgono come rete per il caso in cui un progetto allenti il divieto di commit all'agente, non come garanzia sui tuoi.
+La seconda è che i due hook sul `git commit` vedono *il commit dell'agente*, non il tuo. In questo sistema le operazioni git restano dell'utente, quindi il caso normale è che i tuoi commit non passino di lì. Per coprirli serve un hook nativo di git, cioè `core.hooksPath`, e il README di `hooks-starter` spiega come. Finché non lo si fa, quei due hook valgono come rete per il caso in cui un progetto allenti il divieto di commit all'agente, non come garanzia sui tuoi.
 
-La terza riguarda la chiusura. Un hook `SessionEnd` gira quando la sessione si chiude, comprese le chiusure ordinate, ma **non gira quando il processo muore davvero**, per un crash o per la corrente che manca. È esattamente il comportamento che serve: copre la chiusura distratta, cioè la finestra chiusa senza aggiornare il file di ripresa, e lascia scoperta la caduta vera, che è la cosa che si vuole restare visibile alla sessione successiva.
+La terza riguarda la chiusura. Un hook `SessionEnd` gira quando la sessione si chiude, comprese le chiusure ordinate, ma non gira quando il processo muore davvero, per un crash o per la corrente che manca. È esattamente il comportamento che serve: copre la chiusura distratta, cioè la finestra chiusa senza aggiornare il file di ripresa, e lascia scoperta la caduta vera, che è la cosa che si vuole restare visibile alla sessione successiva.
 
 ## Che cosa devi digitare tu
 
@@ -51,7 +51,7 @@ Le skill si invocano digitando il loro nome preceduto dalla barra, nel terminale
 | `/studio-didattico` | Aggiunge una voce al racconto evolutivo e la sua scheda di dettaglio | A ogni refactor o scelta di qualità non ovvia, se il progetto ha adottato la pratica |
 | `/hooks` | Mostra quali hook sono registrati davvero | Dopo aver registrato un hook, per verificare che ci sia |
 
-Gli strumenti si lanciano invece come programmi, dalla radice del progetto. Il percorso è quello che hanno **dopo l'istanziazione**, cioè dentro `tools/` del progetto ospite; nel repository del template vivono sotto `.claude/templates/`, e là si eseguono solo per provarli.
+Gli strumenti si lanciano invece come programmi, dalla radice del progetto. Il percorso è quello che hanno *dopo l'istanziazione*, cioè dentro `tools/` del progetto ospite; nel repository del template vivono sotto `.claude/templates/`, e là si eseguono solo per provarli.
 
 | Lanci | Che cosa fa |
 |---|---|
@@ -64,6 +64,7 @@ Gli strumenti si lanciano invece come programmi, dalla radice del progetto. Il p
 | `python tools/fix-dashes.py --check .` | Trattini lunghi e segni che somigliano a un trattino |
 | `python tools/lint-md-commands.py .` | Comandi spezzati dentro i blocchi di codice, che non si copiano in una riga sola |
 | `python tools/lint-doc-references.py --solo-vivi` | Documenti vivi che nominano file inesistenti |
+| `python tools/check-eol.py .` | File di testo che mescolano CRLF e LF, che al primo salvataggio si riscrivono per intero |
 | `python tools/costruisci-timeline.py` | Rigenera la linea temporale del progetto |
 | `python tools/costruisci-timeline.py --senza-ragione` | Elenca i microstep senza una ragione dichiarata |
 | `python tools/Test-Allineamento.py` | Le affermazioni che stanno invecchiando: scadenze, misure vecchie, invarianti |
@@ -71,11 +72,13 @@ Gli strumenti si lanciano invece come programmi, dalla radice del progetto. Il p
 | `python tools/lint-didattica.py` | Voci di work-log senza didattica dichiarata, e schede orfane |
 | `python tools/indice-refactor.py` | Rigenera l'indice per argomento delle schede didattiche |
 
-E due strumenti che non stanno in `tools/` del progetto perché riguardano la macchina e non il progetto, e si eseguono dal bundle:
+E quattro strumenti che non stanno in `tools/` del progetto e si eseguono dal bundle. I primi due riguardano la macchina e non il progetto; gli altri due riguardano il bundle in quanto tale, cioè la coerenza fra ciò che distribuisce e ciò che dichiara, e in un progetto ospite non hanno niente da dire.
 
 ```
 python .claude/templates/tools/detect-ssh-profiles.py --repo .
 powershell -NoProfile -ExecutionPolicy Bypass -File .claude/templates/tools/check-account-hygiene.ps1
+python .claude/templates/tools/check-copie-modelli.py
+python .claude/templates/tools/check-catalogo.py
 ```
 
 ## Le regole: che cosa vuol dire "usarle"
@@ -84,17 +87,17 @@ Questa è la domanda che `chat-non-e-memoria.md` solleva, e vale per tutte le re
 
 Una regola non si lancia e non si invoca. È un file Markdown che entra nel contesto della sessione e cambia il comportamento dell'agente, e il modo in cui la si "usa" è che esista nel progetto e sia indicizzata. Non c'è un comando, non c'è un momento in cui si attiva: se il file c'è, la regola è in vigore.
 
-Per `chat-non-e-memoria.md` in particolare, ciò che la regola prescrive è un comportamento dell'agente e ha un **osservabile preciso**, che è il modo in cui puoi verificare che stia funzionando invece di sperarlo. La regola dice che nessun contenuto sostanziale resti nella sola conversazione: un numero misurato va in un documento, una correzione nel work-log, una decisione nel registro come ADR, un lavoro rimandato fra le pendenze, una fonte nel registro delle fonti. E dice che l'aggiornamento avvenga nel medesimo giro di lavoro in cui il contenuto nasce, non a fine sessione quando il contesto è pieno e l'attenzione bassa.
+Per `chat-non-e-memoria.md` in particolare, ciò che la regola prescrive è un comportamento dell'agente e ha un *osservabile preciso*, che è il modo in cui puoi verificare che stia funzionando invece di sperarlo. La regola dice che nessun contenuto sostanziale resti nella sola conversazione: un numero misurato va in un documento, una correzione nel work-log, una decisione nel registro come ADR, un lavoro rimandato fra le pendenze, una fonte nel registro delle fonti. E dice che l'aggiornamento avvenga nel medesimo giro di lavoro in cui il contenuto nasce, non a fine sessione quando il contesto è pieno e l'attenzione bassa.
 
-L'osservabile è l'ultima riga: **alla fine di ogni giro di lavoro sostanziale l'agente dichiara quali file ha scritto**. Quella riga è il presidio della regola. Se c'è, il contenuto è su disco; se manca, il contenuto è rimasto in chat ed è già perduto, anche quando la risposta era ottima. Quindi il modo in cui usi questa regola è: leggere quella riga, e quando non c'è, chiederla.
+L'osservabile è l'ultima riga: alla fine di ogni giro di lavoro sostanziale l'agente dichiara quali file ha scritto. Quella riga è il presidio della regola. Se c'è, il contenuto è su disco; se manca, il contenuto è rimasto in chat ed è già perduto, anche quando la risposta era ottima. Quindi il modo in cui usi questa regola è: leggere quella riga, e quando non c'è, chiederla.
 
-Una seconda cosa la regola la dice e vale ripeterla qui perché è la parte che sorprende: l'agente **non** scrive di propria iniziativa in `.claude/memory/` e in `.claude/context/`. Propone il delta e lo applica quando glielo chiedi, perché il versionamento della memoria resta sotto controllo umano. L'eccezione dichiarata riguarda i documenti di conoscenza, cioè studi, censimenti e registri di fonti, che l'agente scrive sempre: là il rischio è opposto, ed è che il contenuto resti in chat.
+Una seconda cosa la regola la dice e vale ripeterla qui perché è la parte che sorprende: l'agente non scrive di propria iniziativa in `.claude/memory/` e in `.claude/context/`. Propone il delta e lo applica quando glielo chiedi, perché il versionamento della memoria resta sotto controllo umano. L'eccezione dichiarata riguarda i documenti di conoscenza, cioè studi, censimenti e registri di fonti, che l'agente scrive sempre: là il rischio è opposto, ed è che il contenuto resti in chat.
 
 ## Il ciclo di una sessione, nella forma concreta
 
 All'apertura, se hai registrato l'hook, la verifica e lo stato arrivano da soli e ti trovi davanti un recap. Se non lo hai registrato, digiti `/riprendi`. In entrambi i casi il passo successivo è `/sync-context`, che l'hook chiede all'agente di fare e che puoi sempre digitare tu.
 
-Se la verifica ha trovato divergenze, l'agente deve riportarle **prima** di leggere il file di ripresa e prima di cominciare. La regola in questa situazione è che non decide: un file lasciato a metà può essere un lavoro da riprendere o uno da buttare, e la differenza non si legge dal contenuto. Se l'agente comincia a lavorare senza avertele riportate, fermalo.
+Se la verifica ha trovato divergenze, l'agente deve riportarle prima di leggere il file di ripresa e prima di cominciare. La regola in questa situazione è che non decide: un file lasciato a metà può essere un lavoro da riprendere o uno da buttare, e la differenza non si legge dal contenuto. Se l'agente comincia a lavorare senza avertele riportate, fermalo.
 
 Durante il lavoro vale la regola sulla persistenza appena descritta, con il suo osservabile.
 
@@ -130,6 +133,9 @@ Qui la risposta alla domanda "si lancia automatico?" è: quasi mai, e per una ra
 | "Questo documento dice una cosa che forse non è più vera" | Un'affermazione con una scadenza implicita | `python tools/Test-Allineamento.py` |
 | "Il diff è pieno di righe che nessuno ha toccato" | Paragrafi hard-wrapped che si ri-avvolgono | automatico a ogni scrittura con l'hook; altrimenti `python tools/md-unwrap.py .` |
 | "Questo comando incollato si è spezzato in due" | Una continuazione di riga dentro un blocco di codice | `python tools/lint-md-commands.py .` |
+| "Ho corretto uno strumento e nei progetti nuovi la correzione non c'è" | La copia in `tools/` e il modello sotto `.claude/templates/` sono divergenti | `python .claude/templates/tools/check-copie-modelli.py` |
+| "Il gate propone un pacchetto che non esiste, o non ne propone uno che c'è" | Il catalogo e il disco sono divergenti | `python .claude/templates/tools/check-catalogo.py` |
+| "Una modifica di due righe compare come modifica dell'intero file" | Fini riga miste nello stesso file | `python tools/check-eol.py .` |
 | "Sto per rendere pubblico il repository" | Dati che identificano persone o infrastrutture | `python tools/Test-Anonymization.py` |
 | "Il commit è partito con l'email sbagliata" | Identità git non impostata a livello locale | `python .claude/templates/tools/detect-ssh-profiles.py --repo .` |
 | "Questa fonte esiste ma non riesco a leggerla" | Una fonte fuori dalla portata degli strumenti di sessione | leggi `.claude/rules/web-sources-not-fetchable.md`, poi gli strumenti di `community-sources` |
@@ -138,9 +144,9 @@ Qui la risposta alla domanda "si lancia automatico?" è: quasi mai, e per una ra
 
 ## Le ricette: che cosa Claude capisce da solo e che cosa no
 
-La domanda è legittima e la risposta onesta è: **capisce i settori, non sceglie i pacchetti**.
+La domanda è legittima e la risposta onesta è: capisce i settori, non sceglie i pacchetti.
 
-Quando incolli il prompt iniziale e descrivi il progetto, la skill `gate-pacchetti` usa quella descrizione insieme ai fatti che legge sul disco, cioè quali linguaggi ci sono, se esista una cartella di documenti o di fonti, quanto è lunga la storia git, quanti server MCP sono già configurati. Da lì ricava a quali dei dieci settori il progetto appartiene, e **te li dichiara con il fatto da cui li ha riconosciuti**, perché tu possa correggerli. Un settore che aggiungi si attraversa, uno che togli si salta con la ragione registrata.
+Quando incolli il prompt iniziale e descrivi il progetto, la skill `gate-pacchetti` usa quella descrizione insieme ai fatti che legge sul disco, cioè quali linguaggi ci sono, se esista una cartella di documenti o di fonti, quanto è lunga la storia git, quanti server MCP sono già configurati. Da lì ricava a quali dei dieci settori il progetto appartiene, e te li dichiara con il fatto da cui li ha riconosciuti, perché tu possa correggerli. Un settore che aggiungi si attraversa, uno che togli si salta con la ragione registrata.
 
 Quello che non fa, e non deve fare, è decidere. Dentro un settore riconosciuto ogni pacchetto arriva con tre frasi, cioè che cosa fa, perché a questo progetto potrebbe servire legando la ragione a un fatto del tuo repository invece che a una categoria generica, e che cosa costa, comprese le capacità che duplicherebbe. Poi chiede, e un silenzio non è un sì.
 
@@ -160,7 +166,7 @@ Le ricette che seguono sono quindi una scorciatoia per te, non un comportamento 
 
 ## La memoria del progetto, strato per strato
 
-Questa sezione risponde alla domanda che tiene insieme tutto il sistema: dove finisce ciò che sai del progetto, che cosa sopravvive a un clone, e che cosa viene cancellato e quando. Il principio è uno solo, e le quattro sezioni che seguono sono le sue conseguenze: **la memoria del progetto vive dentro la cartella del progetto, e tutto ciò che si accumula altrove è materiale transitorio da ripulire.**
+Questa sezione risponde alla domanda che tiene insieme tutto il sistema: dove finisce ciò che sai del progetto, che cosa sopravvive a un clone, e che cosa viene cancellato e quando. Il principio è uno solo, e le quattro sezioni che seguono sono le sue conseguenze: la memoria del progetto vive dentro la cartella del progetto, e tutto ciò che si accumula altrove è materiale transitorio da ripulire.
 
 Il modo di verificare che il principio regga è secco, e conviene usarlo davvero ogni tanto: clona il repository in una cartella nuova, aprilo, e chiediti se basta. Se per capire lo stato serve qualcosa che nel clone non c'è, quella cosa è nel posto sbagliato.
 
@@ -193,9 +199,9 @@ CLAUDE.local.md                preferenze personali di sessione
 .claude/settings.local.json    permessi personali, non condivisi
 ```
 
-Il `.gitignore` li esclude, e il blocco che li esclude arriva da `templates/gitignore.snippet`: va unito **prima** di creare `_notes/`, altrimenti la cartella finisce indicizzata e toglierla dopo è un'operazione sulla storia. Nessuno li cancella automaticamente: li cancelli tu quando non servono più, e la regola per il materiale grezzo di terzi è di eliminarlo quando la sintesi con l'attribuzione lo ha reso superfluo.
+Il `.gitignore` li esclude, e il blocco che li esclude arriva da `templates/gitignore.snippet`: va unito prima di creare `_notes/`, altrimenti la cartella finisce indicizzata e toglierla dopo è un'operazione sulla storia. Nessuno li cancella automaticamente: li cancelli tu quando non servono più, e la regola per il materiale grezzo di terzi è di eliminarlo quando la sintesi con l'attribuzione lo ha reso superfluo.
 
-La conseguenza da tenere presente è che questo strato **non sopravvive a un clone**, ed è voluto: se qualcosa che sta qui serve a capire il progetto, va promosso allo strato uno.
+La conseguenza da tenere presente è che questo strato non sopravvive a un clone, ed è voluto: se qualcosa che sta qui serve a capire il progetto, va promosso allo strato uno.
 
 ### Strato tre: fuori dal repository, nella home dell'account Claude
 
@@ -220,7 +226,7 @@ Di tutto questo, la cosa che conta di più è la prima riga: le trascrizioni di 
 
 ### Come lo strato tre viene ripulito, e la cosa che non funziona
 
-Si ripulisce con `session-end-wipe`, che si installa **una volta per macchina** nella home dell'account e si registra come hook `SessionEnd` del `settings.json` dell'account, non del progetto. A ogni chiusura di sessione rimuove le trascrizioni e la memoria nascosta dei progetti non preservati, gli store effimeri dell'elenco sopra, la cronologia dei prompt, e dalla mappa `projects` del `.claude.json` le voci dei percorsi non preservati.
+Si ripulisce con `session-end-wipe`, che si installa una volta per macchina nella home dell'account e si registra come hook `SessionEnd` del `settings.json` dell'account, non del progetto. A ogni chiusura di sessione rimuove le trascrizioni e la memoria nascosta dei progetti non preservati, gli store effimeri dell'elenco sopra, la cronologia dei prompt, e dalla mappa `projects` del `.claude.json` le voci dei percorsi non preservati.
 
 Che cosa preserva, sempre: i progetti il cui slug comincia con uno dei prefissi che hai dichiarato, la configurazione, il login, le skill, i plugin, gli hook e lo stato del daemon. E non tocca mai i file dei progetti su disco: agisce solo dentro la home dell'account.
 
@@ -231,13 +237,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<CLAUDE_CONFIG_DIR>\hooks\s
 powershell -NoProfile -ExecutionPolicy Bypass -File "<CLAUDE_CONFIG_DIR>\hooks\session-end-wipe.ps1" -DryRun
 ```
 
-E qui va detta la cosa che non funziona, perché è documentata e non è un difetto da nascondere: **l'hook `SessionEnd` è best-effort**. Claude Code può riscrivere alcuni file di sessione dopo che l'hook è già scattato, quindi la coda dell'ultima sessione può sopravvivere fino alla chiusura successiva. La conseguenza pratica è che il wipe automatico non basta da solo: dopo aver chiuso Claude, per la pulizia garantita anche sulla coda dell'ultima sessione, si rilancia lo script a mano.
+E qui va detta la cosa che non funziona, perché è documentata e non è un difetto da nascondere: l'hook `SessionEnd` è best-effort. Claude Code può riscrivere alcuni file di sessione dopo che l'hook è già scattato, quindi la coda dell'ultima sessione può sopravvivere fino alla chiusura successiva. La conseguenza pratica è che il wipe automatico non basta da solo: dopo aver chiuso Claude, per la pulizia garantita anche sulla coda dell'ultima sessione, si rilancia lo script a mano.
 
 ```
 powershell -NoProfile -ExecutionPolicy Bypass -File "<CLAUDE_CONFIG_DIR>\hooks\session-end-wipe.ps1"
 ```
 
-Che l'account sia in regola si verifica in sola lettura, e il controllo guarda tre cose: che la auto-memory nativa sia disattivata, che l'hook di wipe sia registrato, e che lo script installato sia configurato per **questa** macchina e non per un'altra, il che è la firma di una configurazione copiata da altrove.
+Che l'account sia in regola si verifica in sola lettura, e il controllo guarda tre cose: che la auto-memory nativa sia disattivata, che l'hook di wipe sia registrato, e che lo script installato sia configurato per questa macchina e non per un'altra, il che è la firma di una configurazione copiata da altrove.
 
 ```
 powershell -NoProfile -ExecutionPolicy Bypass -File .claude/templates/tools/check-account-hygiene.ps1

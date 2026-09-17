@@ -25,6 +25,46 @@ printf '%s' "$RAW" | grep -qE 'git[[:space:]]+commit' || exit 0
 RADICE="${CLAUDE_PROJECT_DIR:-$PWD}"
 FALLITI=""
 
+# Ricerca a cascata dello strumento. Le collocazioni legittime sono due e non una: in un
+# progetto istanziato gli strumenti condivisi stanno in tools/ della radice, mentre nel
+# repository che li produce, cioe' il template stesso, gli originali vivono sotto
+# .claude/templates/, dove md-unwrap ha per giunta una cartella propria. Un hook che cercasse
+# soltanto la prima uscirebbe zero senza fare nulla proprio nel repository dove quegli strumenti
+# sono nati, e non come errore ma come silenzio, che e' il modo peggiore di fallire.
+#
+# La ricerca prova le tre cartelle in quest'ordine e restituisce la prima che risponde, e dove
+# l'uscita dell'hook viene letta dichiara anche quale: un hook che sta lavorando su una copia
+# dei modelli invece che sull'originale, o viceversa, deve poterlo far vedere.
+CARTELLE_STRUMENTI="tools .claude/templates/tools .claude/templates/md-unwrap/tools"
+
+trova_strumento() {
+    for cartella in $CARTELLE_STRUMENTI; do
+        if [ -f "$RADICE/$cartella/$1" ]; then
+            printf '%s/%s/%s' "$RADICE" "$cartella" "$1"
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Il repository che produce i modelli chiede due argomenti in piu', ed e' la seconda meta' dello
+# stesso difetto che la cascata risolve. I tre strumenti tipografici rifiutano di scrivere sotto
+# .claude/templates/, perche' in un progetto ospite quelli sono copie e correggerle le farebbe
+# divergere dall'originale; qui pero' gli originali sono proprio loro, e senza --includi-modelli
+# il controllo guarda una frazione dei file e passa. Allo stesso modo il controllo sui
+# riferimenti vuole --bundle, perche' i percorsi dell'anatomia di un progetto ospite, nominati
+# dai modelli, qui non esistono e non sono riferimenti rotti. Entrambi i casi falliscono verso il
+# verde, che e' la direzione sbagliata: un via libera indistinguibile da quello vero.
+#
+# Il marcatore del bundle sono i due prompt di istanziazione, che nessun progetto ospite riceve:
+# si riconosce per cio' che il repository fa, non per come si chiama la sua cartella.
+MODELLI=""
+BUNDLE=""
+if [ -f "$RADICE/.claude/PROMPT-nuovo-progetto.md" ]; then
+    MODELLI="--includi-modelli"
+    BUNDLE="--bundle"
+fi
+
 # L'interprete si sceglie invece di assumerlo. Su una macchina con Git Bash `python3` puo'
 # esistere sul PATH ed essere l'alias fittizio del Microsoft Store, che non esegue niente e non
 # sbaglia: un hook che lo invocasse uscirebbe zero senza aver fatto nulla, cioe' fallirebbe in
@@ -45,10 +85,12 @@ done
 # impossibile committare.
 esegui() {
     nome="$1"; file="$2"; shift 2
-    [ -f "$RADICE/$file" ] || return 0
-    if ! "$PY" "$RADICE/$file" "$@" >/dev/null 2>&1; then
+    percorso="$(trova_strumento "$file")" || return 0
+    if ! "$PY" "$percorso" "$@" >/dev/null 2>&1; then
+        # Si nomina il percorso davvero usato e non il solo nome del file: dove le cartelle
+        # candidate sono tre, un comando da rilanciare che non dica quale e' da indovinare.
         FALLITI="$FALLITI
-  - $nome: rilanciare  python $file $*"
+  - $nome: rilanciare  python ${percorso#$RADICE/} $*"
     fi
 }
 
@@ -56,11 +98,11 @@ esegui() {
 # corrente del processo che esegue l'hook, e le due coincidono in una sessione ordinaria ma non
 # per contratto. Un controllo che girasse sulla cartella sbagliata non darebbe un errore, darebbe
 # zero segnalazioni, cioe' un via libera indistinguibile da quello vero.
-esegui "forma dei paragrafi Markdown" "tools/md-unwrap.py" --check --oracle require "$RADICE"
-esegui "accenti"                      "tools/fix-accents.py" --check "$RADICE"
-esegui "trattini"                     "tools/fix-dashes.py" --check "$RADICE"
-esegui "comandi copiabili"            "tools/lint-md-commands.py" "$RADICE"
-esegui "riferimenti a file"           "tools/lint-doc-references.py" --radice "$RADICE" --solo-vivi
+esegui "forma dei paragrafi Markdown" "md-unwrap.py" --check --oracle require "$RADICE"
+esegui "accenti"                      "fix-accents.py" --check $MODELLI "$RADICE"
+esegui "trattini"                     "fix-dashes.py" --check $MODELLI "$RADICE"
+esegui "comandi copiabili"            "lint-md-commands.py" "$RADICE"
+esegui "riferimenti a file"           "lint-doc-references.py" --radice "$RADICE" --solo-vivi $BUNDLE
 
 if [ -n "$FALLITI" ]; then
     {

@@ -248,8 +248,8 @@ def main():
     ap.add_argument("--server", action="append", help="limita a questi server; ripetibile")
     ap.add_argument("--sigla", action="append",
                     help="limita ai canali che servono questa sigla di lavoro; ripetibile. "
-                         "Serve perché i canali che servono una stessa domanda stanno su più "
-                         "gruppi di priorità, e chiederli per gruppo significa chiedere anche il resto")
+                         "Serve perché i canali che servono una stessa domanda stanno su più "
+                         "gruppi di priorità, e chiederli per gruppo significa chiedere anche il resto")
     ap.add_argument("--dce", help="percorso dell'eseguibile di DiscordChatExporter")
     ap.add_argument("--html", action="store_true",
                     help="esporta anche la resa leggibile, oltre al JSON")

@@ -72,11 +72,11 @@ Il passaggio e in Node e non in PowerShell per una ragione precisa: `ConvertFrom
 
 ## lint-doc-references.py
 
-Trova nella documentazione i riferimenti a file che non esistono. Non verifica se una descrizione sia vera, che e un giudizio: verifica se l'oggetto di cui parla esista, che e il sottoinsieme controllabile del problema ed e quello che sul progetto di origine aveva prodotto un documento di contesto primario che descriveva un file mai esistito.
+Trova nella documentazione i riferimenti a file che non esistono. Non verifica se una descrizione sia vera, che è un giudizio: verifica se l'oggetto di cui parla esista, che è il sottoinsieme controllabile del problema ed è quello che sul progetto di origine aveva prodotto un documento di contesto primario che descriveva un file mai esistito.
 
-Divide in categorie invece di produrre un elenco unico, e la ragione vale come criterio generale di ogni controllo automatico: cento segnalazioni di cui novanta legittime insegnano a ignorare le altre dieci. Sono da correggere i documenti vivi che nominano un file assente; sono storici il work-log e le schede datate, dove una voce che nomina un file poi cancellato era vera quel giorno; sono modelli i percorsi sotto `templates/`, che sono convenzioni per un progetto che non e questo. La quarta categoria si attiva solo su dichiarazione esplicita e riguarda un repository solo, cioe quello che contiene lo standard invece di averlo adottato.
+Divide in categorie invece di produrre un elenco unico, e la ragione vale come criterio generale di ogni controllo automatico: cento segnalazioni di cui novanta legittime insegnano a ignorare le altre dieci. Sono da correggere i documenti vivi che nominano un file assente; sono storici il work-log e le schede datate, dove una voce che nomina un file poi cancellato era vera quel giorno; sono modelli i percorsi sotto `templates/`, che sono convenzioni per un progetto che non è questo. La quarta categoria si attiva solo su dichiarazione esplicita e riguarda un repository solo, cioè quello che contiene lo standard invece di averlo adottato.
 
-Le radici che identificano un percorso non si configurano: si leggono da git. Un elenco scritto a mano sarebbe un secondo posto dove vive lo stesso fatto, e divergerebbe in silenzio, perche il sintomo di una cartella non controllata e l'assenza di segnalazioni.
+Le radici che identificano un percorso non si configurano: si leggono da git. Un elenco scritto a mano sarebbe un secondo posto dove vive lo stesso fatto, e divergerebbe in silenzio, perché il sintomo di una cartella non controllata e l'assenza di segnalazioni.
 
 ```
 python tools/lint-doc-references.py
@@ -87,15 +87,55 @@ python tools/lint-doc-references.py --self-test
 
 ## verifica-ripresa.py
 
-Dice, alla riapertura di una sessione, se fra l'ultima e questa si e perso qualcosa. Confronta l'impronta registrata a fine sessione, cioe il commit e la forma dell'albero di lavoro in quel momento, con lo stato reale, e riporta i commit comparsi dopo l'ultima registrazione, i file rimasti a meta, i documenti di memoria che dichiarano un commit piu vecchio di HEAD e le schede ancorate a un commit che non esiste.
+Dice, alla riapertura di una sessione, se fra l'ultima e questa si e perso qualcosa. Confronta l'impronta registrata a fine sessione, cioè il commit e la forma dell'albero di lavoro in quel momento, con lo stato reale, e riporta i commit comparsi dopo l'ultima registrazione, i file rimasti a meta, i documenti di memoria che dichiarano un commit più vecchio di HEAD e le schede ancorate a un commit che non esiste.
 
-Il danno che intercetta non e la perdita del lavoro, che sta su disco e in git, ma il fatto che una sessione nuova prenda un file di ripresa vecchio per lo stato corrente: un file di ripresa non aggiornato ha esattamente lo stesso aspetto di uno aggiornato. La skill `riprendi` e la procedura che ne interpreta l'esito.
+Il danno che intercetta non è la perdita del lavoro, che sta su disco e in git, ma il fatto che una sessione nuova prenda un file di ripresa vecchio per lo stato corrente: un file di ripresa non aggiornato ha esattamente lo stesso aspetto di uno aggiornato. La skill `riprendi` e la procedura che ne interpreta l'esito.
 
 ```
 python tools/verifica-ripresa.py
 python tools/verifica-ripresa.py --registra
 python tools/verifica-ripresa.py --breve
 python tools/verifica-ripresa.py --self-test
+```
+
+## check-eol.py
+
+Segnala i file di testo che mescolano CRLF e LF nello stesso file. La convenzione Markdown del sistema prescrive di conservare la fine riga di ciascun file, e md-unwrap la rispetta per contratto: ne segue che l'albero contiene legittimamente entrambe le convenzioni, e che nessun altro controllo si accorge se un file le mescola, perché il rendering a video è identico e la catena tipografica guarda i caratteri e non le interruzioni.
+
+Un file misto non è un problema estetico. Con `core.autocrlf` a false e senza `.gitattributes` git registra le fini riga così come stanno sul disco, quindi il file misto entra nella storia, e alla prima riscrittura da parte di qualunque strumento le interruzioni si uniformano, trasformando una modifica di due righe in una modifica dell'intero file. È di sola lettura e non converte niente, perché la decisione su quale fine riga tenere resta di chi conosce il file.
+
+```
+python tools/check-eol.py
+python tools/check-eol.py --dettaglio
+```
+
+## check-copie-modelli.py
+
+Confronta ogni strumento istanziato con il suo modello sotto `.claude/templates/`. Un progetto che adotta lo standard copia gli strumenti condivisi dentro la propria anatomia, e dal momento della copia le due esistono in parallelo senza che niente le tenga insieme: si corregge la copia, perché è quella che gira, e il modello resta indietro.
+
+Il modo in cui questo difetto si manifesta è il peggiore possibile, perché non si manifesta nel repository dove nasce. Il 2026-09-16, in questo bundle, i tre strumenti tipografici avevano ricevuto una guardia che impedisce di riscrivere le copie dei modelli: la guardia era entrata nelle copie sotto `tools/`, dove era stata provata, e non nei modelli. Tutte le prove passavano, perché le prove girano sulle copie, e il difetto sarebbe comparso soltanto nei progetti allineati dopo, sotto forma di strumenti privi di una protezione che la documentazione dichiarava presente.
+
+La corrispondenza fra modello e copia si deduce dalla struttura e non da un elenco: dentro un pacchetto, una cartella che si chiama come una dell'anatomia ospite (`tools`, `hooks`, `rules`, `skills`, `agents`, `commands`) atterra nella cartella omonima del progetto. I README dei pacchetti non hanno copia e non entrano nel confronto; i file che si istanziano proprio per essere adattati, come l'elenco di esclusioni di `fix-dashes`, stanno in una lista di eccezioni dichiarate con il motivo, perché altrimenti produrrebbero una segnalazione perpetua. Un modello senza copia non è un difetto ma un pacchetto non adottato, e si conta senza elencarlo salvo `--tutti`.
+
+```
+python tools/check-copie-modelli.py
+python tools/check-copie-modelli.py --tutti
+python tools/check-copie-modelli.py --allinea
+python tools/check-copie-modelli.py --self-test
+```
+
+## check-catalogo.py
+
+Verifica che il catalogo dei pacchetti in `.claude/templates/PACKAGES.md` descriva il disco. Le due cose divergono in tre modi, tutti muti: una riga nomina una cartella che non esiste più e il gate propone un pacchetto inesistente; una cartella non ha riga e il pacchetto non viene proposto a nessuno, il che è indistinguibile dall'averlo escluso di proposito; e i totali dichiarati in prosa restano al numero che era giusto quando qualcuno li ha scritti.
+
+Il terzo caso è quello che si nota di meno, ed è il motivo per cui lo strumento esiste: il 2026-09-16 il catalogo dichiarava settantatré voci e ne aveva settantaquattro, mentre `docs/feature-map.html` ne dichiarava sessantuno. Tre numeri per lo stesso fatto, nessuno dei quali sbagliato nel momento in cui era stato scritto.
+
+I totali in prosa non si cercano con una espressione regolare, e la ragione vale come criterio generale. Il testo dice anche che un progetto appartiene a due o tre settori, e quel tre non è un totale ma una osservazione: una regola che cercasse un numero seguito da "settori" segnalerebbe entrambi, e un controllo che segnala ciò che è corretto insegna a ignorarlo. Le affermazioni verificate stanno quindi in un elenco dichiarato, una riga per frase, con accanto che cosa quella frase conta; `--censimento` elenca i numeri candidati perché trovarne di nuove non richieda di ricordarsele. I numeri si leggono in cifre e in lettere italiane fino a novantanove, contrazioni comprese.
+
+```
+python tools/check-catalogo.py
+python tools/check-catalogo.py --censimento
+python tools/check-catalogo.py --self-test
 ```
 
 ## latest-screenshot.ps1
