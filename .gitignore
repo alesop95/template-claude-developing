@@ -5,6 +5,15 @@ CLAUDE.local.md
 # Livello privato e verboso: appunti, stati di lavorazione, materiale transitorio
 _notes/
 
+# Eccezione: sotto .claude/templates/ i _notes non sono appunti reali ma i modelli da cui
+# si istanziano, quindi vanno versionati. I quattro modelli DIARIO, RESOCONTO, RESUME-PROMPT
+# e TEST-CHECKLIST sono tracciati da prima che questa regola esistesse, quindi il pattern non
+# li tocca e un clone li riceve: la negazione non ripara un danno in corso, previene quello
+# futuro, cioe' un modello aggiunto qui domani che sparirebbe in silenzio e che `git add`
+# rifiuterebbe senza -f. Propagata da un progetto istanziato il 2026-09-17.
+!.claude/templates/_notes/
+!.claude/templates/community-sources/_notes/
+
 # Artefatti di sistema operativo e di sincronizzazione
 Thumbs.db
 desktop.ini
