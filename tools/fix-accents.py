@@ -673,6 +673,37 @@ def main():
 
     estensioni = set(e if e.startswith(".") else "." + e
                      for e in args.ext.split(","))
+
+    # Guardia sui sorgenti, aggiunta il 2026-09-17 dopo un danno reale.
+    #
+    # Lanciato con `--ext .ts --ext .tsx` su un progetto React, questo strumento ha prodotto
+    # settecentotrentasei sostituzioni e **rotto la compilazione**. La causa non e' un caso limite
+    # esotico: in un linguaggio con le stringhe fra apici singoli, un letterale come `'che'`
+    # termina con la sequenza `e'`, che e' esattamente il bersaglio piu' frequente della tabella.
+    # La sostituzione produce `'che` senza chiusura, cioe' `Unterminated string literal`.
+    #
+    # La lezione, che vale oltre questo strumento: **una regola di prosa applicata a un file che
+    # contiene due linguaggi va applicata solo al linguaggio giusto.** E' lo stesso problema gia'
+    # risolto per i file di composizione tipografica, dove gli identificatori vengono mascherati
+    # prima di operare; qui la soluzione corretta sarebbe distinguere commenti da codice, che
+    # richiede un analizzatore sintattico per ogni linguaggio. Finche' non esiste, lo strumento
+    # **si rifiuta** invece di fare un lavoro che non sa fare.
+    #
+    # L'errore era prevedibile e infatti e' stato previsto: chi lo ha lanciato aveva nominato il
+    # rischio prima di eseguire e ha verificato subito con il compilatore. Il danno e' stato nullo
+    # perche' il codice era committato, ma il presidio non puo' essere la prudenza di chi lancia.
+    SORGENTI = {".ts", ".tsx", ".js", ".jsx", ".py", ".java", ".c", ".h", ".cpp", ".cs",
+                ".go", ".rb", ".php", ".rs", ".swift", ".kt", ".sql", ".sh", ".ps1"}
+    pericolose = sorted(estensioni & SORGENTI)
+    if pericolose and not args.check:
+        print("rifiutato: estensioni di codice sorgente richieste (%s)."
+              % ", ".join(pericolose))
+        print("In un linguaggio con stringhe fra apici singoli, un letterale come 'che' finisce")
+        print("con la sequenza e', che questo strumento convertirebbe rompendo la stringa.")
+        print("Per ispezionare senza scrivere si puo' usare --check; per correggere i commenti")
+        print("serve uno strumento che sappia distinguere commenti da codice, che questo non e'.")
+        return 2
+
     file = raccogli(args.percorsi or ["."], estensioni)
 
     statistiche, residui, ambigui = {}, {}, {}
