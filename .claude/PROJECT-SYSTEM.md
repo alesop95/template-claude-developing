@@ -317,6 +317,80 @@ Ne discendono tre conseguenze operative.
 
 Non tutte le regole ammettono un presidio, e non tutte lo meritano. Il criterio e' il costo della violazione: quando e' alto e silenzioso, cioe' quando nessuno se ne accorge finche' non e' tardi, il presidio va costruito anche se costa; quando e' basso o rumoroso, la regola scritta basta.
 
+## 18. Un piano descrive uno stato che puo' essere cambiato, e le sue istruzioni sono ipotesi
+
+Generalizzato da un progetto istanziato, dove lo stesso fenomeno si e' presentato **cinque volte nello stesso piano di lavoro**, in forme diverse e con esiti diversi. La ripetizione e' cio' che lo rende un principio e non un aneddoto.
+
+Un piano dettagliato, scritto da qualcun altro o da noi stessi settimane prima, elenca per ciascun passo i file da toccare e le modifiche da fare. E' utilissimo e ha una proprieta' che si dimentica sempre: **descrive il codice com'era nel momento in cui e' stato scritto**. Fra la stesura e l'esecuzione il codice cambia, per ragioni tutte legittime.
+
+Ne discende la formulazione da tenere presente: le istruzioni di un piano sono **ipotesi da confermare, non fatti da eseguire**, e la conferma costa sempre meno della modifica sbagliata e molto meno della modifica non necessaria.
+
+Le cinque forme osservate meritano di essere elencate, perche' sono i modi concreti in cui l'ipotesi risulta falsa e nessuno di essi assomiglia agli altri.
+
+Un passo puo' richiedere **zero righe di codice**, perche' tutte le sue istruzioni risultano gia' soddisfatte o non applicabili alla variante scelta. E' l'esito psicologicamente piu' difficile da accettare, perche' un passo che non produce nulla sembra un passo saltato, e quella pressione e' precisamente cio' che genera modifiche non richieste.
+
+Il piano puo' **nominare il file sbagliato**, perche' il componente di cui parla e' stato spostato dopo la stesura. La risposta giusta non e' ricreare nel file nominato cio' che il piano descrive, ma applicare l'intenzione dove la cosa vive davvero.
+
+Un **criterio di accettazione puo' mentire**, perche' verifica la forma che cerca e non la proprieta' che intende: una ricerca di valori esadecimali non trova un colore scritto in un'altra notazione, e il difetto si nasconde sempre nelle forme che il criterio non conosce.
+
+Un'istruzione puo' chiedere di modificare qualcosa che **non e' visibile**, e ogni istruzione della forma "cambia l'aspetto di X" contiene il presupposto silenzioso che X si veda. Quel presupposto e' verificabile, spesso senza nemmeno aprire l'applicazione.
+
+E un'istruzione estetica generica puo' chiedere di rimuovere una struttura che **esiste per una ragione funzionale**, decisa mesi prima da chi conosceva un problema che il piano non conosce. Qui la regola sovraordinata, che un piano ben scritto dichiara da se', e' che una modifica estetica non tocca una scelta funzionale: si segnala e si prosegue.
+
+La conseguenza operativa e' una sola domanda, da porsi prima di eseguire ciascuna istruzione: **questa istruzione e' ancora vera per questo codice, in questa variante?** A volte la risposta e' che non c'e' nulla da fare, a volte che il bersaglio e' un altro, a volte che esiste un problema che il piano non aveva previsto. Nessuno dei tre casi e' un'anomalia da correggere seguendo il documento piu' alla lettera: e' il lavoro di chi un piano lo esegue invece di copiarlo.
+
+## 19. Un controllo che dipende da cio' che deve controllare non e' un controllo
+
+Generalizzato dallo stesso progetto, dove il principio si e' presentato in quattro forme lontanissime fra loro, il che e' il segno che riguarda la struttura di un controllo e non il dominio in cui vive.
+
+Un controllo ha sempre due parti: una condizione e **i dati su cui la valuta**. Si rilegge quasi sempre la prima e quasi mai la seconda, e questo e' il punto: una condizione scritta bene su un dato non affidabile e' indistinguibile, leggendola, da un controllo che funziona.
+
+La prima forma riguarda i dati. Un controllo che verifica un campo **scrivibile da chi deve superarlo** non verifica nulla: chi lo aggira scrive prima il campo e poi supera il controllo. La domanda da porsi davanti a qualunque verifica non e' se la condizione sia corretta, ma **da dove venga il dato che consulta**.
+
+La seconda riguarda la composizione delle regole. In diversi sistemi di autorizzazione le regole sono **additive**: quando piu' regole coprono lo stesso oggetto, basta che una conceda. Restringere un permesso aggiungendo una regola piu' specifica non restringe niente, se quella generica continua a coprire lo stesso oggetto concedendo di piu'. E' l'errore piu' facile da commettere in quei linguaggi, ed e' invisibile perche' la regola stretta esiste e si legge.
+
+La terza riguarda le prove. Una finzione scritta **guardando il codice che deve soddisfare** descrive quel codice, non la dipendenza che sostituisce, e da quel momento conferma qualunque cosa il codice faccia. Nel caso osservato la finzione dichiarava una proprieta' che nel sistema reale non esisteva nella stessa forma, proprio perche' il codice ne aveva bisogno.
+
+La quarta riguarda l'ambiente. Un comportamento che funziona perche' due parti del sistema coincidono **per caso** sulla macchina di chi sviluppa non e' verificato: e' solo non ancora smentito.
+
+La forma generale che le tiene insieme si enuncia in una riga, ed e' quella da ricordare: **un controllo che dipende da qualcosa che chi lo deve superare puo' influenzare non e' un controllo.** Chi lo deve superare puo' essere una persona che attacca, ma anche il codice stesso, una regola piu' larga, o un ambiente che nessuno ha dichiarato.
+
+## 20. Prima di costruire strumentazione, si guarda che cosa il sistema produce gia'
+
+Principio breve e con un ritorno sproporzionato, osservato durante la messa a punto di una verifica automatica.
+
+Un fallimento non diceva la propria causa. Si e' aggiunta strumentazione per ottenerla, si e' verificato che non cambiava nulla, si e' aggiunta altra strumentazione. **La prova decisiva era gia' stata prodotta e conservata dal sistema a ogni fallimento, per giorni, e nessuno l'aveva scaricata**: era un artefatto di esecuzione con dentro una schermata del momento del guasto e l'errore letterale.
+
+La domanda che avrebbe accorciato quella ricerca va posta presto e costa niente: **che cosa questo sistema sta gia' producendo che non ho ancora guardato?** Registri conservati, artefatti di esecuzione, rapporti generati, cartelle di uscita che nessuno apre. Quasi ogni strumento moderno produce piu' di quanto chi lo usa consulti.
+
+Un corollario dallo stesso episodio, indipendente e altrettanto utile. **Un registro che non cambia affatto dopo una correzione non e' un fallimento silenzioso da minimizzare: e' la prova che la correzione ha toccato una leva non collegata al problema.** Riconoscerlo subito impedisce di costruire una seconda ipotesi sopra la prima, che e' il modo in cui una diagnosi si allontana dalla causa invece di avvicinarsi.
+
+## 21. Il sistema risponde alla domanda che gli e' stata posta, non a quella che avevi in mente
+
+Principio osservato in **quattro forme in una sola giornata**, su quattro sistemi senza alcun rapporto fra loro: una console di amministrazione, un registro di consegna della posta, un pannello di consumo e la diagnostica di uno strumento da terminale. La ripetizione su domini cosi' distanti e' cio' che lo rende un principio strutturale e non un difetto di un prodotto.
+
+In tutti e quattro i casi l'indicatore letto era **letteralmente vero**, ed e' stato inteso come risposta a una domanda diversa da quella cui rispondeva. Nessuno dei quattro sistemi ha mentito; tutti e quattro hanno prodotto una diagnosi sbagliata e sicura di se'.
+
+Un pannello dichiarava l'assenza di una licenza, il che era vero, e da li' si e' concluso che l'oggetto governato da quella licenza non esistesse. Non esisteva la licenza: l'oggetto esisteva e funzionava, perche' in quel modello non ne richiede una. **La domanda "esiste?" era stata posta a un pannello che risponde a "quanto costa?".**
+
+Il riepilogo di un registro di consegna riportava un esito negativo per un messaggio che, aperti i suoi eventi, risultava **consegnato con successo** a un indirizzo di inoltro. Il riepilogo rispondeva a "e' arrivato nella cassetta di destinazione originale?", non a "e' arrivato?".
+
+Un indicatore di consumo esprimeva una percentuale di **disponibilita' residua**, letta come percentuale consumata. Il valore era corretto e l'interpretazione lo ribaltava: si e' creduto di essere quasi al limite mentre si era appena partiti.
+
+La diagnostica di uno strumento riportava un componente di sicurezza come disattivato, e si e' concluso che la protezione fosse dichiarata ma non imposta. Era vero che il componente era disattivato, ma per una ragione diversa da quella immaginata: non era **ancora stato installato**, e lo strumento lo avrebbe proposto alla prima esecuzione interattiva.
+
+Ne discendono tre conseguenze operative.
+
+**Prima di fidarsi di un indicatore, si stabilisce a quale domanda risponde.** Non e' un esercizio filosofico: e' la differenza fra "questo campo dice che la cassetta non c'e'" e "questo campo dice che non c'e' una licenza". La seconda formulazione contiene gia' il dubbio che la prima nasconde.
+
+**Dove esistono un riepilogo e un dettaglio, il dettaglio ha ragione.** Un riepilogo e' una proiezione calcolata per uno scopo, quasi mai il proprio. La regola operativa e' che una diagnosi non si chiude mai su una colonna di stato quando sotto c'e' un elenco di eventi: si apre l'elenco. Costa dieci secondi e ha evitato, nel caso osservato, ore di ricerca nella direzione sbagliata.
+
+**Si cerca la fonte autoritativa per quella domanda, non quella piu' vicina.** Ogni dominio ne ha una, ed e' spesso una console diversa da quella in cui si stava gia' lavorando. Restare dove si e' gia' loggati e' la ragione piu' comune per cui si consulta la fonte sbagliata.
+
+Un corollario della stessa famiglia, osservato nella stessa giornata su un quinto sistema. Uno strumento la cui configurazione seleziona il perimetro di lavoro, quando quella configurazione non arriva, **non fallisce: ricade su un default e prosegue dichiarando successo**. L'unico segnale era una riga di errore della shell che sembrava scollegata dal resto. La difesa non e' ricordarsi la sintassi giusta ma non digitare mai quel comando a mano: ci si arriva da uno script che verifica il perimetro prima di eseguire, secondo la sezione 17.
+
+---
+
 [^1]: *Skill* - workflow richiamabile descritto in un file `SKILL.md`, che incapsula istruzioni operative e comandi pre-eseguiti il cui output viene iniettato nel contesto.
 [^2]: *MCP*, Model Context Protocol - protocollo per collegare a Claude server esterni che espongono strumenti e dati; configurato in `.mcp.json`.
 [^3]: *Drift* - divergenza accumulata tra ciò che un documento descrive e lo stato attuale del codice.
