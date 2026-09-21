@@ -47,3 +47,19 @@ La domanda da porsi prima di fermarsi al carico: fra quello che consegno e l'eff
 Succede, ed è successo due volte in due giorni nello stesso progetto. La reazione corretta non è correggere il sintomo ma capire perché la prova non l'aveva visto, e scrivere quella ragione dove la leggerà chi scriverà la prossima prova. Un difetto trovato a mano dopo una suite verde è un difetto *della suite* oltre che del codice, e ignorare la seconda metà garantisce la ripetizione.
 
 Vale anche il verso positivo, da dire a chi esegue la verifica manuale: un risultato inatteso vale più di uno atteso, e va riportato insieme al passo che lo ha prodotto invece di essere aggiustato a mano e dimenticato.
+
+## Una finzione scritta guardando il codice descrive il codice, non la dipendenza
+
+Quarta forma di prova che passa senza misurare, osservata su un progetto istanziato e distinta dalle tre precedenti perché non riguarda l'asserzione ma ciò che la circonda.
+
+Una prova unitaria sostituisce le dipendenze con oggetti scritti a mano. È una pratica corretta, e dimostra esattamente questo: **il mio codice si comporta come mi aspetto, dato che questa dipendenza si comporta come l'ho immaginata.** La seconda metà di quella frase è il limite, e di solito non si legge.
+
+Nel caso osservato, tre file di codice pubblicato usavano una proprietà che nel sistema reale non esisteva nella forma in cui la usavano. Tutte le loro prove erano verdi, e la ragione è la più insidiosa possibile: ogni finzione dichiarava quella proprietà a mano, **proprio perché il codice ne aveva bisogno**, senza che nessuno si chiedesse se esistesse davvero. La finzione era stata costruita per far passare il codice, non per descrivere la dipendenza, e da quel momento confermava qualunque cosa il codice facesse.
+
+Il difetto è stato trovato solo da una prova che attraversava un sistema reale, la prima volta che ne è stata scritta una.
+
+Due conseguenze operative.
+
+Quando si scrive una finzione, ci si chiede se la si stia costruendo **guardando la documentazione della dipendenza oppure guardando il codice che deve passare**. Il secondo caso produce una prova che conferma se stessa, e nessuna revisione la distingue dall'altra leggendola.
+
+E la piramide che raccomanda molte prove unitarie e poche che attraversano il sistema vero non viene smentita da questo: **il valore delle poche non sta in quanto coprono, ma nel fatto che esista almeno un percorso in cui nessuno ha potuto immaginare la dipendenza.** Per quella ragione non sono facoltative, per quanto poche.
