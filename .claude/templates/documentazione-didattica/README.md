@@ -56,3 +56,33 @@ python tools/indice-refactor.py --cartella docs/studi --prefisso studio- --racco
 Si offre a un progetto in cui qualcuno imparerà qualcosa rileggendo, e in cui il committente o l'autore hanno dichiarato di volere il ragionamento e non solo il risultato. Il caso tipico è un progetto lungo, seguito da una persona sola, la cui documentazione deve reggere a mesi di distanza o diventare materiale mostrabile.
 
 Non si offre a un progetto breve, dove il work-log basta e un secondo registro diventa un obbligo che nessuno onora. E non si offre quando la documentazione ha un destinatario esterno che vuole istruzioni d'uso: quello è un manuale operativo, che risponde a "come faccio X" e non a "perché X è fatto così", ed è una tipologia di informazione diversa con un proprietario diverso. Un registro che nessuno aggiorna è peggio della sua assenza, perché suggerisce una copertura che non c'è.
+
+## Estrarre non è dedurre, e perché lo strumento propone invece di scrivere
+
+`tools/proponi-covers-paths.py` è stato scritto il 2026-09-21 per chiudere il quarto modo di degradare descritto sopra, cioè le schede che non dichiarano i percorsi coperti. Il registro di quel progetto dichiarava il lavoro **non automatizzabile**, e aveva ragione per il motivo che scriveva: dedurre i percorsi dal testo produrrebbe percorsi plausibili e non percorsi veri, che è il tipo di errore peggiore perché sembra un dato.
+
+Lo strumento non contraddice quella diagnosi, la aggira con una distinzione che vale ben oltre questo caso. **Non deduce niente: estrae.** Prende le stringhe che la scheda ha già scritto fra apici inversi, tiene solo quelle che corrispondono a un file realmente presente sul disco, e le ordina per quante volte la scheda le nomina. Un percorso che la scheda non nomina non compare mai.
+
+La differenza fra dedurre ed estrarre non è un cavillo: **una deduzione può essere sbagliata in modo invisibile, un'estrazione al massimo è incompleta in modo visibile.** Le schede che parlano di un file senza nominarlo restano scoperte, e lo strumento le elenca invece di indovinare. Sul progetto di origine, su cinquantadue schede da coprire, l'estrazione ne ha risolte quarantacinque e ne ha dichiarate sette da leggere a mano: quelle sette sono la prova che lo strumento tace dove non sa, che è esattamente ciò che lo rende affidabile sulle altre quarantacinque.
+
+Una sola cautela nella risoluzione dei nomi nudi, cioè quando una scheda scrive il nome di un file senza la sua cartella. Si accetta **solo la corrispondenza unica**: se due file del repository portano quel nome, la scheda non ha detto quale, e sceglierne uno sarebbe tornare a inventare. Gli ambigui si dichiarano.
+
+Ne discende anche la separazione fra proporre e scrivere, che è deliberata. Uno strumento che estrae e scrive nello stesso gesto non lascia nessun punto in cui una persona possa guardare prima che il dato atterri, e questo campo esiste proprio per dare fiducia. Due cose restano comunque al giudizio umano: la potatura, perché una scheda può nominare dieci file e trattarne tre, e i file citati che non esistono più, che sono un'informazione a sé perché dicono quali schede parlano di codice cancellato.
+
+Una scelta di dosaggio da fare consapevolmente, perché dipende dall'uso. Se il campo serve a rispondere a "quali schede riverificare quando questo file cambia", **omettere è peggio che includere in più**: un percorso di troppo costa una rilettura inutile, un percorso mancante costa una spiegazione che resta falsa senza che nessuno lo sappia. Con un uso diverso la risposta potrebbe essere l'opposta, e va deciso invece che subito.
+
+## Rendere autoconsistente un corpus esistente: è additivo, non una riscrittura
+
+Nota di metodo verificata il 2026-09-21 su un progetto istanziato, sul primo blocco di una conversione che ne riguarda una sessantina. Vale per chiunque adotti questo pacchetto su un progetto che ha già delle schede.
+
+La constatazione di partenza sembra ovvia solo dopo averla fatta. Le schede esistenti erano **già buone nel merito**: il ragionamento c'era, era preciso, e in un paio di casi notevole. Quello che mancava era lo strato **sotto**, cioè i presupposti che il testo dava per noti, e lo strato **sopra**, cioè le sezioni che distinguono una spiegazione da una cronaca: le domande di dosaggio, che cosa protegge la scelta dal tornare indietro, come si estende.
+
+Ne discende che il lavoro non è riscrivere N documenti ma **completarne N**, e la differenza non è retorica: cambia la stima, cambia il rischio, e cambia chi lo può fare. Il ragionamento originale si conserva parola per parola, perché è la parte che nessuno può ricostruire a posteriori, e gli si costruisce attorno il resto.
+
+Due indicazioni pratiche, entrambe misurate e non stimate.
+
+**Si procede a blocchi omogenei per dominio, non per ordine di numerazione.** Scrivendo di seguito sei schede che parlano tutte dello stesso ambito, i presupposti si ripetono, ed è la regola e non l'eccezione, perché chi apre una scheda ci arriva per quell'argomento e non ha letto le altre. Ma scrivendoli vicini si vede subito se si stanno ripetendo **uguali**, che sarebbe una copia, oppure **tarati sull'argomento che li ospita**, che è la ridondanza didattica voluta. Su un blocco eterogeneo quella differenza non è osservabile, e la si scopre mesi dopo quando il corpus è pieno di paragrafi identici.
+
+**Il costo triplica il volume e lascia intero il contenuto.** Sul blocco misurato, le schede passano da circa cinquecento parole a circa millecinquecento ciascuna. Quello che cresce è esclusivamente ciò che prima si dava per scontato. È un dato utile per dimensionare il lavoro e anche per riconoscere una conversione fatta male: una scheda che cresce poco probabilmente non ha costruito niente sotto, e una che cresce moltissimo probabilmente ha riscritto invece di completare.
+
+Un'ultima avvertenza sul misurare l'avanzamento. Contare quante schede hanno una sezione di fondamenta è un **proxy**, non la proprietà: una sezione intitolata "Le fondamenta" che non costruisce niente conta come conforme e non lo è. Il proxy serve a sapere dove guardare, non a dichiarare finito.

@@ -90,3 +90,17 @@ python -c "import ast,glob; [ast.parse(open(f,'rb').read().decode('utf-8')) for 
 Lo strumento si estende quando il progetto ha un linguaggio in cui l'apostrofo ha un significato proprio, e il caso reale già incontrato vale come esempio del genere di attenzione che serve. In un progetto di notazione musicale con LilyPond l'apostrofo dopo il nome di una nota ne alza l'ottava, quindi `e'` è un Mi e non una *e* accentata, e la riga `\relative e' { ... }` sarebbe stata distrutta. La difesa aggiunta là non è un elenco di eccezioni ma il salto dei blocchi in cui la notazione vive, cioè gli ambienti `lilypond`, le righe che invocano un comando musicale e i file `.ly` per intero.
 
 Il criterio generale, se il caso si ripresenta, è quello: si salta la regione, non si elencano i simboli. Un elenco di eccezioni invecchia, una regione dichiarata no.
+
+## Il limite sui sorgenti, e perché è un limite e non un difetto
+
+Aggiunto il 2026-09-17 dopo un danno reale su un progetto istanziato, con codice committato e verifica immediata, quindi senza perdite ma con una lezione che vale registrare.
+
+Lanciato con `--ext .ts` su una cartella di sorgenti React, `fix-accents.py` ha prodotto settecentotrentasei sostituzioni e rotto la compilazione. La causa non è un caso limite esotico. In un linguaggio con le stringhe fra apici singoli, un letterale come `'che'` termina con la sequenza `e'`, che è il bersaglio più frequente della tabella: la sostituzione lascia la stringa senza chiusura, e il compilatore risponde con un errore di stringa non terminata. Lo stesso vale per `'perché'`, `'più'` e per qualunque parola che finisca con una vocale accentabile.
+
+Da qui la guardia: lo strumento **rifiuta** le estensioni di codice sorgente quando deve scrivere, e spiega perché invece di limitarsi a un codice d'uscita. Con `--check` resta possibile ispezionare, che è l'uso legittimo su un sorgente.
+
+Il principio generale, che vale oltre questo pacchetto: **una regola di prosa applicata a un file che contiene due linguaggi va applicata solo al linguaggio giusto.** È lo stesso problema già risolto per i file di composizione tipografica, dove gli argomenti di un insieme chiuso di macro vengono mascherati prima di operare e ripristinati dopo. Là la regione da saltare si dichiara con una lista di macro; in un linguaggio di programmazione la regione da trattare è l'insieme dei commenti, e riconoscerla richiede di sapere dove finisce una stringa e dove comincia un commento, cioè un analizzatore sintattico per ciascun linguaggio.
+
+Questo lo strumento non lo fa, e la scelta è deliberata: **fra rifiutarsi e fare un lavoro che non si sa fare, si rifiuta.** La conseguenza è che in un progetto con molti commenti in lingua i commenti restano disallineati dalla convenzione, e va dichiarato come debito invece di essere scoperto più tardi da chi lo credeva coperto.
+
+Se un giorno il lavoro servisse davvero, la forma corretta non è allargare le espressioni regolari ma appoggiarsi a un analizzatore del linguaggio, per esempio una libreria che restituisca i soli intervalli di commento, e applicare la tabella solo dentro quegli intervalli. Finché quel passo non è fatto, la guardia è la risposta onesta.

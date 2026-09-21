@@ -281,6 +281,42 @@ Complementare al wipe c'è la sessione incognito: invece di pulire dopo, si evit
 
 ---
 
+## 16. Il ritorno dai progetti istanziati
+
+Un template che non impara dai progetti che ne nascono invecchia mentre loro migliorano, e la distanza non si recupera piu' perche' nessuno sa piu' quali delle due versioni sia quella giusta. Il canale che lo evita non e' una revisione periodica, che nessuno fa, ma una domanda posta nel momento esatto in cui la conoscenza esiste.
+
+La domanda e' questa. Quando in un progetto istanziato si corregge un difetto, si scopre una trappola o si scrive una regola, prima di considerare chiuso il passo si stabilisce se quella conoscenza sia **specifica di quel progetto o generale del modo di lavorare**. Se e' generale, sale qui nello stesso giro di lavoro, non in un momento futuro.
+
+Il criterio pratico per distinguere e' meccanico e va usato come tale: si prova a riscrivere la lezione togliendo ogni nome proprio del progetto, il dominio, i nomi dei file e la tecnologia. Se dopo quella ripulitura resta vera e utile, e' del template; se non sta piu' in piedi, era un fatto di quel progetto. **La ripulitura non e' un passaggio formale ma la verifica stessa.**
+
+Il momento conta quanto il criterio. La domanda va posta **al momento della correzione**, quando il ragionamento e' ancora presente, e non a fine progetto quando resta solo l'esito: il perche' di una scelta e' la prima cosa che si perde, ed e' precisamente la parte che rende una regola utile a chi non c'era.
+
+Vale la pena dire che cosa questo canale produce davvero, perche' e' meno prevedibile di quanto sembri. Nell'arco di due giorni su un progetto istanziato ha prodotto una regola sulle prove che misurano davvero qualcosa, una sezione sui presupposti non dichiarati di una shell con le sue quattro cause distinte, la trattazione della GitHub CLI come quarto asse di identita' con il relativo gate di adozione, un pacchetto per la documentazione didattica e una guardia dentro uno strumento che aveva appena rotto una compilazione. **Nessuna di queste cose era stata pianificata: sono tutte uscite da un difetto.** Un template si irrobustisce dove qualcuno ha sbagliato, non dove qualcuno ha progettato.
+
+La direzione opposta resta quella dell'inizializzazione e dell'allineamento, e le due non vanno confuse. Dal template scende la struttura; dai progetti sale la conoscenza guadagnata sul campo. Un progetto che non ha mai fatto salire niente e' probabilmente un progetto che non ha ancora incontrato nulla di interessante, oppure uno in cui la domanda non viene posta.
+
+## 17. Una regola senza presidio e' una speranza
+
+Principio generalizzato da un progetto istanziato, dove la stessa conclusione e' stata raggiunta **tre volte in una settimana** per ragioni completamente diverse. La ripetizione e' il dato che lo rende un principio e non un aneddoto.
+
+La prima volta riguardava le prove. Una suite verde non dice che il comportamento e' corretto, dice che le prove non hanno protestato, e le due cose coincidono solo se le prove esercitano davvero il difetto. Il presidio e' diventato un passo obbligato: si rimette il difetto, si guarda quali prove cadono, si ripristina.
+
+La seconda riguardava uno strumento di sostituzione tipografica, lanciato su file sorgente dove ha rotto la compilazione. Chi lo aveva lanciato aveva nominato il rischio prima di eseguire e ha verificato subito, quindi il danno e' stato nullo. Ma il presidio non poteva restare quella prudenza: e' diventato una guardia dentro lo strumento, che rifiuta le estensioni di codice e spiega perche'.
+
+La terza riguardava la regola sul documentare mentre si lavora. Scritta, poi riaffermata in forma enfatica, poi richiamata ancora. Il presidio e' diventato un controllo che confronta le date dei commit con quelle del registro.
+
+Il principio che le tre insieme dimostrano si enuncia cosi'. **Una regola che dipende dalla memoria o dalla disciplina di chi esegue fallisce esattamente quando serve**, cioe' nelle sessioni lunghe, sotto pressione, o quando l'attenzione e' su altro. Scriverla meglio non la rafforza; ripeterla non la rafforza. L'unico rafforzamento reale e' un controllo che renda visibile la violazione nel momento in cui accade.
+
+Ne discendono tre conseguenze operative.
+
+**Il sintomo da riconoscere e' la ripetizione.** Quando una regola deve essere richiamata una seconda volta, il difetto non e' in chi l'ha violata ne' nella sua formulazione: e' che non ha un presidio. La domanda giusta a quel punto non e' come renderla piu' chiara ma quale controllo meccanico ne osserverebbe la violazione.
+
+**Il presidio va nominato dalla regola che presidia.** Un controllo che esiste e che nessun documento cita non viene eseguito, per la stessa ragione per cui una regola che nessun documento carica non viene applicata. La regola dichiara il proprio controllo e il momento in cui va eseguito.
+
+**Il presidio dichiara che cosa non copre.** Nessun controllo meccanico raggiunge la qualita' di un contenuto: distingue il silenzio dalla presenza, non il buono dal mediocre. Dirlo e' parte del presidio, perche' credere che copra piu' di quanto copre produce fiducia in una copertura inesistente, che e' peggio della sua assenza.
+
+Non tutte le regole ammettono un presidio, e non tutte lo meritano. Il criterio e' il costo della violazione: quando e' alto e silenzioso, cioe' quando nessuno se ne accorge finche' non e' tardi, il presidio va costruito anche se costa; quando e' basso o rumoroso, la regola scritta basta.
+
 [^1]: *Skill* - workflow richiamabile descritto in un file `SKILL.md`, che incapsula istruzioni operative e comandi pre-eseguiti il cui output viene iniettato nel contesto.
 [^2]: *MCP*, Model Context Protocol - protocollo per collegare a Claude server esterni che espongono strumenti e dati; configurato in `.mcp.json`.
 [^3]: *Drift* - divergenza accumulata tra ciò che un documento descrive e lo stato attuale del codice.

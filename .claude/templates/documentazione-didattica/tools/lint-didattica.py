@@ -193,8 +193,15 @@ if senza_didattica:
     )
 
 # ------------------------------------------------------------------ schede orfane e rimandi rotti
+# Le schede vere hanno un numero nel nome. L'indice generato da `tools/indice-refactor.py` si
+# chiama `refactor-indice.md` e combaciava con il modello, quindi veniva segnalato come scheda
+# orfana: un file generato non e' una scheda e non puo' essere citato dal racconto, perche' il
+# racconto cita argomenti e quello e' un elenco. Corretto il 2026-09-21, ed e' il caso generale
+# **di un controllo che riconosce i propri bersagli dal nome**: basta che nasca un file con un
+# nome compatibile perche' il controllo produca un difetto che non esiste.
 schede = sorted(
     os.path.basename(p) for p in glob.glob(".claude/context/refactor-*.md")
+    if re.match(r"refactor-\d+-", os.path.basename(p))
 )
 testo_master = io.open(MASTER, encoding="utf-8").read()
 
