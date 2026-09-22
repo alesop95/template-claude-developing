@@ -4,7 +4,7 @@
 
 ## Come si usa
 
-Il catalogo si attraversa per settore e non per riga, e la differenza non è di comodità: con settantaquattro voci, un gate che le proponga una per una è un gate che nessuno arriva in fondo a leggere, e un gate che ne proponga tre scelte a occhio è un gate che ne nasconde settanta. La procedura autoritativa è la skill `gate-pacchetti`, che questo file alimenta; qui sta il criterio che quella skill applica.
+Il catalogo si attraversa per settore e non per riga, e la differenza non è di comodità: con settantotto voci, un gate che le proponga una per una è un gate che nessuno arriva in fondo a leggere, e un gate che ne proponga tre scelte a occhio è un gate che ne nasconde settanta. La procedura autoritativa è la skill `gate-pacchetti`, che questo file alimenta; qui sta il criterio che quella skill applica.
 
 Il criterio è che il settore si riconosce dall'obiettivo del progetto, e i pacchetti si propongono solo dentro i settori riconosciuti. Prima di aprire una tabella l'agente dice quali settori ha riconosciuto e da che cosa li ha riconosciuti, cioè dal fatto che il progetto abbia già codice o parta da zero, che raccolga fonti o le produca, che il suo dominio sia scientifico, che scriva prosa destinata a qualcuno, che abbia un tracciatore di problemi, che sia grande abbastanza da non leggersi per intero. Quel riconoscimento si dichiara e si fa correggere: è un'ipotesi sul progetto, e chi lo conosce è l'utente, non l'agente. Un settore che l'utente aggiunge si attraversa come gli altri; uno che toglie si salta dichiarandolo, così che la prossima tornata sappia che era stato escluso e non dimenticato.
 
@@ -20,7 +20,7 @@ Per i pacchetti di tipo MCP server vale una regola aggiuntiva che sopravvive all
 
 ## Catalogo
 
-Il catalogo è diviso per settore, e la divisione non è ornamentale: è il modo in cui il gate lo attraversa. Un progetto appartiene a due o tre settori, non a dieci, e riconoscerli dal suo obiettivo prima di aprire una tabella è ciò che trasforma un elenco di settantaquattro voci in tre domande. Ogni settore apre con la frase che dice a chi serve e che cosa chiedere per saperlo; le righe dentro restano quelle di sempre, con la colonna che dichiara il trigger concreto.
+Il catalogo è diviso per settore, e la divisione non è ornamentale: è il modo in cui il gate lo attraversa. Un progetto appartiene a due o tre settori, non a dieci, e riconoscerli dal suo obiettivo prima di aprire una tabella è ciò che trasforma un elenco di settantotto voci in tre domande. Ogni settore apre con la frase che dice a chi serve e che cosa chiedere per saperlo; le righe dentro restano quelle di sempre, con la colonna che dichiara il trigger concreto.
 
 ### Fondamenta e igiene del progetto
 

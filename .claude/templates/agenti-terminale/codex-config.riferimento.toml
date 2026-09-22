@@ -98,4 +98,4 @@ network_access = false
 # l'agente ha scritto da se' viene perso.
 
 [windows]
-sandbox = "elevated"
+sandbox = "unelevated"

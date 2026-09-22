@@ -13,12 +13,12 @@ Strumenti, documentazione e procedure vivono nel **template** del sistema di pro
 | Cosa | Dove |
 |---|---|
 | Installazione e ricostruzione da zero | `templates/agenti-terminale/tools/Installa-Agenti.ps1` |
-| Avvio su radice isolata, con pulizia all'uscita | `tools/Avvia-Codex.ps1` |
-| Wipe selettivo degli store | `tools/Pulisci-Codex.ps1` |
-| Comandi brevi di shell | `tools/Installa-Comandi.ps1` |
-| Consumo di tutte le radici | `tools/Consumo-Agenti.ps1` |
-| Configurazione di riferimento | `codex-config.riferimento.toml` |
-| Questo file | `codex-agents.riferimento.md` |
+| Avvio su radice isolata, con pulizia all'uscita | `.claude/templates/agenti-terminale/tools/Avvia-Codex.ps1` |
+| Wipe selettivo degli store | `.claude/templates/agenti-terminale/tools/Pulisci-Codex.ps1` |
+| Comandi brevi di shell | `.claude/templates/agenti-terminale/tools/Installa-Comandi.ps1` |
+| Consumo di tutte le radici | `.claude/templates/agenti-terminale/tools/Consumo-Agenti.ps1` |
+| Configurazione di riferimento | `.claude/templates/agenti-terminale/codex-config.riferimento.toml` |
+| Questo file | `.claude/templates/agenti-terminale/codex-agents.riferimento.md` |
 
 Il repository di **macchina** conserva invece cio' che riguarda solo questo computer: la fotografia del suo stato, i valori compilati, e un punto d'ingresso sottile che chiama la catena del template con i parametri di questa macchina.
 

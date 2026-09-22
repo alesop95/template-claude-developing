@@ -28,15 +28,15 @@ codex-account2
 
 | File | Ruolo |
 |---|---|
-| `tools/Installa-Agenti.ps1` | **punto d'ingresso**: prerequisiti, dipendenze, chiama i due installatori e i comandi |
-| `tools/Installa-Claude.ps1` + `merge-claude-settings.js` | installa il wipe di fine sessione nelle radici Claude e registra l'hook nel `settings.json` preservando ogni altra chiave |
-| `tools/Installa-Codex.ps1` | crea le radici Codex, vi scrive la configurazione di riferimento e il puntatore `AGENTS.md` |
-| `tools/Avvia-Codex.ps1` | avvio su radice isolata, con vincolo sulla cartella di lavoro e pulizia all'uscita |
-| `tools/Pulisci-Codex.ps1` | wipe selettivo degli store, con tre guardie |
-| `tools/Installa-Comandi.ps1` | scrive nel profilo PowerShell i comandi brevi per tutte le radici presenti |
-| `tools/Consumo-Agenti.ps1` | consumo di token di **tutte** le radici dei due agenti, radici di default comprese |
-| `codex-config.riferimento.toml` | configurazione di una radice Codex |
-| `codex-agents.riferimento.md` | `AGENTS.md` distribuito nelle radici: puntatore, mai copia |
+| `.claude/templates/agenti-terminale/tools/Installa-Agenti.ps1` | **punto d'ingresso**: prerequisiti, dipendenze, chiama i due installatori e i comandi |
+| `.claude/templates/agenti-terminale/tools/Installa-Claude.ps1` + `merge-claude-settings.js` | installa il wipe di fine sessione nelle radici Claude e registra l'hook nel `settings.json` preservando ogni altra chiave |
+| `.claude/templates/agenti-terminale/tools/Installa-Codex.ps1` | crea le radici Codex, vi scrive la configurazione di riferimento e il puntatore `AGENTS.md` |
+| `.claude/templates/agenti-terminale/tools/Avvia-Codex.ps1` | avvio su radice isolata, con vincolo sulla cartella di lavoro e pulizia all'uscita |
+| `.claude/templates/agenti-terminale/tools/Pulisci-Codex.ps1` | wipe selettivo degli store, con tre guardie |
+| `.claude/templates/agenti-terminale/tools/Installa-Comandi.ps1` | scrive nel profilo PowerShell i comandi brevi per tutte le radici presenti |
+| `.claude/templates/agenti-terminale/tools/Consumo-Agenti.ps1` | consumo di token di **tutte** le radici dei due agenti, radici di default comprese |
+| `.claude/templates/agenti-terminale/codex-config.riferimento.toml` | configurazione di una radice Codex |
+| `.claude/templates/agenti-terminale/codex-agents.riferimento.md` | `AGENTS.md` distribuito nelle radici: puntatore, mai copia |
 
 ## Che cosa NON contiene, e perche'
 
@@ -48,7 +48,7 @@ codex-account2
 
 ## La chiusura di una sessione
 
-Il pacchetto porta con se' la regola `rules/chiusura-delle-sessioni.md`, che va dichiarata fra quelle caricate. Il principio in una riga: **una sessione che si considera chiusa per davvero va rimossa, non abbandonata**, perche' abbandonarla la lascia in un magazzino che il wipe preserva apposta.
+Il pacchetto porta con se' la regola `.claude/templates/agenti-terminale/rules/chiusura-delle-sessioni.md`, che va dichiarata fra quelle caricate. Il principio in una riga: **una sessione che si considera chiusa per davvero va rimossa, non abbandonata**, perche' abbandonarla la lascia in un magazzino che il wipe preserva apposta.
 
 Le attuazioni differiscono: Codex ha il comando nativo `/delete`, che cancella la sessione ed esce; Claude Code non ha un equivalente e la rimozione va fatta a mano sul magazzino dell'account.
 
