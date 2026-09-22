@@ -180,10 +180,12 @@ Il modo di verificare che il principio regga è secco, e conviene usarlo davvero
 .claude/memory/decisions.md    registro ADR-lite: le decisioni architetturali, numerate e mai riscritte
 .claude/context/*.md           schede tecniche con frontmatter ancorato a un commit
 CLAUDE.md                      indice dei satelliti e procedura di ripresa
+AGENTS.md                      ponte Codex verso le istruzioni canoniche
+.agents/skills/*/SKILL.md      wrapper generati per la scoperta nativa delle skill in Codex
 docs/                          documenti generati che il progetto decide di versionare
 ```
 
-Non viene cancellato da niente e da nessuno. Cresce, e l'unico presidio è che non diverga dal codice, che è il mestiere di `sync-context`. L'agente non vi scrive di propria iniziativa: propone il delta e lo applica quando glielo chiedi.
+Non viene cancellato da niente e da nessuno. Cresce, e l'unico presidio è che non diverga dal codice, che è il mestiere di `sync-context`. I wrapper Codex non si aggiornano a mano: `sync-codex-skills.py` li deriva dalle skill canoniche sotto `.claude/skills/` e il suo modo `--check` rileva il drift. L'agente non scrive nella memoria di propria iniziativa: propone il delta e lo applica quando glielo chiedi.
 
 ### Strato due: dentro il repository, ignorato da git
 

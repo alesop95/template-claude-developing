@@ -8,7 +8,7 @@
 
 ## Procedura di ripresa in una sessione nuova
 
-Lo stato del progetto è interamente recuperabile su disco. All'inizio di una sessione si segue questo percorso fisso, che comincia con una verifica e non con una lettura: la skill `riprendi` esegue `tools/verifica-ripresa.py`, che confronta l'impronta registrata alla chiusura precedente con lo stato reale di git e dice che cosa una sessione caduta a metà non ha scritto. Solo dopo si legge `.claude/memory/index.md`, che dà branch, commit di riferimento, stato di verifica di ogni scheda e punto di ripresa. Si legge poi `.claude/context/current-work.md` se c'è una feature attiva, per sapere cosa è in lavorazione e quali sono i TODO e i limiti d'ambiente. Si invoca la skill `sync-context` per verificare il drift tra schede e codice, e si leggono solo le schede pertinenti al task, mai tutte insieme. Il work-log `.claude/memory/progress.md` e il registro `.claude/memory/decisions.md` forniscono la storia e le decisioni quando servono. Il materiale grezzo sotto `_notes/` si apre solo per verificare un requisito originale. Per una ripresa rapida esiste, quando presente, `_notes/RESUME-PROMPT.md`, privato e ignorato: riporta lo stato raggiunto e un prompt pronto da incollare. Va aggiornato alla fine di ogni sessione con il punto in cui si e arrivati, mentre lo stato canonico resta `.claude/memory/index.md`.
+Lo stato del progetto è interamente recuperabile su disco. All'inizio di una sessione si esegue `python tools/sync-codex-skills.py --check`, che controlla che Claude Code e Codex scoprano le stesse skill, poi si segue il percorso fisso che comincia con una verifica e non con una lettura: la skill `riprendi` esegue `tools/verifica-ripresa.py`, che confronta l'impronta registrata alla chiusura precedente con lo stato reale di git e dice che cosa una sessione caduta a metà non ha scritto. Solo dopo si legge `.claude/memory/index.md`, che dà branch, commit di riferimento, stato di verifica di ogni scheda e punto di ripresa. Si legge poi `.claude/context/current-work.md` se c'è una feature attiva, per sapere cosa è in lavorazione e quali sono i TODO e i limiti d'ambiente. Si invoca la skill `sync-context` per verificare il drift tra schede e codice, e si leggono solo le schede pertinenti al task, mai tutte insieme. Il work-log `.claude/memory/progress.md` e il registro `.claude/memory/decisions.md` forniscono la storia e le decisioni quando servono. Il materiale grezzo sotto `_notes/` si apre solo per verificare un requisito originale. Per una ripresa rapida esiste, quando presente, `_notes/RESUME-PROMPT.md`, privato e ignorato: riporta lo stato raggiunto e un prompt pronto da incollare. Va aggiornato alla fine di ogni sessione con il punto in cui si e arrivati, mentre lo stato canonico resta `.claude/memory/index.md`.
 
 ## Indice dei file satellite tracciati
 
@@ -31,7 +31,7 @@ Schede tecniche, sotto `.claude/context/`, con frontmatter di riconciliazione.
 .claude/context/roadmap.md              direzione e priorità
 ```
 
-Regole modulari caricate su necessità, sotto `.claude/rules/`, e skill richiamabili, sotto `.claude/skills/`. Lo standard di sistema completo è in `.claude/PROJECT-SYSTEM.md`.
+Regole modulari caricate su necessità, sotto `.claude/rules/`, e skill canoniche richiamabili, sotto `.claude/skills/`. Codex le scopre attraverso adapter sottili sotto `.agents/skills/`, che rimandano alla fonte canonica senza duplicarla. Lo standard di sistema completo è in `.claude/PROJECT-SYSTEM.md`.
 
 ## Apprendimenti recenti
 

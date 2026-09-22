@@ -24,7 +24,7 @@ Entrambi i prompt si fermano a chiedere conferma prima di ogni azione difficilme
 
 ## Cosa viene installato in un progetto
 
-La cartella `.claude/` e il centro di controllo del progetto, tenuto all'essenziale. La struttura canonica, da adottare nella forma minima e da estendere solo quando serve, e descritta per intero in `.claude/PROJECT-SYSTEM.md`. In sintesi un progetto inizializzato ottiene un `CLAUDE.md` di radice che indicizza i file satellite tracciati, un `CLAUDE.local.md` ignorato per gli override personali, e sotto `.claude/` le cartelle `rules`, `skills`, `agents`, `commands`, l'eventuale `hooks`, una cartella `memory` con `index.md`, `progress.md` e `decisions.md`, e una cartella `context` con le schede tecniche `STACK.md`, `design-and-security.md`, `deployment.md`, `dev-testing.md`, `current-work.md`, `roadmap.md` e i diagrammi. Il livello privato e verboso vive in `_notes/`, ignorato da git.
+La cartella `.claude/` e il centro di controllo del progetto, tenuto all'essenziale. La struttura canonica, da adottare nella forma minima e da estendere solo quando serve, e descritta per intero in `.claude/PROJECT-SYSTEM.md`. In sintesi un progetto inizializzato ottiene un `CLAUDE.md` di radice che indicizza i file satellite tracciati, un `AGENTS.md` che rende quelle istruzioni native anche per Codex senza duplicarle, un `CLAUDE.local.md` ignorato per gli override personali, e sotto `.claude/` le cartelle `rules`, `skills`, `agents`, `commands`, l'eventuale `hooks`, una cartella `memory` con `index.md`, `progress.md` e `decisions.md`, e una cartella `context` con le schede tecniche `STACK.md`, `design-and-security.md`, `deployment.md`, `dev-testing.md`, `current-work.md`, `roadmap.md` e i diagrammi. Le skill canoniche sotto `.claude/skills/` vengono esposte a Codex tramite wrapper generati sotto `.agents/skills/`; lo strumento `sync-codex-skills.py` impedisce che le due superfici divergano. Il livello privato e verboso vive in `_notes/`, ignorato da git.
 
 ## I due livelli documentali
 
@@ -217,7 +217,9 @@ template-claude-developing/
     feature-map.html             inventario completo delle feature con source e repo, apribile localmente
     project-flow.html            flusso di progetto annotato con tutte le feature e la tabella fonti
   CLAUDE.md                      segnaposto di radice del template
+  AGENTS.md                      istruzioni native di Codex per lavorare sul template
   CLAUDE.local.md                override personali, ignorato
+  .agents/skills/                wrapper generati verso le skill canoniche
   .gitignore
   .claude/
     PROJECT-SYSTEM.md            fonte di verita della procedura, in sezioni numerate
@@ -240,7 +242,7 @@ template-claude-developing/
     agents/  commands/  hooks/  plugins/    livelli di orchestrazione, vuoti di default
     templates/
       PACKAGES.md  registro dei pacchetti opzionali offerti al init/align
-      CLAUDE.md  CLAUDE.local.md  settings.json  gitignore.snippet  env.example  mcp.json  mcp.windows.json
+      AGENTS.md  CLAUDE.md  CLAUDE.local.md  settings.json  gitignore.snippet  env.example  mcp.json  mcp.windows.json
       README.md  README-project.md
       agents/    code-reviewer.md  security-auditor.md  debugger.md  explorer.md  (agenti template, da copiare in .claude/agents/)
       memory/    index.md  progress.md  decisions.md

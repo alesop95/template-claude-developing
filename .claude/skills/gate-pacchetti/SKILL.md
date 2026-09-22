@@ -66,7 +66,7 @@ Poi si chiede, e si aspetta una risposta esplicita. Un silenzio non è un sì, e
 
 ## Passo 4 - Che cosa fare della risposta
 
-Su un sì si istanzia seguendo il `README.md` del pacchetto quando è a cartella, mai ricostruendo il contenuto a memoria. Se un file di destinazione esiste già, si mostra la differenza invece di sovrascrivere. Subito dopo si mostra il recap d'uso, cioè i comandi e il flusso essenziali presi da quel README: un pacchetto installato di cui non si conoscono i comandi è un pacchetto che non verrà usato, e il recap costa tre righe.
+Su un sì si istanzia seguendo il `README.md` del pacchetto quando è a cartella, mai ricostruendo il contenuto a memoria. Se un file di destinazione esiste già, si mostra la differenza invece di sovrascrivere. Se il pacchetto aggiunge o modifica una skill sotto `.claude/skills/` e il progetto ha `tools/sync-codex-skills.py`, si rigenerano i wrapper Codex e si verifica l'allineamento con `python tools/sync-codex-skills.py --check`; il wrapper non si scrive a mano. Subito dopo si mostra il recap d'uso, cioè i comandi e il flusso essenziali presi da quel README: un pacchetto installato di cui non si conoscono i comandi è un pacchetto che non verrà usato, e il recap costa tre righe.
 
 Su un no si registra il no. È l'altra metà della regola e vale quanto la prima: un promemoria esplicito che il pacchetto resta istanziabile in seguito, con la data e, se l'utente l'ha data, la ragione. Il posto dove registrarlo è il work log del progetto, oppure il registro delle decisioni se la scelta è architetturale, e vale qui la regola generale per cui l'agente propone il delta sulla memoria e lo applica quando l'utente lo chiede.
 

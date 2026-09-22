@@ -14,6 +14,7 @@ Anatomia sempre creata. La colonna git indica se il file istanziato è tracciato
 
 ```
 templates/CLAUDE.md            ->  <radice>/CLAUDE.md                    (tracciato)
+templates/AGENTS.md            ->  <radice>/AGENTS.md                    (tracciato)
 templates/CLAUDE.local.md      ->  <radice>/CLAUDE.local.md             (ignorato)
 templates/gitignore.snippet    ->  da unire al <radice>/.gitignore       (tracciato)
 templates/settings.json        ->  <radice>/.claude/settings.json        (tracciato)
@@ -21,7 +22,10 @@ templates/memory/*.md          ->  <radice>/.claude/memory/*.md          (tracci
 templates/context/*.md         ->  <radice>/.claude/context/*.md         (tracciato)
 templates/context/sub-subproject.md ->  <radice>/.claude/context/<nome-sottoprogetto>.md  (tracciato, una copia per sottoprogetto)
 templates/_notes/*.md          ->  <radice>/_notes/*.md                  (ignorato; solo dopo che _notes e ignorato)
+templates/tools/sync-codex-skills.py -> <radice>/tools/sync-codex-skills.py (tracciato)
 ```
+
+`AGENTS.md` non duplica `CLAUDE.md`: lo indica come fonte canonica e traduce soltanto il punto di ingresso per Codex. Lo strumento `sync-codex-skills.py` crea sotto `.agents/skills/` wrapper minimi per ogni skill canonica presente in `.claude/skills/`; nome, descrizione e policy di invocazione restano così scopribili nativamente da Codex, mentre il corpo della procedura continua a vivere in un solo file. Lo strumento si riesegue dopo ogni installazione, rimozione o modifica di una skill e si verifica con `--check`.
 
 Una precisazione sulla riga delle schede di contesto, perché la forma con l'asterisco la nasconde: `sub-subproject.md` non è una scheda che si copia una volta con il proprio nome, ma un modello che si istanzia una volta per ogni sottoprogetto, rinominandolo con il nome di quello e compilandone il `covers-paths` con la sua cartella. Le istruzioni di istanziazione stanno dentro il modello, e comprendono il passo che si dimentica più spesso, cioè estendere il `covers-paths` delle schede trasversali alla cartella nuova: senza quel passo il motore di riconciliazione non guarda mai il sottoprogetto appena aggiunto.
 

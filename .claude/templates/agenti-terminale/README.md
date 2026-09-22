@@ -46,6 +46,14 @@ codex-account2
 
 **Nessun orchestratore.** Far lavorare piu' agenti insieme su un compito e' materia del pacchetto `lavoro-a-lotti`, che poggia su questo ma non lo richiede.
 
+## La chiusura di una sessione
+
+Il pacchetto porta con se' la regola `rules/chiusura-delle-sessioni.md`, che va dichiarata fra quelle caricate. Il principio in una riga: **una sessione che si considera chiusa per davvero va rimossa, non abbandonata**, perche' abbandonarla la lascia in un magazzino che il wipe preserva apposta.
+
+Le attuazioni differiscono: Codex ha il comando nativo `/delete`, che cancella la sessione ed esce; Claude Code non ha un equivalente e la rimozione va fatta a mano sul magazzino dell'account.
+
+E' il completamento del wipe, non un suo doppione: **il wipe copre l'incuria, questa regola copre la volonta'.**
+
 ## Mappa di istanziazione
 
 | Dal pacchetto | Nel progetto di macchina |
