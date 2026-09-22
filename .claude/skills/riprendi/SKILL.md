@@ -16,7 +16,7 @@ disable-model-invocation: true
 
 ## Il problema, che non è la perdita del lavoro
 
-La procedura di ripresa del sistema parte da `_notes/RESUME-PROMPT.md`, che l'agente aggiorna alla fine di ogni sessione con lo stato raggiunto e con il prompt da incollare. Quella procedura presuppone una cosa che non sempre è vera: che la sessione precedente sia arrivata alla fine. Una sessione che cade a metà, per un crash, per una compattazione andata male o semplicemente perché la finestra è stata chiusa, lascia il progetto in uno stato che il file di ripresa non descrive.
+La procedura di ripresa del sistema parte da `_notes/RESUME-PROMPT.md`, che l'agente aggiorna alla fine di ogni sessione con lo stato raggiunto e con il prompt da incollare. Lo strumento accetta anche il nome storico `_notes/RESUME_PROMPT.md`, così un progetto già istanziato non deve rinominare il proprio stato locale per adottare il presidio. Quella procedura presuppone una cosa che non sempre è vera: che la sessione precedente sia arrivata alla fine. Una sessione che cade a metà, per un crash, per una compattazione andata male o semplicemente perché la finestra è stata chiusa, lascia il progetto in uno stato che il file di ripresa non descrive.
 
 Il danno non è la perdita del lavoro, che sta su disco e in git. È più sottile, e per questo peggiore: la sessione nuova legge il file di ripresa, lo prende per lo stato corrente, e costruisce sopra una premessa falsa. Nessuno se ne accorge, perché un file di ripresa vecchio ha esattamente lo stesso aspetto di uno aggiornato. Questa skill esiste per rendere meccanica quella distinzione invece di affidarla al ricordo di come sia finita l'ultima volta.
 

@@ -4,7 +4,8 @@
 
 Perché esiste
 -------------
-La procedura di ripresa del sistema parte da `_notes/RESUME-PROMPT.md`, che l'agente aggiorna
+La procedura di ripresa del sistema parte da `_notes/RESUME-PROMPT.md`, oppure dal nome storico
+`_notes/RESUME_PROMPT.md`, che l'agente aggiorna
 alla fine di ogni sessione con lo stato raggiunto. Quella procedura presuppone una cosa che non
 sempre è vera: che la sessione precedente sia arrivata alla fine. Una sessione che cade a metà,
 per un crash, per una compattazione andata male o semplicemente perché la finestra è stata
@@ -62,6 +63,7 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 RIPRESA = os.path.join("_notes", "RESUME-PROMPT.md")
+RIPRESA_COMPAT = os.path.join("_notes", "RESUME_PROMPT.md")
 INDICE = os.path.join(".claude", "memory", "index.md")
 PROGRESSO = os.path.join(".claude", "memory", "progress.md")
 CONTESTO = os.path.join(".claude", "context")
@@ -79,6 +81,15 @@ SORVEGLIATI = [
 
 class Errore(Exception):
     """Un guasto che l'utente deve leggere."""
+
+
+def individua_ripresa(radice=None):
+    """Il nome corrente o quello storico, senza imporre un rename a un progetto esistente."""
+    base = radice or "."
+    for relativo in (RIPRESA, RIPRESA_COMPAT):
+        if os.path.isfile(os.path.join(base, relativo)):
+            return relativo
+    return RIPRESA
 
 
 def git(*argomenti, radice=None):
@@ -109,9 +120,9 @@ def impronta_corrente(radice=None, ora=None):
     # Nel sistema di progetto `_notes/` e' ignorato da git e il caso non si presenta, ma quella e'
     # una convenzione del progetto ospite: un programma corretto solo finche' una convenzione
     # altrui regge e' un programma che aspetta di sbagliare.
-    nostro = RIPRESA.replace(os.sep, "/")
+    nostri = tuple(p.replace(os.sep, "/") for p in (RIPRESA, RIPRESA_COMPAT))
     righe = [r for r in stato.splitlines()
-             if r.strip() and nostro not in r.replace("\\", "/")]
+             if r.strip() and not any(p in r.replace("\\", "/") for p in nostri)]
     digest = hashlib.sha256("\n".join(sorted(righe)).encode("utf-8")).hexdigest()[:16]
     return {
         "commit": commit,
@@ -157,9 +168,11 @@ def leggi_impronta(testo):
 
 def registra(radice=None, ora=None):
     """Scrive l'impronta nel file di ripresa, sostituendo quella precedente."""
-    percorso = os.path.join(radice or ".", RIPRESA)
+    ripresa = individua_ripresa(radice)
+    percorso = os.path.join(radice or ".", ripresa)
     if not os.path.isfile(percorso):
-        raise Errore("non trovo " + RIPRESA + ": il file di ripresa si istanzia dal template "
+        raise Errore("non trovo " + RIPRESA + " ne' " + RIPRESA_COMPAT +
+                     ": il file di ripresa si istanzia dal template "
                      "omonimo, e senza di esso non c'e' dove registrare l'impronta")
     testo = io.open(percorso, encoding="utf-8", errors="replace").read()
     nuovo = blocco(impronta_corrente(radice=radice, ora=ora))
@@ -214,12 +227,14 @@ def confronta(radice=None):
     divergenze = []
     note = []
 
-    percorso = os.path.join(radice or ".", RIPRESA)
+    ripresa = individua_ripresa(radice)
+    percorso = os.path.join(radice or ".", ripresa)
     adesso = impronta_corrente(radice=radice)
 
     if not os.path.isfile(percorso):
         divergenze.append(
-            "non esiste " + RIPRESA + ": la procedura di ripresa non ha da dove partire. Si "
+            "non esiste " + RIPRESA + " ne' " + RIPRESA_COMPAT +
+            ": la procedura di ripresa non ha da dove partire. Si "
             "istanzia dal template omonimo, e si registra l'impronta a fine sessione.")
         return divergenze, note
 
