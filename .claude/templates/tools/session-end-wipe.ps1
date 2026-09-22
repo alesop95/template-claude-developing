@@ -32,16 +32,48 @@
 #      settings.local.json.
 #
 # COSA PRESERVA, sempre:
-#   - i progetti il cui slug inizia con uno dei prefissi in $keepPrefixes. L'insieme
-#     e SPECIFICO della macchina: un prefisso per ogni disco dove stanno i progetti
-#     di sviluppo (es. 'D--' se i progetti stanno su D:, 'E--' se anche su E:, e cosi
-#     via se lo sviluppo e distribuito su piu dischi).
 #   - configurazione, login, skill, plugin: settings.json, .credentials.json,
 #     skills\, plugins\, hooks\, daemon\  -> mai toccati
 #   - di .claude.json si rimuovono SOLO le voci 'projects' dei percorsi non
 #     preservati: login e configurazione restano intatti (vedi blocco 4)
 #   - i file dei progetti su disco (E:\, D:\, ...) -> mai toccati: si agisce
 #     solo dentro la home dell'account e nello scratchpad temporaneo.
+#
+# $keepPrefixes: QUALI TRASCRIZIONI SI SALVANO, e la risposta giusta e' NESSUNA.
+#
+#   Ogni cartella sotto 'projects' e' lo slug di un percorso di lavoro, con i due
+#   punti e le barre sostituiti da trattini: 'E--mio-progetto' sta per
+#   'E:\mio-progetto'. Dentro NON c'e' nulla del progetto: ci sono solo i verbali
+#   delle conversazioni avvenute li'. La cartella si chiama come il progetto e
+#   non lo contiene, ed e' esattamente per questo che la si preserva per sbaglio.
+#
+#   La memoria di un progetto vive DENTRO il progetto, versionata: .claude/memory/,
+#   il work-log, il diario, il resume-prompt. E' la regola 'token-economy', alla
+#   voce su cio' che non si fa: non si accumula stato fuori dal progetto. Una
+#   trascrizione che sopravvive qui e' precisamente quello, cioe' memoria fuori
+#   dal progetto, non versionata, non ispezionabile, che nessuno rileggera'.
+#
+#   Ne segue che elencare qui i dischi di sviluppo e' il contrario di cio' che
+#   sembra: non protegge la memoria dei progetti, conserva i doppioni proprio dei
+#   progetti che la memoria ce l'hanno gia'. L'insieme corretto e' VUOTO, e ogni
+#   prefisso aggiunto e' un'eccezione da giustificare per iscritto.
+#
+#   Se la ripresa di un lavoro dipende da una trascrizione conservata qui, il
+#   difetto non e' nel wipe: e' che quel lavoro non ha lasciato traccia dove
+#   doveva. La risposta non e' preservare la trascrizione, e' scrivere il file
+#   di ripresa.
+#
+#   Cio' che si perde con l'insieme vuoto, detto per intero: la possibilita' di
+#   riaprire una conversazione passata con --resume o --continue. Nient'altro.
+#
+# $keepPathPrefixes: e' un'ALTRA cosa, e di norma NON va svuotato.
+#
+#   Governa le voci 'projects' di .claude.json, che contengono impostazioni e non
+#   conversazioni: permessi concessi, server MCP, la conferma 'mi fido di questa
+#   cartella', piu' contatori d'uso. Svuotarlo fa ricomparire il dialogo di
+#   fiducia a ogni progetto a ogni sessione. Le trascrizioni sono memoria, queste
+#   sono configurazione: si trattano in modo diverso, e sono due parametri
+#   distinti proprio per poterlo fare.
 # ============================================================================
 param(
   [switch]$DryRun,   # stampa cosa verrebbe rimosso, senza rimuovere niente
@@ -112,10 +144,16 @@ Write-Log ("session-end-wipe: {0}  modo={1}  base={2}" -f (Get-Date -Format 'yyy
 # insieme di prefissi vuoto significherebbe "non preservare niente". La guardia non vale
 # in modo -List, che e proprio il comando con cui si scopre che cosa configurare: li la
 # mancanza si segnala e si prosegue in sola lettura.
+# $allowEmptyKeep vale per ENTRAMBE le guardie sull'insieme vuoto, questa e la 0.3, e rende "non preservare niente" una scelta DICHIARATA, distinta dal
+# silenzio di un segnaposto mai compilato. Senza la distinzione le due cose sono
+# indistinguibili dal di dentro e hanno esiti opposti: una e corretta, l'altra e un
+# wipe totale per distrazione. La prima e anche la forma normale, perche le cartelle
+# sotto 'projects' non contengono i progetti ma i verbali delle conversazioni, e la
+# memoria di un progetto vive dentro il progetto, versionata.
 $keepPrefixes = @($keepPrefixes | Where-Object { $_ -and $_ -notmatch '<.*>' })
-$keepConfigured = [bool]$keepPrefixes
+$keepConfigured = ([bool]$keepPrefixes) -or $allowEmptyKeep
 if (-not $keepConfigured -and -not $List) {
-  Stop-Wipe "keepPrefixes non compilato. Esegui con -List per vedere gli slug presenti in questo account, poi scegli cosa preservare."
+  Stop-Wipe "keepPrefixes non compilato e $allowEmptyKeep non dichiarato. Esegui con -List per vedere gli slug presenti; se non si vuole preservare nulla, imposta $allowEmptyKeep = $true."
 }
 
 # 0.3 i prefissi parlano di QUESTA macchina. E la guardia che conta davvero: un insieme
@@ -153,8 +191,36 @@ if ($all.Count -gt 0 -and $keptList.Count -eq 0 -and -not $allowEmptyKeep) {
 }
 Write-Log ("Progetti: {0} totali, {1} preservati, {2} da rimuovere." -f $all.Count, $keptList.Count, ($all.Count - $keptList.Count))
 
+# GUARDIA DI ULTIMA ISTANZA. Tutto lo script e gia costruito per agire solo dentro
+# $base e dentro la radice degli scratchpad, ma "corretto per costruzione" non e una
+# garanzia: basta una riga sbagliata in una modifica futura perche una rimozione
+# ricorsiva finisca su una cartella di progetto. Qui il perimetro smette di essere una
+# proprieta del codice e diventa un controllo, secondo la sezione 17 del sistema.
+# Qualunque percorso fuori dalle due radici consentite ferma lo script invece di essere
+# rimosso: un wipe che si ferma e un fastidio, un wipe che sbaglia bersaglio e un danno
+# non reversibile. Le cartelle di lavoro dei progetti, _notes/ compresa, vivono su altri
+# dischi e non possono in nessun caso corrispondere.
+$script:sep = [System.IO.Path]::DirectorySeparatorChar
+$script:radiciConsentite = @($base, (Join-Path $env:LOCALAPPDATA (Join-Path 'Temp' 'claude')))
+function Test-DentroPerimetro($path) {
+  # Niente backslash letterali in questa funzione: si usa DirectorySeparatorChar.
+  # Un separatore perso in una modifica futura renderebbe il confronto un semplice
+  # prefisso di stringa, e '...account30' risulterebbe dentro '...account3'.
+  $pieno = [System.IO.Path]::GetFullPath($path).TrimEnd($script:sep)
+  foreach ($r in $script:radiciConsentite) {
+    if ([string]::IsNullOrWhiteSpace($r)) { continue }
+    $radice = [System.IO.Path]::GetFullPath($r).TrimEnd($script:sep)
+    if ($pieno -eq $radice) { return $true }
+    if ($pieno.StartsWith($radice + $script:sep, [StringComparison]::OrdinalIgnoreCase)) { return $true }
+  }
+  return $false
+}
+
 function Remove-Target($path) {
   if (-not (Test-Path -LiteralPath $path)) { return }
+  if (-not (Test-DentroPerimetro $path)) {
+    Stop-Wipe ("RIFIUTO: '{0}' e fuori dalle radici consentite ({1}). Nessuna rimozione oltre questo punto." -f $path, ($script:radiciConsentite -join ' ; '))
+  }
   if ($DryRun) { Write-Log "  [dry-run] Remove-Item -Recurse -Force $path" }
   else { Remove-Item -LiteralPath $path -Recurse -Force }
 }

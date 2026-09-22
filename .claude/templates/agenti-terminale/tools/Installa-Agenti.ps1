@@ -70,6 +70,16 @@ param(
   [int[]]$Claude,
   [int[]]$Codex,
   [string[]]$Prefissi,
+
+  # Dichiara che nessuna trascrizione va preservata. Passato a Installa-Claude,
+  # dove un insieme vuoto sarebbe altrimenti indistinguibile da "prefissi non
+  # determinati", che e' un errore e viene rifiutato.
+  [switch]$NienteDaPreservare,
+
+  # Prefissi di percorso per le voci 'projects' di .claude.json, che sono
+  # impostazioni e non conversazioni.
+  [string[]]$PrefissiImpostazioni,
+
   [string]$Template,
   [string]$RemotoTemplate,
   [switch]$ClonaTemplate,
@@ -180,6 +190,8 @@ if (-not $SoloCodex) {
   if ($Verifica) { $argClaude['Verifica'] = $true }
   if ($Forza) { $argClaude['Forza'] = $true }
   if ($Prefissi -and $Prefissi.Count -gt 0) { $argClaude['Prefissi'] = $Prefissi }
+  if ($NienteDaPreservare) { $argClaude['NienteDaPreservare'] = $true }
+  if ($PrefissiImpostazioni -and $PrefissiImpostazioni.Count -gt 0) { $argClaude['PrefissiImpostazioni'] = $PrefissiImpostazioni }
   & (Join-Path $PSScriptRoot 'Installa-Claude.ps1') @argClaude
 }
 

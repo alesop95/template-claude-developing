@@ -14,7 +14,19 @@ E' l'unica cosa da capire prima di leggere il resto, e non e' arbitraria.
 
 **Claude Code ha un hook di fine sessione**: un comando registrato nel `settings.json` dell'account che punta a un file. Lo script di pulizia **deve** quindi esistere come copia dentro ogni radice, e l'installatore lo mette li' sostituendo i segnaposto.
 
-**Codex non ha un hook di ciclo di vita.** Si avvia da un **wrapper**, che imposta la radice, verifica le guardie e fa la pulizia al ritorno del processo. I suoi script restano quindi nel pacchetto e nessuna copia finisce nelle radici.
+**Codex ha un hook di fine sessione e non se ne puo' servire.** Si avvia quindi da un **wrapper**, che imposta la radice, verifica le guardie e fa la pulizia al ritorno del processo. I suoi script restano nel pacchetto e nessuna copia finisce nelle radici.
+
+> **Questa riga diceva il falso fino al 2026-09-22**, e la correzione vale piu' della frase corretta. Si leggeva *"Codex non ha un hook di ciclo di vita"*. E' vero il contrario da `codex-cli 0.155.1`: esiste `SessionEnd`, si configura in `<CODEX_HOME>\hooks.json`, scatta, e riceve gia' pronti `session_id` e `cwd` della sessione. Misurato: parte in 0,38 secondi e il payload contiene tutto il necessario.
+>
+> Il wrapper resta lo stesso, per **due limiti indipendenti**, ciascuno sufficiente da solo.
+>
+> **Non scatta su `codex exec`.** Tutto il lavoro non interattivo e' scoperto, a cominciare dal pacchetto `lavoro-a-lotti`, che invoca esattamente quel comando. Ed e' il caso che pesa di piu': una giornata di lavoro a mano lascia tre o quattro sessioni, un corpus a lotti ne lascia decine.
+>
+> **Non puo' rimuovere la sessione che si sta chiudendo.** `SessionEnd` scatta *right before a session ends*, quando la sessione e' ancora aperta e di proprieta' del processo che sta uscendo: `codex delete` su di essa esce con codice 1 e `Error: failed to delete session`. La stessa sessione, stesso identificativo e stessa radice, viene rimossa senza errori un secondo dopo dal `finally` del wrapper.
+>
+> **La regola strutturale che ne discende:** la pulizia deve avvenire quando il processo e' **gia' uscito**, e nessun hook interno puo' trovarsi in quel momento. Non e' una limitazione di questa versione, da rivedere al prossimo aggiornamento: e' una proprieta' dell'ordine degli eventi.
+>
+> Ne segue che l'asimmetria fra i due agenti **non e' sulla presenza dell'hook** — ce l'hanno entrambi — ma su **quanto l'hook riesce a coprire**. Chi rivaluta questo punto in futuro parta da qui invece di riaprire l'indagine: e' costata una giornata.
 
 Stessa invocazione per l'utente, motori diversi sotto. Cio' che l'utente vede e' simmetrico:
 
@@ -81,3 +93,41 @@ Gli installatori sono **idempotenti**: rieseguirli non sovrascrive cio' che c'e'
 I **prefissi del wipe non si indovinano, si leggono**, con il modo di sola lettura di `Pulisci-Codex.ps1`. Un insieme sbagliato non produce un errore: preserva l'insieme vuoto e cancella tutto, facendo esattamente cio' che gli e' stato chiesto.
 
 I **server MCP di account** non sono ripristinati e vanno ricreati a mano.
+
+Gli script del pacchetto si scrivono in **solo ASCII**. PowerShell 5.1 legge i `.ps1` in ANSI: un carattere non ASCII salvato da un editor UTF-8 si corrompe, spacca la stringa che lo contiene e produce un errore di analisi. Uno script che non si analizza **non parte affatto**, quindi non lascia nemmeno la riga di diagnostica messa apposta per non restare senza traccia. Il controllo costa due comandi e si fa prima di consegnare, non dopo:
+
+```powershell
+# nessuna riga in uscita = il file e' pulito
+Select-String -Path .\script.ps1 -Pattern '[^\x00-\x7F]' -Encoding utf8
+$e = $null; [void][System.Management.Automation.Language.Parser]::ParseFile('.\script.ps1', [ref]$null, [ref]$e); $e
+```
+
+## Se si vuole comunque un hook di Codex: tre cose che non si vedono
+
+Non serve per la pulizia, per le ragioni gia' dette. Ma il meccanismo esiste, prima o poi qualcuno lo usera' per altro, e queste tre cose si pagano una volta ciascuna.
+
+**La fiducia si concede a mano e nessuno script puo' farlo al posto tuo.** Un hook nuovo o modificato non viene eseguito finche' non lo si approva in una schermata interattiva all'avvio della sessione. L'approvazione si registra come `hooks.state."<percorso>:<evento>:<i>:<j>".trusted_hash` **dentro `config.toml`**, ed e' il digest del contenuto: cambiare il comando richiede una nuova approvazione. La chiave contiene il percorso assoluto e la posizione dell'hook nel file, quindi anche **spostare il file o riordinare gli hook** riporta tutto a non fidato. Un installatore puo' quindi distribuire il `hooks.json`, non attivarlo: serve un passaggio umano per radice, e di nuovo a ogni aggiornamento.
+
+**Un hook non fidato non parte e non lo dice.** Nessun messaggio, nessun errore, nessuna riga di registro. Identico, dall'esterno, a un hook che funziona e non trova niente da fare.
+
+**`-Forza` cancella anche la fiducia.** Rimpiazzando l'intero `config.toml` si perde il blocco `[hooks.state]`, e l'hook resta sul disco, appare configurato in `/hooks`, e non viene piu' eseguito. E' la stessa trappola gia' descritta sopra per la scelta della sandbox, su un secondo oggetto.
+
+Due note tecniche che fanno risparmiare mezza giornata a chi ci prova.
+
+Il campo `command` **non e' una riga di shell affidabile**: virgolette annidate e metacaratteri non sopravvivono al passaggio, e il fallimento e' muto. Ci va il percorso di uno script, senza spazi, e la logica sta nello script.
+
+Il tetto di esecuzione di `SessionEnd` e' **3 secondi**, non aggirabile: un `timeout` maggiore viene ignorato con un avviso, e `async: true` non aiuta. `SessionStart` e `Stop` non hanno questo tetto.
+
+> **Implicazione di sicurezza, da non perdere.** La fiducia si calcola sul **comando**, non su cio' che il comando esegue. Un `hooks.json` che punta a uno script rende lo script modificabile per sempre senza che nessuna approvazione venga piu' chiesta, e la schermata di approvazione dichiara che **un hook fidato gira fuori dalla sandbox**. Lo script puntato da un hook non va quindi tenuto dentro la radice dell'account, ma dove solo l'amministratore scrive.
+
+## Che cosa si preserva nel wipe, e perche' la risposta giusta tende a "niente"
+
+Il wipe ha un insieme di prefissi da preservare, e la tentazione e' riempirlo con i dischi di progetto, cosi' che le sessioni di lavoro sopravvivano e si possano riprendere. **E' la scelta sbagliata**, e la ragione non e' di igiene ma di coerenza con il sistema.
+
+La memoria di un progetto vive **dentro il progetto**, versionata: `.claude/memory/`, il work-log, il diario, i file di ripresa. E' scritto nella regola `token-economy.md`, alla voce su cio' che non si fa: non si accumula stato fuori dal progetto. Una trascrizione di sessione che sopravvive nella radice di un account e' esattamente quello: **memoria fuori dal progetto, non versionata, non ispezionabile, e che nessuno rileggera' mai**.
+
+Se la ripresa di un lavoro dipende da una trascrizione conservata in `<CODEX_HOME>\sessions\`, il difetto non e' nel wipe: e' che quel lavoro non ha lasciato traccia dove doveva. La risposta non e' preservare la trascrizione, e' scrivere il file di ripresa.
+
+Ne segue che l'insieme dei prefissi preservati dovrebbe essere **vuoto per default**, e che ogni prefisso aggiunto e' un'eccezione da giustificare. Vale allo stesso modo per l'altro agente, dove la stessa logica e' espressa come elenco di slug di progetto da conservare.
+
+**Due avvertenze, perche' la cosa non si faccia alla cieca.** Preservare l'insieme vuoto **non produce un errore**: fa esattamente cio' che gli e' stato chiesto, cioe' cancellare tutto, ed e' indistinguibile da un insieme di prefissi sbagliato. Ed e' un'operazione **non reversibile**: le trascrizioni non stanno nel controllo di versione e non c'e' cestino. Si guarda prima l'elenco con il modo di sola lettura, e solo dopo si esegue.

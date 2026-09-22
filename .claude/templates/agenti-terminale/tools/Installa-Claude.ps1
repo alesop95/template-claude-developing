@@ -60,6 +60,22 @@ param(
   [int[]]$Account = @(1, 2, 3),
   [string]$Template,
   [string[]]$Prefissi,
+
+  # Dichiara che NESSUNA trascrizione va preservata. Serve perche' un insieme
+  # vuoto e' ambiguo: puo' significare "non preservare niente" oppure "i prefissi
+  # non sono stati determinati", e le due cose hanno esiti opposti. La guardia 2
+  # rifiuta il secondo caso, e questo interruttore rende il primo una scelta
+  # dichiarata invece che un silenzio. E' la scelta corretta per default: le
+  # cartelle sotto 'projects' contengono verbali di conversazioni, non memoria di
+  # progetto, che vive versionata dentro il progetto.
+  [switch]$NienteDaPreservare,
+
+  # Prefissi di PERCORSO per le voci 'projects' di .claude.json, che sono
+  # IMPOSTAZIONI e non conversazioni. Se omesso si derivano dagli slug, come
+  # prima. Va passato quando si usa -NienteDaPreservare e si vogliono comunque
+  # conservare permessi e dialogo di fiducia dei propri progetti.
+  [string[]]$PrefissiImpostazioni,
+
   [switch]$IncludiDefault,
   [switch]$Verifica,
   [switch]$Forza
@@ -100,7 +116,17 @@ Scrivi ("Template        {0}" -f $Template) 'Green'
 
 # --- GUARDIA 2: i prefissi non si indovinano --------------------------------
 # Se non sono stati passati, si leggono da una installazione gia' presente.
-if (-not $Prefissi -or $Prefissi.Count -eq 0) {
+if ($NienteDaPreservare) {
+  $Prefissi = @()
+  Scrivi 'Prefissi        nessuno: NESSUNA trascrizione viene preservata (scelta dichiarata)' 'Green'
+  if ($PrefissiImpostazioni -and $PrefissiImpostazioni.Count -gt 0) {
+    Scrivi ("Impostazioni    {0}  (voci di .claude.json conservate per questi percorsi)" -f ($PrefissiImpostazioni -join ', ')) 'Green'
+  }
+  else {
+    Scrivi 'Impostazioni    nessuna: anche permessi e dialogo di fiducia verranno rimossi' 'Yellow'
+  }
+}
+elseif (-not $Prefissi -or $Prefissi.Count -eq 0) {
   foreach ($n in $Account) {
     $candidato = Join-Path $env:USERPROFILE ".claude-account$n\hooks\session-end-wipe.ps1"
     if (-not (Test-Path -LiteralPath $candidato)) { continue }
@@ -120,7 +146,7 @@ else {
   Scrivi ("Prefissi        {0}  (passati a riga di comando)" -f ($Prefissi -join ', ')) 'Green'
 }
 
-if (-not $Prefissi -or $Prefissi.Count -eq 0) {
+if (-not $NienteDaPreservare -and (-not $Prefissi -or $Prefissi.Count -eq 0)) {
   Scrivi '' 'Gray'
   Scrivi 'PREFISSI NON DETERMINATI. Non li invento, e non devi indovinarli tu.' 'Red'
   Scrivi 'Sono specifici della macchina, uno per ogni radice su cui vivono i progetti.' 'Yellow'
@@ -178,10 +204,33 @@ foreach ($r in $radici) {
           $nuove.Add('$base = ' + [char]39 + $r.Percorso + [char]39 + '   # <-- specifico di questo account')
         }
         elseif ($t.StartsWith('$keepPrefixes = ') -and $riga.Contains('<KEEP_PREFIXES>')) {
-          $nuove.Add('$keepPrefixes = @(' + $elenco + ')       # dischi con progetti di sviluppo su questa macchina')
+          if ($NienteDaPreservare) {
+            $nuove.Add('$keepPrefixes = @()       # nessuna trascrizione si preserva: la memoria di progetto vive nel progetto')
+          }
+          else {
+            $nuove.Add('$keepPrefixes = @(' + $elenco + ')       # dischi con progetti di sviluppo su questa macchina')
+          }
         }
         elseif ($t.StartsWith('$keepPathPrefixes = ') -and $riga.Contains('<KEEP_PATH_PREFIXES>')) {
-          $nuove.Add('$keepPathPrefixes = @($keepPrefixes | ForEach-Object { $_.Substring(0,1) + ' + [char]39 + ':' + [char]39 + ' })')
+          # Le voci 'projects' di .claude.json sono IMPOSTAZIONI, non conversazioni:
+          # si governano a parte, altrimenti svuotare le trascrizioni farebbe
+          # ricomparire il dialogo di fiducia a ogni progetto a ogni sessione.
+          if ($PrefissiImpostazioni -and $PrefissiImpostazioni.Count -gt 0) {
+            $elencoImp = ($PrefissiImpostazioni | ForEach-Object { [char]39 + $_ + [char]39 }) -join ', '
+            $nuove.Add('$keepPathPrefixes = @(' + $elencoImp + ')   # permessi e fiducia conservati per questi percorsi')
+          }
+          elseif ($NienteDaPreservare) {
+            $nuove.Add('$keepPathPrefixes = @()   # nulla conservato, nemmeno permessi e dialogo di fiducia')
+          }
+          else {
+            $nuove.Add('$keepPathPrefixes = @($keepPrefixes | ForEach-Object { $_.Substring(0,1) + ' + [char]39 + ':' + [char]39 + ' })')
+          }
+        }
+        elseif ($t.StartsWith('$allowEmptyKeep = ') -and $NienteDaPreservare) {
+          # Il template ha gia' la deroga esplicita all'insieme vuoto: si usa quella
+          # invece di introdurne una seconda. Copre entrambe le guardie, quella sul
+          # segnaposto mai compilato e quella su "nessuno slug corrisponde".
+          $nuove.Add('$allowEmptyKeep = $true   # scelta dichiarata: nessuna trascrizione si preserva')
         }
         else { $nuove.Add($riga) }
       }

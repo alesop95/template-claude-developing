@@ -392,6 +392,20 @@ Ne discendono tre conseguenze operative.
 
 Un corollario della stessa famiglia, osservato nella stessa giornata su un quinto sistema. Uno strumento la cui configurazione seleziona il perimetro di lavoro, quando quella configurazione non arriva, **non fallisce: ricade su un default e prosegue dichiarando successo**. L'unico segnale era una riga di errore della shell che sembrava scollegata dal resto. La difesa non e' ricordarsi la sintassi giusta ma non digitare mai quel comando a mano: ci si arriva da uno script che verifica il perimetro prima di eseguire, secondo la sezione 17.
 
+### Tre occorrenze successive, e la terza e' la piu' istruttiva
+
+Registrate il giorno dopo le prime cinque, in un solo lavoro di mezza giornata sulla verifica di un hook di fine sessione. La ripetizione cosi' ravvicinata e' essa stessa il dato: **questo non e' un errore che si fa una volta e si impara**, e' la forma normale in cui si sbaglia.
+
+**Un'assenza non e' una risposta finche' non si sa di che cosa e' l'assenza.** Un file marcatore non comparso sembrava rispondere a *"l'hook funziona?"*. Rispondeva invece a *"la sessione e' finita?"*, e la sessione era ancora aperta. La diagnosi sbagliata stava per essere chiusa con sicurezza; l'ha impedita l'apertura del registro interno dello strumento, che mostrava un battito ogni trentun secondi.
+
+**Un pannello che dice `Active` risponde a "e' armato?", non a "funziona?".** Il comando diagnostico dello strumento dichiarava l'hook `Installed 1, Active 1`, ed era letteralmente vero: era installato, approvato e abilitato. Non veniva eseguito lo stesso, perche' il comando configurato era malformato. Nessuna delle due colonne mentiva, e nessuna delle due rispondeva alla domanda che si stava ponendo.
+
+**Una prova costruita male risponde a una domanda vicina a quella giusta, e la si scambia per quella giusta.** Serviva sapere se una sessione si potesse rimuovere *dal processo che la stava chiudendo*. E' stata misurata invece la rimozione di *un'altra* sessione mentre *un altro* processo era vivo: piu' semplice da allestire, a costo nullo, e con esito positivo. La conclusione, "nessun conflitto", e' stata smentita mezz'ora dopo dal percorso vero, che falliva. **La frugalita' aveva selezionato lo scenario piu' comodo, non quello che serviva.**
+
+Ne discende una quarta conseguenza operativa, che si aggiunge alle tre sopra e riguarda chi le prove le progetta, non chi legge gli indicatori.
+
+**Prima di fidarsi di una prova, si dichiara quale differenza rispetto al caso reale si sta accettando.** Una prova e' un modello, e ogni modello omette qualcosa: finche' l'omissione resta implicita, l'esito positivo si estende senza accorgersene al caso che non e' stato provato. Scrivere per esteso *"questa prova differisce dal caso reale in X"* costa una riga e rende visibile se X sia proprio la variabile in esame. Nel caso osservato, X era **chi possiede la sessione**, cioe' esattamente l'oggetto della domanda.
+
 ---
 
 [^1]: *Skill* - workflow richiamabile descritto in un file `SKILL.md`, che incapsula istruzioni operative e comandi pre-eseguiti il cui output viene iniettato nel contesto.

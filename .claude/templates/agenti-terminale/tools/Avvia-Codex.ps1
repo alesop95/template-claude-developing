@@ -14,9 +14,32 @@
   riga scollegata, e il login e' andato a buon fine sulla radice di default.
 
   Lo script imposta la radice, verifica che esista e sia configurata, esegue
-  Codex, e al ritorno del processo invoca la pulizia se e' installata. Non e'
-  un hook: Codex non ne espone uno di fine sessione, e un wrapper e' comunque
-  piu' affidabile perche' il processo e' gia' terminato quando la pulizia parte.
+  Codex, e al ritorno del processo invoca la pulizia se e' installata.
+
+  NON e' un hook, e la ragione e' misurata, non di gusto. Codex un hook di fine
+  sessione CE L'HA, da codex-cli 0.155.1: si chiama SessionEnd, si configura in
+  <CODEX_HOME>\hooks.json, scatta davvero, e riceve gia' pronti session_id e
+  cwd della sessione. Non basta lo stesso, per due limiti indipendenti e
+  ciascuno sufficiente da solo.
+
+  PRIMO. Non scatta su `codex exec`, quindi non copre NULLA del lavoro non
+  interattivo. E' il caso del pacchetto lavoro-a-lotti, che invoca esattamente
+  quel comando, ed e' anche il caso che produce piu' sessioni da rimuovere: una
+  giornata a mano ne lascia tre o quattro, un corpus a lotti ne lascia decine.
+
+  SECONDO. Non puo' rimuovere la sessione che si sta chiudendo. SessionEnd
+  scatta "right before a session ends", cioe' quando la sessione e' ancora
+  aperta e di proprieta' del processo che la sta chiudendo, e `codex delete` su
+  di essa esce con codice 1 e "Error: failed to delete session".
+
+  Verificato il 2026-09-22 nello stesso terminale: la sessione
+  01a0c9c7-50ea-7530-84ea-754c1420aba2 non e' stata rimossa dall'hook e lo e'
+  stata un secondo dopo dal blocco finally qui sotto. Stesso identificativo,
+  stessa radice, stesso comando sotto. Cambia solo il momento.
+
+  Ne segue la regola strutturale: la pulizia deve avvenire quando il processo e'
+  GIA' USCITO, e nessun hook interno puo' trovarsi in quel momento. E' il
+  motivo per cui questo wrapper esiste e non e' sostituibile.
 
 .PARAMETER Account
   Numero della radice, che corrisponde a <PROFILO_UTENTE>\.codex-account<N>.
@@ -53,6 +76,12 @@ param(
   [switch]$Stato,
 
   [switch]$NoPulizia,
+
+  # Conserva le sessioni invece di azzerarle. Per default la pulizia e' TOTALE,
+  # perche' una trascrizione che sopravvive nella radice dell'account e' memoria
+  # fuori dal progetto: la memoria di un progetto vive dentro il progetto,
+  # versionata. Vedi la sezione "Che cosa si preserva nel wipe" del README.
+  [switch]$ConservaSessioni,
 
   [Parameter(ValueFromRemainingArguments = $true)]
   [string[]]$Resto
@@ -138,7 +167,8 @@ finally {
     $pulizia = Join-Path $PSScriptRoot 'Pulisci-Codex.ps1'
     if (Test-Path -LiteralPath $pulizia) {
       Write-Host 'Pulizia degli store di sessione...' -ForegroundColor Cyan
-      & $pulizia -Account $Account
+      if ($ConservaSessioni) { & $pulizia -Account $Account }
+      else { & $pulizia -Account $Account -Tutto }
     }
     else {
       # Il percorso cercato va STAMPATO, non solo il fatto che manchi: la causa
