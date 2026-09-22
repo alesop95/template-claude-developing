@@ -141,7 +141,14 @@ finally {
       & $pulizia -Account $Account
     }
     else {
-      Write-Host 'Pulisci-Codex.ps1 non installato: nessuna pulizia eseguita.' -ForegroundColor DarkYellow
+      # Il percorso cercato va STAMPATO, non solo il fatto che manchi: la causa
+      # osservata e' una finestra che aveva caricato il profilo prima che gli
+      # script cambiassero posizione, e le sue funzioni puntavano alla vecchia.
+      # Senza il percorso, il messaggio non distingue "file assente" da
+      # "sto guardando nel posto sbagliato", che sono due diagnosi opposte.
+      Write-Host ("Pulisci-Codex.ps1 non trovato in: {0}" -f $pulizia) -ForegroundColor DarkYellow
+      Write-Host 'Nessuna pulizia eseguita. Se il percorso sopra non e'' quello atteso,' -ForegroundColor DarkYellow
+      Write-Host 'questa finestra ha un profilo vecchio: esegui . $PROFILE oppure aprine una nuova.' -ForegroundColor DarkYellow
     }
   }
 }
