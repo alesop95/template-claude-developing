@@ -48,6 +48,18 @@ Succede, ed è successo due volte in due giorni nello stesso progetto. La reazio
 
 Vale anche il verso positivo, da dire a chi esegue la verifica manuale: un risultato inatteso vale più di uno atteso, e va riportato insieme al passo che lo ha prodotto invece di essere aggiustato a mano e dimenticato.
 
+## In una verifica manuale si marca quale passo è quello discriminante
+
+Caso osservato su una sequenza di quattro passi, scritta apposta per riverificare una correzione che al primo tentativo non aveva chiuso il difetto. I passi erano: creare un elemento e controllare che nasca in una posizione libera, crearne un secondo e controllare che non si sovrapponga, *spostarne uno a mano*, crearne un terzo e controllare che non atterri sopra nessuno.
+
+Solo il terzo e il quarto passo, presi insieme, esercitano il difetto, e la ragione è che lo spostamento cambia la *composizione dell'insieme* da cui il calcolo deriva la posizione: l'elemento spostato acquista una collocazione propria, esce dall'insieme di quelli senza, e fa scalare l'indice di tutti gli altri. I primi due passi percorrono il caso facile.
+
+Che cosa è successo davvero, ed è il motivo per cui la lezione merita di essere scritta. La prima esecuzione si è fermata dopo il primo passo e la cosa è stata registrata come verifica parziale, il che ha funzionato. Ma la seconda esecuzione, in una sessione diversa, ha rifatto **di nuovo il primo passo** prima di arrivare al terzo, e senza un richiamo esplicito si sarebbe fermata di nuovo lì: dall'esterno i passi si assomigliano tutti, sono tutti "crea un elemento e guarda dove finisce", e nulla nella lista diceva quale dei quattro portasse l'informazione. *Il passo facile è stato eseguito due volte, quello discriminante ha rischiato di non esserlo mai.*
+
+La prescrizione che ne discende è minima e costa una riga. Chi scrive una sequenza di verifica manuale dichiara, accanto al passo che conta, **perché** conta e che cosa distingue: non "crea un terzo elemento" ma "crea un terzo elemento, ed è questo che la correzione precedente sbagliava, perché lo spostamento del passo prima ha cambiato l'insieme". Chi esegue, allora, sa che fermarsi prima non è fermarsi a metà ma fermarsi a zero.
+
+Il criterio per riconoscere il passo discriminante, quando la sequenza la si sta scrivendo: è quello che *modifica lo stato da cui il codice deriva il risultato*, non quello che ripete l'operazione osservata. Un passo che ripete l'operazione precedente con un nome diverso aggiunge fiducia e non aggiunge informazione, ed è utile dirlo, perché a quel punto chi esegue può anche saltarlo consapevolmente invece di saltare l'altro per stanchezza.
+
 ## Una finzione scritta guardando il codice descrive il codice, non la dipendenza
 
 Quarta forma di prova che passa senza misurare, osservata su un progetto istanziato e distinta dalle tre precedenti perché non riguarda l'asserzione ma ciò che la circonda.
