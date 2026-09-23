@@ -9,6 +9,7 @@ Branch attivo:        <branch>
 Commit di riferimento: <hash del commit corrente>
 Data snapshot:        <YYYY-MM-DD>
 Albero autorevole:    <percorso assoluto, o "unico" se il progetto ha un solo albero>
+Ambienti:             <solo con una branch per ambiente: commit di produzione e di staging sul remoto, e divergenza del ramo corrente, dopo un fetch>
 ```
 
 ## Stato di verifica delle schede

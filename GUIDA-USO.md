@@ -131,6 +131,7 @@ Qui la risposta alla domanda "si lancia automatico?" è: quasi mai, e per una ra
 | "Non ricordo dove eravamo, e il file di ripresa sembra vecchio" | Una sessione è caduta senza chiudersi | automatico all'apertura con l'hook; altrimenti `/riprendi` |
 | "La documentazione descrive un file che non trovo" | Una fotografia invecchiata in un documento vivo | `python tools/lint-doc-references.py --solo-vivi` |
 | "Le schede non corrispondono più al codice" | Drift fra documentazione e commit | `/sync-context` |
+| "Come separo test e produzione in questo progetto?" | Non esiste un default: dipende da stack, macchina e persone | leggi `.claude/rules/separazione-ambienti.md` e ripeti il suo gate; l'esito va in `context/deployment.md` |
 | "Ho aperto un secondo albero di lavoro e la memoria sembra indietro" | La memoria versionata vale per la branch, e questa non è la più avanti | `/riprendi`, che la segnala con il percorso dell'albero autorevole; poi leggi `.claude/rules/alberi-di-lavoro.md` |
 | "Perché a marzo abbiamo scelto questa libreria?" | Il fatto è registrato, la ragione no | `python tools/costruisci-timeline.py`, poi apri `docs/TIMELINE.html` |
 | "Questo documento dice una cosa che forse non è più vera" | Un'affermazione con una scadenza implicita | `python tools/Test-Allineamento.py` |

@@ -49,7 +49,7 @@ Questo file e il README della repository GitHub. Serve a far capire cos'e il tem
 - [Voce e trascrizione in locale (voicestudio)](#voce-e-trascrizione-in-locale-voicestudio)
 - [I due cataloghi esterni di skill (scientific-skills, matt-pocock-skills)](#i-due-cataloghi-esterni-di-skill-scientific-skills-matt-pocock-skills)
 - [Ripresa di una sessione dopo una caduta](#ripresa-di-una-sessione-dopo-una-caduta)
-- [Ambienti separati in alberi di lavoro](#ambienti-separati-in-alberi-di-lavoro)
+- [Separazione fra test e produzione](#separazione-fra-test-e-produzione)
 - [Linea temporale del progetto (timeline-progetto)](#linea-temporale-del-progetto-timeline-progetto)
 - [Ragioni delle scelte tecniche (documentazione-didattica)](#ragioni-delle-scelte-tecniche-documentazione-didattica)
 - [Controllo della memoria di progetto (memoria-di-progetto)](#controllo-della-memoria-di-progetto-memoria-di-progetto)
@@ -260,9 +260,13 @@ Lo strumento `tools/verifica-ripresa.py` rende meccanica la distinzione. A fine 
 
 La skill `riprendi` è la procedura che ne interpreta l'esito, e la sua regola è che una divergenza si riporta all'utente prima di qualunque altra cosa, perché solo lui sa che cosa stava facendo: un file rimasto a metà può essere un lavoro da riprendere o uno da buttare, e la differenza non si legge dal contenuto. Lo strumento dichiara anche ciò che non può sapere, ed è la parte onesta: non sa se il lavoro fatto fosse giusto, e soprattutto non sa se una decisione presa a voce sia stata scritta, che è il buco che la regola `chat-non-e-memoria.md` previene a monte invece di rilevare a valle.
 
-## Ambienti separati in alberi di lavoro
+## Separazione fra test e produzione
 
-Quando servono ambienti di test e di produzione separati, il template raccomanda un albero di lavoro per ambiente, aggiunto con `git worktree`: ogni albero porta in uscita la propria branch e ha il proprio `.env`, la propria porta e la propria base dati locale, e la tabella degli alberi vive nella scheda `context/deployment.md`. Il prezzo di questa forma sta nella memoria versionata, che vale per la branch su cui è scritta e non per il progetto: un albero aperto su una branch indietro riceve uno snapshot e un registro delle decisioni ben formati e vecchi. La regola `.claude/rules/alberi-di-lavoro.md` prescrive di leggere la memoria dall'albero della branch più avanti, per percorso assoluto, senza copiarla né fonderla, e `tools/verifica-ripresa.py` segnala all'apertura ogni altro albero la cui branch abbia fatto avanzare `.claude/memory/`, nominandone il percorso. Il principio, e la regola di redazione che ne discende per ogni documento di stato, stanno nella sezione 22 di `PROJECT-SYSTEM.md`.
+Il template non impone un modo di separare test e produzione: lo chiede. All'inizializzazione e a ogni tornata di allineamento l'agente pone un gate, come per i pacchetti, dichiarando prima i fatti che osserva nel repository e sulla macchina di esercizio, cioè dove gira la produzione, file di composizione, configurazioni del reverse proxy, pipeline, file d'esempio delle variabili e branch remote, poi ponendo sei domande e proponendo una combinazione legata a quei fatti. In un progetto esistente il modello c'è quasi sempre già, anche se nessuno l'ha scritto, e il gate lo riconosce e lo documenta invece di sostituirlo. L'esito va nella sezione "Modello di separazione" di `context/deployment.md`, con lo stato in esercizio o previsto di ogni ambiente e i rischi da presidiare, e come ADR in `memory/decisions.md`.
+
+Il catalogo, in `.claude/rules/separazione-ambienti.md`, è ricavato da una ricognizione su nove progetti reali e divide la scelta in quattro assi indipendenti, perché confonderli è l'errore più comune. L'asse R dice dove girano gli ambienti: solo produzione con backup e snapshot per un'applicazione di terze parti, gemelli sulla stessa macchina dietro il reverse proxy, stack di container isolati sulla stessa macchina sempre accesi con una composizione parametrizzata oppure accesi a richiesta, macchina di staging separata con produzione immutabile da immagini, progetti gemelli su una piattaforma gestita con emulatori e anteprime per richiesta di modifica. L'asse P dice come passa il codice: una branch stabile con richieste di modifica, una branch di staging condivisa, una branch per ambiente con configurazione divergente. L'asse D dice da dove vengono i dati di prova: vuoti o con un seme, propri dell'ambiente di sviluppo con promozione controllata, copia della produzione resa innocua, istantanea su richiesta. L'asse L dice come stanno i sorgenti sulla macchina di chi sviluppa: un albero solo, più alberi di lavoro con `git worktree`, cloni indipendenti per ambiente. Per ciascuna forma la regola riporta quando conviene, che cosa costa e che cosa si è rotto nel caso reale, più sei rischi trasversali osservati su modelli diversi, primo fra tutti l'ambiente di prova esposto alla rete accanto alla produzione, trovato su quattro macchine.
+
+Gli alberi di lavoro sono quindi una scelta fra le altre, e hanno una conseguenza che la regola `.claude/rules/alberi-di-lavoro.md` governa: la memoria versionata vale per la branch su cui è scritta, e un albero aperto su una branch indietro riceve uno snapshot e un registro delle decisioni ben formati e vecchi. La memoria si legge allora dall'albero della branch più avanti, per percorso assoluto, senza copiarla né fonderla, e `tools/verifica-ripresa.py` segnala all'apertura ogni altro albero la cui branch abbia fatto avanzare `.claude/memory/`, nominandone il percorso. Con una branch di staging condivisa lo stesso fenomeno si presenta in forma più lieve, e lo snapshot `memory/index.md` porta per questo la riga degli ambienti con i commit di produzione e di staging sul remoto. Il principio sta nella sezione 22 di `PROJECT-SYSTEM.md`.
 
 ## Linea temporale del progetto (timeline-progetto)
 
@@ -327,13 +331,14 @@ template-claude-developing/
     settings.json                permessi condivisi e variabili di progetto
     settings.local.json          permessi personali, ignorato
     rules/
-      alberi-di-lavoro.md        ambienti separati in worktree, memoria letta dall'albero autorevole
+      alberi-di-lavoro.md        piu alberi di lavoro, memoria letta dall'albero autorevole
       chat-non-e-memoria.md      tutto cio che si scrive in sessione si scrive anche su disco
       git-commands-format.md     comandi git manuali, una riga per comando, contesto dichiarato
       git-identity-and-repo.md   identita git locale, alias SSH, bootstrap del remoto
       interaction-style.md       stile della documentazione tecnica
       manual-screenshots.md      quando e come chiedere uno screenshot per i passi manuali
       prove-che-misurano.md      verifica di non vacuita delle prove automatiche
+      separazione-ambienti.md    catalogo e gate della separazione fra test e produzione
       security-permissions.md    modalita di permesso, sandbox, baseline deny e ask rules
       token-economy.md           pratiche di risparmio contesto, igiene sessione, stack 7 tool
       web-sources-not-fetchable.md   fonti web non recuperabili, vie in ordine di costo

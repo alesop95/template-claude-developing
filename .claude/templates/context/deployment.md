@@ -11,6 +11,16 @@ last-verified-commit: <hash dell'ultima verifica o aggiornamento>
 
 > Popolare leggendo la configurazione reale di infrastruttura e CI. Commit, push e deploy restano operazioni manuali dell'utente.
 
+## Modello di separazione fra test e produzione
+
+> Scelto al gate dell'inizializzazione o dell'allineamento fra i modelli del catalogo `.claude/rules/separazione-ambienti.md`, e registrato anche come ADR in `memory/decisions.md`. Non si deduce: se il gate non è stato fatto, la sezione lo dice.
+
+- Modello: <una sigla per asse dal catalogo, per esempio R2 a richiesta, P1, D0, L1>
+- Stato: <in esercizio / previsto e non ancora creato, per ciascun ambiente>
+- Scelto il: <YYYY-MM-DD>, ADR: <ADR-NNN>
+- Perché questo e non gli altri: <il fatto del progetto che lo decide>
+- Rischi da presidiare: <quelli del modello scelto e i rischi trasversali del catalogo che il modello non esclude, con il presidio di ciascuno>
+
 ## Livelli
 
 <descrizione dei livelli test/staging e produzione, hosting, domini>
