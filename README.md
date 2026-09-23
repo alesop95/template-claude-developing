@@ -313,7 +313,9 @@ Sul fronte specifico di un corpus di fonti da cui ragionare, il pacchetto `noteb
 
 ## Niente AI slop
 
-Lo stile pulito è garantito sempre dalla regola `interaction-style` (niente trattini lunghi, niente stilemi da testo generativo). Quando serve una pulizia attiva, al gate si possono attivare due strumenti esterni a scelta, distinti per ambito. Per il testo, `humanizer` è una skill che rimuove i segni di scrittura AI (frasi riempitive, regola del tre, trattini lunghi e grassetto in eccesso, hedging, tono promozionale, 33 pattern): si clona in `.claude/skills/humanizer/` e si usa con `/humanizer <testo>`. Per le interfacce, `taste-skill` migliora layout, tipografia, spaziatura e motion delle UI generate per evitare l'aspetto generico-AI: si aggiunge con `npx skills add https://github.com/Leonxlnx/taste-skill`. Il primo serve ai progetti che producono prosa, il secondo ai progetti con frontend.
+Il template riconosce e fa evitare quattordici segni ricorrenti dei contenuti generati da un modello, sei nella prosa e otto nelle interfacce, partiti da un carosello portato dall'utente e riscontrati uno per uno su fonti primarie. Per la prosa la regola sta in `.claude/rules/interaction-style.md`, sezione "I segni del testo generato", e vale sempre: niente autorità senza nome, niente parallelismo negativo del tipo "non è X: è Y", niente raggruppamenti per tre per abitudine, niente frasi e paragrafi della stessa misura, niente gergo da chat, niente lessico di maniera, oltre al divieto dei trattini lunghi che la regola aveva già. Per le interfacce la regola `design-non-generico.md` entra nei progetti con un frontend e chiede una ragione scritta per ogni default: la palette crema con accento ambra o terracotta, la parola del titolo in corsivo, l'etichetta maiuscola sopra ogni titolo, la sezione in tre passi, le card dentro le card, le icone di repertorio, le decorazioni estranee al prodotto, lo stesso layout in ogni sezione; il contrasto WCAG del testo è l'unico vincolo senza eccezioni.
+
+Il pacchetto `.claude/templates/anti-slop/` porta la guida, che per ogni segno dice perché si produce, come si riconosce e che cosa si fa invece, il registro `FONTI.md` con la fonte visiva di partenza e dodici fonti pubblicate, fra cui il catalogo "Signs of AI writing" della comunità di Wikipedia, la skill `frontend-design` di Anthropic, la guida di Anthropic al prompting estetico, uno studio sull'eccesso di vocabolario in quindici milioni di abstract, uno sui falsi positivi dei rilevatori verso chi non è madrelingua, e le linee guida di usabilità su icone e card. Porta anche due rilevatori deterministici a zero dipendenze, `lint-prosa.py` e `lint-ui.py`, che segnalano e non riscrivono: le fonti stesse avvertono che nessun rilevatore dimostra che un testo sia generato. La loro prima corsa sul template ha trovato il parallelismo negativo quattordici volte in sei file di sistema, la prevalenza delle triadi in sette, e nelle pagine HTML la palette calda e un catalogo di sezioni identiche, che lì è una scelta corretta. Le due skill esterne restano complementari: `humanizer` riscrive un testo applicando il catalogo di Wikipedia e si clona in `.claude/skills/humanizer/`, `taste-skill` guida la generazione di un'interfaccia e si aggiunge con `npx skills add https://github.com/Leonxlnx/taste-skill`; il pacchetto verifica il risultato di entrambe.
 
 ## Componenti del bundle
 
@@ -383,6 +385,7 @@ template-claude-developing/
       roadmap/         pacchetto opzionale: lista del lavoro aperto generata dallo stato corrente
       readme-sync/     pacchetto opzionale: indice navigabile, inventario dei pacchetti e controllo dei link del README
       separazione-ambienti/  guida ai paradigmi di separazione fra test e produzione, registro di 37 fonti e 9 casi, esempi annotati
+      anti-slop/       pacchetto opzionale: 14 segni di prosa e interfacce generate, guida, 12 fonti, lint-prosa.py e lint-ui.py
       dev-skills/       pacchetto opzionale: 4 skill di sviluppo a scelta (test-generator, mcp-tool-scaffold, code-review, security-review)
       automation-starter/  pacchetto opzionale: headless-run .ps1/.sh (claude -p su abbonamento), workflow GitHub Actions opzionale via token setup-token, terza via nativa /schedule
       agent-catalog/    pacchetto opzionale: fetch mirato di subagent community da fonti flat (0xfurai), 3 comandi, script check-update dual-OS con stato tracciato
@@ -394,7 +397,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**33 pacchetti a cartella** su **80 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**34 pacchetti a cartella** su **81 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -416,6 +419,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 - `documentazione-didattica` - il registro di perché una scelta è migliore di un'altra, accanto a quello di che cosa è accaduto: [.claude/templates/documentazione-didattica/README.md](.claude/templates/documentazione-didattica/README.md)
 - `md-unwrap` - formatter Markdown a diff minimo per i paragrafi su riga continua: [.claude/templates/md-unwrap/README.md](.claude/templates/md-unwrap/README.md)
 - `fix-typography` - accenti, accenti mancanti e trattini secondo le convenzioni tipografiche: [.claude/templates/fix-typography/README.md](.claude/templates/fix-typography/README.md)
+- `anti-slop` - segni di prosa e interfacce generate, con fonti e due rilevatori: [.claude/templates/anti-slop/README.md](.claude/templates/anti-slop/README.md)
 - `latex` - ambiente di build LaTeX: [.claude/templates/latex/README.md](.claude/templates/latex/README.md)
 - `docx-to-docs` - `.docx` in albero `docs/` versionato: [.claude/templates/docx-to-docs/README.md](.claude/templates/docx-to-docs/README.md)
 - `knowledge-wiki` - LLM Wiki accumulatoria: [.claude/templates/knowledge-wiki/README.md](.claude/templates/knowledge-wiki/README.md)
