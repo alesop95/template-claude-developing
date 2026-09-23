@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 ## Contesto (best-effort, pre-iniettato)
 
-!`git log -1 --format="%h %ad %s" --date=short` !`git status --short`
+!`git log -1 --format="%h %ad %s" --date=short` !`git status --short` !`git worktree list`
 
 ## Il problema, che non è la perdita del lavoro
 
@@ -28,9 +28,9 @@ Il primo comando non legge il file di ripresa: verifica che si possa credergli.
 python tools/verifica-ripresa.py
 ```
 
-Lo strumento confronta l'impronta registrata a fine sessione, cioè commit e forma dell'albero di lavoro in quel momento, con lo stato reale di adesso. Esce con codice diverso da zero quando qualcosa diverge, e dice che cosa in ordine di quanto conta: i commit comparsi dopo l'ultima registrazione, con il loro messaggio, perché sono il lavoro che una sessione ha prodotto senza chiudersi; l'albero di lavoro diverso da quello registrato, cioè i file che quella sessione stava toccando quando è caduta; i documenti di memoria che dichiarano un commit più vecchio di HEAD; e le schede di contesto ancorate a un commit che nel repository non esiste più.
+Lo strumento confronta l'impronta registrata a fine sessione, cioè commit e forma dell'albero di lavoro in quel momento, con lo stato reale di adesso. Esce con codice diverso da zero quando qualcosa diverge, e dice che cosa in ordine di quanto conta: i commit comparsi dopo l'ultima registrazione, con il loro messaggio, perché sono il lavoro che una sessione ha prodotto senza chiudersi; l'albero di lavoro diverso da quello registrato, cioè i file che quella sessione stava toccando quando è caduta; i documenti di memoria che dichiarano un commit più vecchio di HEAD; le schede di contesto ancorate a un commit che nel repository non esiste più; e, dove il progetto usa più alberi di lavoro, gli altri alberi la cui branch porta nella memoria modifiche che questo albero non ha, con il percorso di ciascuno.
 
-Se il progetto non ha lo strumento istanziato, la stessa domanda si pone a mano confrontando il commit dichiarato in `.claude/memory/index.md` con `HEAD` e guardando `git status --short`. È meno preciso e va detto quando lo si fa, perché senza impronta non si distingue un albero sporco lasciato di proposito da uno lasciato da una caduta.
+Se il progetto non ha lo strumento istanziato, la stessa domanda si pone a mano confrontando il commit dichiarato in `.claude/memory/index.md` con `HEAD`, guardando `git status --short` e, se `git worktree list` elenca più di un albero, confrontando la memoria con quella degli altri come descrive la regola `alberi-di-lavoro.md`. È meno preciso e va detto quando lo si fa, perché senza impronta non si distingue un albero sporco lasciato di proposito da uno lasciato da una caduta.
 
 ## Passo 2 - Che cosa fare di una divergenza
 
@@ -41,6 +41,8 @@ Per i commit comparsi dopo la registrazione si guarda che cosa hanno toccato, co
 Per i file rimasti nell'albero di lavoro si chiede, non si decide. Un file a metà può essere un lavoro da riprendere o uno da buttare, e la differenza non si legge dal contenuto.
 
 Per i documenti di memoria arretrati si propone il delta e lo si applica quando l'utente lo chiede, come vuole il vincolo generale sulla memoria: la skill non riscrive `memory/` di propria iniziativa.
+
+Per una memoria più avanti in un altro albero non si propone nessun delta, perché copiarla o fonderla qui sono le due correzioni sbagliate che la regola `alberi-di-lavoro.md` descrive: si dichiara che la memoria di questo albero è quella di un'altra branch, e da quel momento `index.md`, `decisions.md` e `progress.md` si leggono dall'albero autorevole per percorso assoluto, mentre codice e schede di contesto restano quelli di questo albero. Se il file di ripresa di questo albero non si apre già con quell'avviso, si propone di aggiungerlo in testa, che è il solo posto non versionato e quindi il solo che non eredita il tranello.
 
 E per ciò che si sospetta perduto ma non si vede, cioè una decisione presa a voce nella sessione caduta, si dice chiaramente che non è ricostruibile da qui e si chiede se ce ne fosse una. È il buco che la regola `chat-non-e-memoria.md` previene a monte scrivendo nel giro di lavoro in cui il contenuto nasce; a valle resta solo la domanda.
 

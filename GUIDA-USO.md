@@ -4,7 +4,7 @@
 
 ## Il malinteso da togliere subito
 
-Il sistema non è un insieme di settantaquattro pacchetti fra cui scegliere. È un motore piccolo, che vale sempre, più un catalogo grande, che vale a condizione. Chi comincia dal catalogo si perde, e chi comincia dal motore ha già l'ottanta per cento del valore prima di aver installato niente.
+Il sistema non è un insieme di decine di pacchetti fra cui scegliere. È un motore piccolo, che vale sempre, più un catalogo grande, che vale a condizione. Chi comincia dal catalogo si perde, e chi comincia dal motore ha già l'ottanta per cento del valore prima di aver installato niente.
 
 Il motore è questo: una memoria del progetto versionata dentro il repository, schede di contesto ancorate a un commit, un work-log e un registro di decisioni, e un ciclo che le tiene allineate al codice. Tutto il resto è opzionale per costruzione. Se si adottasse solo il motore e nessun pacchetto, il sistema funzionerebbe: quello che si perderebbe sono capacità specifiche, non la tenuta.
 
@@ -24,6 +24,7 @@ Ne segue la distinzione che governa tutta questa guida, e che va tenuta a mente 
 | Ogni scrittura di un `.md` | I paragrafi tornano su riga sorgente unica | hook `md-unwrap-auto`, evento `PostToolUse` su `Write` ed `Edit` | registrarlo una volta, più `tools/md-unwrap.py` istanziato |
 | Ogni `git commit` dell'agente | Girano i quattro controlli di convenzione, e il commit si ferma se uno fallisce | hook `pre-commit-checks`, evento `PreToolUse` su `Bash` | registrarlo una volta |
 | Ogni `git commit` dell'agente | Il diff in stage viene scansionato alla ricerca di segreti | hook `secret-scan`, evento `PreToolUse` su `Bash` | registrarlo una volta |
+| Ogni commit manuale | L'indice del README viene aggiornato, i link locali verificati e il commit si ferma se il file cambia fuori dallo stage | hook Git di `readme-sync`, file `.githooks/pre-commit` | adottare il pacchetto e impostare `core.hooksPath` nel clone |
 | Ogni scrittura su un file sensibile | La scrittura viene bloccata | hook `protect-sensitive-files`, evento `PreToolUse` | registrarlo una volta |
 | Chiusura sessione | L'impronta di ripresa viene registrata | hook `chiusura-sessione`, evento `SessionEnd` | registrarlo una volta |
 | Chiusura sessione | Il magazzino nascosto dell'account viene ripulito | hook `session-end-wipe`, registrato *nell'account* e non nel progetto | installarlo una volta per macchina |
@@ -45,6 +46,7 @@ Le skill si invocano digitando il loro nome preceduto dalla barra, nel terminale
 | `/riprendi` | Verifica che il file di ripresa descriva il presente, poi ricostruisce il punto di ripresa | Primo atto di ogni sessione, se non hai registrato l'hook di apertura |
 | `/sync-context` | Misura il drift fra le schede di `.claude/context/` e il codice, e propone i delta | Secondo atto di ogni sessione; dopo un `git pull`; dopo modifiche significative |
 | `/gate-pacchetti` | Riconosce i settori del progetto e propone i pacchetti pertinenti uno per uno | A ogni tornata di allineamento, e quando l'obiettivo del progetto cambia |
+| `/sync-readme` | Allinea la prosa pubblica alle fonti e rigenera indice e link verificabili | Quando il progetto ha adottato `readme-sync` e cambiano capacità descritte dal README |
 | `/repo-status` | Riepilogo di branch, commit recenti, file modificati, differenze non committate | Quando vuoi lo stato senza altro |
 | `/git-sync` | Prepara le operazioni git e ti consegna i comandi da eseguire | Prima di committare |
 | `/onboard` | Spiega il progetto da zero leggendo schede, memoria e decisioni | Quando entra qualcuno, o quando rientri dopo mesi |
@@ -129,6 +131,7 @@ Qui la risposta alla domanda "si lancia automatico?" è: quasi mai, e per una ra
 | "Non ricordo dove eravamo, e il file di ripresa sembra vecchio" | Una sessione è caduta senza chiudersi | automatico all'apertura con l'hook; altrimenti `/riprendi` |
 | "La documentazione descrive un file che non trovo" | Una fotografia invecchiata in un documento vivo | `python tools/lint-doc-references.py --solo-vivi` |
 | "Le schede non corrispondono più al codice" | Drift fra documentazione e commit | `/sync-context` |
+| "Ho aperto un secondo albero di lavoro e la memoria sembra indietro" | La memoria versionata vale per la branch, e questa non è la più avanti | `/riprendi`, che la segnala con il percorso dell'albero autorevole; poi leggi `.claude/rules/alberi-di-lavoro.md` |
 | "Perché a marzo abbiamo scelto questa libreria?" | Il fatto è registrato, la ragione no | `python tools/costruisci-timeline.py`, poi apri `docs/TIMELINE.html` |
 | "Questo documento dice una cosa che forse non è più vera" | Un'affermazione con una scadenza implicita | `python tools/Test-Allineamento.py` |
 | "Il diff è pieno di righe che nessuno ha toccato" | Paragrafi hard-wrapped che si ri-avvolgono | automatico a ogni scrittura con l'hook; altrimenti `python tools/md-unwrap.py .` |

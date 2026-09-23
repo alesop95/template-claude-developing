@@ -86,7 +86,8 @@ a.repo:hover{text-decoration:underline}
   </div>
   <div class="s-foot">
     <p>Voci <span class="badge b-new" style="font-size:9px">Nuovo</span> aggiunte nella sessione giugno 2026 dai 6 playbook.<br><br>
-    <strong>78</strong> pacchetti opt-in totali<br>
+    <strong>79</strong> pacchetti opt-in totali<br>
+    <strong>1</strong> aggiunto il 2026-09-23: readme-sync, per navigazione, inventario e link del README<br>
     <strong>22</strong> nuovi nella sessione giugno 2026<br>
     <strong>10</strong> aggiunti il 2026-07-01 (docx-to-docs, doc-ingest, academic-researcher, zotero-mcp, academix, semantic-scholar-mcp, refchecker-mcp, arxiv-cli, grobid, paperqa2)<br>
     <strong>8</strong> aggiunti il 2026-07-02 (learning-agent, knowledge-mcp, anki-mcp, codebase-learning, serena, repomix, deepwiki-skill, deepwiki-mcp)<br>
@@ -108,10 +109,10 @@ a.repo:hover{text-decoration:underline}
     <h1 class="ph-title">template-claude-developing</h1>
     <p class="ph-desc">Inventario completo di tutte le feature del template, con source, repository e licenza per ogni componente esterno. Le voci marcate <span class="badge b-new">Nuovo</span> sono state aggiunte in questa sessione a partire dai 6 playbook.</p>
     <div class="ph-stats">
-      <div class="ps"><span class="ps-n">8</span><span class="ps-l">Skill</span></div>
+      <div class="ps"><span class="ps-n">9</span><span class="ps-l">Skill</span></div>
       <div class="ps"><span class="ps-n">9</span><span class="ps-l">Regole</span></div>
       <div class="ps"><span class="ps-n">4</span><span class="ps-l">Agenti template</span></div>
-      <div class="ps"><span class="ps-n">78</span><span class="ps-l">Pacchetti opt-in</span></div>
+      <div class="ps"><span class="ps-n">79</span><span class="ps-l">Pacchetti opt-in</span></div>
       <div class="ps"><span class="ps-n">20</span><span class="ps-l">MCP server</span></div><div class="ps"><span class="ps-n">10</span><span class="ps-l">Settori del gate</span></div>
     </div>
   </div>
@@ -198,7 +199,7 @@ a.repo:hover{text-decoration:underline}
     <div class="sec-hd"><span class="sec-num">03</span><h2 class="sec-title">Skill</h2></div>
     <p class="sec-sub">Workflow richiamabili on-demand. Il metadata costa ~30-100 token; il corpo si carica solo quando la skill e' pertinente al task.</p>
     <div class="card">
-      <div class="card-hd"><span class="dot d-green"></span>Otto skill di sistema — lavoro originale</div>
+      <div class="card-hd"><span class="dot d-green"></span>Nove skill di sistema — lavoro originale</div>
       <table class="t">
         <thead><tr><th>Skill</th><th>Funzione</th><th>Invocazione tipica</th></tr></thead>
         <tbody>
@@ -210,6 +211,7 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>riprendi</strong> <span class="badge b-new">Nuovo</span></td><td>Riapre una sessione verificando prima di fidarsi: confronta l'impronta registrata alla chiusura precedente con lo stato reale di git, e dice che cosa una sessione caduta a meta' non ha scritto. Solo dopo ricostruisce il punto di ripresa</td><td>Primo atto di ogni sessione nuova</td></tr>
           <tr><td><strong>studio-didattico</strong></td><td>Tiene il livello documentale didattico: racconto evolutivo che contrappone com'era e perche' era fragile al salto di qualita', con deep-dive nel codice reale</td><td>Solo dove il progetto ha adottato la pratica; a ogni refactor o scelta non ovvia</td></tr>
           <tr><td><strong>onboard</strong></td><td>Spiegazione completa del progetto per chi parte da zero: struttura, flussi, decisioni chiave</td><td>Quando un nuovo membro o agente entra</td></tr>
+          <tr><td><strong>sync-readme</strong> <span class="badge b-new">Nuovo</span></td><td>Rilegge codice e documenti per aggiornare la prosa pubblica; invoca il controllo deterministico per indice, inventario e link</td><td>Quando cambiano le capacita' descritte dal README</td></tr>
         </tbody>
       </table>
     </div>
@@ -238,7 +240,7 @@ a.repo:hover{text-decoration:underline}
 
   <section class="sec" id="gate">
     <div class="sec-hd"><span class="sec-num">05</span><h2 class="sec-title">Il gate dei pacchetti per settore</h2></div>
-    <p class="sec-sub">Con settantatre' pacchetti, il modo in cui si scelgono conta quanto i pacchetti stessi. La skill gate-pacchetti attraversa il catalogo per settore e non per riga: riconosce dai fatti del progetto a quali settori appartenga, dichiara il riconoscimento e lo fa correggere, e propone i soli pacchetti dei settori riconosciuti, uno per volta. Un progetto appartiene a due o tre settori su dieci: la scelta passa da settanta domande a una decina, tutte pertinenti.</p>
+    <p class="sec-sub">Con settantanove voci, il modo in cui si scelgono conta quanto le voci stesse. La skill gate-pacchetti attraversa il catalogo per settore e non per riga: riconosce dai fatti del progetto a quali settori appartenga, dichiara il riconoscimento e lo fa correggere, e propone i soli pacchetti dei settori riconosciuti, uno per volta. Un progetto appartiene a due o tre settori su dieci: la scelta passa da decine di domande a una decina, tutte pertinenti.</p>
     <div class="card">
       <div class="card-hd"><span class="dot d-new"></span>Come si presenta un pacchetto — tre frasi, mai meno</div>
       <table class="t">
@@ -478,6 +480,7 @@ a.repo:hover{text-decoration:underline}
         <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Note</th></tr></thead>
         <tbody>
           <tr><td><strong>operations-log</strong></td><td>Registro cronologico degli interventi operativi: che cosa e' stato fatto, a che cosa serve, come e' stato verificato e con quale esito. Copre la granularita' che i file di memoria non coprono</td><td>Progetti con interventi operativi ripetuti di cui serve la traccia</td><td>Originale al template</td></tr>
+          <tr><td><strong>readme-sync</strong> <span class="badge b-new">Nuovo</span></td><td>Indice navigabile dai titoli reali, link locali verificati e inventario dei pacchetti dal catalogo; una skill aggiorna la prosa dalle fonti</td><td>Progetti con README pubblico che cresce nel tempo</td><td>Originale al template; Python standard library, senza rete</td></tr>
           <tr><td><strong>documentazione-didattica</strong></td><td>Accanto al registro di <em>che cosa e' accaduto</em>, il registro di <em>perche' una scelta e' migliore di un'altra</em>: racconto evolutivo che contrappone com'era e perche' era fragile al salto di qualita', con deep-dive nel codice reale</td><td>Chi lavora sul progetto vuole imparare rileggendo le proprie decisioni, non solo saperne lo stato</td><td>Originale al template; skill studio-didattico</td></tr>
           <tr><td><strong>timeline-progetto</strong> <span class="badge b-new">Nuovo</span></td><td>Linea temporale sempre aggiornata, un microstep per voce, con accanto la ragione tecnologica di quel passo. Generata dal work-log e dal registro delle decisioni, mai scritta a mano; un passo senza ragione dichiarata resta dichiarato scoperto invece di ricevere una spiegazione inventata a posteriori</td><td>Progetti lunghi dove la storia tecnica serve per decidere il prossimo passo, o va mostrata a chi non c'era</td><td>Originale al template; artefatto e fonti vivono nel repository e mai nella directory dell'account; uscita deterministica perche' il valore non e' solo leggerla ma vederne il diff; 17 controlli</td></tr>
           <tr><td><strong>alignment</strong></td><td>Controllo eseguibile delle affermazioni che invecchiano in silenzio: scadenze scritte in prosa con la loro conseguenza, eta' di una misura contro la cadenza dichiarata, campo di firma</td><td>Progetti che scrivono affermazioni con una data di scadenza implicita</td><td>Originale al template</td></tr>

@@ -4,6 +4,70 @@ Sistema portabile di contesto, documentazione e version control per progetti ges
 
 Questo file e il README della repository GitHub. Serve a far capire cos'e il template a chi lo trova su GitHub. Non viene copiato nei progetti quando si lancia uno dei due prompt: quei prompt importano solo lo standard e il motore, non questo README. Ogni volta che si aggiunge una funzionalità al template, questo README va aggiornato di conseguenza.
 
+## Indice
+
+<!-- sync-readme:toc:start -->
+[Da dove si comincia](#da-dove-si-comincia) · [A cosa serve](#a-cosa-serve) · [Come si usa](#come-si-usa) · [README pubblico e controllo automatico](#readme-pubblico-e-controllo-automatico)
+
+<details>
+<summary>Tutte le sezioni</summary>
+
+- [Da dove si comincia](#da-dove-si-comincia)
+- [A cosa serve](#a-cosa-serve)
+- [Come si usa](#come-si-usa)
+- [README pubblico e controllo automatico](#readme-pubblico-e-controllo-automatico)
+- [Cosa viene installato in un progetto](#cosa-viene-installato-in-un-progetto)
+- [I due livelli documentali](#i-due-livelli-documentali)
+- [Il motore di riconciliazione](#il-motore-di-riconciliazione)
+- [Ripresa di una sessione](#ripresa-di-una-sessione)
+- [Ingestione di documenti voluminosi (.docx, .pdf e affini)](#ingestione-di-documenti-voluminosi-docx-pdf-e-affini)
+- [Igiene del version control e identità git](#igiene-del-version-control-e-identità-git)
+- [Sicurezza e permessi](#sicurezza-e-permessi)
+- [Diagrammi e stile della documentazione](#diagrammi-e-stile-della-documentazione)
+- [Forma dei file Markdown (md-unwrap)](#forma-dei-file-markdown-md-unwrap)
+- [Igiene dell'auto-memory di Claude Code](#igiene-dellauto-memory-di-claude-code)
+- [Più account Claude Code e Codex sulla stessa macchina](#più-account-claude-code-e-codex-sulla-stessa-macchina)
+- [Windows o Linux](#windows-o-linux)
+- [Screenshot per i passi manuali](#screenshot-per-i-passi-manuali)
+- [Comprensione del codice esistente](#comprensione-del-codice-esistente)
+- [Knowledge wiki: accumulare conoscenza nel tempo](#knowledge-wiki-accumulare-conoscenza-nel-tempo)
+- [Libri come skill (book-to-skill)](#libri-come-skill-book-to-skill)
+- [Bibliografia da libri fisici o scansionati (book-bib-extract)](#bibliografia-da-libri-fisici-o-scansionati-book-bib-extract)
+- [Ricerca accademica (academic-researcher)](#ricerca-accademica-academic-researcher)
+- [Ricerca fondata su fonti proprie (notebooklm-bridge)](#ricerca-fondata-su-fonti-proprie-notebooklm-bridge)
+- [Apprendimento guidato (learning-agent)](#apprendimento-guidato-learning-agent)
+- [Comprensione guidata di un progetto finito (codebase-learning)](#comprensione-guidata-di-un-progetto-finito-codebase-learning)
+- [Riferimento delle opzioni di Claude Code (claude-code-handoff)](#riferimento-delle-opzioni-di-claude-code-claude-code-handoff)
+- [Profili di stack (stack-profiles)](#profili-di-stack-stack-profiles)
+- [Hook pronti all'uso (hooks-starter)](#hook-pronti-alluso-hooks-starter)
+- [Skill di sviluppo (dev-skills)](#skill-di-sviluppo-dev-skills)
+- [Automazione headless e su schedulazione (automation-starter)](#automazione-headless-e-su-schedulazione-automation-starter)
+- [Agenti di progetto](#agenti-di-progetto)
+- [Catalogo di subagent community (agent-catalog)](#catalogo-di-subagent-community-agent-catalog)
+- [Lavori estesi a lotti (lavoro-a-lotti)](#lavori-estesi-a-lotti-lavoro-a-lotti)
+- [Fonti che vivono in canali e catene di discussioni (community-sources)](#fonti-che-vivono-in-canali-e-catene-di-discussioni-community-sources)
+- [Voce e trascrizione in locale (voicestudio)](#voce-e-trascrizione-in-locale-voicestudio)
+- [I due cataloghi esterni di skill (scientific-skills, matt-pocock-skills)](#i-due-cataloghi-esterni-di-skill-scientific-skills-matt-pocock-skills)
+- [Ripresa di una sessione dopo una caduta](#ripresa-di-una-sessione-dopo-una-caduta)
+- [Ambienti separati in alberi di lavoro](#ambienti-separati-in-alberi-di-lavoro)
+- [Linea temporale del progetto (timeline-progetto)](#linea-temporale-del-progetto-timeline-progetto)
+- [Ragioni delle scelte tecniche (documentazione-didattica)](#ragioni-delle-scelte-tecniche-documentazione-didattica)
+- [Controllo della memoria di progetto (memoria-di-progetto)](#controllo-della-memoria-di-progetto-memoria-di-progetto)
+- [Lista del lavoro aperto (roadmap)](#lista-del-lavoro-aperto-roadmap)
+- [Il gate dei pacchetti per settore](#il-gate-dei-pacchetti-per-settore)
+- [Token economy](#token-economy)
+- [Niente AI slop](#niente-ai-slop)
+- [Componenti del bundle](#componenti-del-bundle)
+- [Indice dei README dei pacchetti](#indice-dei-readme-dei-pacchetti)
+- [Cosa non finisce nei progetti](#cosa-non-finisce-nei-progetti)
+- [Origine](#origine)
+- [Come estendere il sistema](#come-estendere-il-sistema)
+- [Riferimenti e strumenti open source](#riferimenti-e-strumenti-open-source)
+- [Versionamento del repository](#versionamento-del-repository)
+
+</details>
+<!-- sync-readme:toc:end -->
+
 ## Da dove si comincia
 
 Questo file è il riferimento di che cosa esiste. Chi cerca invece da dove cominciare, con quale cadenza si fa che cosa, e quale leva tirare davanti a un sintomo, legga prima [GUIDA-USO.md](GUIDA-USO.md): è la guida pratica, organizzata per obiettivo invece che per inventario, e contiene il calendario delle attività, la tabella che va dal sintomo allo strumento, e le ricette per archetipo di progetto.
@@ -21,6 +85,12 @@ Il punto di ingresso sono i due prompt fissi sotto `.claude/`, da incollare in C
 `.claude/PROMPT-allinea-progetto-esistente.md` allinea retroattivamente allo standard un progetto che ha già codice e storia git, senza riscrivere la storia e senza inventare contenuto. Fa l'inventario di cio che esiste, ricostruisce la memoria dalla storia dei commit, e crea le schede mancanti leggendo il codice attuale.
 
 Entrambi i prompt si fermano a chiedere conferma prima di ogni azione difficilmente reversibile o che tocca il version control, e non eseguono mai `git add`, `commit` o `push`: preparano i file e lasciano le operazioni git all'utente.
+
+## README pubblico e controllo automatico
+
+Il pacchetto opzionale `readme-sync` mantiene la navigazione del README pubblico: ricava l'indice dai titoli reali, verifica i link locali e aggiorna i blocchi generati senza riscrivere la prosa. In questo repository legge anche il catalogo per raggruppare tutti i README dei pacchetti per settore e calcolare i conteggi. La skill omonima rilegge codice e documentazione quando cambia una capacità del progetto, corregge le spiegazioni e poi invoca il programma; un controllo deterministico da solo non può decidere se una frase descriva ancora il comportamento reale. Il pacchetto si istanzia nei progetti che hanno scelto di avere un README pubblico. Dettaglio e comandi nel [README del pacchetto](.claude/templates/readme-sync/README.md).
+
+L'hook versionato in `.githooks/pre-commit` copre anche i commit manuali dopo l'attivazione locale con `git config --local core.hooksPath .githooks`: aggiorna i blocchi generati, ma se il file cambia ferma il commit perché la persona possa rivedere il diff e rimettere il README in stage. Non aggiunge file allo stage né crea commit.
 
 ## Cosa viene installato in un progetto
 
@@ -190,6 +260,10 @@ Lo strumento `tools/verifica-ripresa.py` rende meccanica la distinzione. A fine 
 
 La skill `riprendi` è la procedura che ne interpreta l'esito, e la sua regola è che una divergenza si riporta all'utente prima di qualunque altra cosa, perché solo lui sa che cosa stava facendo: un file rimasto a metà può essere un lavoro da riprendere o uno da buttare, e la differenza non si legge dal contenuto. Lo strumento dichiara anche ciò che non può sapere, ed è la parte onesta: non sa se il lavoro fatto fosse giusto, e soprattutto non sa se una decisione presa a voce sia stata scritta, che è il buco che la regola `chat-non-e-memoria.md` previene a monte invece di rilevare a valle.
 
+## Ambienti separati in alberi di lavoro
+
+Quando servono ambienti di test e di produzione separati, il template raccomanda un albero di lavoro per ambiente, aggiunto con `git worktree`: ogni albero porta in uscita la propria branch e ha il proprio `.env`, la propria porta e la propria base dati locale, e la tabella degli alberi vive nella scheda `context/deployment.md`. Il prezzo di questa forma sta nella memoria versionata, che vale per la branch su cui è scritta e non per il progetto: un albero aperto su una branch indietro riceve uno snapshot e un registro delle decisioni ben formati e vecchi. La regola `.claude/rules/alberi-di-lavoro.md` prescrive di leggere la memoria dall'albero della branch più avanti, per percorso assoluto, senza copiarla né fonderla, e `tools/verifica-ripresa.py` segnala all'apertura ogni altro albero la cui branch abbia fatto avanzare `.claude/memory/`, nominandone il percorso. Il principio, e la regola di redazione che ne discende per ogni documento di stato, stanno nella sezione 22 di `PROJECT-SYSTEM.md`.
+
 ## Linea temporale del progetto (timeline-progetto)
 
 Un progetto lungo accumula centinaia di microstep, e di ciascuno restano due cose che vivono separate: il fatto, nel work-log e nei commit, e la ragione per cui quel fatto è stato fatto così e non altrimenti, nel registro delle decisioni oppure da nessuna parte. Le due non si leggono insieme, quindi in pratica non si leggono, e la storia tecnica del progetto esiste su disco ed è illeggibile.
@@ -212,7 +286,7 @@ Il pacchetto opzionale `roadmap` genera una lista del lavoro ancora aperto da un
 
 ## Il gate dei pacchetti per settore
 
-Con settantotto voci in catalogo, il modo in cui si scelgono conta quanto le voci stesse. Un gate che le proponga una per una in fila è un gate che nessuno legge fino in fondo; uno che ne scelga tre a occhio nasconde le altre senza dirlo. La skill `gate-pacchetti` risolve il problema cambiando l'unità della domanda: il catalogo è diviso in dieci settori, e prima di aprire una tabella la skill riconosce dai fatti del progetto a quali settori esso appartenga. Un progetto ne ha due o tre su dieci, quindi la scelta passa da decine di domande a una decina, tutte pertinenti.
+Con decine di voci in catalogo, il modo in cui si scelgono conta quanto le voci stesse. Un gate che le proponga una per una in fila è un gate che nessuno legge fino in fondo; uno che ne scelga tre a occhio nasconde le altre senza dirlo. La skill `gate-pacchetti` risolve il problema cambiando l'unità della domanda: il catalogo è diviso in dieci settori, e prima di aprire una tabella la skill riconosce dai fatti del progetto a quali settori esso appartenga. Un progetto ne ha due o tre su dieci, quindi la scelta passa da decine di domande a una decina, tutte pertinenti.
 
 Il riconoscimento si dichiara e si fa correggere, perché è una ipotesi sul progetto e chi lo conosce è l'utente: si mostrano i settori riconosciuti con il fatto da cui li si è riconosciuti, e quelli esclusi con la ragione dell'esclusione. Dentro un settore riconosciuto ogni pacchetto arriva in tre frasi e mai meno, cioè che cosa fa in linguaggio di chi lo userà, perché a questo progetto potrebbe servire legando la ragione a un fatto di questo repository invece che al trigger generico, e che cosa costa, dove il costo comprende le dipendenze esterne, i token che un server MCP occupa a ogni turno anche quando non viene usato, e soprattutto le capacità che il pacchetto duplicherebbe.
 
@@ -232,6 +306,8 @@ Lo stile pulito è garantito sempre dalla regola `interaction-style` (niente tra
 
 ## Componenti del bundle
 
+La mappa mostra i punti di ingresso principali. L'elenco completo dei pacchetti a cartella è generato per settore nella sezione successiva; per le altre voci vale il catalogo `PACKAGES.md`.
+
 ```
 template-claude-developing/
   README.md                      questo file, solo per la repo, non trasportato nei progetti
@@ -242,6 +318,7 @@ template-claude-developing/
   AGENTS.md                      istruzioni native di Codex per lavorare sul template
   CLAUDE.local.md                override personali, ignorato
   .agents/skills/                wrapper generati verso le skill canoniche
+  .githooks/pre-commit           controllo del README sui commit manuali, da attivare nel clone
   .gitignore
   .claude/
     PROJECT-SYSTEM.md            fonte di verita della procedura, in sezioni numerate
@@ -250,17 +327,23 @@ template-claude-developing/
     settings.json                permessi condivisi e variabili di progetto
     settings.local.json          permessi personali, ignorato
     rules/
+      alberi-di-lavoro.md        ambienti separati in worktree, memoria letta dall'albero autorevole
+      chat-non-e-memoria.md      tutto cio che si scrive in sessione si scrive anche su disco
+      git-commands-format.md     comandi git manuali, una riga per comando, contesto dichiarato
       git-identity-and-repo.md   identita git locale, alias SSH, bootstrap del remoto
       interaction-style.md       stile della documentazione tecnica
       manual-screenshots.md      quando e come chiedere uno screenshot per i passi manuali
+      prove-che-misurano.md      verifica di non vacuita delle prove automatiche
       security-permissions.md    modalita di permesso, sandbox, baseline deny e ask rules
       token-economy.md           pratiche di risparmio contesto, igiene sessione, stack 7 tool
+      web-sources-not-fetchable.md   fonti web non recuperabili, vie in ordine di costo
     skills/
       init-project-system/       installa l'anatomia, modalita nuovo o allineamento
       sync-context/              misura la divergenza schede contro codice
       git-sync/                  prepara le operazioni git, non committa
       repo-status/               riepilogo dello stato del repository
       onboard/                   spiegazione completa del progetto per chi parte da zero
+      sync-readme/               revisione della prosa pubblica e aggiornamento meccanico del README
     agents/  commands/  hooks/  plugins/    livelli di orchestrazione, vuoti di default
     templates/
       PACKAGES.md  registro dei pacchetti opzionali offerti al init/align
@@ -285,6 +368,7 @@ template-claude-developing/
       lavoro-a-lotti/  pacchetto opzionale: registro riprendibile e presidio degli artefatti per lavori estesi
       memoria-di-progetto/  pacchetto opzionale: controllo delle tracce nel registro cronologico
       roadmap/         pacchetto opzionale: lista del lavoro aperto generata dallo stato corrente
+      readme-sync/     pacchetto opzionale: indice navigabile, inventario dei pacchetti e controllo dei link del README
       dev-skills/       pacchetto opzionale: 4 skill di sviluppo a scelta (test-generator, mcp-tool-scaffold, code-review, security-review)
       automation-starter/  pacchetto opzionale: headless-run .ps1/.sh (claude -p su abbonamento), workflow GitHub Actions opzionale via token setup-token, terza via nativa /schedule
       agent-catalog/    pacchetto opzionale: fetch mirato di subagent community da fonti flat (0xfurai), 3 comandi, script check-update dual-OS con stato tracciato
@@ -293,39 +377,70 @@ template-claude-developing/
 
 ## Indice dei README dei pacchetti
 
-Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. Questo indice li raccoglie tutti, ed è il punto da cui aggiungere la riga quando nasce un pacchetto nuovo: il README di radice indicizza i README dei pacchetti, non li incorpora. I pacchetti che non sono cartelle, gli strumenti esterni e i server MCP, non hanno un README dedicato e vivono come righe del catalogo `PACKAGES.md`.
+Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
+<!-- sync-readme:packages:start -->
+**32 pacchetti a cartella** su **79 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+
+### Fondamenta e igiene del progetto
+
+- `operations-log` - registro cronologico degli interventi operativi, con a che cosa servono e come sono stati verificati: [.claude/templates/operations-log/README.md](.claude/templates/operations-log/README.md)
+- `readme-sync` - indice, pacchetti e link del README aggiornati da fonti verificabili: [.claude/templates/readme-sync/README.md](.claude/templates/readme-sync/README.md)
+- `memoria-di-progetto` - controllo delle tracce nel registro cronologico: [.claude/templates/memoria-di-progetto/README.md](.claude/templates/memoria-di-progetto/README.md)
+- `alignment` - controllo eseguibile delle affermazioni che invecchiano: scadenze, freschezza delle misure, domande aperte e invarianti: [.claude/templates/alignment/README.md](.claude/templates/alignment/README.md)
+- `hooks-starter` - hook di automazione pronti, mai attivi di default: [.claude/templates/hooks-starter/README.md](.claude/templates/hooks-starter/README.md)
+- `automation-starter` - headless e routine su abbonamento, senza API a consumo: [.claude/templates/automation-starter/README.md](.claude/templates/automation-starter/README.md)
+- `stack-profiles` - profili di regole per gli stack ricorrenti: [.claude/templates/stack-profiles/README.md](.claude/templates/stack-profiles/README.md)
+- `claude-code-handoff` - riferimento auto-aggiornante delle opzioni di Claude Code: [.claude/templates/claude-code-handoff/README.md](.claude/templates/claude-code-handoff/README.md)
+- `anonymization` - guard-rail sui dati che identificano persone e infrastrutture reali: [.claude/templates/anonymization/README.md](.claude/templates/anonymization/README.md)
+- `timeline-progetto` - linea temporale generata, un microstep per voce con la ragione tecnologica adottata: [.claude/templates/timeline-progetto/README.md](.claude/templates/timeline-progetto/README.md)
+- `roadmap` - lista del lavoro aperto generata dallo stato corrente: [.claude/templates/roadmap/README.md](.claude/templates/roadmap/README.md)
+
+### Scrittura, documentazione e tipografia
+
+- `documentazione-didattica` - il registro di perché una scelta è migliore di un'altra, accanto a quello di che cosa è accaduto: [.claude/templates/documentazione-didattica/README.md](.claude/templates/documentazione-didattica/README.md)
 - `md-unwrap` - formatter Markdown a diff minimo per i paragrafi su riga continua: [.claude/templates/md-unwrap/README.md](.claude/templates/md-unwrap/README.md)
+- `fix-typography` - accenti, accenti mancanti e trattini secondo le convenzioni tipografiche: [.claude/templates/fix-typography/README.md](.claude/templates/fix-typography/README.md)
 - `latex` - ambiente di build LaTeX: [.claude/templates/latex/README.md](.claude/templates/latex/README.md)
+- `docx-to-docs` - `.docx` in albero `docs/` versionato: [.claude/templates/docx-to-docs/README.md](.claude/templates/docx-to-docs/README.md)
 - `knowledge-wiki` - LLM Wiki accumulatoria: [.claude/templates/knowledge-wiki/README.md](.claude/templates/knowledge-wiki/README.md)
+
+### Fonti, ricerca e corpus documentali
+
+- `community-sources` - lettore di canali di community con un bot account ufficiale: [.claude/templates/community-sources/README.md](.claude/templates/community-sources/README.md)
+- `doc-ingest` - ingestione incrementale di un corpus a zero token: [.claude/templates/doc-ingest/README.md](.claude/templates/doc-ingest/README.md)
 - `book-to-skill` - PDF tecnico in skill on-demand: [.claude/templates/book-to-skill/README.md](.claude/templates/book-to-skill/README.md)
 - `book-bib-extract` - anagrafica bibliografica da libri fisici/scansionati senza DOI: [.claude/templates/book-bib-extract/README.md](.claude/templates/book-bib-extract/README.md)
-- `docx-to-docs` - `.docx` in albero `docs/` versionato: [.claude/templates/docx-to-docs/README.md](.claude/templates/docx-to-docs/README.md)
-- `doc-ingest` - ingestione incrementale di un corpus a zero token: [.claude/templates/doc-ingest/README.md](.claude/templates/doc-ingest/README.md)
-- `academic-researcher` - ambiente di ricerca accademica: [.claude/templates/academic-researcher/README.md](.claude/templates/academic-researcher/README.md)
 - `notebooklm-bridge` - ricerca fondata NotebookLM gratuito + Claude: [.claude/templates/notebooklm-bridge/README.md](.claude/templates/notebooklm-bridge/README.md)
-- `community-sources` - lettore di canali di community con un bot account ufficiale: [.claude/templates/community-sources/README.md](.claude/templates/community-sources/README.md)
-- `learning-agent` - tutor di apprendimento guidato di un topic: [.claude/templates/learning-agent/README.md](.claude/templates/learning-agent/README.md)
+- `academic-researcher` - ambiente di ricerca accademica: [.claude/templates/academic-researcher/README.md](.claude/templates/academic-researcher/README.md)
+
+### Voce, audio e trascrizione
+
+- `voicestudio` - riconoscimento e sintesi vocale in locale, e la trascrizione di una fonte parlata con la sua provenienza: [.claude/templates/voicestudio/README.md](.claude/templates/voicestudio/README.md)
+
+### Domini scientifici e analisi dei dati
+
+- `scientific-skills` - la mappa delle 166 skill scientifiche di K-Dense, con autore, licenza, codice eseguibile e sovrapposizioni: [.claude/templates/scientific-skills/README.md](.claude/templates/scientific-skills/README.md)
+
+### Comprensione di una codebase
+
 - `codebase-learning` - comprensione guidata di un progetto finito: [.claude/templates/codebase-learning/README.md](.claude/templates/codebase-learning/README.md)
-- `claude-code-handoff` - riferimento auto-aggiornante delle opzioni di Claude Code: [.claude/templates/claude-code-handoff/README.md](.claude/templates/claude-code-handoff/README.md)
-- `stack-profiles` - profili di regole per gli stack ricorrenti: [.claude/templates/stack-profiles/README.md](.claude/templates/stack-profiles/README.md)
-- `hooks-starter` - hook di automazione pronti, mai attivi di default: [.claude/templates/hooks-starter/README.md](.claude/templates/hooks-starter/README.md)
+
+### Sviluppo, qualità e revisione del codice
+
+- `dev-skills` - skill di sviluppo (test, scaffolding MCP, review): [.claude/templates/dev-skills/README.md](.claude/templates/dev-skills/README.md)
+- `matt-pocock-skills` - la mappa fra le 37 skill di ingegneria di mattpocock e ciò che questo sistema già ha: [.claude/templates/matt-pocock-skills/README.md](.claude/templates/matt-pocock-skills/README.md)
+
+### Apprendimento guidato
+
+- `learning-agent` - tutor di apprendimento guidato di un topic: [.claude/templates/learning-agent/README.md](.claude/templates/learning-agent/README.md)
+
+### Orchestrazione, sessioni e cataloghi di agenti
+
 - `agenti-terminale` - radici isolate, ricostruzione, pulizia e consumo di Claude Code e Codex: [.claude/templates/agenti-terminale/README.md](.claude/templates/agenti-terminale/README.md)
 - `lavoro-a-lotti` - registro riprendibile per lavori estesi su molti elementi: [.claude/templates/lavoro-a-lotti/README.md](.claude/templates/lavoro-a-lotti/README.md)
-- `memoria-di-progetto` - controllo delle tracce nel registro cronologico: [.claude/templates/memoria-di-progetto/README.md](.claude/templates/memoria-di-progetto/README.md)
-- `roadmap` - lista del lavoro aperto generata dallo stato corrente: [.claude/templates/roadmap/README.md](.claude/templates/roadmap/README.md)
-- `dev-skills` - skill di sviluppo (test, scaffolding MCP, review): [.claude/templates/dev-skills/README.md](.claude/templates/dev-skills/README.md)
-- `automation-starter` - headless e routine su abbonamento, senza API a consumo: [.claude/templates/automation-starter/README.md](.claude/templates/automation-starter/README.md)
 - `agent-catalog` - fetch mirato di subagent community da fonti flat: [.claude/templates/agent-catalog/README.md](.claude/templates/agent-catalog/README.md)
-- `anonymization` - guard-rail sui dati che identificano persone e infrastrutture reali: [.claude/templates/anonymization/README.md](.claude/templates/anonymization/README.md)
-- `fix-typography` - accenti, accenti mancanti e trattini secondo le convenzioni tipografiche: [.claude/templates/fix-typography/README.md](.claude/templates/fix-typography/README.md)
-- `alignment` - controllo eseguibile delle affermazioni che invecchiano: scadenze, freschezza delle misure, domande aperte e invarianti: [.claude/templates/alignment/README.md](.claude/templates/alignment/README.md)
-- `operations-log` - registro cronologico degli interventi operativi, con a che cosa servono e come sono stati verificati: [.claude/templates/operations-log/README.md](.claude/templates/operations-log/README.md)
-- `timeline-progetto` - linea temporale generata, un microstep per voce con la ragione tecnologica adottata: [.claude/templates/timeline-progetto/README.md](.claude/templates/timeline-progetto/README.md)
-- `documentazione-didattica` - il registro di perché una scelta è migliore di un'altra, accanto a quello di che cosa è accaduto: [.claude/templates/documentazione-didattica/README.md](.claude/templates/documentazione-didattica/README.md)
-- `voicestudio` - riconoscimento e sintesi vocale in locale, e la trascrizione di una fonte parlata con la sua provenienza: [.claude/templates/voicestudio/README.md](.claude/templates/voicestudio/README.md)
-- `scientific-skills` - la mappa delle 166 skill scientifiche di K-Dense, con autore, licenza, codice eseguibile e sovrapposizioni: [.claude/templates/scientific-skills/README.md](.claude/templates/scientific-skills/README.md)
-- `matt-pocock-skills` - la mappa fra le 37 skill di ingegneria di mattpocock e ciò che questo sistema già ha: [.claude/templates/matt-pocock-skills/README.md](.claude/templates/matt-pocock-skills/README.md)
+<!-- sync-readme:packages:end -->
 
 ## Cosa non finisce nei progetti
 
@@ -342,7 +457,7 @@ Il sistema cresce aggiungendo pacchetti al catalogo quando si trova uno strument
 1. Trova lo strumento o il pattern e verifica cosa fa, come si installa e con quale licenza, cercando se esiste già invece di ricostruirlo.
 2. Decidi il tipo. Un pacchetto a cartella scaffolda file nel progetto: vive sotto `.claude/templates/<nome>/` con un proprio `README.md` manifest, sul modello di `latex`, `knowledge-wiki`, `book-to-skill`. Uno strumento esterno non scaffolda nulla: è solo una voce di catalogo che si installa su conferma, sul modello di `code-context`, `caveman`, `graphify`.
 3. Aggiungi una riga a `.claude/templates/PACKAGES.md` con un trigger concreto nella colonna "quando offrirlo", più cosa istanzia, note e crediti. Il trigger è cio che permette al gate di proporlo senza assumere.
-4. Spiega lo strumento su due piani, concettuale e operativo: cosa risolve e perché, e i comandi per usarlo. La spiegazione va nel `README.md` del pacchetto, se a cartella, e in sintesi nel `README.md` di radice. Se il pacchetto è a cartella, la sua riga va aggiunta anche all'indice dei README dei pacchetti, così che il README di radice continui a indicizzare tutti i README dei pacchetti.
+4. Spiega lo strumento su due piani, concettuale e operativo: cosa risolve e perché, e i comandi per usarlo. La spiegazione va nel `README.md` del pacchetto, se a cartella, e in sintesi nel `README.md` di radice. Per un pacchetto a cartella aggiungi al suo README `<!-- readme-summary: descrizione breve -->`, poi esegui `sync-readme.py --write --bundle`: l'indice dei README viene rigenerato dal catalogo, senza una seconda lista da mantenere a mano.
 5. Aggiungi il credito nella sezione "Riferimenti e strumenti open source", con il link al repo e la licenza.
 6. Aggiorna le due mappe visive in `docs/`: `feature-map.html` (riga di catalogo nella sezione pertinente, badge Nuovo, contatore pacchetti opt-in) e `project-flow.html` (contatore pacchetti, riga nella tabella fonti se il pacchetto introduce una dipendenza open source non ancora elencata). Sono generate una volta e poi mantenute a mano: un pacchetto o una funzionalità aggiunta al sistema senza questo passo le lascia disallineate rispetto a `PACKAGES.md`, com'è già successo una volta. Questo passo si applica a ogni estensione del sistema, non solo ai pacchetti a se stanti: anche una funzionalità che cambia il numero o la natura di skill, regole o agenti va riflessa negli stessi contatori.
 7. Non serve toccare il gate, ma serve scegliere il settore. La skill `gate-pacchetti` legge `PACKAGES.md`, riconosce a quali dei dieci settori il progetto appartenga e propone i pacchetti dei soli settori riconosciuti, mostrandone il recap d'uso all'attivazione: un pacchetto nuovo entra quindi in un settore e in uno solo, e quello giusto è il settore da cui un utente lo cercherebbe partendo dall'obiettivo del proprio progetto, non quello che ne descrive meglio la tecnica. Se nessun settore lo accoglie senza forzature, il pacchetto sta annunciando che ne serve uno nuovo, e un settore nuovo si apre con la propria frase di riconoscimento come gli altri.

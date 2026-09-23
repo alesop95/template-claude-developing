@@ -90,6 +90,14 @@ Pacchetto opzionale degli hook pronti all'uso, mai attivi dopo l'istanziazione: 
 templates/hooks-starter/hooks/  ->  .claude/hooks/ (variante OS .ps1 o .sh; attivazione manuale via settings.json)
 ```
 
+Pacchetto opzionale per un README pubblico che cresce nel tempo: una skill verifica e aggiorna la prosa contro codice e documentazione, mentre uno strumento deterministico genera l'indice navigabile e controlla i link locali. Nel repository del template genera anche l'inventario dei pacchetti dal catalogo. Dettaglio in `templates/readme-sync/README.md`.
+
+```
+templates/readme-sync/tools/sync-readme.py          ->  <radice>/tools/sync-readme.py
+templates/readme-sync/skills/sync-readme/SKILL.md  ->  <radice>/.claude/skills/sync-readme/SKILL.md
+templates/readme-sync/githooks/pre-commit           ->  <radice>/.githooks/pre-commit (opzionale, da attivare in git locale)
+```
+
 Pacchetto opzionale delle skill di sviluppo, da scegliere una per una al gate: `test-generator` e `mcp-tool-scaffold` non duplicano nulla, `code-review` e `security-review` si istanziano solo dichiarando la sovrapposizione con le skill native omonime. Dettaglio e nota sul naming in `templates/dev-skills/README.md`.
 
 ```

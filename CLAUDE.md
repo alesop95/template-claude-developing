@@ -2,6 +2,8 @@
 
 > Istruzioni di team di questo repository, che è il template stesso del sistema di progetto e non un progetto che lo adotta. Lo standard completo sta in `.claude/PROJECT-SYSTEM.md`, le regole normative caricate su necessità in `.claude/rules/`, il catalogo dei pacchetti opzionali in `.claude/templates/PACKAGES.md`, e il percorso per estendere il sistema nella sezione "Come estendere il sistema" del `README.md` di radice.
 
+Quando cambia una capacità pubblica del template, usa la skill `.claude/skills/sync-readme/` per aggiornare la prosa del README e poi esegui `python .claude/templates/readme-sync/tools/sync-readme.py --write --bundle`. Prima di consegnare comandi di version control esegui la stessa CLI con `--check --bundle`: controlla indice, inventario e link locali.
+
 ## Convenzione Markdown
 
 I file `.md` di questo repository si scrivono con i paragrafi su una riga sorgente continua: nessun a capo manuale a colonna fissa, nessuna riga spezzata a metà frase. L'a capo separa due paragrafi distinti, mai due frasi o due porzioni della stessa frase, perché l'avvolgimento a video resta compito dell'editor o del renderer e non del file sorgente. Il motivo è pratico: con i paragrafi su riga unica il diff git segna esattamente i paragrafi cambiati invece di ri-avvolgere righe che nessuno ha toccato, e la ricerca testuale per frase funziona.

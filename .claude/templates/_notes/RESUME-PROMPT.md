@@ -4,6 +4,11 @@
 
 > In coda a questo file vive l'impronta di ripresa, un commento che non si vede nel rendering e che non si scrive a mano: la registra `python tools/verifica-ripresa.py --registra` come ultimo atto della sessione, dopo i commit. Serve alla sessione successiva per sapere se questo file descriva ancora il presente, e la sua assenza non è un difetto ma la condizione che la verifica riconosce.
 
+<!-- Solo negli alberi di lavoro che non sono quello autorevole (regola alberi-di-lavoro.md): l'avviso seguente va subito sotto il titolo, prima di ogni altra cosa, togliendo questo commento; nell'albero autorevole si toglie tutto il blocco.
+
+> ATTENZIONE: questo albero è sulla branch <branch>, che non è la più avanti. La memoria di progetto valida è in <percorso assoluto dell'albero autorevole>/.claude/memory/: si legge da lì per percorso assoluto, non si copia e non si fonde qui.
+-->
+
 ## Stato raggiunto
 
 - Data: <YYYY-MM-DD>

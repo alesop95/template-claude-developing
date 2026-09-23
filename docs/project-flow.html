@@ -74,10 +74,10 @@ table.src a:hover{text-decoration:underline}
     <h1 class="hero-title">Potenzialita' e fonti<br><span>in un flusso reale</span></h1>
     <p class="hero-sub">Cosa fa questo template, quando lo fa, e da quali strumenti e repository open source attinge. Illustrato su un progetto tipico: una REST API Node.js con PostgreSQL, test E2E e deploy su Vercel. Vedi anche: <a href="feature-map.html" style="color:var(--green);font-family:monospace;font-size:12px">feature-map.html</a></p>
     <div class="hero-meta">
-      <div class="hm"><span class="hm-n">5</span><span class="hm-l">Skill</span></div>
-      <div class="hm"><span class="hm-n">6</span><span class="hm-l">Regole</span></div>
+      <div class="hm"><span class="hm-n">9</span><span class="hm-l">Skill</span></div>
+      <div class="hm"><span class="hm-n">9</span><span class="hm-l">Regole</span></div>
       <div class="hm"><span class="hm-n">4</span><span class="hm-l">Agenti template</span></div>
-      <div class="hm"><span class="hm-n">61</span><span class="hm-l">Pacchetti opt-in</span></div>
+      <div class="hm"><span class="hm-n">79</span><span class="hm-l">Pacchetti opt-in</span></div>
       <div class="hm"><span class="hm-n">49+</span><span class="hm-l">Repo open source</span></div>
     </div>
   </div>
@@ -93,7 +93,7 @@ table.src a:hover{text-decoration:underline}
       <div class="phase-when">Giorno 0 — 30 minuti</div>
       <div class="phase-title">Inizializzazione del progetto</div>
       <div class="phase-body">
-        Si incolla <strong>PROMPT-nuovo-progetto.md</strong> in Claude Code nella radice del progetto. La skill <strong>init-project-system</strong> esegue l'anatomia minima: crea .claude/ con memory/, context/ e rules/, istanzia le schede tecniche vuote, popola CLAUDE.md con la procedura di ripresa. Poi invoca <strong>gate-pacchetti</strong>, che non scorre il catalogo riga per riga: con settantatre' pacchetti sarebbe un elenco che nessuno legge. Riconosce prima dai fatti del progetto, e dall'obiettivo appena dichiarato, a quali dei dieci settori questo progetto appartenga, li mostra con la ragione del riconoscimento perche' si possano correggere, e solo dopo apre le tabelle dei settori riconosciuti. Qui i settori riconosciuti sono quattro: fondamenta e igiene (il progetto vivra' mesi), sviluppo e qualita' del codice (si scrive TypeScript), comprensione di una codebase (in allineamento ci sarebbe gia' del codice: qui no, e il settore resta a margine), economia del contesto (sempre valutabile). Gli altri sei si dichiarano esclusi con la ragione, cosi' che la tornata successiva sappia che erano stati esclusi e non dimenticati.<br><br>
+        Si incolla <strong>PROMPT-nuovo-progetto.md</strong> in Claude Code nella radice del progetto. La skill <strong>init-project-system</strong> esegue l'anatomia minima: crea .claude/ con memory/, context/ e rules/, istanzia le schede tecniche vuote, popola CLAUDE.md con la procedura di ripresa. Poi invoca <strong>gate-pacchetti</strong>, che non scorre il catalogo riga per riga: con settantanove voci sarebbe un elenco che nessuno legge. Riconosce prima dai fatti del progetto, e dall'obiettivo appena dichiarato, a quali dei dieci settori questo progetto appartenga, li mostra con la ragione del riconoscimento perche' si possano correggere, e solo dopo apre le tabelle dei settori riconosciuti. Qui i settori riconosciuti sono quattro: fondamenta e igiene (il progetto vivra' mesi), sviluppo e qualita' del codice (si scrive TypeScript), comprensione di una codebase (in allineamento ci sarebbe gia' del codice: qui no, e il settore resta a margine), economia del contesto (sempre valutabile). Gli altri sei si dichiarano esclusi con la ragione, cosi' che la tornata successiva sappia che erano stati esclusi e non dimenticati.<br><br>
         Ogni pacchetto arriva in tre frasi: che cosa fa, perche' a <em>questo</em> progetto, legandolo a un fatto del repository e non alla categoria generica, e che cosa costa, comprese le capacita' che duplicherebbe. Gate accettati in questo progetto: <em>github-mcp</em> (il progetto vive su GitHub), <em>context7</em> (si usa Express e Drizzle in evoluzione rapida), <em>playwright-mcp</em> (test E2E previsti), <em>ccusage</em> (baseline misurazione token, sempre), <em>vercel-mcp</em> (deploy su Vercel), <em>stack-profiles</em> (stack TypeScript riconosciuto dal package.json: il profilo ts-mcp diventa rules/stack-profile.md), <em>claude-code-handoff</em> (riferimento delle opzioni dello strumento, con auto-update dalla guida community), <em>hooks-starter</em> (si attiva il solo hook session-context: la procedura di ripresa diventa automatica). Gate rifiutati, e registrati come rifiuti con la data: LaTeX e knowledge-wiki (non necessari ora), le skill di review di dev-skills (duplicano le native, dichiarato nella stessa frase in cui sono state proposte). Un no registrato non torna identico alla tornata successiva: torna solo se il suo presupposto cambia.
       </div>
       <div class="pills">
@@ -208,7 +208,7 @@ table.src a:hover{text-decoration:underline}
       <div class="phase-title">Onboarding, stile e riconciliazione finale</div>
       <div class="phase-body">
         Prima del tag, <strong>sync-context</strong> passa in rassegna tutte le schede: tre sono marcate "da aggiornare" perche' il refactoring di settimana 3 ha spostato file coperti dalle paths. Si aggiornano solo quelle tre.<br><br>
-        Il README pubblico viene scritto da Claude e poi passato a <strong>humanizer</strong>: rimuove 11 occorrenze di pattern AI. La regola <strong>interaction-style</strong> era gia' attiva sulla documentazione interna; humanizer serve per la prosa esterna.<br><br>
+        Il README pubblico viene scritto da Claude e poi passato a <strong>humanizer</strong>: rimuove 11 occorrenze di pattern AI. La regola <strong>interaction-style</strong> era gia' attiva sulla documentazione interna; humanizer serve per la prosa esterna. Se il README cresce, <strong>readme-sync</strong> ne genera l'indice navigabile e controlla i link locali; la skill aggiorna la prosa contro le fonti e l'hook Git ricontrolla il file prima dei commit manuali.<br><br>
         La skill <strong>onboard</strong> genera la guida per il nuovo collaboratore leggendo le schede, la storia dei commit e le decisioni architetturali.<br><br>
         Per non lasciare che le schede tornino a divergere in silenzio dopo il tag, si registra <strong>automation-starter</strong> nel Task Scheduler locale: <code>headless-run.ps1</code> lancia <em>sync-context</em> ogni lunedi' alle 6:00, autenticato dal login gia' fatto con <code>claude login</code>, mai da una chiave API a consumo.
       </div>
@@ -216,6 +216,7 @@ table.src a:hover{text-decoration:underline}
         <span class="pill p-core"><span class="pill-label">core</span>sync-context (finale)</span>
         <span class="pill p-core"><span class="pill-label">skill</span>onboard</span>
         <span class="pill p-pkg"><span class="pill-label">opt-in</span>humanizer</span>
+        <span class="pill p-pkg"><span class="pill-label">opt-in</span>readme-sync</span>
         <span class="pill p-core"><span class="pill-label">regola</span>interaction-style</span>
         <span class="pill p-core"><span class="pill-label">regola</span>git-commands-format</span>
         <span class="pill p-pkg"><span class="pill-label">opt-in</span>automation-starter</span>

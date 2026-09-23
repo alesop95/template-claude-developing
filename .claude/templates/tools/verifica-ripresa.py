@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Dice, alla riapertura, se fra l'ultima sessione e questa si e' perso qualcosa.
+"""Dice, alla riapertura, se fra l'ultima sessione e questa si è perso qualcosa.
 
 Perché esiste
 -------------
@@ -29,6 +29,12 @@ quali documenti di memoria sono rimasti indietro.
 
 Si appoggia a git e non ai tempi di modifica dei file, che sopravvivono male a un clone, a una
 copia e a un checkout, e che su una macchina con l'orologio storto mentono senza dirlo.
+
+Dove il progetto usa più alberi di lavoro, confronta anche la memoria di questo albero con quella
+degli altri: la memoria versionata vale per la branch su cui è scritta, e un albero aperto su una
+branch indietro ne riceve una ben formata e vecchia. Segnala ogni altro albero la cui branch abbia
+cambiato `.claude/memory/` dopo essersi separata da questa, o vi abbia modifiche non committate,
+e ne nomina il percorso: è da lì che la memoria si legge (regola `alberi-di-lavoro.md`).
 
 Che cosa non può sapere, e va detto invece di lasciarlo intuire
 ---------------------------------------------------------------
@@ -98,10 +104,10 @@ def git(*argomenti, radice=None):
         p = subprocess.run(["git"] + list(argomenti), cwd=radice, capture_output=True, text=True,
                            encoding="utf-8", errors="replace")
     except FileNotFoundError:
-        raise Errore("git non e' sul PATH: questo controllo legge lo stato da git e non dai "
+        raise Errore("git non è sul PATH: questo controllo legge lo stato da git e non dai "
                      "tempi di modifica dei file, che mentono dopo un clone o una copia")
     if p.returncode != 0:
-        raise Errore("git " + " ".join(argomenti) + " e' fallito: " + (p.stderr or "").strip()[:200])
+        raise Errore("git " + " ".join(argomenti) + " è fallito: " + (p.stderr or "").strip()[:200])
     return p.stdout
 
 
@@ -114,12 +120,12 @@ def impronta_corrente(radice=None, ora=None):
     """
     commit = git("rev-parse", "HEAD", radice=radice).strip()
     stato = git("status", "--porcelain", radice=radice)
-    # Il file di ripresa si esclude, ed e' la riga piu' importante di questa funzione. E' il file
+    # Il file di ripresa si esclude, ed è la riga più importante di questa funzione. È il file
     # che `--registra` scrive: contarlo significherebbe fotografare un albero che la fotografia
     # stessa sta per cambiare, e la corsa successiva troverebbe una divergenza prodotta da noi.
-    # Nel sistema di progetto `_notes/` e' ignorato da git e il caso non si presenta, ma quella e'
-    # una convenzione del progetto ospite: un programma corretto solo finche' una convenzione
-    # altrui regge e' un programma che aspetta di sbagliare.
+    # Nel sistema di progetto `_notes/` è ignorato da git e il caso non si presenta, ma quella è
+    # una convenzione del progetto ospite: un programma corretto solo finché una convenzione
+    # altrui regge è un programma che aspetta di sbagliare.
     nostri = tuple(p.replace(os.sep, "/") for p in (RIPRESA, RIPRESA_COMPAT))
     righe = [r for r in stato.splitlines()
              if r.strip() and not any(p in r.replace("\\", "/") for p in nostri)]
@@ -171,7 +177,7 @@ def registra(radice=None, ora=None):
     ripresa = individua_ripresa(radice)
     percorso = os.path.join(radice or ".", ripresa)
     if not os.path.isfile(percorso):
-        raise Errore("non trovo " + RIPRESA + " ne' " + RIPRESA_COMPAT +
+        raise Errore("non trovo " + RIPRESA + " né " + RIPRESA_COMPAT +
                      ": il file di ripresa si istanzia dal template "
                      "omonimo, e senza di esso non c'e' dove registrare l'impronta")
     testo = io.open(percorso, encoding="utf-8", errors="replace").read()
@@ -199,10 +205,10 @@ def commit_dichiarato(percorso):
 
 
 def schede_indietro(radice=None):
-    """Le schede di contesto il cui commit di verifica non e' fra gli antenati di HEAD.
+    """Le schede di contesto il cui commit di verifica non è fra gli antenati di HEAD.
 
     Non duplica `sync-context`, che confronta i file coperti e propone il delta: qui interessa il
-    solo fatto che una scheda sia ancorata a un commit che non c'e' piu', cioe' il sintomo di una
+    solo fatto che una scheda sia ancorata a un commit che non c'e' più, cioè il sintomo di una
     riscrittura della storia o di una scheda copiata da un altro ramo.
     """
     cartella = os.path.join(radice or ".", CONTESTO)
@@ -222,6 +228,61 @@ def schede_indietro(radice=None):
     return fuori
 
 
+def _normalizza(percorso):
+    return os.path.normcase(os.path.normpath(os.path.abspath(percorso)))
+
+
+def alberi_con_memoria_avanti(radice=None):
+    """Gli altri alberi di lavoro che portano nella memoria qualcosa che questo albero non ha.
+
+    La memoria versionata vale per la branch su cui è scritta, non per il progetto: un albero
+    aperto su una branch indietro riceve uno snapshot e un registro delle decisioni ben formati e
+    vecchi, e nulla al loro interno lo dice (regola `alberi-di-lavoro.md`). Per ogni altro albero
+    si guarda che cosa la sua branch ha cambiato sotto `.claude/memory/` dal punto in cui si è
+    separata da HEAD, con la notazione a tre punti, e se vi sono modifiche non committate alla
+    memoria. Ritorna una lista di (percorso, branch, file avanti, file non committati).
+
+    Un git senza `worktree list --porcelain`, o un repository con un albero solo, non producono
+    niente: l'assenza di altri alberi non è una divergenza.
+    """
+    try:
+        elenco = git("worktree", "list", "--porcelain", radice=radice)
+        qui = _normalizza(git("rev-parse", "--show-toplevel", radice=radice).strip())
+    except Errore:
+        return []
+    voci, voce = [], {}
+    for riga in elenco.splitlines() + [""]:
+        if not riga.strip():
+            if voce:
+                voci.append(voce)
+            voce = {}
+            continue
+        chiave, _sep, valore = riga.partition(" ")
+        voce[chiave] = valore
+    memoria = os.path.dirname(INDICE).replace(os.sep, "/")
+    avanti = []
+    for v in voci:
+        percorso = v.get("worktree")
+        if not percorso or "bare" in v or "prunable" in v or not os.path.isdir(percorso):
+            continue
+        if _normalizza(percorso) == qui or not v.get("HEAD"):
+            continue
+        branch = v.get("branch", "").replace("refs/heads/", "") or "(detached " + v["HEAD"][:9] + ")"
+        try:
+            file_avanti = git("diff", "--name-only", "HEAD..." + v["HEAD"], "--", memoria,
+                              radice=radice).split()
+        except Errore:
+            file_avanti = []
+        try:
+            sporchi = [r[3:] for r in git("status", "--porcelain", "--", memoria,
+                                          radice=percorso).splitlines() if r.strip()]
+        except Errore:
+            sporchi = []
+        if file_avanti or sporchi:
+            avanti.append((percorso, branch, file_avanti, sporchi))
+    return avanti
+
+
 def confronta(radice=None):
     """Il confronto completo. Ritorna (divergenze, note), entrambe liste di stringhe."""
     divergenze = []
@@ -233,7 +294,7 @@ def confronta(radice=None):
 
     if not os.path.isfile(percorso):
         divergenze.append(
-            "non esiste " + RIPRESA + " ne' " + RIPRESA_COMPAT +
+            "non esiste " + RIPRESA + " né " + RIPRESA_COMPAT +
             ": la procedura di ripresa non ha da dove partire. Si "
             "istanzia dal template omonimo, e si registra l'impronta a fine sessione.")
         return divergenze, note
@@ -241,7 +302,7 @@ def confronta(radice=None):
     vecchia = leggi_impronta(io.open(percorso, encoding="utf-8", errors="replace").read())
     if vecchia is None:
         note.append(
-            "il file di ripresa non porta ancora un'impronta: questa e' la prima corsa, e finche' "
+            "il file di ripresa non porta ancora un'impronta: questa è la prima corsa, e finché "
             "non se ne registra una non c'e' niente da confrontare. Si registra a fine sessione "
             "con --registra.")
     else:
@@ -258,12 +319,12 @@ def confronta(radice=None):
                     + "\n    ".join(nuovi.splitlines()))
             else:
                 divergenze.append(
-                    "il commit registrato (" + vecchia["commit"][:9] + ") non e' un antenato di "
-                    "HEAD (" + adesso["commit"][:9] + "): il ramo e' cambiato, oppure la storia e' "
+                    "il commit registrato (" + vecchia["commit"][:9] + ") non è un antenato di "
+                    "HEAD (" + adesso["commit"][:9] + "): il ramo è cambiato, oppure la storia è "
                     "stata riscritta dopo l'ultima registrazione.")
         if vecchia["albero"] != adesso["albero"]:
             divergenze.append(
-                "l'albero di lavoro non e' quello registrato: allora %d modificati e %d non "
+                "l'albero di lavoro non è quello registrato: allora %d modificati e %d non "
                 "tracciati, adesso %d e %d. Il dettaglio si vede con `git status --short`."
                 % (vecchia.get("modificati", 0), vecchia.get("non_tracciati", 0),
                    adesso["modificati"], adesso["non_tracciati"]))
@@ -274,25 +335,39 @@ def confronta(radice=None):
     for documento, ruolo in SORVEGLIATI:
         p = os.path.join(radice or ".", documento)
         if not os.path.isfile(p):
-            note.append("manca " + documento + ", che e' " + ruolo)
+            note.append("manca " + documento + ", che è " + ruolo)
             continue
         dichiarato = commit_dichiarato(p)
         if dichiarato and dichiarato != "PENDING-FIRST-COMMIT" \
                 and not adesso["commit"].startswith(dichiarato):
             divergenze.append(
-                documento + " dichiara il commit " + dichiarato + " mentre HEAD e' "
+                documento + " dichiara il commit " + dichiarato + " mentre HEAD è "
                 + adesso["commit"][:9] + ": " + ruolo + ", quindi lo stato che la sessione nuova "
-                "legge per primo e' piu' vecchio del codice.")
+                "legge per primo è più vecchio del codice.")
 
     for nome, h in schede_indietro(radice=radice):
         divergenze.append(
-            "la scheda context/" + nome + " e' ancorata al commit " + h + ", che in questo "
+            "la scheda context/" + nome + " è ancorata al commit " + h + ", che in questo "
             "repository non esiste: viene da un altro ramo, o da una storia riscritta.")
+
+    # Gli altri alberi di lavoro: la memoria di questo albero può essere la verità di un'altra
+    # branch, ed è la sola divergenza che nessun file di questo albero può rivelare.
+    for percorso, branch, file_avanti, sporchi in alberi_con_memoria_avanti(radice=radice):
+        dettagli = []
+        if file_avanti:
+            dettagli.append("committate sulla sua branch e assenti qui: " + ", ".join(file_avanti))
+        if sporchi:
+            dettagli.append("non committate: " + ", ".join(sporchi))
+        divergenze.append(
+            "l'albero " + percorso + " (branch " + branch + ") ha una memoria più avanti di "
+            "questa, con modifiche " + "; ".join(dettagli) + ". La memoria valida si legge da "
+            "quell'albero per percorso assoluto e non si copia né si fonde qui "
+            "(regola alberi-di-lavoro.md).")
 
     if adesso["modificati"] or adesso["non_tracciati"]:
         note.append("nell'albero di lavoro ci sono %d file modificati e %d non tracciati: se non "
                     "li ha lasciati di proposito l'ultima sessione, sono il lavoro che quella "
-                    "sessione stava facendo quando e' caduta."
+                    "sessione stava facendo quando è caduta."
                     % (adesso["modificati"], adesso["non_tracciati"]))
 
     return divergenze, note
@@ -300,7 +375,7 @@ def confronta(radice=None):
 
 # ------------------------------------------------------------------------------------------
 # Le prove, contro repository veri creati al volo e poi cancellati. Non usano la rete e non
-# toccano il repository ospite, perche' una prova che scrive dove vive il codice e' una prova
+# toccano il repository ospite, perché una prova che scrive dove vive il codice è una prova
 # che prima o poi cancella qualcosa.
 # ------------------------------------------------------------------------------------------
 
@@ -337,12 +412,12 @@ def self_test():
         prova("l'impronta finisce nel file di ripresa", APERTURA in testo, "")
         prova("l'impronta sta in coda e non in testa",
               testo.index("# Resume prompt") < testo.index(APERTURA), "")
-        prova("l'impronta e' un commento, quindi non si vede nel rendering",
+        prova("l'impronta è un commento, quindi non si vede nel rendering",
               testo.strip().endswith(CHIUSURA), "")
 
         # Il difetto che questa prova pianta: registrare scrive nel file di ripresa, e se quel
         # file entra nell'impronta la registrazione invalida se stessa. Vale anche dove il file
-        # sia tracciato, cioe' dove la convenzione del progetto ospite non regga.
+        # sia tracciato, cioè dove la convenzione del progetto ospite non regga.
         git("add", "-A", radice=tmp)
         git("commit", "-q", "-m", "il file di ripresa entra in git", radice=tmp)
         registra(radice=tmp)
@@ -360,12 +435,12 @@ def self_test():
         prova("il commit perduto si nomina, non si conta soltanto",
               any("lavoro della sessione caduta" in d for d in div), str(div))
 
-        # Un file lasciato a meta' nell'albero di lavoro.
+        # Un file lasciato a metà nell'albero di lavoro.
         registra(radice=tmp)
         io.open(os.path.join(tmp, "a-meta.txt"), "w", encoding="utf-8").write("interrotto\n")
         div, note = confronta(radice=tmp)
         prova("un file comparso dopo la registrazione si vede",
-              any("albero di lavoro non e' quello registrato" in d for d in div), str(div))
+              any("albero di lavoro non è quello registrato" in d for d in div), str(div))
         prova("negativo: non pretende di sapere che cosa contenga",
               not any("interrotto" in d for d in div), str(div))
 
@@ -387,9 +462,41 @@ def self_test():
         io.open(os.path.join(tmp, CONTESTO, "STACK.md"), "w", encoding="utf-8").write(
             "---\nlast-verified-commit: PENDING-FIRST-COMMIT\n---\n")
         div, note = confronta(radice=tmp)
-        prova("negativo: il segnaposto del greenfield non e' una divergenza",
+        prova("negativo: il segnaposto del greenfield non è una divergenza",
               not any("STACK.md" in d for d in div), str(div))
 
+        shutil.rmtree(tmp, ignore_errors=True)
+
+        # Il tranello dei worktree: un secondo albero su una branch che ha fatto avanzare la
+        # memoria. Da qui, cioè dalla branch indietro, la memoria locale è ben formata e vecchia.
+        tmp = repo()
+        altro = tempfile.mkdtemp(prefix="verifica-ripresa-albero-")
+        albero = os.path.join(altro, "avanti")
+        git("worktree", "add", "-q", "-b", "avanti", albero, radice=tmp)
+        prova("negativo: un secondo albero senza memoria diversa non è una divergenza",
+              not any("memoria più avanti" in d for d in confronta(radice=tmp)[0]), "")
+        os.makedirs(os.path.join(albero, ".claude", "memory"), exist_ok=True)
+        io.open(os.path.join(albero, ".claude", "memory", "decisions.md"), "w",
+                encoding="utf-8").write("## ADR-001\n")
+        git("add", "-A", radice=albero)
+        git("commit", "-q", "-m", "decisione presa nell'altro albero", radice=albero)
+        div, _n = confronta(radice=tmp)
+        prova("la memoria più avanti in un altro albero si segnala",
+              any("memoria più avanti" in d and "decisions.md" in d for d in div), str(div))
+        prova("la segnalazione nomina il percorso dell'albero autorevole",
+              any(albero in d or albero.replace("\\", "/") in d for d in div), str(div))
+        div, _n = confronta(radice=albero)
+        prova("negativo: dall'albero più avanti non si segnala niente",
+              not any("memoria più avanti" in d for d in div), str(div))
+        io.open(os.path.join(albero, ".claude", "memory", "decisions.md"), "a",
+                encoding="utf-8").write("## ADR-002\n")
+        git("merge", "-q", "avanti", radice=tmp)
+        div, _n = confronta(radice=tmp)
+        prova("dopo la fusione resta segnalata la sola memoria non committata dell'altro albero",
+              any("non committate: .claude/memory/decisions.md" in d for d in div)
+              and not any("assenti qui" in d for d in div), str(div))
+        git("worktree", "remove", "--force", albero, radice=tmp)
+        shutil.rmtree(altro, ignore_errors=True)
         shutil.rmtree(tmp, ignore_errors=True)
 
         # Un repository senza file di ripresa: lo dice invece di fallire.
@@ -399,10 +506,10 @@ def self_test():
         prova("senza file di ripresa lo dichiara come divergenza",
               any("non esiste" in d and "RESUME-PROMPT" in d for d in div), str(div))
 
-        # Un file di ripresa senza impronta: e' la prima corsa, non un difetto.
+        # Un file di ripresa senza impronta: è la prima corsa, non un difetto.
         io.open(os.path.join(tmp, RIPRESA), "w", encoding="utf-8").write("# Resume prompt\n")
         div, note = confronta(radice=tmp)
-        prova("negativo: la prima corsa non e' una divergenza", div == [], str(div))
+        prova("negativo: la prima corsa non è una divergenza", div == [], str(div))
         prova("la prima corsa lo dice fra le note",
               any("prima corsa" in n for n in note), str(note))
 
@@ -410,7 +517,7 @@ def self_test():
         d = leggi_impronta(APERTURA + "\ncommit: abc123\nalbero: xyz\nspazzatura\n" + CHIUSURA)
         prova("l'impronta si legge anche con una riga che non le appartiene",
               d and d["commit"] == "abc123", str(d))
-        prova("negativo: un'impronta senza i campi che servono non si legge a meta'",
+        prova("negativo: un'impronta senza i campi che servono non si legge a metà",
               leggi_impronta(APERTURA + "\ncommit: abc\n" + CHIUSURA) is None, "")
     finally:
         if tmp:
@@ -456,7 +563,7 @@ def main():
             return 1 if divergenze else 0
 
         if divergenze:
-            print("Fra l'ultima registrazione e adesso e' successo qualcosa che il file di")
+            print("Fra l'ultima registrazione e adesso è successo qualcosa che il file di")
             print("ripresa non racconta. In ordine, che cosa guardare:")
             print("")
             for i, d in enumerate(divergenze, 1):
@@ -471,7 +578,7 @@ def main():
             print("")
         print("Questo controllo legge fatti di git e non giudizi: non sa se il lavoro fatto fosse")
         print("giusto, e soprattutto non sa se una decisione presa a voce sia stata scritta, che")
-        print("e' il buco che la regola sulla persistenza previene a monte invece di rilevare qui.")
+        print("è il buco che la regola sulla persistenza previene a monte invece di rilevare qui.")
         return 1 if divergenze else 0
     except Errore as e:
         sys.stderr.write(str(e) + "\n")

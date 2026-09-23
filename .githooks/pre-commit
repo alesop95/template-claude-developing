@@ -1,0 +1,40 @@
+#!/bin/sh
+# Keep generated README sections current before a manual commit. Never stage files.
+set -eu
+
+root=$(git rev-parse --show-toplevel)
+if [ ! -f "$root/README.md" ]; then
+    exit 0
+fi
+
+bundle=""
+script="$root/tools/sync-readme.py"
+if [ ! -f "$script" ]; then
+    script="$root/.claude/templates/readme-sync/tools/sync-readme.py"
+    if [ ! -f "$script" ]; then
+        exit 0
+    fi
+    bundle="--bundle"
+fi
+
+python_cmd=""
+for candidate in python3 python; do
+    if command -v "$candidate" >/dev/null 2>&1 && "$candidate" -c 'import sys' >/dev/null 2>&1; then
+        python_cmd="$candidate"
+        break
+    fi
+done
+if [ -z "$python_cmd" ]; then
+    echo "sync-readme: Python non trovato; installarlo prima del commit" >&2
+    exit 1
+fi
+
+if ! "$python_cmd" "$script" --root "$root" --write $bundle; then
+    echo "sync-readme: correggere gli errori del README prima del commit" >&2
+    exit 1
+fi
+if ! git diff --quiet -- README.md; then
+    echo "sync-readme: README aggiornato o diverso dall'indice; rivederlo e aggiungerlo di nuovo allo stage" >&2
+    exit 1
+fi
+"$python_cmd" "$script" --root "$root" --check $bundle
