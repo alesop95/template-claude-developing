@@ -1,6 +1,6 @@
 # template-claude-developing
 
-Sistema portabile di contesto, documentazione e version control per progetti gestiti con Claude Code. Si installa nella radice di un progetto e fa in modo che lo stato del progetto resti interamente recuperabile dal repository in qualsiasi momento e da chiunque lo cloni. La sessione di chat e effimera e si perde alla chiusura; cio che persiste e il contesto strutturato su disco, riletto in automatico a ogni nuova sessione aperta nella stessa cartella.
+Sistema portabile di contesto, documentazione e version control per progetti gestiti con Claude Code e Codex. Si installa nella radice di un progetto e fa in modo che lo stato del progetto resti interamente recuperabile dal repository in qualsiasi momento e da chiunque lo cloni. La sessione di chat e effimera e si perde alla chiusura; cio che persiste e il contesto strutturato su disco, riletto in automatico a ogni nuova sessione aperta nella stessa cartella.
 
 Questo file e il README della repository GitHub. Serve a far capire cos'e il template a chi lo trova su GitHub. Non viene copiato nei progetti quando si lancia uno dei due prompt: quei prompt importano solo lo standard e il motore, non questo README. Ogni volta che si aggiunge una funzionalità al template, questo README va aggiornato di conseguenza.
 
@@ -74,6 +74,12 @@ Claude Code ha una memoria automatica nativa che, se attiva, scrive file in un m
 
 Per tenere pulito il magazzino nascosto nel tempo, il bundle fornisce uno strumento di wipe da installare per-account come hook `SessionEnd`, e uno strumento di verifica che controlla che l'account attivo abbia la memoria nativa disattivata e l'hook di wipe installato. Sono in `templates/tools/`, in versione PowerShell per Windows e shell POSIX per Linux. Il wipe preserva i progetti il cui slug corrisponde a uno dei prefissi indicati, la configurazione, il login, le skill e i plugin, e non tocca mai i file dei progetti su disco. L'insieme dei prefissi da preservare dipende dalla macchina, e per questo il template non ne porta uno di default ma un segnaposto che blocca lo script finché qualcuno non lo compila: un default che funziona su una macchina è una trappola su tutte le altre, perché su Linux gli slug derivano dal percorso assoluto e un prefisso pensato per una lettera di disco non corrisponde a niente, l'insieme dei progetti preservati risulta vuoto e il wipe cancellerebbe l'intero magazzino senza segnalare nulla. Lo script si difende con tre guardie che precedono ogni rimozione, rifiutando di partire se la home dell'account non assomiglia a un magazzino di Claude Code, se i prefissi non sono stati compilati o se nessuno degli slug presenti vi corrisponde, e i prefissi giusti si leggono invece di indovinarli, con un modo di sola lettura che elenca gli slug realmente presenti e un modo a vuoto che mostra le rimozioni senza eseguirle.
 
+## Più account Claude Code e Codex sulla stessa macchina
+
+Il pacchetto opzionale `agenti-terminale` tiene isolate più radici dei due agenti da terminale e le rende ricostruibili da un template dopo una formattazione. Il repository della macchina conserva soltanto i parametri specifici e uno script sottile che chiama il pacchetto: gli strumenti restano nel template. L'installazione prepara le radici e i comandi brevi `claude-account<N>` e `codex-account<N>`; le credenziali richiedono un nuovo login, mentre `Consumo-Agenti.ps1` misura il consumo delle radici presenti.
+
+La pulizia usa meccanismi diversi. Claude Code esegue uno script distribuito in ciascuna radice tramite l'hook `SessionEnd`. Codex si avvia con un wrapper che imposta e verifica `CODEX_HOME`, poi pulisce dopo l'uscita del processo: il suo hook `SessionEnd` esiste, ma non copre `codex exec` e non riesce a rimuovere la sessione ancora aperta che lo invoca. La regola `chiusura-delle-sessioni.md` completa il wipe chiedendo di rimuovere le sessioni davvero concluse. Il dettaglio, incluse le guardie e il ripristino, è nel [README del pacchetto](.claude/templates/agenti-terminale/README.md).
+
 ## Windows o Linux
 
 Diverse parti del sistema cambiano a seconda del sistema operativo: il forzare o meno `core.sshCommand` all'OpenSSH di sistema, gli script di setup e build dell'ambiente, gli script di wipe e di verifica dell'account, e la sintassi degli hook. Per questo i due prompt chiedono al punto giusto, in fase di inizializzazione o allineamento, se si sviluppa su Windows o su Linux, e da quel momento usano la variante corretta degli strumenti. Cambia però anche cio che non dipende dal sistema operativo ma dalla singola installazione, cioè gli alias SSH verso GitHub, le chiavi dietro ciascuno e le identità git da abbinarvi: sono scelte di chi ha configurato quella macchina, e il sistema li rileva con `detect-ssh-profiles.py` e poi li chiede, invece di riusare quelli di un'altra installazione. Lo stesso vale per le radici di sviluppo da preservare nel wipe. Gli strumenti che hanno una doppia forma, come il pacchetto LaTeX e gli strumenti di igiene dell'account, sono forniti sia in PowerShell sia in shell POSIX.
@@ -130,7 +136,7 @@ Il pacchetto opzionale `stack-profiles` fornisce profili di regole già scritti 
 
 ## Hook pronti all'uso (hooks-starter)
 
-Il pacchetto opzionale `hooks-starter` concretizza le famiglie di hook descritte nella sezione 14 di `PROJECT-SYSTEM.md`, finora solo descrittiva, con tre script in doppia forma PowerShell e shell POSIX, mai attivi dopo l'istanziazione: `session-context`, un hook `SessionStart` che inietta nel contesto branch, ultimi commit, file modificati e la testa di `memory/index.md` con il punto di ripresa, automatizzando la procedura di ripresa della sezione 12; `protect-sensitive-files`, che blocca le scritture dell'agente su `.env`, chiavi e area `.git/` come difesa in profondità rispetto ai deny del `settings.json`; e `secret-scan`, che scansiona il diff in stage prima di un `git commit` dell'agente, con la nota onesta che nella baseline del sistema quel commit è già negato e l'hook serve ai progetti che allentano quel deny. L'attivazione resta sempre una scelta esplicita: si copiano i soli blocchi voluti dal frammento di esempio della propria piattaforma nel `settings.json` del progetto. Il dettaglio è in `.claude/templates/hooks-starter/README.md`.
+Il pacchetto opzionale `hooks-starter` fornisce sette hook in doppia forma PowerShell e shell POSIX, mai attivi dopo l'istanziazione. `apertura-sessione` confronta l'impronta registrata da `chiusura-sessione` con lo stato corrente e segnala quando invocare `sync-context`; `session-context` mostra branch, commit, modifiche e punto di ripresa. `md-unwrap-auto` applica la convenzione Markdown dopo una scrittura e `pre-commit-checks` esegue i controlli prima di un commit dell'agente. `protect-sensitive-files` difende i percorsi sensibili e `secret-scan` controlla il diff in stage; nella baseline il commit dell'agente è già negato, quindi quest'ultimo resta una difesa ulteriore per i progetti che cambiano quel permesso. L'attivazione richiede di copiare nel `settings.json` del progetto i soli blocchi voluti dal frammento della propria piattaforma. Il dettaglio è in `.claude/templates/hooks-starter/README.md`.
 
 ## Skill di sviluppo (dev-skills)
 
@@ -149,6 +155,10 @@ I subagent sono agenti con una persona specializzata, un system prompt focalizza
 Per il caso complementare a `subagent-template`, quando serve un subagent iper-specifico per uno stack o un tool preciso invece di uno dei quattro ruoli generici, il pacchetto opzionale `agent-catalog` installa un meccanismo per pescarne uno alla volta da fonti community che li distribuiscono come semplici file Markdown senza un manifest di plugin installabile. La fonte integrata come "flat" e fetchable è `0xfurai/claude-code-subagents`, 138 agenti "expert" per singolo stack o framework (react-expert, python-expert, prisma-expert e così via); tre comandi, `/list-community-agents`, `/fetch-community-agent` e `/check-agent-sources`, e i rispettivi script dual-OS elencano gli agenti disponibili, ne scaricano uno specifico dentro `.claude/agents/` registrandone la provenienza, e controllano se la fonte ha ricevuto nuovi commit dall'ultima verifica, sulla stessa strategia a costo zero (confronto di uno sha di commit, nessun consumo token) già usata da `claude-code-handoff`. L'indice curato `hesreallyhim/awesome-claude-code` è tracciato come fonte "meta" solo per sapere quando vale la pena riaprirlo e cercare fonti nuove, senza essere esso stesso elencabile.
 
 Due fonti popolari e comparabili per qualità, `wshobson/agents` (194 agent) e `VoltAgent/awesome-claude-code-subagents` (154+ agent), non sono integrate in questo pacchetto perché offrono già un proprio plugin marketplace nativo Claude Code: per queste il meccanismo corretto è `/plugin marketplace add`, non un fetch grezzo che duplicherebbe una funzionalità della piattaforma. Le due righe di catalogo corrispondenti, `wshobson-agents` e `voltagent-subagents`, vivono come voci a sé in `PACKAGES.md`, sul modello già usato da `code-simplifier` e `ponytail`. Il dettaglio completo, con la valutazione delle altre collezioni community esaminate e scartate con la relativa motivazione, è in `.claude/templates/agent-catalog/README.md`.
+
+## Lavori estesi a lotti (lavoro-a-lotti)
+
+Il pacchetto opzionale `lavoro-a-lotti` serve quando il lavoro su un corpus supera la finestra di una sessione: prepara un registro JSONL locale e riprendibile, una regola per distribuire il lavoro fra agenti con quote indipendenti e un controllo che verifica gli artefatti prodotti invece di fidarsi dello stato dichiarato. Prima di adottarlo si stima il prodotto fra numero di elementi e costo per elemento, si cerca la parte risolvibile senza un modello e si verifica che ogni elemento produca un artefatto controllabile. Lo strumento non avvia agenti: definisce il contratto con cui interrompere e riprendere una mappatura prima dell'aggregazione finale. Il dettaglio è nel [README del pacchetto](.claude/templates/lavoro-a-lotti/README.md).
 
 ## Fonti che vivono in canali e catene di discussioni (community-sources)
 
@@ -188,9 +198,21 @@ Il pacchetto opzionale `timeline-progetto` le mette in una linea sola, generata 
 
 L'artefatto e tutto ciò da cui deriva vivono nel repository e in nessun altro posto: niente entra nella directory di configurazione dell'account Claude né nella memoria automatica nativa, per lo stesso principio della sezione 15 dello standard. L'uscita è deterministica, senza data di generazione, perché il valore della linea temporale non è solo leggerla ma vederne il diff: una revisione che aggiunge tre microstep mostra tre righe nuove, e una che ne toglie uno lo dichiara invece di nasconderlo.
 
+## Ragioni delle scelte tecniche (documentazione-didattica)
+
+Il pacchetto opzionale `documentazione-didattica` aggiunge al registro dei fatti un racconto di come sono cambiate le scelte tecniche e schede numerate che entrano nel codice reale. Ogni scheda dichiara i percorsi che copre, così una modifica successiva rende visibile quando va riletta; le schede superate restano marcate e consultabili, senza riscrivere il ragionamento del passato. Gli strumenti controllano l'allineamento fra registro, racconto, indice e schede. Si propone ai progetti in cui qualcuno ha dichiarato di voler imparare dalle decisioni, non come obbligo documentale di ogni commit. Il dettaglio è nel [README del pacchetto](.claude/templates/documentazione-didattica/README.md).
+
+## Controllo della memoria di progetto (memoria-di-progetto)
+
+Il pacchetto opzionale `memoria-di-progetto` aggiunge `lint-memoria.py` ai progetti che tengono un registro cronologico. Il controllo segnala commit successivi all'ultima voce, voci chiuse senza data e voci che non dichiarano i file toccati. Distingue il silenzio dalla presenza di una traccia, senza giudicare la qualità di ciò che è stato scritto. Per essere eseguito con regolarità va richiamato nella direttiva che governa il registro, prima dei comandi di version control. Il dettaglio è nel [README del pacchetto](.claude/templates/memoria-di-progetto/README.md).
+
+## Lista del lavoro aperto (roadmap)
+
+Il pacchetto opzionale `roadmap` genera una lista del lavoro ancora aperto da un file dati versionato, ordinata per costo. Ogni esecuzione misura di nuovo il commit di riferimento, la distanza delle schede da HEAD, i controlli dichiarati dal progetto e la raggiungibilità dei link. Una voce può avere una sonda che rileva se una traccia testuale la smentisce: in quel caso resta visibile in una sezione separata, finché una persona non decide di rimuoverla. L'uscita è un derivato ignorato da git, disponibile anche in forma pronta da stampare. Il dettaglio è nel [README del pacchetto](.claude/templates/roadmap/README.md).
+
 ## Il gate dei pacchetti per settore
 
-Con settantatré pacchetti in catalogo, il modo in cui si scelgono conta quanto i pacchetti stessi. Un gate che li proponga uno per uno in fila è un gate che nessuno legge fino in fondo; uno che ne scelga tre a occhio è un gate che nasconde gli altri settanta senza dirlo. La skill `gate-pacchetti` risolve il problema cambiando l'unità della domanda: il catalogo è diviso in dieci settori, e prima di aprire una tabella la skill riconosce dai fatti del progetto a quali settori esso appartenga. Un progetto ne ha due o tre su dieci, quindi la scelta passa da settanta domande a una decina, tutte pertinenti.
+Con settantotto voci in catalogo, il modo in cui si scelgono conta quanto le voci stesse. Un gate che le proponga una per una in fila è un gate che nessuno legge fino in fondo; uno che ne scelga tre a occhio nasconde le altre senza dirlo. La skill `gate-pacchetti` risolve il problema cambiando l'unità della domanda: il catalogo è diviso in dieci settori, e prima di aprire una tabella la skill riconosce dai fatti del progetto a quali settori esso appartenga. Un progetto ne ha due o tre su dieci, quindi la scelta passa da decine di domande a una decina, tutte pertinenti.
 
 Il riconoscimento si dichiara e si fa correggere, perché è una ipotesi sul progetto e chi lo conosce è l'utente: si mostrano i settori riconosciuti con il fatto da cui li si è riconosciuti, e quelli esclusi con la ragione dell'esclusione. Dentro un settore riconosciuto ogni pacchetto arriva in tre frasi e mai meno, cioè che cosa fa in linguaggio di chi lo userà, perché a questo progetto potrebbe servire legando la ragione a un fatto di questo repository invece che al trigger generico, e che cosa costa, dove il costo comprende le dipendenze esterne, i token che un server MCP occupa a ogni turno anche quando non viene usato, e soprattutto le capacità che il pacchetto duplicherebbe.
 
@@ -258,7 +280,11 @@ template-claude-developing/
       codebase-learning/  pacchetto opzionale: comando /learn-repo a 5 fasi, subagent code-tutor, documento di riferimento
       claude-code-handoff/  pacchetto opzionale: handoff delle opzioni Claude Code auto-aggiornante (documento distillato, script update-handoff .ps1/.sh con rilevamento stallo fonte, comando /refresh-handoff, workflow GitHub Actions opzionale)
       stack-profiles/   pacchetto opzionale: profili di regole per stack (ts-mcp, python, react, n8n, generico), un profilo per progetto in rules/stack-profile.md
-      hooks-starter/    pacchetto opzionale: 3 hook pronti .ps1/.sh mai attivi di default (session-context, protect-sensitive-files, secret-scan) + frammenti settings di attivazione
+      hooks-starter/    pacchetto opzionale: 7 hook .ps1/.sh mai attivi di default + frammenti settings di attivazione
+      agenti-terminale/  pacchetto opzionale: gestione di radici Claude Code e Codex isolate, ripristino, wipe e consumo
+      lavoro-a-lotti/  pacchetto opzionale: registro riprendibile e presidio degli artefatti per lavori estesi
+      memoria-di-progetto/  pacchetto opzionale: controllo delle tracce nel registro cronologico
+      roadmap/         pacchetto opzionale: lista del lavoro aperto generata dallo stato corrente
       dev-skills/       pacchetto opzionale: 4 skill di sviluppo a scelta (test-generator, mcp-tool-scaffold, code-review, security-review)
       automation-starter/  pacchetto opzionale: headless-run .ps1/.sh (claude -p su abbonamento), workflow GitHub Actions opzionale via token setup-token, terza via nativa /schedule
       agent-catalog/    pacchetto opzionale: fetch mirato di subagent community da fonti flat (0xfurai), 3 comandi, script check-update dual-OS con stato tracciato
@@ -284,6 +310,10 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 - `claude-code-handoff` - riferimento auto-aggiornante delle opzioni di Claude Code: [.claude/templates/claude-code-handoff/README.md](.claude/templates/claude-code-handoff/README.md)
 - `stack-profiles` - profili di regole per gli stack ricorrenti: [.claude/templates/stack-profiles/README.md](.claude/templates/stack-profiles/README.md)
 - `hooks-starter` - hook di automazione pronti, mai attivi di default: [.claude/templates/hooks-starter/README.md](.claude/templates/hooks-starter/README.md)
+- `agenti-terminale` - radici isolate, ricostruzione, pulizia e consumo di Claude Code e Codex: [.claude/templates/agenti-terminale/README.md](.claude/templates/agenti-terminale/README.md)
+- `lavoro-a-lotti` - registro riprendibile per lavori estesi su molti elementi: [.claude/templates/lavoro-a-lotti/README.md](.claude/templates/lavoro-a-lotti/README.md)
+- `memoria-di-progetto` - controllo delle tracce nel registro cronologico: [.claude/templates/memoria-di-progetto/README.md](.claude/templates/memoria-di-progetto/README.md)
+- `roadmap` - lista del lavoro aperto generata dallo stato corrente: [.claude/templates/roadmap/README.md](.claude/templates/roadmap/README.md)
 - `dev-skills` - skill di sviluppo (test, scaffolding MCP, review): [.claude/templates/dev-skills/README.md](.claude/templates/dev-skills/README.md)
 - `automation-starter` - headless e routine su abbonamento, senza API a consumo: [.claude/templates/automation-starter/README.md](.claude/templates/automation-starter/README.md)
 - `agent-catalog` - fetch mirato di subagent community da fonti flat: [.claude/templates/agent-catalog/README.md](.claude/templates/agent-catalog/README.md)
@@ -393,6 +423,6 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - `wshobson/agents`, marketplace di plugin nativo Claude Code con 194 agent per dominio, riga di catalogo `wshobson-agents` (licenza MIT): https://github.com/wshobson/agents
 - `VoltAgent/awesome-claude-code-subagents`, marketplace di plugin nativo Claude Code con 154+ agent in 10 categorie, riga di catalogo `voltagent-subagents` (licenza MIT): https://github.com/VoltAgent/awesome-claude-code-subagents
 
-## Repository
+## Versionamento del repository
 
-Identità personale, alias SSH `github-personal`, remoto `git@github-personal:alesop95/template-claude-developing.git`. Identità e remoto si preparano a livello locale del repo; il primo commit e il push restano manuali.
+L'identità git e il remoto si configurano localmente secondo `.claude/rules/git-identity-and-repo.md`, usando i valori rilevati sulla macchina che ospita il clone. `git add`, commit e push restano operazioni manuali dell'utente.
