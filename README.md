@@ -91,7 +91,7 @@ Entrambi i prompt si fermano a chiedere conferma prima di ogni azione difficilme
 
 Il pacchetto opzionale `readme-sync` mantiene la navigazione del README pubblico: ricava l'indice dai titoli reali, verifica i link locali e aggiorna i blocchi generati senza riscrivere la prosa. In questo repository legge anche il catalogo per raggruppare tutti i README dei pacchetti per settore e calcolare i conteggi. La skill omonima rilegge codice e documentazione quando cambia una capacità del progetto, corregge le spiegazioni e poi invoca il programma; un controllo deterministico da solo non può decidere se una frase descriva ancora il comportamento reale. Il pacchetto si istanzia nei progetti che hanno scelto di avere un README pubblico. Dettaglio e comandi nel [README del pacchetto](.claude/templates/readme-sync/README.md).
 
-L'hook versionato in `.githooks/pre-commit` copre anche i commit manuali dopo l'attivazione locale con `git config --local core.hooksPath .githooks`: aggiorna i blocchi generati, ma se il file cambia ferma il commit perché la persona possa rivedere il diff e rimettere il README in stage. Non aggiunge file allo stage né crea commit.
+L'hook versionato in `.githooks/pre-commit` copre anche i commit manuali dopo l'attivazione locale con `git config --local core.hooksPath .githooks`: aggiorna i blocchi generati, ma se il file cambia ferma il commit perché la persona possa rivedere il diff e rimettere il README in stage. Esegue poi gli script opzionali in `.githooks/pre-commit.d/`; il passo di `anti-slop` segnala problemi nei file di prosa e interfaccia in stage senza bloccare il commit. L'hook non aggiunge file allo stage né crea commit.
 
 ## Cosa viene installato in un progetto
 
@@ -259,7 +259,7 @@ La procedura di ripresa del sistema parte da `_notes/RESUME-PROMPT.md` e presupp
 
 Lo strumento `tools/verifica-ripresa.py` rende meccanica la distinzione. A fine sessione registra nel file di ripresa una impronta, cioè il commit e la forma esatta dell'albero di lavoro in quel momento; alla riapertura la confronta con lo stato reale e dice che cosa diverge, in ordine di quanto conta: i commit comparsi dopo l'ultima registrazione con il loro messaggio, perché sono il lavoro che una sessione ha prodotto senza chiudersi; i file che quella sessione stava toccando; i documenti di memoria che dichiarano un commit più vecchio di HEAD; e le schede di contesto ancorate a un commit che nel repository non esiste più. Si appoggia a git e non ai tempi di modifica dei file, che sopravvivono male a un clone e su una macchina con l'orologio storto mentono senza dirlo.
 
-La skill `riprendi` è la procedura che ne interpreta l'esito, e la sua regola è che una divergenza si riporta all'utente prima di qualunque altra cosa, perché solo lui sa che cosa stava facendo: un file rimasto a metà può essere un lavoro da riprendere o uno da buttare, e la differenza non si legge dal contenuto. Lo strumento dichiara anche ciò che non può sapere, ed è la parte onesta: non sa se il lavoro fatto fosse giusto, e soprattutto non sa se una decisione presa a voce sia stata scritta, che è il buco che la regola `chat-non-e-memoria.md` previene a monte invece di rilevare a valle.
+La skill `riprendi` è la procedura che ne interpreta l'esito, e la sua regola è che una divergenza si riporta all'utente prima di qualunque altra cosa, perché solo l'utente sa che cosa stava facendo: un file rimasto a metà può essere un lavoro da riprendere o uno da buttare, e la differenza non si legge dal contenuto. Lo strumento dichiara anche ciò che non può sapere, ed è la parte onesta: non sa se il lavoro fatto fosse giusto, e soprattutto non sa se una decisione presa a voce sia stata scritta, che è il buco che la regola `chat-non-e-memoria.md` previene a monte invece di rilevare a valle.
 
 ## Separazione fra test e produzione
 
@@ -331,7 +331,8 @@ template-claude-developing/
   AGENTS.md                      istruzioni native di Codex per lavorare sul template
   CLAUDE.local.md                override personali, ignorato
   .agents/skills/                wrapper generati verso le skill canoniche
-  .githooks/pre-commit           controllo del README sui commit manuali, da attivare nel clone
+  .githooks/pre-commit           controllo del README e avvio dei passi opzionali sui commit manuali
+  .githooks/pre-commit.d/        controlli aggiuntivi; anti-slop segnala problemi senza bloccare
   .gitignore
   .claude/
     PROJECT-SYSTEM.md            fonte di verita della procedura, in sezioni numerate

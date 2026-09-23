@@ -6,7 +6,7 @@
 
 Il sistema di questo template ha già un motore di riconciliazione, la skill `sync-context`, e copre bene la domanda "questa scheda descrive ancora il codice che dichiara di coprire". Confronta il frontmatter con il diff dei percorsi coperti e propone edit chirurgici.
 
-C'è però una classe di obsolescenza che quel motore non vede, e non è un difetto della skill: è una domanda diversa. Il drift si misura contro il *codice*, cioè contro qualcosa che sta nel repository e che git conosce. Un'affermazione su un fatto esterno non ha nulla contro cui essere misurata: che una copia di backup fuori sede esista, che una licenza sia coperta, che un'automazione stia girando, che una persona abbia risposto a una domanda. Nessun `git diff` la contraddice mai. Nasce vera e il momento in cui smette di esserlo non lascia traccia.
+C'è però una classe di obsolescenza che quel motore non vede, perché risponde a una domanda diversa da quella per cui la skill è stata scritta. Il drift si misura contro il *codice*, cioè contro qualcosa che sta nel repository e che git conosce. Un'affermazione su un fatto esterno non ha nulla contro cui essere misurata: che una copia di backup fuori sede esista, che una licenza sia coperta, che un'automazione stia girando, che una persona abbia risposto a una domanda. Nessun `git diff` la contraddice mai. Nasce vera e il momento in cui smette di esserlo non lascia traccia.
 
 La differenza pratica fra i due strumenti è anche di natura. `sync-context` è una procedura guidata dall'LLM, quindi costa contesto, richiede una sessione e produce un giudizio; questo è un test deterministico con un codice di uscita, quindi si mette in un hook di avvio, non consuma contesto e produce un fatto. I due si usano insieme: il primo aggiorna le schede, il secondo dice che c'è qualcosa da guardare.
 
@@ -16,7 +16,7 @@ Nel progetto reale da cui questo pacchetto è estratto, in una sola mattina sono
 
 Nello stesso passaggio si è contato che nei file tracciati vivevano *sedici date* di scadenza o di presidio scritte in prosa, e che nessun meccanismo le guardava. Ogni incidente che in quel progetto aveva fatto danno era una di quelle date: una licenza scaduta che ha spento per due giorni la fonte automatica con cui si verificava il lavoro, e un abbonamento di spazio cloud scaduto che ha messo una data di cancellazione sull'unica copia storica dei backup.
 
-Nei cinque giorni successivi all'adozione, lo stesso impianto ha trovato un'automazione pianificata che non era mai partita, una replica fuori sede che i documenti davano per esistente e che non esisteva, un guard-rail che non cercava dodici valori reali, e due voci di un registro arrivate in un commit con lo stesso numero perché scritte lo stesso giorno da due sessioni di lavoro diverse. Il punto non è la quantità: è che nessuno di questi era visibile leggendo.
+Nei cinque giorni successivi all'adozione, lo stesso impianto ha trovato un'automazione pianificata che non era mai partita, una replica fuori sede che i documenti davano per esistente e che non esisteva, un guard-rail che non cercava dodici valori reali, e due voci di un registro arrivate in un commit con lo stesso numero perché scritte lo stesso giorno da due sessioni di lavoro diverse. Conta meno la quantità del fatto che nessuno di questi fosse visibile leggendo.
 
 ## Le quattro famiglie di controllo
 

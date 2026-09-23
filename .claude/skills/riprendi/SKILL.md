@@ -34,7 +34,7 @@ Se il progetto non ha lo strumento istanziato, la stessa domanda si pone a mano 
 
 ## Passo 2 - Che cosa fare di una divergenza
 
-Una divergenza non è un difetto da correggere in silenzio: è materiale da riportare all'utente prima di qualunque altra cosa, perché solo lui sa che cosa stava facendo. La forma è breve e in ordine di gravità.
+Una divergenza è materiale da riportare all'utente prima di qualunque altra cosa, e non da correggere in silenzio, perché solo l'utente sa che cosa stava facendo. La forma è breve e in ordine di gravità.
 
 Per i commit comparsi dopo la registrazione si guarda che cosa hanno toccato, con `git show --stat`, e si dice in una riga che cosa risulta fatto. Non si assume che il work-log lo sappia: si confronta con `.claude/memory/progress.md`, e se l'ultima voce non copre quei commit lo si dichiara, perché è esattamente il lavoro che la regola sulla persistenza chiede di scrivere e che quella sessione non ha scritto.
 

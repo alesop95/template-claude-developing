@@ -19,6 +19,8 @@ anti-slop/
 ├── FONTI.md                    registro: la fonte visiva di partenza e 12 fonti pubblicate
 ├── rules/
 │   └── design-non-generico.md  regola per i progetti con interfaccia
+├── githooks/
+│   └── pre-commit.d/anti-slop  passo di avviso per i commit manuali
 └── tools/
     ├── lint-prosa.py           P1-P6 su Markdown e testo, zero dipendenze
     └── lint-ui.py              U1-U10 su HTML, CSS, JSX, TSX, Vue, Svelte, zero dipendenze
@@ -55,7 +57,10 @@ templates/anti-slop/tools/lint-prosa.py          ->  tools/lint-prosa.py        
 templates/anti-slop/tools/lint-ui.py             ->  tools/lint-ui.py               nei progetti con interfaccia
 templates/anti-slop/rules/design-non-generico.md ->  .claude/rules/                 nei progetti con interfaccia
 templates/anti-slop/GUIDA.md e FONTI.md          ->  docs/anti-slop/                interi
+templates/anti-slop/githooks/pre-commit.d/anti-slop -> .githooks/pre-commit.d/      dove c'è l'hook di readme-sync
 ```
+
+Il passo di `.githooks/pre-commit.d/` porta gli strumenti nei commit manuali: esamina i soli file di prosa e di interfaccia in stage e stampa le segnalazioni nel terminale di chi committa, senza mai fermare il commit. Si appoggia all'hook `pre-commit` del pacchetto `readme-sync`, che esegue gli script di quella cartella; dove l'hook non c'è, lo si richiama da un hook proprio. Provato il 2026-09-23 in un repository temporaneo con un file dal nome contenente spazi: segnalazioni stampate, commit eseguito.
 
 La guida e il registro si copiano interi, perché le regole e gli strumenti vi rimandano per il perché di ogni segno.
 

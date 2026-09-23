@@ -143,8 +143,25 @@ def esamina_file(testo):
         if CORSIVO.search(m.group(0)):
             esiti.append(("U3", "una parola del titolo %s in corsivo" % m.group(1).lower()))
             break
+        # La stessa enfasi fatta con un colore: uno span che isola una parte breve del titolo,
+        # "Accenting just a single word or phrase in a headline" nella fonte (FONTI.md, F06).
+        interno = re.search(r"<span\b[^>]*>([^<]{1,60})</span>", m.group(2), re.I)
+        if interno and len(re.sub(r"<[^>]+>", "", m.group(2)).split()) > len(interno.group(1).split()):
+            esiti.append(("U3", "una parte del titolo %s isolata e accentata: «%s»"
+                          % (m.group(1).lower(), interno.group(1).strip()[:40])))
+            break
 
-    etichette, titoli = len(ETICHETTA.findall(testo)), len(TITOLI.findall(testo))
+    # Le etichette si riconoscono anche quando lo stile sta in una classe CSS del file: una regola
+    # con maiuscolo e spaziatura delle lettere definisce una classe di etichetta, e si contano gli
+    # elementi che la usano.
+    classi_etichetta = set()
+    for r in REGOLA_CSS.finditer(testo):
+        if re.search(r"text-transform\s*:\s*uppercase", r.group(2), re.I) and \
+                re.search(r"letter-spacing\s*:\s*[.\d]", r.group(2), re.I):
+            classi_etichetta |= set(re.findall(r"\.([\w-]+)\s*$", r.group(1).strip()))
+    uso_css = sum(len(re.findall(r"class=[\"'](?:[^\"']*\s)?%s(?:\s[^\"']*)?[\"']" % re.escape(c), testo))
+                  for c in classi_etichetta)
+    etichette, titoli = len(ETICHETTA.findall(testo)) + uso_css, len(TITOLI.findall(testo))
     if etichette >= 2 and etichette * 3 > max(titoli, 1):
         esiti.append(("U4", "%d etichette maiuscole spaziate per %d titoli" % (etichette, titoli)))
 
@@ -246,6 +263,13 @@ def self_test():
     prova("U4: un'etichetta maiuscola per ogni titolo si segnala",
           "U4" in codici('<p class="uppercase tracking-widest">A</p><h2>x</h2>'
                          '<p class="uppercase tracking-widest">B</p><h2>y</h2>'))
+    prova("U3: una frase del titolo isolata in uno span si segnala",
+          "U3" in codici("<h1>Potenzialità e fonti<br><span>in un flusso reale</span></h1>"))
+    prova("negativo U3: un titolo tutto dentro uno span non si segnala",
+          "U3" not in codici("<h1><span>Potenzialità e fonti</span></h1>"))
+    prova("U4: etichette definite da una classe CSS maiuscola e spaziata si segnalano",
+          "U4" in codici("<style>.eye{text-transform:uppercase;letter-spacing:.2em}</style>"
+                         '<div class="eye">A</div><h2>x</h2><div class="eye">B</div><h2>y</h2>'))
     prova("U5: tre card annidate si segnalano",
           "U5" in codici('<div class="card"><div class="card"><div class="card">x</div></div></div>'))
     prova("negativo U5: tre card affiancate non si segnalano",

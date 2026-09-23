@@ -1,6 +1,6 @@
 # community-sources
 
-Pacchetto per le fonti che nessuno strumento di sessione raggiunge e che per certi domini tecnici sono la sola documentazione esistente: quelle che vivono dentro canali di conversazione di community, e quelle che vivono dentro catene di discussioni pubbliche che si citano a vicenda. La ragione d'essere del pacchetto è meno ovvia di quanto sembri, ed è la stessa per entrambe le famiglie: non è che leggerle sia difficile, è che le vie per farlo sono più d'una e alcune hanno conseguenze che vale conoscere prima di scegliere.
+Pacchetto per le fonti che nessuno strumento di sessione raggiunge e che per certi domini tecnici sono la sola documentazione esistente: quelle che vivono dentro canali di conversazione di community, e quelle che vivono dentro catene di discussioni pubbliche che si citano a vicenda. La ragione d'essere del pacchetto è meno ovvia di quanto sembri, ed è la stessa per entrambe le famiglie: le vie per leggerle sono più d'una, e alcune hanno conseguenze che vale conoscere prima di scegliere.
 
 Contiene sei strumenti, che servono bisogni distinti e non si sostituiscono a vicenda. I primi tre recuperano, gli altri tre riducono ciò che il recupero ha prodotto, e la distinzione conta perché un recupero senza riduzione produce materiale che nessuno legge.
 
@@ -28,7 +28,7 @@ Bash(python tools/fetch-reddit.py:*)
 
 ## Perché un programma e non un server MCP
 
-La scelta va motivata perché la letteratura sul tema raccomanda l'altra strada, e la raccomandazione non è sbagliata: è giusta per un contesto diverso. Un server MCP dedicato a Discord serve quando un agente residente deve poter chiamare quel tool nel mezzo di una conversazione, decidendo lui quando leggere; è il caso di un assistente che vive su un server e a cui si chiede che cosa sia stato detto in un canale.
+La scelta va motivata perché la letteratura sul tema raccomanda l'altra strada, e la raccomandazione è giusta per un contesto diverso da questo. Un server MCP dedicato a Discord serve quando un agente residente deve poter chiamare quel tool nel mezzo di una conversazione, decidendo lui quando leggere; è il caso di un assistente che vive su un server e a cui si chiede che cosa sia stato detto in un canale.
 
 Qui il compito è un altro: leggere una fonte e trasferirne la sintesi nel registro delle fonti del progetto. È lavoro deterministico, e la regola `token-economy.md` prescrive di tenere il lavoro deterministico su codice invece che su modello. Un programma sulla sola libreria standard fa quel lavoro senza aggiungere un ambiente di esecuzione ulteriore, un pacchetto di terze parti a cui affidare una credenziale, e uno strato di protocollo interposto fra il chiamante e una richiesta HTTP.
 
@@ -154,7 +154,7 @@ Il cursore di `--nuovi` vive in `_notes/.discord-cursori.json` e avanza fino all
 
 Le due tabelle dell'orchestratore non sono alternative di gusto e la scelta fra loro segue una regola. `CANALI` elenca i canali scelti uno per uno e produce un archivio leggibile, perché trenta canali scelti si leggono e un server intero no: è la via preferibile ogni volta che gli identificativi dei canali si conoscono. `GUILDS` elenca i server da esportare interi, si appoggia al sottocomando `exportguild` dell'esportatore esterno e non richiede alcun identificativo di canale.
 
-Il caso che rende necessaria la seconda tabella è quello in cui gli identificativi non si conoscono, e vale enunciare perché non si risolve indovinandoli: il servizio, quando riceve un identificativo che non è un numero valido, risponde con un errore sul corpo della richiesta che non nomina il campo sbagliato, cioè con un messaggio che somiglia a un problema di permessi e non lo è. Davanti a identificativi ignoti la scelta corretta non è tentare, è cambiare granularità.
+Il caso che rende necessaria la seconda tabella è quello in cui gli identificativi non si conoscono, e vale enunciare perché non si risolve indovinandoli: il servizio, quando riceve un identificativo che non è un numero valido, risponde con un errore sul corpo della richiesta che non nomina il campo sbagliato, cioè con un messaggio che somiglia a un problema di permessi e non lo è. Davanti a identificativi ignoti la scelta corretta è cambiare granularità invece di tentare.
 
 L'uscita di questa via è una cartella per server invece di un file per canale, perché i nomi dei canali si conoscono soltanto a esportazione avvenuta: l'esportatore esterno, quando riceve una cartella come destinazione, nomina da sé i file. La protezione contro la sovrascrittura è la stessa dell'altra via, cioè una cartella che esiste e non è vuota viene saltata a meno di `--forza`.
 

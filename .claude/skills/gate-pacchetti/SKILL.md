@@ -80,7 +80,7 @@ Ne segue una conseguenza operativa per questa skill: il conteggio si tiene attra
 
 ## Passo 6 - Chiudere dichiarando che cosa è cambiato
 
-Alla fine si consegna un riepilogo in quattro righe: quali settori sono stati attraversati, quali pacchetti sono stati attivati con che cosa hanno istanziato, quali sono stati rifiutati o rimandati, e quali file il gate ha scritto. L'ultima riga non è formalità: è il presidio della regola per cui ciò che si dice in sessione si scrive anche su disco, e se manca vuol dire che il gate è rimasto in chat.
+Alla fine si consegna un riepilogo in quattro righe: quali settori sono stati attraversati, quali pacchetti sono stati attivati con che cosa hanno istanziato, quali sono stati rifiutati o rimandati, e quali file il gate ha scritto. L'ultima riga è il presidio della regola per cui ciò che si dice in sessione si scrive anche su disco, e se manca vuol dire che il gate è rimasto in chat.
 
 I comandi git restano manuali dell'utente: il gate prepara i file e non committa.
 

@@ -68,6 +68,8 @@ ANATOMIA = {
 ECCEZIONI = {
     "dashes-exclude.txt": "elenco di esclusioni del progetto ospite: si istanzia per essere "
                           "esteso con i file di quel progetto",
+    "accents-exclude.txt": "elenco di esclusioni degli accenti del progetto ospite: si istanzia "
+                           "per essere esteso con i file di quel progetto",
 }
 
 

@@ -29,7 +29,7 @@ Una scheda è *autoconsistente*: costruisce i presupposti che servono a capirla 
 
 Valgono più della convenzione stessa, perché la convenzione la si intuisce e questi no.
 
-Una scheda si stacca dal codice da sola, senza che nessuno sbagli. Nel progetto di origine sei schede tecniche si sono trovate indietro di duecentodiciotto commit, ed era la terza occorrenza dopo due riallineamenti precedenti. La ripetizione è il dato: non è disattenzione, è che il lavoro che invecchia una scheda è lo stesso lavoro che la rende utile. Una scheda ferma non è neutra come un documento mancante, è peggio, perché chi la legge non sa di doverla verificare. Il presidio è il campo `covers-paths` più un riallineamento periodico dichiarato, non la buona volontà.
+Una scheda si stacca dal codice da sola, senza che nessuno sbagli. Nel progetto di origine sei schede tecniche si sono trovate indietro di duecentodiciotto commit, ed era la terza occorrenza dopo due riallineamenti precedenti. La ripetizione è il dato, e la causa sta nel lavoro stesso: ciò che invecchia una scheda è lo stesso lavoro che la rende utile. Una scheda ferma è peggio di un documento mancante, perché chi la legge non sa di doverla verificare. Il presidio è il campo `covers-paths` più un riallineamento periodico dichiarato, non la buona volontà.
 
 Il racconto resta indietro rispetto ai fatti, un passo alla volta. Sei passi registrati nel work-log e il racconto fermo alla voce precedente. La ragione è strutturale e va detta perché non è pigrizia: ogni singolo passo sembra troppo piccolo per meritare una voce, e la somma di sei passi piccoli non lo è. La decisione si prende sempre sul passo e mai sulla somma, quindi si rimanda sempre. Il presidio è `lint-didattica.py`, che non scrive la voce ma rende visibile il divario nel momento in cui si apre. Ammette esplicitamente la risposta "questo passo non ha prodotto una lezione", purché sia dichiarata: il silenzio è l'unica cosa non ammessa.
 
@@ -87,7 +87,7 @@ Il rimedio ha un presidio proprio, `python tools/proponi-covers-paths.py --autot
 
 Nota di metodo verificata il 2026-09-21 su un progetto istanziato, sul primo blocco di una conversione che ne riguarda una sessantina. Vale per chiunque adotti questo pacchetto su un progetto che ha già delle schede.
 
-La constatazione di partenza sembra ovvia solo dopo averla fatta. Le schede esistenti erano **già buone nel merito**: il ragionamento c'era, era preciso, e in un paio di casi notevole. Quello che mancava era lo strato **sotto**, cioè i presupposti che il testo dava per noti, e lo strato **sopra**, cioè le sezioni che distinguono una spiegazione da una cronaca: le domande di dosaggio, che cosa protegge la scelta dal tornare indietro, come si estende.
+La constatazione di partenza sembra ovvia solo dopo averla fatta. Le schede esistenti erano **già buone nel merito**: il ragionamento era preciso, e in un paio di casi notevole. Quello che mancava era lo strato **sotto**, cioè i presupposti che il testo dava per noti, e lo strato **sopra**, cioè le sezioni che distinguono una spiegazione da una cronaca: le domande di dosaggio, che cosa protegge la scelta dal tornare indietro, come si estende.
 
 Ne discende che il lavoro non è riscrivere N documenti ma **completarne N**, e la differenza non è retorica: cambia la stima, cambia il rischio, e cambia chi lo può fare. Il ragionamento originale si conserva parola per parola, perché è la parte che nessuno può ricostruire a posteriori, e gli si costruisce attorno il resto.
 

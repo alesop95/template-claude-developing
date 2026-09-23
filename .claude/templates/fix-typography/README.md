@@ -22,6 +22,8 @@ Nei file Markdown salta i blocchi di codice recintati e i code span in linea, pe
 
 Lo strumento esclude infine il proprio sorgente, perché i suoi casi di prova contengono di proposito le sequenze che cerca, e una corsa su se stesso li altererebbe. È accaduto due volte, e la difesa è strutturale invece che mnemonica.
 
+I file che conservano intenzionalmente forme con apostrofo si dichiarano in `accents-exclude.txt`, uno per riga con il motivo dopo un cancelletto. Una voce senza motivo viene rifiutata. Il file si istanzia in `tools/` e si estende con le eccezioni del progetto; la copia nel template contiene i casi verificati in questa repository.
+
 ## Che cosa fa `fix-missing-accents.py`
 
 È il terzo strumento e affronta il caso più insidioso: le parole a cui l'accento manca del tutto, senza apostrofo né alcun altro segno che le denunci. Nel materiale ereditato si leggono frasi come «è già progettato», «densità sopra completezza», «più di un estratto», dove nulla distingue a prima vista un errore da una parola corretta. Il primo strumento non le vede, perché cerca l'apostrofo.
@@ -40,13 +42,14 @@ Le esclusioni si dichiarano in `dashes-exclude.txt`, una per riga con il motivo 
 
 ## Come si installa
 
-Si copiano i tre script e il file delle esclusioni in `tools/` del progetto. Non hanno dipendenze oltre alla libreria standard.
+Si copiano i tre script e i due file delle esclusioni in `tools/` del progetto. Non hanno dipendenze oltre alla libreria standard.
 
 ```
 cp .claude/templates/fix-typography/tools/fix-accents.py tools/
 cp .claude/templates/fix-typography/tools/fix-missing-accents.py tools/
 cp .claude/templates/fix-typography/tools/fix-dashes.py tools/
 cp .claude/templates/fix-typography/tools/dashes-exclude.txt tools/
+cp .claude/templates/fix-typography/tools/accents-exclude.txt tools/
 ```
 
 ## Come si usa

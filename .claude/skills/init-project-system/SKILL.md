@@ -63,7 +63,7 @@ Interpretazione dell'esito e azione:
 
 Subito dopo l'account Claude, e prima del runbook, decidere con quale identità git verranno firmati i commit e a quale repository GitHub agganciare il remoto. Identità git e account Claude sono cose distinte: la prima e la coppia user.name/user.email più la chiave SSH, la seconda e il profilo di configurazione di Claude Code. Il dettaglio autoritativo della procedura, dei profili disponibili e del caso repo con README e in `rules/git-identity-and-repo.md`.
 
-La rilevazione si fa leggendo la configurazione SSH reale della macchina, mai citando alias a memoria: gli alias sono una convenzione della singola installazione e su una macchina diversa hanno altri nomi, altri percorsi e altre chiavi. Lo strumento è lo stesso su Windows e su Linux, perché il formato di `ssh_config` lo è.
+La rilevazione si fa leggendo la configurazione SSH reale della macchina, mai citando alias a memoria: gli alias sono una convenzione della singola installazione e su una macchina diversa hanno altri nomi e selezionano altre chiavi, con percorsi diversi. Lo strumento è lo stesso su Windows e su Linux, perché il formato di `ssh_config` lo è.
 
 ```
 python .claude/templates/tools/detect-ssh-profiles.py --repo .

@@ -261,7 +261,7 @@ def markdown(righe, elenco_settori, radice):
 
     r.append("## Tutte le skill")
     r.append("")
-    r.append("La colonna del codice dice se la skill porta una cartella `scripts/` con programmi eseguibili. La colonna dell'autore dice soltanto se sia della casa: non è un giudizio, è il criterio che la raccolta stessa indica per sapere quanta revisione quella skill abbia avuto.")
+    r.append("La colonna del codice dice se la skill porta una cartella `scripts/` con programmi eseguibili. La colonna dell'autore dice soltanto se sia della casa: e lo fa secondo il criterio che la raccolta stessa indica per sapere quanta revisione quella skill abbia avuto.")
     r.append("")
     r.append("| Skill | Autore | Licenza | Codice | Che cosa fa |")
     r.append("|---|---|---|---|---|")

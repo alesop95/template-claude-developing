@@ -4,7 +4,7 @@
 
 ## Il principio
 
-Una fonte che non si riesce a leggere non è una fonte inaffidabile: è una fonte non letta, ed è una distinzione che va scritta ogni volta. Il rischio, altrimenti, è che il registro delle fonti si riempia di voci che sembrano consultate e non lo sono, e che un'affermazione poggi su un titolo di thread invece che sul suo contenuto.
+Una fonte che non si riesce a leggere resta una fonte non letta, e non diventa per questo inaffidabile: la distinzione va scritta ogni volta. Il rischio, altrimenti, è che il registro delle fonti si riempia di voci che sembrano consultate e non lo sono, e che un'affermazione poggi su un titolo di thread invece che sul suo contenuto.
 
 Da qui la regola in due parti. La prima è che ogni voce non letta va etichettata come tale nel registro, con il motivo. La seconda è che, prima di etichettarla, si tenta il recupero per le vie documentate qui sotto, in ordine di costo crescente, invece di arrendersi al primo errore.
 
@@ -32,7 +32,7 @@ Da questo criterio discende una conseguenza che va enunciata perché è ciò che
 
 ## Il caso Reddit, un vicolo cieco documentato e la via che lo ha aggirato
 
-Reddit merita una scheda propria perché è una fonte tecnica di prima qualità su molti domini, e perché la sua indisponibilità è facile da attribuire alla causa sbagliata. Non è un problema di configurazione del progetto: è la somma di due fatti indipendenti, entrambi fuori dal controllo di chi lavora.
+Reddit merita una scheda propria perché è una fonte tecnica di prima qualità su molti domini, e perché la sua indisponibilità è facile da attribuire alla causa sbagliata. La causa sta nella somma di due fatti indipendenti, entrambi fuori dal controllo di chi lavora, e la configurazione del progetto non c'entra.
 
 | Via tentata | Esito osservato |
 |---|---|
@@ -63,7 +63,7 @@ La lezione di metodo, che vale oltre il caso di Reddit, è che una tabella di vi
 
 ## Il caso Discord, e le tre vie di cui una si dimentica
 
-Discord merita una scheda propria per la stessa ragione di Reddit, e per una in più: qui l'errore tipico non è credere che il problema sia irrisolvibile, è valutare l'unica via che si conosce, trovarla inaccettabile, e concludere che il problema non abbia soluzione. Le vie sono tre.
+Discord merita una scheda propria per la stessa ragione di Reddit, e per una in più: qui l'errore tipico consiste nel valutare l'unica via che si conosce, trovarla inaccettabile e concludere che il problema non abbia soluzione. Le vie sono tre.
 
 La prima è il token del proprio account personale, cioè il self-bot. Funziona tecnicamente e non richiede il permesso di nessuno, perché l'account è già dentro il server. È vietata dalle condizioni d'uso, che dedicano alla questione una pagina di supporto, e la sanzione dichiarata è la terminazione dell'account senza distinzione di intenzioni. Va aggiunto un argomento che di solito manca nella valutazione: un token utente dà accesso a tutto ciò che vede l'account, messaggi privati compresi, quindi il danno di una sua fuga è incomparabilmente più ampio di quello di un token con permessi ristretti. Sul rilevamento vale essere precisi invece di allarmisti o rassicuranti: non è certo ma probabilistico, perché la piattaforma cerca schemi di traffico anomali e non ispeziona ogni richiesta; ne segue che non essere stati sanzionati non equivale a essere al sicuro, e che l'asimmetria fra il guadagno, cioè risparmiare una copia manuale, e la perdita possibile, cioè un account con anni di iscrizioni e conversazioni private, è il vero termine della decisione. Se un progetto decide comunque di percorrerla, la decisione va registrata come tale e non fatta scivolare dentro un altro lavoro.
 
@@ -83,11 +83,11 @@ Un'ultima avvertenza vale per il caso in cui la fonte sia una community di svilu
 
 ## Come l'utente consegna il materiale, e in che formato
 
-Quando la via resta l'ultima, cioè l'utente procura il contenuto, il modo di consegnarlo non è incollarlo in conversazione: è salvarlo su disco in una cartella concordata, perché così resta disponibile anche nelle sessioni successive e non consuma contesto due volte. La cartella è `_notes/fonti/`, locale e non versionata, e la convenzione di nome è la data seguita da una parola che identifica la fonte.
+Quando la via resta l'ultima, cioè l'utente procura il contenuto, il contenuto si consegna salvandolo su disco in una cartella concordata, invece di incollarlo in conversazione, perché così resta disponibile anche nelle sessioni successive e non consuma contesto due volte. La cartella è `_notes/fonti/`, locale e non versionata, e la convenzione di nome è la data seguita da una parola che identifica la fonte.
 
 Sui formati, in ordine di preferenza. Il testo semplice o Markdown è il migliore, perché è cercabile, diffabile e non porta rumore: per una discussione basta il corpo dei messaggi con l'autore e la data, senza la struttura di navigazione del sito. Il salvataggio della pagina come singolo file HTML va bene e si legge, ma contiene molto rumore. Il PDF è accettabile. Uno screenshot è l'ultima scelta, perché non è cercabile né citabile parola per parola, e va riservato ai casi in cui il contenuto è grafico.
 
-Sulle chat esiste una forma di consegna che vale più di tutte le altre e che va chiesta esplicitamente, perché l'utente non ha motivo di inventarla. Non è l'esportazione del canale, che è voluminosa e richiede strumenti discutibili, e non è la copia di una conversazione scelta a occhio: è la ricerca interna al canale con un termine concordato, di cui si consegna la lista dei risultati. La ragione è che il filtro incorpora la domanda, e chi cerca sa che cosa sta cercando.
+Sulle chat esiste una forma di consegna che vale più di tutte le altre e che va chiesta esplicitamente, perché l'utente non ha motivo di inventarla. Si tratta della ricerca interna al canale con un termine concordato, di cui si consegna la lista dei risultati; l'esportazione del canale è voluminosa e richiede strumenti discutibili, e la copia di una conversazione scelta a occhio perde ciò che non si è pensato di cercare. La ragione è che il filtro incorpora la domanda, e chi cerca sa che cosa sta cercando.
 
 Ne segue una prescrizione per chi chiede il materiale. Si concordano i termini di ricerca prima, non il canale. Si chiede il conteggio dei risultati insieme alle schermate, perché sapere che un filtro ha dato zero risultati è esso stesso un dato. E si accetta che su un filtro molto generico l'utente si fermi a una parte dei risultati, purché dichiari dove si è fermato, così che la copertura parziale resti dichiarata invece di sembrare completa.
 

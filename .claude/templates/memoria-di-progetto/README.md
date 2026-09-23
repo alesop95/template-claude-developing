@@ -6,7 +6,7 @@ Un controllo che segnala il lavoro atterrato nel repository senza lasciare tracc
 
 Quasi ogni progetto che adotta questo sistema arriva a una regola della forma "si documenta mentre si fa, non dopo". È una regola giusta e ha un difetto strutturale: **dipende interamente dalla memoria di chi esegue**, e quindi fallisce esattamente quando serve, cioè nelle sessioni lunghe in cui si è concentrati su altro.
 
-Il sintomo che la regola non basta è preciso e riconoscibile: qualcuno deve ripeterla. Nel progetto di origine è stata scritta una volta, riaffermata in forma enfatica, e richiamata ancora dopo alcuni giorni. A quel punto la conclusione non è che vada scritta più forte, ma che **una direttiva che va ripetuta non è un presidio, è una speranza**.
+Il sintomo che la regola non basta è preciso e riconoscibile: qualcuno deve ripeterla. Nel progetto di origine è stata scritta una volta, riaffermata in forma enfatica, e richiamata ancora dopo alcuni giorni. A quel punto la conclusione non è che vada scritta più forte, ma che **una direttiva che va ripetuta resta una speranza finché non ha un presidio**.
 
 È la stessa conclusione già tratta due volte nello stesso progetto per ragioni diverse: su uno strumento tipografico che aveva rotto una compilazione, dove il presidio è diventato una guardia nel codice invece della prudenza di chi lanciava; e sulle prove, dove la domanda "questa prova cadrebbe se il difetto tornasse" è diventata un passo obbligato invece di un'intenzione.
 

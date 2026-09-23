@@ -194,13 +194,33 @@ def registra(radice=None, ora=None):
     return percorso
 
 
+# Quante righe in testa a un documento contano come intestazione. Un'ancora dichiarata sta nel
+# front matter o nel blocco di stato iniziale: oltre quel punto comincia il corpo, e nel corpo
+# la stessa etichetta compare come prosa.
+RIGHE_INTESTAZIONE = 40
+
+
 def commit_dichiarato(percorso):
-    """L'hash che un documento di memoria dichiara come proprio riferimento, se lo dichiara."""
+    """L'hash che un documento di memoria dichiara come proprio riferimento, se lo dichiara.
+
+    L'ancora si cerca SOLO nell'intestazione, e la ragione è un falso positivo osservato alla
+    prima corsa su un progetto reale: un work-log lungo cita l'etichetta dentro una voce datata
+    (`last-verified-commit: 8fededb`, fra apici inversi, mentre racconta di averla aggiornata),
+    e una ricerca su tutto il file la prendeva per la dichiarazione del documento. Il risultato
+    era una divergenza segnalata su un documento che non dichiara nessuna ancora.
+
+    E' la stessa classe di difetto del controllo che segnalava i file meglio documentati perche'
+    il commento che spiegava una regola ne conteneva il nome: **un controllo che cerca testo
+    trova anche il testo che parla di quel testo.** Qui costa piu' del solito, perche' un falso
+    positivo in un controllo di ripresa insegna a ignorarlo, ed e' il modo in cui un presidio
+    muore: e' scritto nella skill che questo strumento serve, tre paragrafi sopra.
+    """
     if not os.path.isfile(percorso):
         return None
-    testo = io.open(percorso, encoding="utf-8", errors="replace").read()
+    with io.open(percorso, encoding="utf-8", errors="replace") as f:
+        testa = "".join(next(f, "") for _ in range(RIGHE_INTESTAZIONE))
     m = re.search(r"(?:Commit di riferimento|last-verified-commit|generated-from-commit)\s*:?\s*"
-                  r"([0-9a-f]{7,40}|PENDING-FIRST-COMMIT)", testo)
+                  r"([0-9a-f]{7,40}|PENDING-FIRST-COMMIT)", testa)
     return m.group(1) if m else None
 
 

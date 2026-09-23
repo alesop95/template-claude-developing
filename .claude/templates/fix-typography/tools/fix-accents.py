@@ -508,14 +508,56 @@ def raccogli(percorsi, estensioni):
     # che gli strumenti cercano. Una corsa che li riscrivesse romperebbe le prove invece di
     # correggere un testo, ed e' lo stesso genere di ricorsione che l'auto-esclusione previene.
     FAMIGLIA = {"fix-accents.py", "fix-missing-accents.py", "fix-dashes.py",
-                "test-tipografia.py", "dashes-exclude.txt"}
+                "test-tipografia.py", "dashes-exclude.txt", "accents-exclude.txt"}
     IO_STESSO = os.path.abspath(__file__)
+
+    # Esclusioni per singolo file, con lo stesso formato e la stessa regola di fix-dashes.py:
+    # una voce senza motivo viene rifiutata. Aggiunte il 2026-09-23 (voce C-46) per una ragione
+    # che vale la pena scrivere qui, perche' e' il difetto che questo meccanismo chiude.
+    # Il 2026-09-01 una passata di questo strumento rovino' `refactor-53`, che contiene le
+    # grafie sbagliate COME DATO, cioe' come esempi di cio' che lo strumento corregge. La
+    # scheda `refactor-54` racconto' l'errore, ne trasse la conclusione giusta - una nota in
+    # prosa non e' una guardia - e mostro' un frammento di codice come rimedio. Quel codice
+    # non e' mai atterrato: verificato sull'intera storia del repository, zero occorrenze.
+    # Per ventidue giorni il rimedio e' esistito solo nella scheda che lo mostrava, ed e' una
+    # condizione peggiore dell'assenza dichiarata, perche' chi legge smette di cercare.
+    esclusi, malformate = leggi_esclusioni()
+    if malformate:
+        print("esclusioni senza motivo, rifiutate:", file=sys.stderr)
+        for r in malformate:
+            print("  %s" % r, file=sys.stderr)
+        raise SystemExit(1)
+
+    def relativo(percorso):
+        """Il percorso relativo alla radice del repository, oppure None se sta fuori.
+
+        Su Windows `relpath` solleva quando i due percorsi stanno su unita' diverse, e non e'
+        un caso di scuola: lo strumento puo' legittimamente essere puntato su una cartella
+        altrove, per esempio su una copia di prova. Le esclusioni sono dichiarate relative alla
+        radice, quindi un file fuori dalla radice non puo' essere escluso: si risponde None e
+        chi chiama lo tratta come non escluso, invece di interrompere il programma.
+        """
+        try:
+            return os.path.normpath(os.path.relpath(os.path.abspath(percorso), ROOT))
+        except ValueError:
+            return None
+
+    def escluso(percorso):
+        rel = relativo(percorso)
+        return rel is not None and rel in esclusi
+
     file = []
     for p in percorsi:
         ap = p if os.path.isabs(p) else os.path.join(ROOT, p)
         if os.path.isfile(ap):
             if sotto_templates(ap) and not MODELLI_AMMESSI:
                 print(f"rifiutato, sta sotto .claude/templates/: {p}", file=sys.stderr)
+                continue
+            if escluso(ap):
+                # Il salto si dichiara invece di tacere: una protezione silenziosa sembra una
+                # svista a chi guarda l'uscita, ed e' cosi' che una guardia smette di esistere.
+                rel = relativo(ap)
+                print(f"escluso ({esclusi[rel]}): {rel}", file=sys.stderr)
                 continue
             if os.path.abspath(ap) != IO_STESSO and os.path.basename(ap) not in FAMIGLIA:
                 file.append(ap)
@@ -538,9 +580,51 @@ def raccogli(percorsi, estensioni):
                     completo = os.path.join(radice, n)
                     if sotto_templates(completo) and not MODELLI_AMMESSI:
                         continue
+                    if escluso(completo):
+                        rel = relativo(completo)
+                        print(f"escluso ({esclusi[rel]}): {rel}", file=sys.stderr)
+                        continue
                     if os.path.abspath(completo) != IO_STESSO and n not in FAMIGLIA:
                         file.append(completo)
     return file
+
+
+def leggi_esclusioni():
+    """Le esclusioni per singolo file, con il motivo obbligatorio.
+
+    Stesso formato e stessa regola di `tools/dashes-exclude.txt`: una riga per percorso, il
+    motivo dopo un cancelletto, e una voce senza motivo viene rifiutata invece di essere
+    applicata in silenzio. Il senso di quella severita' e' costringere a dichiarare la ragione
+    nel momento in cui si esclude, perche' un'esclusione senza motivo e' indistinguibile da una
+    dimenticanza il giorno in cui qualcuno la rilegge.
+
+    I due elenchi restano separati e non condivisi, ed e' una scelta dosata: le esclusioni dei
+    trattini sono specifiche dei trattini (una tabella di sostituzione, un documento copiato
+    verbatim) e non valgono per gli accenti. La duplicazione del LETTORE, invece, e' la terza
+    occorrenza della stessa forma in questa famiglia di strumenti, quindi e' il momento in cui
+    la regola del tre direbbe di estrarre: non e' stato fatto qui perche' toccare tutti e tre
+    gli strumenti per un'estrazione va fatto come passo dichiarato e non dentro la chiusura di
+    un'altra voce. Annotato come debito invece che nascosto.
+    """
+    percorso = os.path.join(ROOT, "tools", "accents-exclude.txt")
+    esclusi, malformate = {}, []
+    if not os.path.exists(percorso):
+        return esclusi, malformate
+    with open(percorso, "rb") as f:
+        for riga in f.read().decode("utf-8").splitlines():
+            riga = riga.strip()
+            if not riga or riga.startswith("##"):
+                continue
+            if "#" not in riga:
+                malformate.append(riga)
+                continue
+            p, motivo = riga.split("#", 1)
+            p, motivo = p.strip(), motivo.strip()
+            if not p or not motivo:
+                malformate.append(riga)
+                continue
+            esclusi[os.path.normpath(p)] = motivo
+    return esclusi, malformate
 
 
 def autotest():
@@ -716,7 +800,17 @@ def main():
             print("saltato, non è UTF-8: %s" % percorso)
             continue
         if cambia:
-            rel = os.path.relpath(percorso, ROOT)
+            # Difetto preesistente, corretto il 2026-09-23 insieme all'aggiunta delle
+            # esclusioni: su Windows `relpath` solleva quando i due percorsi stanno su unita'
+            # diverse, quindi lo strumento non poteva essere puntato su una cartella fuori dal
+            # repository. Non e' un caso di scuola su questa macchina, dove il repository sta
+            # su un'unita' e la cartella temporanea su un'altra, ed e' il modo naturale di
+            # provare lo strumento su una copia senza rischiare l'originale. Fuori dalla radice
+            # si stampa il percorso assoluto, che e' l'unica cosa sensata da mostrare.
+            try:
+                rel = os.path.relpath(percorso, ROOT)
+            except ValueError:
+                rel = os.path.abspath(percorso)
             cambiati.append(rel)
             if not args.check and not args.residui:
                 with open(percorso, "wb") as f:

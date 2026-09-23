@@ -16,6 +16,20 @@ Due esiti sono interessanti e nessuno dei due è quello atteso. Se *non cade nie
 
 Il costo è di minuti e va pagato ogni volta che si chiude un difetto, non solo quando si è in dubbio. Il dubbio non è un segnale affidabile: le prove vacue si scrivono proprio quando si è sicuri.
 
+## La non vacuità vale anche per le guardie, non solo per le prove
+
+Estensione della sezione precedente a un oggetto diverso, osservata chiudendo un presidio mancante. Una *guardia* è qualunque cosa impedisca a un'operazione di toccare qualcosa: un file escluso da una trasformazione automatica, una condizione che salta un ramo, un elenco di eccezioni. Vale per lei la stessa domanda che si pone a una prova, e quasi nessuno la pone: *se la togliessi, cambierebbe qualcosa?*
+
+Il caso osservato. Uno strumento che corregge la tipografia aveva rovinato, mesi prima, il documento che spiegava quella stessa correzione, perché quel documento contiene le grafie sbagliate **come dato**. Chiudendo il presidio mancante, stavano per essere esclusi tre file: i due documenti che parlano di quelle grafie e la regola di stile che le descrive. Provati su una copia prima di scrivere l'elenco, **due dei tre non venivano toccati affatto**: nel frattempo lo strumento aveva imparato a saltare i blocchi di codice, e in quei due file le occorrenze stavano tutte lì dentro. Erano già protetti da un meccanismo diverso.
+
+Ne discendono due conseguenze, e la seconda è meno ovvia della prima.
+
+La prima: una delle tre esclusioni è stata tolta, perché *una regola che non restringe niente comunica una protezione che non esiste*. Chi legge un elenco di eccezioni conclude che quei file siano a rischio, e smette di chiedersi se lo siano davvero.
+
+La seconda: una delle due è stata **tenuta**, e la ragione va saputa distinguere dalla simmetria. Quel documento ha una storia reale di danno, dichiara nel proprio testo di dover essere escluso, e la sua sicurezza di oggi dipende **interamente** da un meccanismo implicito, cioè dal fatto che ogni occorrenza resti dentro un blocco di codice: basta che chi lo modifica ne scriva una in prosa perché il difetto torni. *Una protezione ridondante si tiene quando l'altra è implicita e il margine è largo una modifica*, e si toglie quando è semplicemente ridondante. La differenza sta nel sapere da che cosa dipende la protezione che già c'è.
+
+La prescrizione operativa costa pochi minuti: prima di aggiungere una guardia, si prova il caso **senza** di essa, su una copia. Se non cambia niente, o la guardia è inutile, oppure protegge da una regressione futura e allora la ragione da scrivere è quella e non il rischio presente.
+
 ## Una prova che sceglie gli argomenti può scegliere quelli che il difetto non produce
 
 Caso osservato: una funzione riceveva un insieme di celle occupate e un ordinale, e restituiva una cella libera. Le prove la chiamavano due volte con ordinali diversi e confrontavano i risultati. Una si chiamava perfino "due elementi nuovi finiscono in due celle diverse". Era verde, leggibile, e sembrava esattamente la prova giusta.
@@ -59,6 +73,30 @@ Che cosa è successo davvero, ed è il motivo per cui la lezione merita di esser
 La prescrizione che ne discende è minima e costa una riga. Chi scrive una sequenza di verifica manuale dichiara, accanto al passo che conta, **perché** conta e che cosa distingue: non "crea un terzo elemento" ma "crea un terzo elemento, ed è questo che la correzione precedente sbagliava, perché lo spostamento del passo prima ha cambiato l'insieme". Chi esegue, allora, sa che fermarsi prima non è fermarsi a metà ma fermarsi a zero.
 
 Il criterio per riconoscere il passo discriminante, quando la sequenza la si sta scrivendo: è quello che *modifica lo stato da cui il codice deriva il risultato*, non quello che ripete l'operazione osservata. Un passo che ripete l'operazione precedente con un nome diverso aggiunge fiducia e non aggiunge informazione, ed è utile dirlo, perché a quel punto chi esegue può anche saltarlo consapevolmente invece di saltare l'altro per stanchezza.
+
+## Un avviso che ricompare sempre uguale smette di essere un avviso
+
+Riguarda l'uscita degli strumenti di controllo, ed è la ragione per cui un controllo può esistere, funzionare, e non proteggere più niente.
+
+Un controllo che gira spesso finisce per segnalare, accanto ai difetti veri, un insieme di casi noti e deliberati: un file che contiene di proposito la forma che lo strumento cerca, un valore che è un requisito e non una svista, una convenzione a cui si è scelto di derogare. Nessuno di questi va corretto, quindi si impara a scorrere l'uscita fino in fondo cercando ciò che è nuovo. *Il costo non è il tempo speso a scorrere: è che a un certo punto non si scorre più*, e la prima segnalazione vera arriva in mezzo a un rumore che si è imparato a ignorare.
+
+Il caso osservato: due controlli tipografici segnalavano da settimane nove e due occorrenze rispettivamente, tutte note e tutte legittime. Dichiararle, con la ragione scritta accanto a ciascuna, ha portato entrambe le uscite a zero. Non è cambiato niente nei file; è cambiato che da quel momento **qualunque cosa compaia è nuova**.
+
+Da qui la prescrizione, che è più forte di quanto sembri: *un caso noto e accettato va dichiarato, non tollerato*. Le due cose si somigliano e differiscono in tutto. Tollerare significa che la conoscenza vive nella testa di chi guarda l'uscita, quindi si perde quando cambia chi guarda; dichiarare significa che vive accanto al caso, con il motivo, e che l'uscita torna a essere leggibile.
+
+Il meccanismo che rende la dichiarazione affidabile è una sola regola, e vale la pena adottarla sempre: **un'esclusione senza motivo viene rifiutata dallo strumento**. Costringe a scrivere la ragione nel momento in cui si esclude, che è l'unico momento in cui la si conosce, e rende un elenco di eccezioni un documento invece di una lista di nomi. Chi lo rilegge fra sei mesi può giudicare se ciascuna valga ancora.
+
+Il corollario per chi scrive lo strumento: il salto va **stampato**, non taciuto. Una protezione silenziosa sembra una svista a chi guarda l'uscita, e questo è il modo in cui una guardia smette di esistere senza che nessuno la tolga.
+
+## Uno strumento che riscrive i file deve poter girare su una copia
+
+Piccola e trovata per caso, ma con una conseguenza sproporzionata alla sua dimensione.
+
+Uno strumento che modifica i file sul posto si prova nel modo ovvio: si copia qualcosa in una cartella temporanea e glielo si dà in pasto. Su una delle macchine in uso la cartella temporanea stava su un'unità diversa dal repository, e la funzione della libreria standard che calcola un percorso relativo **solleva un'eccezione** quando i due percorsi stanno su unità diverse. Lo strumento si interrompeva.
+
+Il difetto era piccolo, era lì da mesi, e la sua conseguenza no: *l'unico modo di provare quello strumento era lanciarlo sui file veri*. Su uno strumento che riscrive, e che in passato aveva già rotto la compilazione di un progetto, è precisamente la proprietà che non si può permettere.
+
+Ne discende una verifica da fare una volta per ogni strumento di questa famiglia, e costa un minuto: **si prova a puntarlo su una copia fuori dal repository**. Se non funziona, il difetto non è la scomodità, è che la prova sicura non esiste. Nel caso osservato il rimedio è stato trattare un percorso fuori dalla radice come non escludibile invece di interrompere, che è anche la semantica corretta, dato che le esclusioni sono dichiarate relative alla radice.
 
 ## Una finzione scritta guardando il codice descrive il codice, non la dipendenza
 

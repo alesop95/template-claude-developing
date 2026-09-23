@@ -54,7 +54,7 @@ Elenca i soli passi scoperti ed esce con codice diverso da zero se ce n'è almen
 
 Nessuna data di generazione, nessun ordine che dipenda dal filesystem, tutto ordinato. Un file generato che cambia a ogni corsa produce un diff a ogni commit, e un diff sempre rumoroso non si guarda.
 
-Il punto non è la pulizia: il valore della linea temporale non è solo leggerla, è vederne il diff. Una revisione che aggiunge tre microstep mostra tre righe nuove, e una che ne toglie uno lo dichiara invece di nasconderlo. È la stessa ragione per cui il file generato si versiona, contro la regola generale che vuole ignorati i derivati: qui il derivato è un documento che si legge e si confronta, non un artefatto di build.
+Il punto non è la pulizia: il valore della linea temporale sta soprattutto nel vederne il diff. Una revisione che aggiunge tre microstep mostra tre righe nuove, e una che ne toglie uno lo dichiara invece di nasconderlo. È la stessa ragione per cui il file generato si versiona, contro la regola generale che vuole ignorati i derivati: qui il derivato è un documento che si legge e si confronta, non un artefatto di build.
 
 ## Sull'accessibilità della resa, che non è un dettaglio estetico
 

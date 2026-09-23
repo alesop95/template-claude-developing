@@ -20,7 +20,7 @@ Per i pacchetti di tipo MCP server vale una regola aggiuntiva che sopravvive all
 
 ## Catalogo
 
-Il catalogo è diviso per settore, e la divisione non è ornamentale: è il modo in cui il gate lo attraversa. Un progetto appartiene a due o tre settori, non a dieci, e riconoscerli dal suo obiettivo prima di aprire una tabella è ciò che trasforma un elenco di ottantuno voci in tre domande. Ogni settore apre con la frase che dice a chi serve e che cosa chiedere per saperlo; le righe dentro restano quelle di sempre, con la colonna che dichiara il trigger concreto.
+Il catalogo è diviso per settore, e la divisione è il modo in cui il gate lo attraversa. Un progetto appartiene a due o tre settori, non a dieci, e riconoscerli dal suo obiettivo prima di aprire una tabella è ciò che trasforma un elenco di ottantuno voci in tre domande. Ogni settore apre con la frase che dice a chi serve e che cosa chiedere per saperlo; le righe dentro restano quelle di sempre, con la colonna che dichiara il trigger concreto.
 
 ### Fondamenta e igiene del progetto
 

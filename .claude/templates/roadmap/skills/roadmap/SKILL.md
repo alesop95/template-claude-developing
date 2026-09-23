@@ -13,7 +13,7 @@ description: >
 
 ## Che cosa hai davanti
 
-La lista qui sopra non è un documento scritto a mano: è un derivato, rigenerato a ogni invocazione. Le voci, cioè il giudizio su quale lavoro resti e perché, vivono in `tools/roadmap-items.yml` ed è l'unico file che si modifica a mano. Tutto il resto, cioè il commit di riferimento, la distanza delle schede da HEAD, l'esito dei controlli che il progetto dichiara e la raggiungibilità dei link, viene misurato sul momento da `tools/roadmap.py`.
+La lista qui sopra è un derivato, rigenerato a ogni invocazione, e nessuno la scrive a mano. Le voci, cioè il giudizio su quale lavoro resti e perché, vivono in `tools/roadmap-items.yml` ed è l'unico file che si modifica a mano. Tutto il resto, cioè il commit di riferimento, la distanza delle schede da HEAD, l'esito dei controlli che il progetto dichiara e la raggiungibilità dei link, viene misurato sul momento da `tools/roadmap.py`.
 
 Le voci sono ordinate per costo crescente e non per importanza. Il livello 0 si chiude in minuti e non richiede alcuna decisione, il livello 1 richiede tempo ma nessuna decisione di contenuto, il livello 2 richiede una decisione dell'utente, il livello 3 è lavoro che non si chiude dentro questo repository e va portato in una sessione sul repository che lo ospita. La scelta dell'ordinamento è deliberata: una lista ordinata per gravità si legge e non si usa, perché la prima voce richiede una settimana.
 
