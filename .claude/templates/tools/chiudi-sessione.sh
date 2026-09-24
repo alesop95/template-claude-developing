@@ -4,7 +4,8 @@
 # Stessa sequenza e stesse ragioni di chiudi-sessione.ps1, a cui si rimanda per il commento
 # esteso: stato, controlli istanziati (si ferma se uno fallisce), commit con conferma, push
 # verificato, impronta di ripresa, wipe degli account se nessuna sessione Claude Code e' aperta.
-# Si lancia dal proprio terminale dopo aver chiuso Claude Code.
+# Si lancia dal proprio terminale dopo aver chiuso Claude Code. Le regole che applica sono elencate
+# in testa a chiudi-sessione.ps1: il messaggio lo fa rispettare l'hook .githooks/commit-msg.
 #
 # Uso:
 #   bash tools/chiudi-sessione.sh                      tutto, con conferma
@@ -107,8 +108,11 @@ if [ "$ncambi" != 0 ]; then
     fi
     [ -n "$messaggio" ] || read -r -p "   Messaggio di commit: " messaggio
     [ -n "$messaggio" ] || { echo "Messaggio vuoto: mi fermo."; exit 1; }
-    [ ${#messaggio} -gt 72 ] && nota "attenzione: il messaggio supera 72 caratteri (${#messaggio})"
+    # git-identity-and-repo.md: si firma solo con l'identita' locale del repository.
+    nome="$(git config --local user.name)"; email="$(git config --local user.email)"
+    [ -n "$nome" ] && [ -n "$email" ] || { echo "Identita' git locale non impostata: impostare user.name e user.email del repository e rilanciare."; exit 1; }
     nota "$ncambi file  ->  \"$messaggio\""
+    nota "autore: $nome <$email>"
     if [ $si = 0 ]; then
         read -r -p "   Committo tutto e pusho su '$ramo'? [s/N] " r
         case "$r" in s|si|y|yes) ;; *) echo "Annullato: niente e' stato committato."; exit 1 ;; esac

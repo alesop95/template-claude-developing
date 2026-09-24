@@ -26,6 +26,10 @@
   La cartella di lavoro e' quella corrente, come ci si aspetta da un comando di
   shell, e resta sovrascrivibile passando `-Progetto`.
 
+  Il blocco contiene anche `chiudi`, che lancia chiudi-sessione.ps1 del repository
+  in cui si trova il terminale: e' uguale per i due agenti, perche' la chiusura
+  (controlli, commit confermato, push, impronta, wipe) non dipende da chi ha lavorato.
+
   Il blocco inserito nel profilo e' delimitato da marcatori e viene SOSTITUITO a
   ogni esecuzione: lo script e' idempotente e non accumula definizioni duplicate.
   Il profilo viene copiato prima di essere toccato.
@@ -117,6 +121,18 @@ foreach ($n in $codex) {
   $righe.Add("    else { & '$avvia' -Account $n -Progetto (Get-Location).Path @args }")
   $righe.Add('}')
 }
+if ($codex.Count -gt 0) { $righe.Add('') }
+
+# Chiusura di sessione, uguale per Claude e Codex perche' non dipende dall'agente: cerca
+# chiudi-sessione.ps1 nel repository in cui si trova il terminale, in tools\ di un progetto
+# istanziato oppure sotto .claude\templates\tools\ nel template, e gli passa gli argomenti.
+$righe.Add('function chiudi {')
+$righe.Add('    $radice = (git rev-parse --show-toplevel 2>$null)')
+$righe.Add('    if (-not $radice) { Write-Host "chiudi: la cartella corrente non e'' dentro un repository git." -ForegroundColor Red; return }')
+$righe.Add('    $script = @("tools\chiudi-sessione.ps1", ".claude\templates\tools\chiudi-sessione.ps1") | ForEach-Object { Join-Path $radice $_ } | Where-Object { Test-Path $_ } | Select-Object -First 1')
+$righe.Add('    if (-not $script) { Write-Host "chiudi: chiudi-sessione.ps1 non e'' istanziato in $radice." -ForegroundColor Red; return }')
+$righe.Add('    powershell -NoProfile -ExecutionPolicy Bypass -File $script @args')
+$righe.Add('}')
 $righe.Add($FINE)
 $blocco = ($righe -join [Environment]::NewLine)
 
@@ -202,15 +218,17 @@ $riletto = Get-Content -LiteralPath $Profilo -Raw
 $mancanti = @()
 foreach ($n in $claude) { if ($riletto -notmatch "function claude-account$n\b") { $mancanti += "claude-account$n" } }
 foreach ($n in $codex) { if ($riletto -notmatch "function codex-account$n\b") { $mancanti += "codex-account$n" } }
+if ($riletto -notmatch "function chiudi\b") { $mancanti += "chiudi" }
 if ($mancanti.Count -gt 0) {
   Nota ("ANOMALIA: dopo la scrittura mancano {0}" -f ($mancanti -join ', ')) 'Red'
   exit 1
 }
 
 Nota '' 'Gray'
-Nota ("Installati {0} comandi." -f ($claude.Count + $codex.Count)) 'Green'
+Nota ("Installati {0} comandi." -f ($claude.Count + $codex.Count + 1)) 'Green'
 foreach ($n in $claude) { Nota ("  claude-account$n") 'White' }
 foreach ($n in $codex) { Nota ("  codex-account$n") 'White' }
+Nota '  chiudi' 'White'
 
 # Le definizioni fuori dal blocco restano e farebbero ombra a quelle generate,
 # perche' in PowerShell l'ultima definizione vince: vanno tolte a mano, una volta.

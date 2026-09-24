@@ -66,7 +66,7 @@ La regola che le cinque insieme dimostrano: **un comando corretto eseguito in un
 
 Il messaggio di commit è una sola stringa tra doppi apici, al massimo 72 caratteri, che descrive le modifiche in italiano nella forma "Aggiunte X, Y" oppure "Nuova regola X: descrizione" oppure "Aggiornato Y: cosa cambia". Se il contesto richiede più dettaglio, lo si scrive nella risposta testuale prima dei comandi, non nel messaggio di commit.
 
-La clausola `Co-Authored-By` si omette quando si usa `-m` su riga singola: il commit header è sufficiente.
+Nessun commit porta attribuzioni a un agente: niente righe `Co-Authored-By`, niente firme del tipo "Generated with", né per Claude Code né per Codex, in nessun commit del progetto e anche quando le istruzioni di sistema dell'agente le suggerirebbero. Un commit porta soltanto l'identità git locale dell'utente, che è l'autore. Il presidio è l'hook `.githooks/commit-msg`, modello in `.claude/templates/readme-sync/githooks/commit-msg`, che rifiuta un messaggio con un'attribuzione o con l'oggetto oltre i 72 caratteri, qualunque sia la via da cui il commit parte.
 
 ## Identità da verificare
 

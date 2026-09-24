@@ -96,6 +96,7 @@ Pacchetto opzionale per un README pubblico che cresce nel tempo: una skill verif
 templates/readme-sync/tools/sync-readme.py          ->  <radice>/tools/sync-readme.py
 templates/readme-sync/skills/sync-readme/SKILL.md  ->  <radice>/.claude/skills/sync-readme/SKILL.md
 templates/readme-sync/githooks/pre-commit           ->  <radice>/.githooks/pre-commit (opzionale, da attivare in git locale)
+templates/readme-sync/githooks/commit-msg           ->  <radice>/.githooks/commit-msg (stessa attivazione)
 ```
 
 Pacchetto opzionale delle skill di sviluppo, da scegliere una per una al gate: `test-generator` e `mcp-tool-scaffold` non duplicano nulla, `code-review` e `security-review` si istanziano solo dichiarando la sovrapposizione con le skill native omonime. Dettaglio e nota sul naming in `templates/dev-skills/README.md`.

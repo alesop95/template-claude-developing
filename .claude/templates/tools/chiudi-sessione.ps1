@@ -17,7 +17,19 @@
 #      nessuna sessione Claude Code da terminale o da editor e' ancora aperta.
 #
 # Commit e push restano un gesto dell'utente: e' l'utente a lanciare lo script e a confermare
-# dopo aver visto file e messaggio. L'agente prepara il messaggio, non lo usa.
+# dopo aver visto file e messaggio. L'agente, Claude Code o Codex, prepara il messaggio, non lo usa.
+#
+# Lo script non ha regole proprie: esegue quelle del progetto, e dove esiste gia' un presidio lo
+# lascia lavorare invece di duplicarlo.
+#   - git-commands-format.md, contesto dichiarato: cartella, ramo e stato si stampano prima di
+#     tutto; con HEAD staccato ci si ferma.
+#   - git-identity-and-repo.md: senza user.name e user.email locali ci si ferma prima del commit,
+#     e l'identita' con cui si firmera' si stampa accanto al messaggio.
+#   - git-commands-format.md, messaggio di commit: una riga sola, nessuna attribuzione a un agente,
+#     al massimo 72 caratteri. Lo fa rispettare l'hook .githooks/commit-msg, che vale per ogni
+#     commit e non solo per quelli di questo script; qui si passa soltanto la prima riga.
+#   - PROJECT-SYSTEM.md sezione 12: l'impronta si registra dopo il commit, e qui solo dopo che il
+#     remoto l'ha ricevuto.
 #
 # Uso:
 #   .\tools\chiudi-sessione.ps1                         tutto, con conferma
@@ -160,8 +172,13 @@ if ($cambi.Count -gt 0) {
     if (-not $Messaggio) { $Messaggio = Read-Host "   Messaggio di commit" }
     $Messaggio = "$Messaggio".Trim()
     if (-not $Messaggio) { Write-Host "Messaggio vuoto: mi fermo." -ForegroundColor Red; exit 1 }
-    if ($Messaggio.Length -gt 72) { Write-Host "   attenzione: il messaggio supera 72 caratteri ($($Messaggio.Length))" -ForegroundColor Yellow }
+    $nome = (& git config --local user.name); $email = (& git config --local user.email)
+    if (-not $nome -or -not $email) {
+        Write-Host "Identita' git locale non impostata (git-identity-and-repo.md): impostare user.name e user.email del repository e rilanciare." -ForegroundColor Red
+        exit 1
+    }
     Write-Host "   $($cambi.Count) file  ->  `"$Messaggio`""
+    Write-Host "   autore: $nome <$email>"
 
     if (-not $Si) {
         $r = Read-Host "   Committo tutto e pusho su '$ramo'? [s/N]"
