@@ -31,7 +31,8 @@ done
 
 titolo() { printf '\n== %s\n' "$1"; }
 ok() { printf '   ok  %s\n' "$1"; }
-ko() { printf '   KO  %s\n' "$1"; }
+avvisi=0
+ko() { avvisi=$((avvisi+1)); printf '   KO  %s\n' "$1"; }
 nota() { printf '   %s\n' "$1"; }
 
 dir_script="$(cd "$(dirname "$0")" && pwd)"
@@ -140,7 +141,12 @@ if [ -n "$vr" ] && [ -n "$python" ]; then
     "$python" "$vr" --radice "$radice" --registra && ok "impronta registrata" || ko "verifica-ripresa.py --registra"
 else nota "verifica-ripresa.py non istanziato: passo saltato"; fi
 
-[ $nowipe = 1 ] && { printf '\nChiusura completata, wipe saltato su richiesta.\n'; exit 0; }
+# 0 se tutto e' andato, 3 se il commit e' fatto ma un passo successivo ha dato KO.
+fine() {
+    if [ "$avvisi" -gt 0 ]; then printf '\nChiusura completata con %s avvisi (KO sopra)%s.\n' "$avvisi" "$1"; exit 3; fi
+    printf '\nChiusura completata%s.\n' "$1"; exit 0
+}
+[ $nowipe = 1 ] && fine ", wipe saltato su richiesta"
 titolo "Wipe del magazzino nascosto"
 script=""
 for d in "$HOME"/.claude*; do
@@ -156,4 +162,4 @@ elif pgrep -x claude >/dev/null 2>&1; then
 else
     for s in $script; do bash "$s" && ok "$s" || ko "$s"; done
 fi
-printf '\nChiusura completata.\n'
+fine ""

@@ -4,7 +4,7 @@
 
 Quando cambia una capacità pubblica del template, usa la skill `.claude/skills/sync-readme/` per aggiornare la prosa del README e poi esegui `python .claude/templates/readme-sync/tools/sync-readme.py --write --bundle`. Prima di consegnare comandi di version control esegui la stessa CLI con `--check --bundle`: controlla indice, inventario e link locali.
 
-A fine sessione aggiorna `_notes/RESUME-PROMPT.md` e scrivi in `_notes/COMMIT-MSG.txt` il messaggio di commit proposto. La chiusura la esegue l'utente, dopo aver chiuso Claude, con `.claude/templates/tools/chiudi-sessione.ps1`: controlli, commit con conferma, push verificato, impronta e wipe.
+A fine sessione aggiorna `_notes/RESUME-PROMPT.md` e scrivi in `_notes/COMMIT-MSG.txt` il messaggio di commit proposto. La chiusura la esegue l'utente, dopo aver chiuso Claude, con `.claude/templates/tools/chiudi-sessione.ps1`: controlli, commit con conferma, push verificato, impronta e wipe. Lo stesso vale per ogni milestone a metà sessione: a blocco concluso scrivi `_notes/COMMIT-MSG.txt` e proponi `chiudi`, una milestone per commit, invece di consegnare comandi git sparsi.
 
 ## Convenzione Markdown
 

@@ -329,11 +329,13 @@ template-claude-developing/
   docs/
     feature-map.html             inventario completo delle feature con source e repo, apribile localmente
     project-flow.html            flusso di progetto annotato con tutte le feature e la tabella fonti
+    guida-sessione.html          guida stampabile di sessione: apertura, milestone con chiudi, chiusura, casi d'uso
   CLAUDE.md                      segnaposto di radice del template
   AGENTS.md                      istruzioni native di Codex per lavorare sul template
   CLAUDE.local.md                override personali, ignorato
   .agents/skills/                wrapper generati verso le skill canoniche
   .githooks/pre-commit           controllo del README e avvio dei passi opzionali sui commit manuali
+  .githooks/commit-msg           rifiuto delle attribuzioni a un agente e degli oggetti oltre 72 caratteri
   .githooks/pre-commit.d/        controlli aggiuntivi; anti-slop segnala problemi senza bloccare
   .gitignore
   .claude/

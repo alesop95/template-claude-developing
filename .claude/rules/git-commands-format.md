@@ -62,6 +62,14 @@ Questa occorrenza è caduta rumorosamente e nessuno l'ha scambiata per un succes
 
 La regola che le cinque insieme dimostrano: **un comando corretto eseguito in un contesto diverso da quello presupposto non è un comando corretto**, e il contesto di una shell, cioè macchina, cartella, ramo, stato dell'albero e variabili d'ambiente, non si deduce mai, si dichiara nel blocco stesso. La verifica costa un secondo e va fatta prima di scrivere il blocco, non dopo che qualcosa è fallito.
 
+## Milestone: la consegna ordinaria è `chiudi`
+
+Dove il progetto ha istanziato `chiudi-sessione`, un commit non si consegna più come sequenza di comandi `git add`, `git commit` e `git push`, ma come proposta di lanciare `chiudi` dal terminale dell'utente. Il momento lo decide il lavoro: quando un blocco coerente è concluso e verificato, cioè una funzionalità, una correzione, una regola o un documento che ha senso ritrovare da solo nella storia, l'agente, Claude Code o Codex, scrive in `_notes/COMMIT-MSG.txt` il messaggio che descrive quella milestone e lo dice in una riga, con il messaggio accanto. L'utente lancia `chiudi`, rilegge file, ramo, autore e messaggio, e conferma o rifiuta.
+
+Una milestone è un commit, e `chiudi` è il solo modo ordinario di farlo, sia a metà sessione sia alla fine: a metà il wipe si salta da solo perché la sessione è aperta, alla fine parte. Ne seguono due conseguenze. Un giro di lavoro che produce più milestone ne propone una alla volta, ciascuna con il proprio messaggio, invece di accumularle in un commit unico che la storia non sa più distinguere. E un giro che non chiude niente di coerente non propone nessun commit: la memoria su disco si aggiorna comunque a ogni giro sostanziale secondo `chat-non-e-memoria.md`, e il commit resta la fotografia di un punto fermo, non un salvataggio continuo.
+
+I comandi git per esteso, nel formato descritto sopra, restano per i casi che `chiudi` non copre: un progetto dove lo script non è istanziato, un commit che deve includere solo una parte delle modifiche presenti, un'operazione diversa dal commit sul ramo in uscita.
+
 ## Messaggio di commit
 
 Il messaggio di commit è una sola stringa tra doppi apici, al massimo 72 caratteri, che descrive le modifiche in italiano nella forma "Aggiunte X, Y" oppure "Nuova regola X: descrizione" oppure "Aggiornato Y: cosa cambia". Se il contesto richiede più dettaglio, lo si scrive nella risposta testuale prima dei comandi, non nel messaggio di commit.

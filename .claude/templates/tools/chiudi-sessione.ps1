@@ -55,7 +55,8 @@ $ErrorActionPreference = "Continue"
 
 function Titolo([string]$t) { Write-Host ""; Write-Host "== $t" -ForegroundColor Cyan }
 function Ok([string]$t) { Write-Host "   ok  $t" -ForegroundColor Green }
-function Ko([string]$t) { Write-Host "   KO  $t" -ForegroundColor Red }
+$script:avvisi = 0
+function Ko([string]$t) { $script:avvisi++; Write-Host "   KO  $t" -ForegroundColor Red }
 function Nota([string]$t) { Write-Host "   $t" -ForegroundColor DarkGray }
 
 # Radice del repository: quella indicata, altrimenti quella che contiene lo script, cosi' il
@@ -220,7 +221,14 @@ if ($vr -and $python) {
 }
 
 # ---------------------------------------------------------------------------------------------
-if ($NoWipe) { Write-Host ""; Write-Host "Chiusura completata, wipe saltato su richiesta." -ForegroundColor Green; exit 0 }
+# Uscita finale: 0 se tutto e' andato, 3 se il commit e' fatto ma un passo successivo ha dato KO,
+# cosi' un falso "completata" non nasconde un'impronta non registrata.
+function Fine([string]$extra) {
+    Write-Host ""
+    if ($script:avvisi -gt 0) { Write-Host "Chiusura completata con $($script:avvisi) avvisi (KO sopra)$extra." -ForegroundColor Yellow; exit 3 }
+    Write-Host "Chiusura completata$extra." -ForegroundColor Green; exit 0
+}
+if ($NoWipe) { Fine ", wipe saltato su richiesta" }
 Titolo "Wipe del magazzino nascosto"
 
 # Una sessione Claude Code aperta riscrive i propri file dopo il wipe e ne vanificherebbe una
@@ -244,6 +252,4 @@ if ($script.Count -eq 0) {
     }
 }
 
-Write-Host ""
-Write-Host "Chiusura completata." -ForegroundColor Green
-exit 0
+Fine ""
