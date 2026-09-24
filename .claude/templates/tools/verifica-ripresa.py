@@ -85,6 +85,15 @@ SORVEGLIATI = [
 ]
 
 
+# I percorsi i cui commit non rendono vecchia un'ancora di memoria. La ragione è strutturale e
+# non di comodità: il commit che scrive l'ancora non può contenere il proprio hash, quindi
+# l'ancora aggiornata nello stesso commit che chiude il giro resta sempre indietro di uno. Se fra
+# l'ancora e HEAD ci sono soltanto commit di memoria, skill, strumenti o appunti, lo stato che
+# l'ancora fotografa è ancora il presente, e segnalarlo come divergenza sarebbe il falso
+# positivo che insegna a ignorare il controllo.
+NON_SPOSTANO_ANCORA = (".claude/memory/", ".claude/skills/", "tools/", "_notes/")
+
+
 class Errore(Exception):
     """Un guasto che l'utente deve leggere."""
 
@@ -224,6 +233,18 @@ def commit_dichiarato(percorso):
     return m.group(1) if m else None
 
 
+def ancora_solo_indietro_di_memoria(dichiarato, radice=None):
+    """Vero se l'ancora è un antenato di HEAD e i commit dopo di essa toccano solo percorsi che
+    non la spostano. Falso, cioè divergenza, in ogni altro caso: anche quando l'ancora non si
+    risolve, perché un dubbio in un controllo di ripresa si riporta invece di assolverlo."""
+    try:
+        git("merge-base", "--is-ancestor", dichiarato, "HEAD", radice=radice)
+        toccati = git("diff", "--name-only", dichiarato + "..HEAD", radice=radice).split()
+    except Errore:
+        return False
+    return all(t.startswith(NON_SPOSTANO_ANCORA) for t in toccati)
+
+
 def schede_indietro(radice=None):
     """Le schede di contesto il cui commit di verifica non è fra gli antenati di HEAD.
 
@@ -360,6 +381,12 @@ def confronta(radice=None):
         dichiarato = commit_dichiarato(p)
         if dichiarato and dichiarato != "PENDING-FIRST-COMMIT" \
                 and not adesso["commit"].startswith(dichiarato):
+            if ancora_solo_indietro_di_memoria(dichiarato, radice=radice):
+                note.append(
+                    documento + " dichiara " + dichiarato + " e HEAD è " + adesso["commit"][:9]
+                    + ", ma i commit in mezzo toccano solo memoria, skill, strumenti o appunti: "
+                    "l'ancora fotografa ancora il presente.")
+                continue
             divergenze.append(
                 documento + " dichiara il commit " + dichiarato + " mentre HEAD è "
                 + adesso["commit"][:9] + ": " + ruolo + ", quindi lo stato che la sessione nuova "
@@ -469,6 +496,28 @@ def self_test():
             "Commit di riferimento: 0123456\n")
         div, note = confronta(radice=tmp)
         prova("uno snapshot di memoria arretrato si segnala",
+              any("index.md dichiara il commit" in d for d in div), str(div))
+
+        # L'ancora scritta nel commit che chiude il giro: resta indietro di uno per costruzione.
+        ancora = git("rev-parse", "--short", "HEAD", radice=tmp).strip()
+        io.open(os.path.join(tmp, INDICE), "w", encoding="utf-8").write(
+            "Commit di riferimento: " + ancora + "\n")
+        os.makedirs(os.path.join(tmp, "tools"), exist_ok=True)
+        io.open(os.path.join(tmp, "tools", "strumento.py"), "w", encoding="utf-8").write("x\n")
+        git("add", INDICE, "tools/strumento.py", radice=tmp)
+        git("commit", "-q", "-m", "chiusura del giro con ancora", radice=tmp)
+        div, note = confronta(radice=tmp)
+        prova("negativo: l'ancora indietro solo di commit di memoria e strumenti non diverge",
+              not any("index.md dichiara il commit" in d for d in div), str(div))
+        prova("l'ancora indietro solo di memoria lo dice fra le note",
+              any("fotografa ancora il presente" in n for n in note), str(note))
+
+        # Il caso che la tolleranza non deve assolvere: un commit di codice dopo l'ancora.
+        io.open(os.path.join(tmp, "codice.txt"), "a", encoding="utf-8").write("tre\n")
+        git("add", "codice.txt", radice=tmp)
+        git("commit", "-q", "-m", "codice dopo l'ancora", radice=tmp)
+        div, note = confronta(radice=tmp)
+        prova("un commit di codice dopo l'ancora torna a essere una divergenza",
               any("index.md dichiara il commit" in d for d in div), str(div))
 
         # Una scheda ancorata a un commit che non esiste.
