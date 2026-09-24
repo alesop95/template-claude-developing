@@ -47,12 +47,16 @@ python=""
 for c in python3 python; do "$c" -c 'import sys' >/dev/null 2>&1 && { python="$c"; break; }; done
 
 titolo "Stato"
-ramo="$(git rev-parse --abbrev-ref HEAD)"
+# symbolic-ref funziona anche senza commit e fallisce con HEAD staccato, da fermare prima del commit.
+ramo="$(git symbolic-ref --short -q HEAD)"
+[ -n "$ramo" ] || { echo "HEAD staccato: passare a un ramo (git switch <ramo>) e rilanciare; niente e' stato committato."; exit 1; }
+haorigin=0; git remote | grep -qx origin && haorigin=1
 nota "repository: $radice"
 nota "ramo: $ramo$([ $bundle = 1 ] && echo '   (bundle del template)')"
+[ $haorigin = 1 ] || nota "attenzione: nessun remoto 'origin': si committa in locale e il push si salta"
 ncambi="$(git status --porcelain | wc -l | tr -d ' ')"
 if [ "$ncambi" = 0 ]; then nota "albero pulito: niente da committare"
-else git --no-pager status --short; git --no-pager diff --stat HEAD; fi
+else git --no-pager status --short; git rev-parse -q --verify HEAD >/dev/null && git --no-pager diff --stat HEAD; fi
 resume="_notes/RESUME-PROMPT.md"
 if [ -f "$resume" ] && [ -n "$(find "$resume" -mtime +0 2>/dev/null)" ]; then
     nota "attenzione: $resume non e' stato aggiornato nelle ultime 24 ore"
@@ -115,12 +119,16 @@ if [ "$ncambi" != 0 ]; then
 fi
 
 titolo "Push"
-if git rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1; then git push; else git push -u origin "$ramo"; fi \
-    || { echo "Push fallito: l'impronta non si registra finche' il remoto non e' allineato."; exit 1; }
-git fetch -q
-locale="$(git rev-parse HEAD)"; remoto="$(git rev-parse '@{u}' 2>/dev/null)"
-[ "$locale" = "$remoto" ] || { ko "HEAD $locale diverso dal remoto $remoto"; exit 1; }
-ok "HEAD e remoto coincidono (${locale:0:7})"
+if [ $haorigin = 0 ]; then nota "nessun remoto 'origin': push saltato, il commit resta locale"
+elif ! git rev-parse -q --verify HEAD >/dev/null; then nota "nessun commit sul ramo: niente da pushare"
+else
+    # Un ramo nuovo non ha ancora un ramo remoto collegato: lo si crea e lo si collega.
+    if git rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1; then git push; else git push -u origin "$ramo"; fi         || { echo "Push fallito: l'impronta non si registra finche' il remoto non e' allineato."; exit 1; }
+    git fetch -q
+    locale="$(git rev-parse HEAD)"; remoto="$(git rev-parse '@{u}' 2>/dev/null)"
+    [ "$locale" = "$remoto" ] || { ko "HEAD $locale diverso dal remoto $remoto"; exit 1; }
+    ok "HEAD e remoto coincidono su '$ramo' (${locale:0:7})"
+fi
 
 titolo "Impronta di ripresa"
 vr="$(trova verifica-ripresa.py)"

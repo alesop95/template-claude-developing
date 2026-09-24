@@ -120,7 +120,7 @@ bash tools/chiudi-sessione.sh --no-wipe
 bash tools/chiudi-sessione.sh --account account2
 ```
 
-Esce 1 e non committa niente se un controllo fallisce, se il messaggio è vuoto, se la conferma manca o se l'hook di pre-commit rifiuta; esce 1 senza registrare l'impronta se il push non arriva al remoto. `_notes/COMMIT-MSG.txt` si cancella dopo un commit riuscito, così un messaggio vecchio non viene riusato alla sessione successiva.
+Esce 1 e non committa niente se un controllo fallisce, se il messaggio è vuoto, se la conferma manca o se l'hook di pre-commit rifiuta; esce 1 senza registrare l'impronta se il push non arriva al remoto. `_notes/COMMIT-MSG.txt` si cancella dopo un commit riuscito, così un messaggio vecchio non viene riusato alla sessione successiva. Lavora sul ramo in uscita, qualunque sia, e lo nomina nella richiesta di conferma: un ramo nuovo senza ramo remoto collegato viene pushato con `-u` e collegato, un repository senza remoto `origin` committa in locale e salta il push, mentre con HEAD staccato lo script si ferma prima dei controlli senza committare niente.
 
 ## check-eol.py
 

@@ -74,15 +74,23 @@ foreach ($c in @("python", "python3", "py")) {
 
 # ---------------------------------------------------------------------------------------------
 Titolo "Stato"
-$ramo = (& git rev-parse --abbrev-ref HEAD)
+# symbolic-ref e non rev-parse: funziona anche su un repository appena creato, senza commit, e
+# fallisce proprio quando HEAD e' staccato, che e' il caso da intercettare prima del commit.
+$ramo = (& git symbolic-ref --short -q HEAD)
+if (-not $ramo) {
+    Write-Host "HEAD staccato: nessun ramo in uscita. Passare a un ramo (git switch <ramo>) e rilanciare; niente e' stato committato." -ForegroundColor Red
+    exit 1
+}
+$haOrigin = @(& git remote) -contains "origin"
 Nota "repository: $Radice"
 Nota "ramo: $ramo$(if ($bundle) { '   (bundle del template)' })"
+if (-not $haOrigin) { Write-Host "   attenzione: nessun remoto 'origin': si committa in locale e il push si salta" -ForegroundColor Yellow }
 $cambi = @(& git status --porcelain)
 if ($cambi.Count -eq 0) {
     Nota "albero pulito: niente da committare"
 } else {
     & git --no-pager status --short
-    & git --no-pager diff --stat HEAD
+    if (& git rev-parse -q --verify HEAD) { & git --no-pager diff --stat HEAD }
 }
 
 $resume = "_notes\RESUME-PROMPT.md"
@@ -168,18 +176,21 @@ if ($cambi.Count -gt 0) {
 
 # ---------------------------------------------------------------------------------------------
 Titolo "Push"
-$upstream = (& git rev-parse --abbrev-ref --symbolic-full-name "@{u}" 2>$null)
-if (-not $upstream) {
-    & git push -u origin $ramo
+if (-not $haOrigin) {
+    Nota "nessun remoto 'origin': push saltato, il commit resta locale"
+} elseif (-not (& git rev-parse -q --verify HEAD)) {
+    Nota "nessun commit sul ramo: niente da pushare"
 } else {
-    & git push
+    # Un ramo nuovo non ha ancora un ramo remoto collegato: lo si crea e lo si collega.
+    $upstream = (& git rev-parse --abbrev-ref --symbolic-full-name "@{u}" 2>$null)
+    if (-not $upstream) { & git push -u origin $ramo } else { & git push }
+    if ($LASTEXITCODE -ne 0) { Write-Host "Push fallito: l'impronta non si registra finche' il remoto non e' allineato." -ForegroundColor Red; exit 1 }
+    & git fetch -q
+    $locale = (& git rev-parse HEAD)
+    $suRemoto = (& git rev-parse "@{u}" 2>$null)
+    if ($locale -ne $suRemoto) { Ko "HEAD $locale diverso dal remoto $suRemoto"; exit 1 }
+    Ok "HEAD e remoto coincidono su '$ramo' ($($locale.Substring(0,7)))"
 }
-if ($LASTEXITCODE -ne 0) { Write-Host "Push fallito: l'impronta non si registra finche' il remoto non e' allineato." -ForegroundColor Red; exit 1 }
-& git fetch -q
-$locale = (& git rev-parse HEAD)
-$remoto = (& git rev-parse "@{u}" 2>$null)
-if ($locale -ne $remoto) { Ko "HEAD $locale diverso dal remoto $remoto"; exit 1 }
-Ok "HEAD e remoto coincidono ($($locale.Substring(0,7)))"
 
 # ---------------------------------------------------------------------------------------------
 Titolo "Impronta di ripresa"
