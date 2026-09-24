@@ -16,6 +16,8 @@ Due esiti sono interessanti e nessuno dei due è quello atteso. Se *non cade nie
 
 Il costo è di minuti e va pagato ogni volta che si chiude un difetto, non solo quando si è in dubbio. Il dubbio non è un segnale affidabile: le prove vacue si scrivono proprio quando si è sicuri.
 
+Il ripristino ha una precondizione che si dimentica: la copia da cui ripristinare deve esistere *prima* della prima mutazione, e va verificato, non presunto. Caso osservato: una sequenza di tre mutazioni ha copiato il file in una cartella temporanea che nel frattempo era stata cancellata, la copia è fallita con un avviso sepolto nell'uscita, e le tre mutazioni si sono sommate nel file. Il controllo finale di ripristino ha colto il danno, ma dopo, e c'erano due costi. Il file era nuovo e non tracciato, quindi git non poteva riportarlo indietro e l'ha salvato solo il fatto che il contenuto originale fosse ancora leggibile altrove. E i risultati della seconda e della terza mutazione misuravano difetti sommati, quindi non valevano niente e sono stati rifatti. La forma sicura è di interrompere la sequenza se la copia non riesce, di verificare dopo ogni mutazione sia che si sia applicata sia che il ripristino sia avvenuto, e di preferire, dove si può, un file già tracciato, che git sa ripristinare da solo.
+
 ## La non vacuità vale anche per le guardie, non solo per le prove
 
 Estensione della sezione precedente a un oggetto diverso, osservata chiudendo un presidio mancante. Una *guardia* è qualunque cosa impedisca a un'operazione di toccare qualcosa: un file escluso da una trasformazione automatica, una condizione che salta un ramo, un elenco di eccezioni. Vale per lei la stessa domanda che si pone a una prova, e quasi nessuno la pone: *se la togliessi, cambierebbe qualcosa?*
