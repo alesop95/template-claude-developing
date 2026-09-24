@@ -31,6 +31,15 @@ EXCLUDES = {'.git', 'node_modules', '.venv', '__pycache__', 'dist', 'build', 'ou
 
 
 def walk(root):
+    # os.walk su un file non produce niente, quindi `lint-md-commands.py <file>` non
+    # esaminava mai nulla e rispondeva "0 errori", proprio nella forma che la regola sui
+    # comandi prescrive. Un file si esamina da solo, e un percorso che non esiste e' un errore.
+    if os.path.isfile(root):
+        yield root
+        return
+    if not os.path.isdir(root):
+        print('percorso inesistente: %s' % root, file=sys.stderr)
+        sys.exit(2)
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in EXCLUDES]
         if '.md-unwrap-ignore' in filenames:
@@ -129,7 +138,7 @@ def main():
                     errori += 1
                 else:
                     avvisi += 1
-                print('%s:%d  %-8s %-42s %s' % (os.path.relpath(p, root), idx,
+                print('%s:%d  %-8s %-42s %s' % (os.path.relpath(p, root if os.path.isdir(root) else (os.path.dirname(root) or '.')), idx,
                       'ERRORE' if grave else 'avviso', kind, body.strip()[:80]))
     print('')
     print('%d errori, %d avvisi' % (errori, avvisi))
