@@ -4,6 +4,8 @@
 
 Quando cambia una capacità pubblica del template, usa la skill `.claude/skills/sync-readme/` per aggiornare la prosa del README e poi esegui `python .claude/templates/readme-sync/tools/sync-readme.py --write --bundle`. Prima di consegnare comandi di version control esegui la stessa CLI con `--check --bundle`: controlla indice, inventario e link locali.
 
+A fine sessione aggiorna `_notes/RESUME-PROMPT.md` e scrivi in `_notes/COMMIT-MSG.txt` il messaggio di commit proposto. La chiusura la esegue l'utente, dopo aver chiuso Claude, con `.claude/templates/tools/chiudi-sessione.ps1`: controlli, commit con conferma, push verificato, impronta e wipe.
+
 ## Convenzione Markdown
 
 I file `.md` di questo repository si scrivono con i paragrafi su una riga sorgente continua: nessun a capo manuale a colonna fissa, nessuna riga spezzata a metà frase. L'a capo separa due paragrafi distinti, mai due frasi o due porzioni della stessa frase, perché l'avvolgimento a video resta compito dell'editor o del renderer e non del file sorgente. Il motivo è pratico: con i paragrafi su riga unica il diff git segna esattamente i paragrafi cambiati invece di ri-avvolgere righe che nessuno ha toccato, e la ricerca testuale per frase funziona.

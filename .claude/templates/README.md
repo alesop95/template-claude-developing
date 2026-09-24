@@ -141,10 +141,12 @@ Strumento di verifica della ripresa, che invece e di progetto e si istanzia: con
 
 ```
 templates/tools/verifica-ripresa.py        ->  tools/verifica-ripresa.py   (tracciato)
+templates/tools/chiudi-sessione.ps1        ->  tools/chiudi-sessione.ps1   (tracciato)
+templates/tools/chiudi-sessione.sh         ->  tools/chiudi-sessione.sh    (tracciato)
 templates/tools/lint-doc-references.py     ->  tools/lint-doc-references.py (tracciato)
 ```
 
-Il secondo dei due trova nella documentazione i riferimenti a file che non esistono, dividendoli in categorie invece di ammucchiarli: un documento vivo che nomina un file assente va corretto, una voce datata che lo nomina era vera quel giorno e non si riscrive. Le radici che identificano un percorso si leggono da git e non si configurano.
+`chiudi-sessione` lega in un comando la chiusura: controlli istanziati, commit con conferma dell'utente, push verificato, impronta di ripresa e wipe degli account quando nessuna sessione Claude Code è aperta. `lint-doc-references` trova nella documentazione i riferimenti a file che non esistono, dividendoli in categorie invece di ammucchiarli: un documento vivo che nomina un file assente va corretto, una voce datata che lo nomina era vera quel giorno e non si riscrive. Le radici che identificano un percorso si leggono da git e non si configurano.
 
 Pacchetto opzionale per la trascrizione e la sintesi vocale in locale, appoggiato a VoiceStudio, che resta una applicazione esterna e non entra nel repository. Istanzia un solo strumento, senza segnaposto da sostituire, che scrive le trascrizioni sotto `_notes/fonti/` con la provenienza davanti al testo. La mappa di dettaglio, l'allestimento per sistema operativo e le note su licenza e consenso alla clonazione di una voce stanno in `templates/voicestudio/README.md`.
 

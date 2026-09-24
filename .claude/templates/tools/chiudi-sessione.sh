@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+# chiudi-sessione.sh - Chiusura di sessione in un comando solo (variante POSIX).
+#
+# Stessa sequenza e stesse ragioni di chiudi-sessione.ps1, a cui si rimanda per il commento
+# esteso: stato, controlli istanziati (si ferma se uno fallisce), commit con conferma, push
+# verificato, impronta di ripresa, wipe degli account se nessuna sessione Claude Code e' aperta.
+# Si lancia dal proprio terminale dopo aver chiuso Claude Code.
+#
+# Uso:
+#   bash tools/chiudi-sessione.sh                      tutto, con conferma
+#   bash tools/chiudi-sessione.sh -m "Testo"           messaggio esplicito
+#   bash tools/chiudi-sessione.sh --si                 senza conferma
+#   bash tools/chiudi-sessione.sh --solo-controlli     stato e controlli, nient'altro
+#   bash tools/chiudi-sessione.sh --no-wipe            salta il wipe
+#   bash tools/chiudi-sessione.sh --account account2   wipe del solo ~/.claude-account2
+set -u
+
+messaggio=""; si=0; solo=0; nowipe=0; account=""; radice=""
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -m|--messaggio) messaggio="$2"; shift 2 ;;
+        --si) si=1; shift ;;
+        --solo-controlli) solo=1; shift ;;
+        --no-wipe) nowipe=1; shift ;;
+        --account) account="$2"; shift 2 ;;
+        --radice) radice="$2"; shift 2 ;;
+        *) echo "opzione sconosciuta: $1" >&2; exit 2 ;;
+    esac
+done
+
+titolo() { printf '\n== %s\n' "$1"; }
+ok() { printf '   ok  %s\n' "$1"; }
+ko() { printf '   KO  %s\n' "$1"; }
+nota() { printf '   %s\n' "$1"; }
+
+dir_script="$(cd "$(dirname "$0")" && pwd)"
+[ -n "$radice" ] || radice="$(git -C "$dir_script" rev-parse --show-toplevel 2>/dev/null)"
+[ -n "$radice" ] || { echo "Non trovo il repository: passare --radice." >&2; exit 2; }
+cd "$radice" || exit 2
+bundle=0; [ -f .claude/templates/PACKAGES.md ] && bundle=1
+
+cartelle="tools .claude/templates/tools .claude/templates/md-unwrap/tools .claude/templates/readme-sync/tools .claude/templates/fix-typography/tools"
+trova() { for c in $cartelle; do [ -f "$c/$1" ] && { echo "$c/$1"; return; }; done; }
+
+python=""
+# Il -c scarta l'alias del Microsoft Store, che su Windows risponde a command -v e non esegue.
+for c in python3 python; do "$c" -c 'import sys' >/dev/null 2>&1 && { python="$c"; break; }; done
+
+titolo "Stato"
+ramo="$(git rev-parse --abbrev-ref HEAD)"
+nota "repository: $radice"
+nota "ramo: $ramo$([ $bundle = 1 ] && echo '   (bundle del template)')"
+ncambi="$(git status --porcelain | wc -l | tr -d ' ')"
+if [ "$ncambi" = 0 ]; then nota "albero pulito: niente da committare"
+else git --no-pager status --short; git --no-pager diff --stat HEAD; fi
+resume="_notes/RESUME-PROMPT.md"
+if [ -f "$resume" ] && [ -n "$(find "$resume" -mtime +0 2>/dev/null)" ]; then
+    nota "attenzione: $resume non e' stato aggiornato nelle ultime 24 ore"
+fi
+
+titolo "Controlli"
+b=""; m=""; o=""
+[ $bundle = 1 ] && { b="--bundle"; m="--includi-modelli"; o="--oracle require"; }
+# nome|argomenti|file richiesto|solo bundle
+controlli="md-unwrap.py|--check $o .||0
+sync-readme.py|--check $b|README.md|0
+lint-md-commands.py|.||0
+lint-doc-references.py|--solo-vivi $b||0
+check-eol.py|.||0
+fix-accents.py|--check $m .||0
+fix-dashes.py|--check $m .||0
+fix-missing-accents.py|--check $m .||0
+sync-codex-skills.py|--project-root . --check|.claude/skills|0
+check-copie-modelli.py|||1
+check-catalogo.py|||1
+check-raggiungibilita.py|||1
+test-tipografia.py|||1"
+
+falliti=""
+if [ -z "$python" ]; then ko "Python non trovato"; falliti="python"
+else
+    while IFS='|' read -r nome argomenti serve solobundle; do
+        [ "$solobundle" = 1 ] && [ $bundle = 0 ] && continue
+        [ -n "$serve" ] && [ ! -e "$serve" ] && continue
+        p="$(trova "$nome")"; [ -n "$p" ] || continue
+        # shellcheck disable=SC2086
+        uscita="$("$python" "$p" $argomenti 2>&1)"; rc=$?
+        if [ $rc = 0 ]; then ok "$nome"
+        else ko "$nome (uscita $rc)"; printf '%s\n' "$uscita" | tail -15 | sed 's/^/       /'; falliti="$falliti $nome"; fi
+    done <<EOF
+$controlli
+EOF
+fi
+if [ -n "$falliti" ]; then printf '\nControlli falliti:%s. Mi fermo prima del commit.\n' "$falliti"; exit 1; fi
+[ $solo = 1 ] && { printf '\nControlli verdi.\n'; exit 0; }
+
+filemsg="_notes/COMMIT-MSG.txt"
+if [ "$ncambi" != 0 ]; then
+    titolo "Commit"
+    if [ -z "$messaggio" ] && [ -f "$filemsg" ]; then
+        messaggio="$(grep -m1 -v '^[[:space:]]*$' "$filemsg")"
+        [ -n "$messaggio" ] && nota "messaggio preparato dall'agente in $filemsg"
+    fi
+    [ -n "$messaggio" ] || read -r -p "   Messaggio di commit: " messaggio
+    [ -n "$messaggio" ] || { echo "Messaggio vuoto: mi fermo."; exit 1; }
+    [ ${#messaggio} -gt 72 ] && nota "attenzione: il messaggio supera 72 caratteri (${#messaggio})"
+    nota "$ncambi file  ->  \"$messaggio\""
+    if [ $si = 0 ]; then
+        read -r -p "   Committo tutto e pusho su '$ramo'? [s/N] " r
+        case "$r" in s|si|y|yes) ;; *) echo "Annullato: niente e' stato committato."; exit 1 ;; esac
+    fi
+    git add -A
+    git commit -m "$messaggio" || { echo "Commit rifiutato (hook o errore): correggere e rilanciare."; exit 1; }
+    rm -f "$filemsg"
+fi
+
+titolo "Push"
+if git rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1; then git push; else git push -u origin "$ramo"; fi \
+    || { echo "Push fallito: l'impronta non si registra finche' il remoto non e' allineato."; exit 1; }
+git fetch -q
+locale="$(git rev-parse HEAD)"; remoto="$(git rev-parse '@{u}' 2>/dev/null)"
+[ "$locale" = "$remoto" ] || { ko "HEAD $locale diverso dal remoto $remoto"; exit 1; }
+ok "HEAD e remoto coincidono (${locale:0:7})"
+
+titolo "Impronta di ripresa"
+vr="$(trova verifica-ripresa.py)"
+if [ -n "$vr" ] && [ -n "$python" ]; then
+    "$python" "$vr" --radice "$radice" --registra && ok "impronta registrata" || ko "verifica-ripresa.py --registra"
+else nota "verifica-ripresa.py non istanziato: passo saltato"; fi
+
+[ $nowipe = 1 ] && { printf '\nChiusura completata, wipe saltato su richiesta.\n'; exit 0; }
+titolo "Wipe del magazzino nascosto"
+script=""
+for d in "$HOME"/.claude*; do
+    [ -d "$d" ] || continue
+    n="$(basename "$d")"
+    [ -z "$account" ] || [ "$n" = ".claude-$account" ] || [ "$n" = "$account" ] || continue
+    [ -f "$d/hooks/session-end-wipe.sh" ] && script="$script $d/hooks/session-end-wipe.sh"
+done
+if [ -z "$script" ]; then nota "nessuno script di wipe installato negli account: passo saltato"
+elif pgrep -x claude >/dev/null 2>&1; then
+    nota "processi Claude Code ancora aperti: wipe rimandato. Chiuderli e lanciare:"
+    for s in $script; do nota "bash \"$s\""; done
+else
+    for s in $script; do bash "$s" && ok "$s" || ko "$s"; done
+fi
+printf '\nChiusura completata.\n'

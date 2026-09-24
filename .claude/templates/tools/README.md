@@ -98,6 +98,30 @@ python tools/verifica-ripresa.py --breve
 python tools/verifica-ripresa.py --self-test
 ```
 
+## chiudi-sessione.ps1 / chiudi-sessione.sh
+
+Chiude una sessione con un comando solo, nell'ordine in cui i passi non si danneggiano a vicenda. Mostra ramo, file cambiati e diff riassuntivo senza pager; trova da solo i controlli istanziati nel progetto e li esegue tutti, fermandosi prima del commit se uno fallisce; prende il messaggio di commit da `-Messaggio`, oppure da `_notes/COMMIT-MSG.txt` che l'agente prepara a fine lavoro, oppure lo chiede; chiede conferma, committa tutto e pusha; verifica che HEAD coincida con il ramo remoto; registra l'impronta con `verifica-ripresa.py --registra`; infine esegue lo script di wipe di ogni account che ne ha uno installato, ma solo se nessun processo Claude Code da terminale o da editor è ancora aperto, altrimenti stampa i comandi da lanciare dopo.
+
+Si lancia dal proprio terminale dopo aver chiuso Claude Code, perché il wipe lavora sui file che Claude riscrive finché è aperto. Commit e push restano un gesto dell'utente: è l'utente a lanciare lo script e a confermare dopo aver visto file e messaggio, e l'agente prepara il messaggio senza usarlo. Nel repository del template lo script riconosce di essere nel bundle e aggiunge ai controlli le opzioni `--bundle`, `--includi-modelli` e `--oracle require`, più i controlli propri del bundle.
+
+```powershell
+.\tools\chiudi-sessione.ps1
+.\tools\chiudi-sessione.ps1 -SoloControlli
+.\tools\chiudi-sessione.ps1 -Messaggio "Aggiornato X: cosa cambia" -Si
+.\tools\chiudi-sessione.ps1 -NoWipe
+.\tools\chiudi-sessione.ps1 -Account account2
+```
+
+```bash
+bash tools/chiudi-sessione.sh
+bash tools/chiudi-sessione.sh --solo-controlli
+bash tools/chiudi-sessione.sh -m "Aggiornato X: cosa cambia" --si
+bash tools/chiudi-sessione.sh --no-wipe
+bash tools/chiudi-sessione.sh --account account2
+```
+
+Esce 1 e non committa niente se un controllo fallisce, se il messaggio è vuoto, se la conferma manca o se l'hook di pre-commit rifiuta; esce 1 senza registrare l'impronta se il push non arriva al remoto. `_notes/COMMIT-MSG.txt` si cancella dopo un commit riuscito, così un messaggio vecchio non viene riusato alla sessione successiva.
+
 ## check-eol.py
 
 Segnala i file di testo che mescolano CRLF e LF nello stesso file. La convenzione Markdown del sistema prescrive di conservare la fine riga di ciascun file, e md-unwrap la rispetta per contratto: ne segue che l'albero contiene legittimamente entrambe le convenzioni, e che nessun altro controllo si accorge se un file le mescola, perché il rendering a video è identico e la catena tipografica guarda i caratteri e non le interruzioni.

@@ -59,6 +59,7 @@ Gli strumenti si lanciano invece come programmi, dalla radice del progetto. Il p
 |---|---|
 | `python tools/verifica-ripresa.py` | Confronta l'impronta con lo stato reale e dice che cosa diverge |
 | `python tools/verifica-ripresa.py --registra` | Registra l'impronta; ultimo atto della sessione, dopo i commit |
+| `.\tools\chiudi-sessione.ps1` | Chiusura in un comando: controlli, commit con conferma, push verificato, impronta, wipe |
 | `python tools/md-unwrap.py <file o cartella>` | Riporta i paragrafi su riga sorgente unica |
 | `python tools/md-unwrap.py --check --oracle require .` | Verifica senza scrivere; esce diverso da zero se qualcosa non rispetta la convenzione |
 | `python tools/fix-accents.py --check .` | Accenti scritti con l'apostrofo |
@@ -105,6 +106,8 @@ Durante il lavoro vale la regola sulla persistenza appena descritta, con il suo 
 
 Alla chiusura l'ordine conta e vale scriverlo per esteso, perché è l'unico punto della guida in cui invertire due passi produce un falso allarme ricorrente. Prima l'agente aggiorna `_notes/RESUME-PROMPT.md` con lo stato raggiunto e il prossimo passo. Poi esegui i tuoi commit. Solo dopo si registra l'impronta, con `python tools/verifica-ripresa.py --registra` oppure lasciandolo fare all'hook di chiusura. Registrare prima dei commit produce alla sessione successiva una divergenza che non è una caduta ma una registrazione fatta troppo presto, e un falso positivo ricorrente insegna a ignorare il controllo, che è il modo in cui un presidio muore.
 
+Tutta la sequenza sta in un comando solo, da lanciare nel proprio terminale dopo aver chiuso Claude: `.\tools\chiudi-sessione.ps1` su Windows, `bash tools/chiudi-sessione.sh` altrove. Prima di chiudere l'agente aggiorna il file di ripresa e scrive in `_notes/COMMIT-MSG.txt` il messaggio di commit proposto; lo script esegue i controlli e si ferma se uno fallisce, mostra file e messaggio e chiede conferma, committa e pusha, verifica che il remoto abbia ricevuto il commit, registra l'impronta e, se nessuna sessione Claude Code è ancora aperta, esegue il wipe degli account.
+
 ## Il calendario, con la colonna che conta
 
 | Cadenza | Che cosa | Parte da solo? | Altrimenti |
@@ -115,6 +118,7 @@ Alla chiusura l'ordine conta e vale scriverlo per esteso, perché è l'unico pun
 | Ogni file `.md` scritto | Paragrafi su riga sorgente unica | sì, con l'hook `md-unwrap-auto` | `python tools/md-unwrap.py <file>` |
 | Prima di un commit | I quattro controlli di convenzione | sui commit dell'agente sì, con `pre-commit-checks`; sui tuoi solo con un hook nativo di git | lanci i quattro comandi della tabella sopra |
 | Prima di un commit | Segreti nel diff in stage | come sopra, con `secret-scan` | `git diff --cached` e lo guardi |
+| Ogni chiusura di sessione | Controlli, commit, push, impronta e wipe in sequenza | un comando, da lanciare dopo aver chiuso Claude | `.\tools\chiudi-sessione.ps1` |
 | Ogni chiusura di sessione | Registrare l'impronta | sì, con l'hook `chiusura-sessione` | `python tools/verifica-ripresa.py --registra` |
 | Ogni chiusura di sessione | Ripulire il magazzino nascosto dell'account | sì, con il wipe registrato nell'account | vedi la sezione sulla memoria |
 | Ogni tornata di allineamento | Riattraversare il gate dei pacchetti | no | `/gate-pacchetti` |
