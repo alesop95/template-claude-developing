@@ -159,7 +159,10 @@ def esamina_file(testo):
         if re.search(r"text-transform\s*:\s*uppercase", r.group(2), re.I) and \
                 re.search(r"letter-spacing\s*:\s*[.\d]", r.group(2), re.I):
             classi_etichetta |= set(re.findall(r"\.([\w-]+)\s*$", r.group(1).strip()))
-    uso_css = sum(len(re.findall(r"class=[\"'](?:[^\"']*\s)?%s(?:\s[^\"']*)?[\"']" % re.escape(c), testo))
+    # Conta solo gli elementi seguiti subito da un titolo: un badge o una didascalia maiuscola non
+    # è un'etichetta sopra un titolo, che è il segno descritto dalla fonte.
+    uso_css = sum(len(re.findall(r"class=[\"'](?:[^\"']*\s)?%s(?:\s[^\"']*)?[\"'][^>]*>[^<]{0,120}"
+                                 r"</[\w-]+>\s*<h[1-3]\b" % re.escape(c), testo, re.I))
                   for c in classi_etichetta)
     etichette, titoli = len(ETICHETTA.findall(testo)) + uso_css, len(TITOLI.findall(testo))
     if etichette >= 2 and etichette * 3 > max(titoli, 1):
@@ -270,6 +273,10 @@ def self_test():
     prova("U4: etichette definite da una classe CSS maiuscola e spaziata si segnalano",
           "U4" in codici("<style>.eye{text-transform:uppercase;letter-spacing:.2em}</style>"
                          '<div class="eye">A</div><h2>x</h2><div class="eye">B</div><h2>y</h2>'))
+    prova("negativo U4: badge maiuscoli spaziati lontani dai titoli non si segnalano",
+          "U4" not in codici("<style>.tag{text-transform:uppercase;letter-spacing:.1em}</style>"
+                             '<h2>x</h2><p>t</p><span class="tag">A</span><span class="tag">B</span>'
+                             '<span class="tag">C</span>'))
     prova("U5: tre card annidate si segnalano",
           "U5" in codici('<div class="card"><div class="card"><div class="card">x</div></div></div>'))
     prova("negativo U5: tre card affiancate non si segnalano",

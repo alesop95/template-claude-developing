@@ -14,23 +14,23 @@ Niente riletture integrali: il motore di riconciliazione confronta i commit e le
 
 Si legge un file quando serve davvero, e solo la porzione necessaria, non l'intero file se non occorre.
 
-## Piu' agenti insieme: quattro numeri misurati, non stimati
+## Più agenti insieme: quattro numeri misurati, non stimati
 
 Sezione ricavata da un pilota reale su un corpus di trecentosettantuno documenti, portato a termine. I numeri valgono per quella forma di lavoro, non in generale, ma i rapporti fra loro sono il dato che si trasferisce.
 
-**Il parallelismo non riduce i token.** Consuma gli stessi token in meta' tempo: la quota si consuma proporzionalmente alla concorrenza, quindi il parallelismo **avvicina** il limite invece di allontanarlo. Si usa quando serve il risultato prima, mai quando si teme di esaurire la finestra. Un sistema multi-agente consuma piu' di una conversazione singola sullo stesso compito, e il consumo maggiore **e' la ragione per cui funziona meglio**, non un effetto collaterale.
+**Il parallelismo non riduce i token.** Consuma gli stessi token in metà tempo: la quota si consuma proporzionalmente alla concorrenza, quindi il parallelismo **avvicina** il limite invece di allontanarlo. Si usa quando serve il risultato prima, mai quando si teme di esaurire la finestra. Un sistema multi-agente consuma più di una conversazione singola sullo stesso compito, e il consumo maggiore **è la ragione per cui funziona meglio**, non un effetto collaterale.
 
-**Il modello e il livello di ragionamento valgono un fattore nove.** Lo stesso lotto, stesso mandato: centoventiduemila token per elemento con il modello generico a ragionamento medio, **tredicimila** con il modello economico a ragionamento basso. Il tempo e' sceso nella stessa proporzione, il che e' una buona prova che la misura sia pulita. Per una mappatura meccanica il ragionamento non serve: si paga e non produce nulla.
+**Il modello e il livello di ragionamento valgono un fattore nove.** Lo stesso lotto, stesso mandato: centoventiduemila token per elemento con il modello generico a ragionamento medio, **tredicimila** con il modello economico a ragionamento basso. Il tempo è sceso nella stessa proporzione, il che è una buona prova che la misura sia pulita. Per una mappatura meccanica il ragionamento non serve: si paga e non produce nulla.
 
-**Il costo per elemento cresce con la dimensione del lotto.** Ventimila token per elemento su un lotto da dieci, centoventiduemila su uno da ventiquattro, a parita' di modello: e' il contesto che si accumula. Ne discende che **molte sessioni brevi costano meno di una lunga**, e che un lotto unico su tutto il corpus e' il modo piu' caro di farlo, non il piu' economico.
+**Il costo per elemento cresce con la dimensione del lotto.** Ventimila token per elemento su un lotto da dieci, centoventiduemila su uno da ventiquattro, a parità di modello: è il contesto che si accumula. Ne discende che **molte sessioni brevi costano meno di una lunga**, e che un lotto unico su tutto il corpus è il modo più caro di farlo, non il più economico.
 
-**Il limite e' su finestra mobile, non giornaliero.** Nel pilota una radice ha consumato tredici milioni di token distribuiti su tredici lotti senza mai fermarsi, mentre un'altra si e' fermata a nove milioni spesi in **una sola sessione concentrata**. Gli stessi token spesi a raffica esauriscono la finestra, spesi distribuiti no.
+**Il limite è su finestra mobile, non giornaliero.** Nel pilota una radice ha consumato tredici milioni di token distribuiti su tredici lotti senza mai fermarsi, mentre un'altra si è fermata a nove milioni spesi in **una sola sessione concentrata**. Gli stessi token spesi a raffica esauriscono la finestra, spesi distribuiti no.
 
 ### La conseguenza operativa, in ordine
 
-Prima **togliere elementi**: la parte deterministica di una mappatura non deve vedere un modello, e portare N da trecento a trenta vale piu' di qualunque ottimizzazione sui trecento. Poi **rendere il lavoro riprendibile**, perche' un lavoro che riparte da capo non si conclude mai. Poi **instradare su serbatoi indipendenti**, dove esistono piu' flotte con quote separate. Solo alla fine **parallelizzare**, sapendo che comprime il tempo e non il costo.
+Prima **togliere elementi**: la parte deterministica di una mappatura non deve vedere un modello, e portare N da trecento a trenta vale più di qualunque ottimizzazione sui trecento. Poi **rendere il lavoro riprendibile**, perché un lavoro che riparte da capo non si conclude mai. Poi **instradare su serbatoi indipendenti**, dove esistono più flotte con quote separate. Solo alla fine **parallelizzare**, sapendo che comprime il tempo e non il costo.
 
-Il pacchetto `lavoro-a-lotti` e' l'attuazione di questi quattro punti; `agenti-terminale` fornisce le flotte su cui il terzo poggia.
+Il pacchetto `lavoro-a-lotti` è l'attuazione di questi quattro punti; `agenti-terminale` fornisce le flotte su cui il terzo poggia.
 
 
 ## Disclosure progressiva su documenti voluminosi

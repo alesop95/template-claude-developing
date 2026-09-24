@@ -62,7 +62,7 @@ server {
 
 **Che cosa costa.** Una configurazione in due copie da tenere allineata, e la contesa delle risorse.
 
-**Come fallisce.** Nel caso osservato i due host virtuali portavano la stessa lista di indirizzi ammessi scritta per esteso [C7]: va aggiornata in due posti, una dimenticanza non produce errori e una modifica della rete la rompe in silenzio. La correzione è il file incluso dell'estratto sopra. In un altro caso l'ambiente di prova era raggiungibile dalla rete accanto alla produzione [C9].
+**Come fallisce.** Nel caso osservato i due host virtuali portavano la stessa lista di indirizzi ammessi scritta per esteso [C7]: va aggiornata in due posti, e una copia dimenticata si rompe in silenzio alla prima modifica della rete. La correzione è il file incluso dell'estratto sopra. In un altro caso l'ambiente di prova era raggiungibile dalla rete accanto alla produzione [C9].
 
 **Quando passare ad altro.** Quando la prova deve somigliare alla produzione anche nei servizi di appoggio, cioè code, cache, motori di ricerca, identità: allora R2.
 

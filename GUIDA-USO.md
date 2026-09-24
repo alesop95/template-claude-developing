@@ -195,7 +195,7 @@ Non viene cancellato da niente e da nessuno. Cresce, e l'unico presidio è che n
 
 ### Strato due: dentro il repository, ignorato da git
 
-È il privato del progetto: sta nella tua cartella, non entra in nessun clone, e non esce dalla tua macchina.
+È il privato del progetto: sta nella tua cartella e non entra in nessun clone.
 
 ```
 _notes/                        materiale grezzo, appunti, stati di lavorazione
@@ -259,7 +259,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .claude/templates/tools/chec
 
 ### Strato quattro: quello che si spegne invece di ripulire
 
-La auto-memory nativa di Claude Code è una memoria che l'agente scrive di sua iniziativa nel magazzino nascosto dello strato tre. Il sistema la disattiva con `"autoMemoryEnabled": false` nel `settings.json` del progetto, e la ragione è la stessa del principio generale: quella memoria non vive nel repository, non è versionata, resta solo sulla macchina, e quindi viola la recuperabilità totale da un clone.
+La auto-memory nativa di Claude Code è una memoria che l'agente scrive di sua iniziativa nel magazzino nascosto dello strato tre. Il sistema la disattiva con `"autoMemoryEnabled": false` nel `settings.json` del progetto, e la ragione è la stessa del principio generale: quella memoria non vive nel repository e resta solo sulla macchina, quindi viola la recuperabilità totale da un clone.
 
 Spegnere è meglio che ripulire, perché una cartella che non si riempie non ha bisogno di essere svuotata, e il wipe resta come seconda difesa per ciò che si fosse accumulato prima. La scelta però non è imposta una volta per tutte: a ogni progetto, e a ogni sessione, la domanda si pone esplicitamente, e chi vuole la memoria nativa per una sessione può portare il flag a `true` con l'impegno di riportarlo a `false` prima di chiudere o di cambiare progetto.
 
@@ -267,7 +267,7 @@ Chi preferisce imporre la regola a livello di macchina imposta lo stesso flag ne
 
 ### Il riassunto in tre righe
 
-Ciò che il progetto sa di sé sta nello strato uno, è versionato, e sopravvive a un clone. Ciò che serve solo a te sta nello strato due, è ignorato da git, e lo cancelli quando vuoi. Ciò che Claude accumula per conto suo sta nello strato tre, fuori dal repository, e viene ripulito a ogni chiusura più una volta a mano; lo strato quattro è la parte di quell'accumulo che il sistema preferisce non far nascere affatto.
+Ciò che il progetto sa di sé sta nello strato uno ed è versionato, quindi sopravvive a un clone. Ciò che serve solo a te sta nello strato due, è ignorato da git, e lo cancelli quando vuoi. Ciò che Claude accumula per conto suo sta nello strato tre, fuori dal repository, e viene ripulito a ogni chiusura più una volta a mano; lo strato quattro è la parte di quell'accumulo che il sistema preferisce non far nascere affatto.
 
 ## Le tre cose che il sistema si rifiuta di fare, e perché
 

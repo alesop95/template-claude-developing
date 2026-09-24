@@ -68,9 +68,9 @@ def run(args, timeout=900):
 def _comando(spec):
     """Normalizza un comando dichiarato nel file dati.
 
-    Un comando puo essere una stringa, una lista di argomenti, o una mappa per piattaforma con le
-    chiavi `windows` e `posix`. La mappa non e un vezzo: uno script di shell invocato da qui non
-    eredita la shell della sessione ma quella che il sistema risolve per prima, che su Windows puo
+    Un comando può essere una stringa, una lista di argomenti, o una mappa per piattaforma con le
+    chiavi `windows` e `posix`. La mappa non è un vezzo: uno script di shell invocato da qui non
+    eredita la shell della sessione ma quella che il sistema risolve per prima, che su Windows può
     essere la bash di WSL invece di quella di Git, con percorsi e interprete diversi. La forma
     `python` si risolve sempre all'interprete corrente, non a quello che il figlio troverebbe.
     """
@@ -305,7 +305,7 @@ def render_summary(s):
         if v.get('fonte'):
             out.append('     fonte: %s' % v['fonte'])
     if s['chiuse']:
-        out += ['', 'Chiuse dalla misura, non piu da fare', '-' * 78]
+        out += ['', 'Chiuse dalla misura, non più da fare', '-' * 78]
         for v in s['chiuse']:
             out.append('%3d. %s (%s)' % (v['id'], v.get('titolo', ''), v.get('misura', '')))
     out += ['', '%d voci aperte, %d chiuse dalla misura.' % (len(s['aperte']), len(s['chiuse']))]

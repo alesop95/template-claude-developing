@@ -1,11 +1,11 @@
-<title>template-claude-developing — Flusso di progetto e fonti</title>
+<title>template-claude-developing - Flusso di progetto e fonti</title>
 <style>
 :root{
-  --ground:#F7F6F2;--surface:#FFFFFF;
-  --text:#19190F;--muted:#716C5E;--light:#A09880;
+  --ground:#F4F6F8;--surface:#FFFFFF;
+  --text:#19190F;--muted:#5A6272;--light:#5F6674;
   --green:#2D6A4F;--green-l:#D4EDDE;--green-d:#1A4030;
-  --amber:#B7791F;--amber-l:#FEF3C7;
-  --border:#E3DFD5;--line:#C8C3B5;
+  --amber:#1E4E8C;--amber-l:#E8EEF7;
+  --border:#DDE1E7;--line:#C2C8D0;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--ground);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.7}
@@ -15,7 +15,6 @@ body{background:var(--ground);color:var(--text);font-family:'Segoe UI',system-ui
 .hero{margin-bottom:3.5rem;padding-bottom:2.5rem;border-bottom:2px solid var(--text)}
 .hero-eye{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-family:'Cascadia Code','Consolas',monospace;margin-bottom:.5rem}
 .hero-title{font-family:Georgia,serif;font-size:2.75rem;line-height:1.05;letter-spacing:-.03em;margin-bottom:.75rem}
-.hero-title span{color:var(--green)}
 .hero-sub{font-size:14px;color:var(--muted);max-width:640px;line-height:1.7;margin-bottom:1.5rem}
 .hero-meta{display:flex;gap:2.5rem;flex-wrap:wrap}
 .hm{display:flex;flex-direction:column}
@@ -40,7 +39,7 @@ h2.sec{font-family:Georgia,serif;font-size:1.7rem;letter-spacing:-.015em;margin-
 .pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:.5rem}
 .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-family:'Cascadia Code','Consolas',monospace;font-weight:500;border:1px solid}
 .p-core{background:var(--green-l);color:var(--green-d);border-color:#A7D7BF}
-.p-pkg{background:var(--amber-l);color:#92400E;border-color:#FDE68A}
+.p-pkg{background:var(--amber-l);color:#1E3A5F;border-color:#C9D6EA}
 .pill-label{font-size:9px;text-transform:uppercase;letter-spacing:.07em;opacity:.7;margin-right:2px}
 
 .divider{height:1px;background:var(--border);margin:3.5rem 0}
@@ -57,8 +56,8 @@ table.src a:hover{text-decoration:underline}
 .b-off{background:#DBEAFE;color:#1E3A5F}
 .src-group{background:var(--green-l);padding:.35rem .9rem;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--green-d);font-weight:700;border-bottom:1px solid #A7D7BF}
 
-.callout{background:var(--amber-l);border:1px solid #FDE68A;border-radius:6px;padding:1rem 1.25rem;font-size:13px;color:#78350F;line-height:1.65;margin:1.5rem 0}
-.callout strong{color:#92400E}
+.callout{background:var(--amber-l);border:1px solid #C9D6EA;border-radius:6px;padding:1rem 1.25rem;font-size:13px;color:#1E3A5F;line-height:1.65;margin:1.5rem 0}
+.callout strong{color:#1E3A5F}
 
 .fn{margin-top:3.5rem;padding-top:1.5rem;border-top:1px solid var(--border);font-size:11.5px;color:var(--light);line-height:1.7}
 
@@ -71,7 +70,7 @@ table.src a:hover{text-decoration:underline}
 
   <div class="hero">
     <div class="hero-eye">template-claude-developing · guida operativa</div>
-    <h1 class="hero-title">Potenzialita' e fonti<br><span>in un flusso reale</span></h1>
+    <h1 class="hero-title">Potenzialità e fonti in un flusso reale</h1>
     <p class="hero-sub">Cosa fa questo template, quando lo fa, e da quali strumenti e repository open source attinge. Illustrato su un progetto tipico: una REST API Node.js con PostgreSQL, test E2E e deploy su Vercel. Vedi anche: <a href="feature-map.html" style="color:var(--green);font-family:monospace;font-size:12px">feature-map.html</a></p>
     <div class="hero-meta">
       <div class="hm"><span class="hm-n">9</span><span class="hm-l">Skill</span></div>
@@ -82,19 +81,18 @@ table.src a:hover{text-decoration:underline}
     </div>
   </div>
 
-  <div class="sec-eye">Flusso di progetto</div>
-  <h2 class="sec">Da zero a produzione — con ogni feature attivata al momento giusto</h2>
-  <p class="sec-desc">Ogni feature del template ha un gate: si attiva solo quando il contesto del progetto lo rende pertinente, mai di default. Questo flusso mostra quando e perche' ciascuna si accende su un progetto reale.</p>
+  <h2 class="sec">Flusso di progetto: da zero a produzione, con ogni feature attivata al momento giusto</h2>
+  <p class="sec-desc">Ogni feature del template ha un gate: si attiva solo quando il contesto del progetto lo rende pertinente, mai di default. Questo flusso mostra quando e perché ciascuna si accende su un progetto reale.</p>
 
   <div class="timeline">
 
     <div class="phase">
       <div class="phase-dot"><span>1</span></div>
-      <div class="phase-when">Giorno 0 — 30 minuti</div>
+      <div class="phase-when">Giorno 0 - 30 minuti</div>
       <div class="phase-title">Inizializzazione del progetto</div>
       <div class="phase-body">
-        Si incolla <strong>PROMPT-nuovo-progetto.md</strong> in Claude Code nella radice del progetto. La skill <strong>init-project-system</strong> esegue l'anatomia minima: crea .claude/ con memory/, context/ e rules/, istanzia le schede tecniche vuote, popola CLAUDE.md con la procedura di ripresa. Poi invoca <strong>gate-pacchetti</strong>, che non scorre il catalogo riga per riga: con settantanove voci sarebbe un elenco che nessuno legge. Riconosce prima dai fatti del progetto, e dall'obiettivo appena dichiarato, a quali dei dieci settori questo progetto appartenga, li mostra con la ragione del riconoscimento perche' si possano correggere, e solo dopo apre le tabelle dei settori riconosciuti. Qui i settori riconosciuti sono quattro: fondamenta e igiene (il progetto vivra' mesi), sviluppo e qualita' del codice (si scrive TypeScript), comprensione di una codebase (in allineamento ci sarebbe gia' del codice: qui no, e il settore resta a margine), economia del contesto (sempre valutabile). Gli altri sei si dichiarano esclusi con la ragione, cosi' che la tornata successiva sappia che erano stati esclusi e non dimenticati.<br><br>
-        Ogni pacchetto arriva in tre frasi: che cosa fa, perche' a <em>questo</em> progetto, legandolo a un fatto del repository e non alla categoria generica, e che cosa costa, comprese le capacita' che duplicherebbe. Gate accettati in questo progetto: <em>github-mcp</em> (il progetto vive su GitHub), <em>context7</em> (si usa Express e Drizzle in evoluzione rapida), <em>playwright-mcp</em> (test E2E previsti), <em>ccusage</em> (baseline misurazione token, sempre), <em>vercel-mcp</em> (deploy su Vercel), <em>stack-profiles</em> (stack TypeScript riconosciuto dal package.json: il profilo ts-mcp diventa rules/stack-profile.md), <em>claude-code-handoff</em> (riferimento delle opzioni dello strumento, con auto-update dalla guida community), <em>hooks-starter</em> (si attiva il solo hook session-context: la procedura di ripresa diventa automatica). Gate rifiutati, e registrati come rifiuti con la data: LaTeX e knowledge-wiki (non necessari ora), le skill di review di dev-skills (duplicano le native, dichiarato nella stessa frase in cui sono state proposte). Un no registrato non torna identico alla tornata successiva: torna solo se il suo presupposto cambia.
+        Si incolla <strong>PROMPT-nuovo-progetto.md</strong> in Claude Code nella radice del progetto. La skill <strong>init-project-system</strong> esegue l'anatomia minima: crea .claude/ con memory/, context/ e rules/, istanzia le schede tecniche vuote, popola CLAUDE.md con la procedura di ripresa. Poi invoca <strong>gate-pacchetti</strong>, che non scorre il catalogo riga per riga: con settantanove voci sarebbe un elenco che nessuno legge. Riconosce prima dai fatti del progetto, e dall'obiettivo appena dichiarato, a quali dei dieci settori questo progetto appartenga, li mostra con la ragione del riconoscimento perché si possano correggere, e solo dopo apre le tabelle dei settori riconosciuti. Qui i settori riconosciuti sono quattro: fondamenta e igiene (il progetto vivrà mesi), sviluppo e qualità del codice (si scrive TypeScript), comprensione di una codebase (in allineamento ci sarebbe già del codice: qui no, e il settore resta a margine), economia del contesto (sempre valutabile). Gli altri sei si dichiarano esclusi con la ragione, così che la tornata successiva sappia che erano stati esclusi e non dimenticati.<br><br>
+        Ogni pacchetto arriva in tre frasi: che cosa fa, perché a <em>questo</em> progetto, legandolo a un fatto del repository e non alla categoria generica, e che cosa costa, comprese le capacità che duplicherebbe. Gate accettati in questo progetto: <em>github-mcp</em> (il progetto vive su GitHub), <em>context7</em> (si usa Express e Drizzle in evoluzione rapida), <em>playwright-mcp</em> (test E2E previsti), <em>ccusage</em> (baseline misurazione token, sempre), <em>vercel-mcp</em> (deploy su Vercel), <em>stack-profiles</em> (stack TypeScript riconosciuto dal package.json: il profilo ts-mcp diventa rules/stack-profile.md), <em>claude-code-handoff</em> (riferimento delle opzioni dello strumento, con auto-update dalla guida community), <em>hooks-starter</em> (si attiva il solo hook session-context: la procedura di ripresa diventa automatica). Gate rifiutati, e registrati come rifiuti con la data: LaTeX e knowledge-wiki (non necessari ora), le skill di review di dev-skills (duplicano le native, dichiarato nella stessa frase in cui sono state proposte). Un no registrato non torna identico alla tornata successiva: torna solo se il suo presupposto cambia.
       </div>
       <div class="pills">
         <span class="pill p-core"><span class="pill-label">core</span>init-project-system</span>
@@ -113,11 +111,11 @@ table.src a:hover{text-decoration:underline}
 
     <div class="phase">
       <div class="phase-dot"><span>2</span></div>
-      <div class="phase-when">Giorno 1 — Prima sessione</div>
+      <div class="phase-when">Giorno 1 - Prima sessione</div>
       <div class="phase-title">Architettura e schede tecniche</div>
       <div class="phase-body">
         All'avvio della prima sessione si legge <strong>memory/index.md</strong> (stato iniziale), si invoca <strong>sync-context</strong> per misurare la divergenza. Si popola <strong>STACK.md</strong> con stack, flussi e ruolo dei file; <strong>design-and-security.md</strong> con i paradigmi scelti.<br><br>
-        <strong>security-auditor</strong> viene chiamato sullo schema di autenticazione JWT appena abbozzato: trova un finding HIGH (token senza scadenza configurabile) e uno MEDIUM (mancanza di rate limiting). Si corregge prima di andare avanti. La regola <strong>security-permissions.md</strong> e' gia' attiva: qualsiasi tentativo di leggere .env viene bloccato dalle deny rules.
+        <strong>security-auditor</strong> viene chiamato sullo schema di autenticazione JWT appena abbozzato: trova un finding HIGH (token senza scadenza configurabile) e uno MEDIUM (mancanza di rate limiting). Si corregge prima di andare avanti. La regola <strong>security-permissions.md</strong> è già attiva: qualsiasi tentativo di leggere .env viene bloccato dalle deny rules.
       </div>
       <div class="pills">
         <span class="pill p-core"><span class="pill-label">core</span>sync-context</span>
@@ -131,13 +129,13 @@ table.src a:hover{text-decoration:underline}
 
     <div class="phase">
       <div class="phase-dot"><span>3</span></div>
-      <div class="phase-when">Settimana 1 — Sviluppo attivo</div>
+      <div class="phase-when">Settimana 1 - Sviluppo attivo</div>
       <div class="phase-title">Loop di sviluppo quotidiano</div>
       <div class="phase-body">
         Ogni sessione inizia leggendo <strong>memory/index.md</strong> e <strong>current-work.md</strong>, poi <strong>sync-context</strong> misura il drift. Solo le schede pertinenti alla feature attiva vengono lette. Il <strong>RESUME-PROMPT.md</strong> (in _notes/, ignorato) viene aggiornato a fine sessione.<br><br>
-        <strong>github-mcp</strong> gestisce issue e PR senza uscire da Claude Code. <strong>code-reviewer</strong> viene invocato prima di ogni PR merge: classifica i finding per severita' (CRITICAL blocca il merge). <strong>context7</strong> risolve le ambiguita' sulla documentazione di Drizzle ORM.<br><br>
-        <strong>ccusage</strong> mostra la baseline: media 45K token per sessione. Si decide di attivare <strong>ponytail</strong> per tenere il codice piu' compatto.<br><br>
-        Serve un parere specialistico sull'ottimizzazione delle query PostgreSQL: invece di scrivere un agente da zero, <strong>/fetch-community-agent 0xfurai postgres-expert</strong> pesca l'agente gia' pronto dalla fonte community in <strong>.claude/agents/postgres-expert.md</strong>, con revisione del campo <code>model</code> prima dell'uso.
+        <strong>github-mcp</strong> gestisce issue e PR senza uscire da Claude Code. <strong>code-reviewer</strong> viene invocato prima di ogni PR merge: classifica i finding per severità (CRITICAL blocca il merge). <strong>context7</strong> risolve le ambiguità sulla documentazione di Drizzle ORM.<br><br>
+        <strong>ccusage</strong> mostra la baseline: media 45K token per sessione. Si decide di attivare <strong>ponytail</strong> per tenere il codice più compatto.<br><br>
+        Serve un parere specialistico sull'ottimizzazione delle query PostgreSQL: invece di scrivere un agente da zero, <strong>/fetch-community-agent 0xfurai postgres-expert</strong> pesca l'agente già pronto dalla fonte community in <strong>.claude/agents/postgres-expert.md</strong>, con revisione del campo <code>model</code> prima dell'uso.
       </div>
       <div class="pills">
         <span class="pill p-core"><span class="pill-label">core</span>sync-context (ogni sessione)</span>
@@ -152,12 +150,12 @@ table.src a:hover{text-decoration:underline}
 
     <div class="phase">
       <div class="phase-dot"><span>4</span></div>
-      <div class="phase-when">Settimana 1 — Sessione lunga (6 ore)</div>
+      <div class="phase-when">Settimana 1 - Sessione lunga (6 ore)</div>
       <div class="phase-title">Igiene di sessione e token economy</div>
       <div class="phase-body">
-        A meta' sessione il contesto raggiunge il 52%. Si lancia <strong>/compact</strong> con istruzione guidata: <em>"focus on the auth flow decisions and the Drizzle schema we finalized"</em>. La qualita' delle risposte resta alta.<br><br>
+        A metà sessione il contesto raggiunge il 52%. Si lancia <strong>/compact</strong> con istruzione guidata: <em>"focus on the auth flow decisions and the Drizzle schema we finalized"</em>. La qualità delle risposte resta alta.<br><br>
         Prima di chiudere, si fa scrivere a Claude un <strong>HANDOFF.md</strong> con le tre decisioni prese, i quattro file toccati e il prossimo passo concreto. La sessione successiva riparte da quel file invece che da zero.<br><br>
-        L'output dei test vitest e' verboso: si attiva <strong>rtk</strong> per comprimere l'output shell prima che entri nel contesto.
+        L'output dei test vitest è verboso: si attiva <strong>rtk</strong> per comprimere l'output shell prima che entri nel contesto.
       </div>
       <div class="pills">
         <span class="pill p-core"><span class="pill-label">regola</span>token-economy (/compact 52%)</span>
@@ -169,10 +167,10 @@ table.src a:hover{text-decoration:underline}
 
     <div class="phase">
       <div class="phase-dot"><span>5</span></div>
-      <div class="phase-when">Settimana 2 — Testing e deploy</div>
+      <div class="phase-when">Settimana 2 - Testing e deploy</div>
       <div class="phase-title">Test E2E, audit di sicurezza e deploy</div>
       <div class="phase-body">
-        <strong>playwright-mcp</strong> pilota il browser in locale per verificare le rotte API autenticate: nessun browser aggiuntivo, riusa Chromium gia' installato.<br><br>
+        <strong>playwright-mcp</strong> pilota il browser in locale per verificare le rotte API autenticate: nessun browser aggiuntivo, riusa Chromium già installato.<br><br>
         <strong>security-auditor</strong> esegue un full pass prima del deploy: trova un finding CRITICAL (path traversal su un endpoint di upload) che viene risolto prima del push. Il finding viene registrato in <strong>memory/decisions.md</strong> come decisione architetturale.<br><br>
         <strong>vercel-mcp</strong> monitora il deploy preview: differenza di latenza tra preview e produzione visibile direttamente in Claude Code. La variabile d'ambiente mancante viene aggiunta tramite vercel-mcp senza uscire dalla sessione.
       </div>
@@ -187,12 +185,12 @@ table.src a:hover{text-decoration:underline}
 
     <div class="phase">
       <div class="phase-dot"><span>6</span></div>
-      <div class="phase-when">Settimana 3-4 — Progetto in evoluzione</div>
+      <div class="phase-when">Settimana 3-4 - Progetto in evoluzione</div>
       <div class="phase-title">Memoria semantica e grafo di conoscenza</div>
       <div class="phase-body">
-        Dopo tre settimane memory/progress.md e' cresciuto a 400 righe. Si attiva <strong>claude-mem</strong>: memoria semantica persistente SQLite+Chroma, interamente locale. I due sistemi sono complementari: progress.md per la traccia versionata; claude-mem per il retrieval semantico cross-sessione.<br><br>
-        <strong>graphify</strong> genera una mappa interattiva delle relazioni tra moduli: emerge che il modulo di autenticazione e' un nodo con 12 connessioni in uscita, molto piu' centrale del previsto. Cambia la priorita' del refactoring.<br><br>
-        Si attiva <strong>codebase-memory-mcp</strong> perche' il codebase ha superato 50K righe: le query strutturali costano ora 200 token invece di 8K.
+        Dopo tre settimane memory/progress.md è cresciuto a 400 righe. Si attiva <strong>claude-mem</strong>: memoria semantica persistente SQLite+Chroma, interamente locale. I due sistemi sono complementari: progress.md per la traccia versionata; claude-mem per il retrieval semantico cross-sessione.<br><br>
+        <strong>graphify</strong> genera una mappa interattiva delle relazioni tra moduli: emerge che il modulo di autenticazione è un nodo con 12 connessioni in uscita, molto più centrale del previsto. Cambia la priorità del refactoring.<br><br>
+        Si attiva <strong>codebase-memory-mcp</strong> perché il codebase ha superato 50K righe: le query strutturali costano ora 200 token invece di 8K.
       </div>
       <div class="pills">
         <span class="pill p-pkg"><span class="pill-label">opt-in</span>claude-mem</span>
@@ -204,13 +202,13 @@ table.src a:hover{text-decoration:underline}
 
     <div class="phase">
       <div class="phase-dot"><span>7</span></div>
-      <div class="phase-when">Tag v1.0 — Documentazione finale</div>
+      <div class="phase-when">Tag v1.0 - Documentazione finale</div>
       <div class="phase-title">Onboarding, stile e riconciliazione finale</div>
       <div class="phase-body">
-        Prima del tag, <strong>sync-context</strong> passa in rassegna tutte le schede: tre sono marcate "da aggiornare" perche' il refactoring di settimana 3 ha spostato file coperti dalle paths. Si aggiornano solo quelle tre.<br><br>
-        Il README pubblico viene scritto da Claude e poi passato a <strong>humanizer</strong>: rimuove 11 occorrenze di pattern AI. La regola <strong>interaction-style</strong> era gia' attiva sulla documentazione interna; humanizer serve per la prosa esterna. Se il README cresce, <strong>readme-sync</strong> ne genera l'indice navigabile e controlla i link locali; la skill aggiorna la prosa contro le fonti e l'hook Git ricontrolla il file prima dei commit manuali.<br><br>
+        Prima del tag, <strong>sync-context</strong> passa in rassegna tutte le schede: tre sono marcate "da aggiornare" perché il refactoring di settimana 3 ha spostato file coperti dalle paths. Si aggiornano solo quelle tre.<br><br>
+        Il README pubblico viene scritto da Claude e poi passato a <strong>humanizer</strong>: rimuove 11 occorrenze di pattern AI. La regola <strong>interaction-style</strong> era già attiva sulla documentazione interna; humanizer serve per la prosa esterna. Se il README cresce, <strong>readme-sync</strong> ne genera l'indice navigabile e controlla i link locali; la skill aggiorna la prosa contro le fonti e l'hook Git ricontrolla il file prima dei commit manuali.<br><br>
         La skill <strong>onboard</strong> genera la guida per il nuovo collaboratore leggendo le schede, la storia dei commit e le decisioni architetturali.<br><br>
-        Per non lasciare che le schede tornino a divergere in silenzio dopo il tag, si registra <strong>automation-starter</strong> nel Task Scheduler locale: <code>headless-run.ps1</code> lancia <em>sync-context</em> ogni lunedi' alle 6:00, autenticato dal login gia' fatto con <code>claude login</code>, mai da una chiave API a consumo.
+        Per non lasciare che le schede tornino a divergere in silenzio dopo il tag, si registra <strong>automation-starter</strong> nel Task Scheduler locale: <code>headless-run.ps1</code> lancia <em>sync-context</em> ogni lunedì alle 6:00, autenticato dal login già fatto con <code>claude login</code>, mai da una chiave API a consumo.
       </div>
       <div class="pills">
         <span class="pill p-core"><span class="pill-label">core</span>sync-context (finale)</span>
@@ -225,12 +223,12 @@ table.src a:hover{text-decoration:underline}
 
     <div class="phase">
       <div class="phase-dot"><span>8</span></div>
-      <div class="phase-when">Mese 3 — Il progetto e' diventato altro</div>
+      <div class="phase-when">Mese 3 - Il progetto è diventato altro</div>
       <div class="phase-title">La tornata di allineamento, e il gate che si riesegue</div>
       <div class="phase-body">
-        Il progetto ha preso una direzione che a giorno 0 non aveva: per documentare una integrazione si e' cominciato a raccogliere materiale di terzi, cioe' thread di discussione, un canale di community e un paio di interviste video. Nessuno lo ha dichiarato, ed e' precisamente il punto: <strong>un gate eseguito una volta sola non se ne sarebbe accorto mai</strong>.<br><br>
-        Si incolla <strong>PROMPT-allinea-progetto-esistente.md</strong> e la tornata rifa' il giro. <strong>gate-pacchetti</strong> riconosce due settori che a giorno 0 erano esclusi: <em>fonti, ricerca e corpus documentali</em>, perche' ora esiste una cartella di materiale di terzi con quaranta file, e <em>voce, audio e trascrizione</em>, perche' due delle fonti sono video senza sottotitoli. Dichiara anche che cosa e' cambiato dalla volta precedente: i settori nuovi, i pacchetti comparsi nel catalogo da allora, e le decisioni dell'altra volta che restano valide.<br><br>
-        Vengono accettati <strong>community-sources</strong> (il grafo dei rinvii a partire dai thread, poi il censimento che li trasforma in righe di registro) e <strong>voicestudio</strong> (i due video si trascrivono in locale, e il testo finisce sotto _notes/fonti/ con la provenienza davanti). Viene rifiutato <em>discord-mcp</em>: la consultazione e' periodica e non conversazionale, quindi il programma costa meno di un server connesso a ogni turno. Le voci gia' decise a giorno 0 non vengono richieste: se ne mostra la decisione e basta.
+        Il progetto ha preso una direzione che a giorno 0 non aveva: per documentare una integrazione si è cominciato a raccogliere materiale di terzi, cioè thread di discussione, un canale di community e un paio di interviste video. Nessuno lo ha dichiarato, ed è precisamente il punto: <strong>un gate eseguito una volta sola non se ne sarebbe accorto mai</strong>.<br><br>
+        Si incolla <strong>PROMPT-allinea-progetto-esistente.md</strong> e la tornata rifà il giro. <strong>gate-pacchetti</strong> riconosce due settori che a giorno 0 erano esclusi: <em>fonti, ricerca e corpus documentali</em>, perché ora esiste una cartella di materiale di terzi con quaranta file, e <em>voce, audio e trascrizione</em>, perché due delle fonti sono video senza sottotitoli. Dichiara anche che cosa è cambiato dalla volta precedente: i settori nuovi, i pacchetti comparsi nel catalogo da allora, e le decisioni dell'altra volta che restano valide.<br><br>
+        Vengono accettati <strong>community-sources</strong> (il grafo dei rinvii a partire dai thread, poi il censimento che li trasforma in righe di registro) e <strong>voicestudio</strong> (i due video si trascrivono in locale, e il testo finisce sotto _notes/fonti/ con la provenienza davanti). Viene rifiutato <em>discord-mcp</em>: la consultazione è periodica e non conversazionale, quindi il programma costa meno di un server connesso a ogni turno. Le voci già decise a giorno 0 non vengono richieste: se ne mostra la decisione e basta.
       </div>
       <div class="pills">
         <span class="pill p-core"><span class="pill-label">core</span>PROMPT-allinea-progetto-esistente</span>
@@ -244,7 +242,7 @@ table.src a:hover{text-decoration:underline}
   </div>
 
   <div class="callout">
-    <strong>Questo e' un flusso raccontato, non una procedura da seguire alla lettera.</strong> La guida pratica, con il calendario delle attivita', la tabella che va dal sintomo allo strumento e le ricette per archetipo di progetto, e' in <a href="../GUIDA-USO.md">GUIDA-USO.md</a>.
+    <strong>Questo è un flusso raccontato, non una procedura da seguire alla lettera.</strong> La guida pratica, con il calendario delle attività, la tabella che va dal sintomo allo strumento e le ricette per archetipo di progetto, è in <a href="../GUIDA-USO.md">GUIDA-USO.md</a>.
   </div>
 
   <div class="callout">
@@ -253,9 +251,8 @@ table.src a:hover{text-decoration:underline}
 
   <div class="divider"></div>
 
-  <div class="sec-eye">Fonti e crediti</div>
-  <h2 class="sec">Tutte le repository e gli strumenti open source</h2>
-  <p class="sec-desc">Ogni componente esterno e' opt-in, mai forzato. Licenza MIT salvo indicazione diversa.</p>
+  <h2 class="sec">Fonti e crediti: le repository e gli strumenti open source</h2>
+  <p class="sec-desc">Ogni componente esterno è opt-in, mai forzato. Licenza MIT salvo indicazione diversa.</p>
 
   <table class="src">
     <thead><tr><th>Strumento</th><th>Cosa fa nel template</th><th>Repository / Fonte</th><th>Licenza</th></tr></thead>
@@ -263,9 +260,9 @@ table.src a:hover{text-decoration:underline}
       <tr class="src-group"><td colspan="4">Conoscenza e documentazione</td></tr>
       <tr><td>code-context-provider-mcp</td><td>Struttura cartelle e simboli del codice via tree-sitter</td><td><a href="https://github.com/AB498/code-context-provider-mcp">github.com/AB498/code-context-provider-mcp</a></td><td><span class="badge b-mit">MIT</span></td></tr>
       <tr><td>book-to-skill</td><td>PDF tecnico → skill interrogabile on-demand via /&lt;slug&gt;</td><td><a href="https://github.com/virgiliojr94/book-to-skill">github.com/virgiliojr94/book-to-skill</a></td><td><span class="badge b-mit">MIT</span></td></tr>
-      <tr><td>book-bib-extract</td><td>Anagrafica bibliografica da libri fisici/scansionati senza DOI; registro unificato con book-digest; verifica visiva del colophon per gli scan senza OCR affidabile</td><td>Originale al template, validato su un progetto reale</td><td>—</td></tr>
+      <tr><td>book-bib-extract</td><td>Anagrafica bibliografica da libri fisici/scansionati senza DOI; registro unificato con book-digest; verifica visiva del colophon per gli scan senza OCR affidabile</td><td>Originale al template, validato su un progetto reale</td><td>-</td></tr>
       <tr><td>Poppler (pdftoppm)</td><td>Render di pagine PDF in PNG per la verifica visiva del colophon in book-bib-extract</td><td><a href="https://poppler.freedesktop.org">poppler.freedesktop.org</a></td><td>GPL-2.0</td></tr>
-      <tr><td>LLM Wiki (pattern)</td><td>sources/ immutabili + wiki/ compilata dall'LLM</td><td><a href="#">gist.github.com/karpathy/442a6bf…</a></td><td>—</td></tr>
+      <tr><td>LLM Wiki (pattern)</td><td>sources/ immutabili + wiki/ compilata dall'LLM</td><td><a href="#">gist.github.com/karpathy/442a6bf…</a></td><td>-</td></tr>
       <tr><td>andrej-karpathy-skills</td><td>4 principi anti-over-engineering come vincoli comportamentali</td><td><a href="https://github.com/forrestchang/andrej-karpathy-skills">github.com/forrestchang/andrej-karpathy-skills</a></td><td><span class="badge b-mit">MIT</span></td></tr>
       <tr><td>graphify</td><td>Grafo interattivo di conoscenza: nodi, relazioni, community</td><td><a href="https://github.com/safishamsi/graphify">github.com/safishamsi/graphify</a></td><td><span class="badge b-mit">MIT</span></td></tr>
       <tr><td>codebase-memory-mcp</td><td>Grafo strutturale del codice (158 linguaggi); 10x-120x meno token</td><td><a href="https://github.com/DeusData/codebase-memory-mcp">github.com/DeusData/codebase-memory-mcp</a></td><td><span class="badge b-mit">MIT</span></td></tr>
@@ -276,7 +273,7 @@ table.src a:hover{text-decoration:underline}
       <tr><td>Academix</td><td>Ricerca letteratura aggregata OpenAlex+DBLP+Semantic Scholar+arXiv+Crossref</td><td><a href="https://github.com/xingyulu23/Academix">github.com/xingyulu23/Academix</a></td><td>Community</td></tr>
       <tr><td>semantic-scholar-mcp</td><td>Ricerca su 225M+ paper con export BibTeX e tracking di sessione</td><td><a href="https://github.com/akapet00/semantic-scholar-mcp">github.com/akapet00/semantic-scholar-mcp</a></td><td>Community</td></tr>
       <tr><td>mcp-refchecker</td><td>Verifica anti-hallucination delle citazioni contro Semantic Scholar/OpenAlex/Crossref</td><td><a href="https://github.com/JonasBaath/mcp-refchecker">github.com/JonasBaath/mcp-refchecker</a></td><td><span class="badge b-mit">MIT</span></td></tr>
-      <tr><td>GROBID</td><td>Parsing di PDF scientifici in XML/TEI strutturato, incluso il parsing dei riferimenti</td><td>Mantenuto da Luca Foppiano/Inria</td><td>—</td></tr>
+      <tr><td>GROBID</td><td>Parsing di PDF scientifici in XML/TEI strutturato, incluso il parsing dei riferimenti</td><td>Mantenuto da Luca Foppiano/Inria</td><td>-</td></tr>
       <tr><td>paper-qa (PaperQA2)</td><td>Framework RAG agentico per letteratura scientifica con citazioni verificate</td><td><a href="https://github.com/Future-House/paper-qa">github.com/Future-House/paper-qa</a></td><td>Da verificare</td></tr>
       <tr><td>arxiv-cli</td><td>CLI standalone per recupero rapido paper arXiv senza MCP</td><td><a href="https://github.com/AstraBert/arxiv-cli">github.com/AstraBert/arxiv-cli</a></td><td><span class="badge b-mit">MIT</span></td></tr>
 
@@ -288,10 +285,10 @@ table.src a:hover{text-decoration:underline}
       <tr><td>serena</td><td>Grafo semantico del codice via language server, navigazione a livello di simbolo</td><td><a href="https://github.com/oraios/serena">github.com/oraios/serena</a></td><td><span class="badge b-mit">MIT</span></td></tr>
       <tr><td>repomix</td><td>Snapshot consolidato dell'intera codebase ottimizzato per l'AI</td><td><a href="https://repomix.com">repomix.com</a></td><td><span class="badge b-mit">MIT</span></td></tr>
       <tr><td>deepwiki-skill</td><td>Documentazione di apprendimento con citazioni precise a riga</td><td><a href="https://github.com/natsu1211/deepwiki-skill">github.com/natsu1211/deepwiki-skill</a></td><td>OSS</td></tr>
-      <tr><td>DeepWiki MCP</td><td>Q&amp;A architetturale su repository GitHub pubbliche gia' indicizzate</td><td>Endpoint ufficiale mcp.deepwiki.com</td><td>Gratis solo repo pubblici</td></tr>
+      <tr><td>DeepWiki MCP</td><td>Q&amp;A architetturale su repository GitHub pubbliche già indicizzate</td><td>Endpoint ufficiale mcp.deepwiki.com</td><td>Gratis solo repo pubblici</td></tr>
 
       <tr class="src-group"><td colspan="4">Ricerca fondata su fonti proprie (notebooklm-bridge)</td></tr>
-      <tr><td>NotebookLM</td><td>Motore di recupero ancorato alle fonti; usato nel piano gratuito da browser (no API pubblica consumer, l'API ufficiale e' solo Enterprise a pagamento)</td><td><a href="https://notebooklm.google.com">notebooklm.google.com</a></td><td>Prodotto Google · gratuito</td></tr>
+      <tr><td>NotebookLM</td><td>Motore di recupero ancorato alle fonti; usato nel piano gratuito da browser (no API pubblica consumer, l'API ufficiale è solo Enterprise a pagamento)</td><td><a href="https://notebooklm.google.com">notebooklm.google.com</a></td><td>Prodotto Google · gratuito</td></tr>
       <tr><td>notebooklm-mcp</td><td>Modo assistito opt-in: pilota il NotebookLM gratuito nel browser via Patchright, login persistito. Community, NON ufficiale, zona grigia dei ToS</td><td><a href="https://github.com/PleasePrompto/notebooklm-mcp">github.com/PleasePrompto/notebooklm-mcp</a></td><td><span class="badge b-mit">MIT</span></td></tr>
 
       <tr class="src-group"><td colspan="4">Documenti e conversione</td></tr>
@@ -304,11 +301,11 @@ table.src a:hover{text-decoration:underline}
       <tr><td>mermaid-cli</td><td>Resa Mermaid .mmd → .svg riusando Chromium di sistema</td><td><a href="https://github.com/mermaid-js/mermaid-cli">github.com/mermaid-js/mermaid-cli</a></td><td><span class="badge b-mit">MIT</span></td></tr>
 
       <tr class="src-group"><td colspan="4">Fonti di community, voce e cataloghi esterni di skill</td></tr>
-      <tr><td>community-sources</td><td>Sei strumenti per le fonti che nessuno strumento di sessione raggiunge: canale Discord via bot account, esportazione ampia, grafo dei rinvii di Reddit via archivio pubblico, e i tre che riducono (export in Markdown, sottotitoli in parlato, corsa in censimento di fonti)</td><td>Originale al template; l'archivio pubblico e' <a href="https://github.com/ArthurHeitmann/arctic_shift">Arctic Shift</a>, successore di Pushshift</td><td>&mdash;</td></tr>
+      <tr><td>community-sources</td><td>Sei strumenti per le fonti che nessuno strumento di sessione raggiunge: canale Discord via bot account, esportazione ampia, grafo dei rinvii di Reddit via archivio pubblico, e i tre che riducono (export in Markdown, sottotitoli in parlato, corsa in censimento di fonti)</td><td>Originale al template; l'archivio pubblico è <a href="https://github.com/ArthurHeitmann/arctic_shift">Arctic Shift</a>, successore di Pushshift</td><td>&mdash;</td></tr>
       <tr><td>DiscordChatExporter</td><td>Esportatore di terze parti orchestrato da export-discord.py per le esportazioni ampie e rare</td><td><a href="https://github.com/Tyrrrz/DiscordChatExporter">github.com/Tyrrrz/DiscordChatExporter</a></td><td><span class="badge b-mit">MIT</span></td></tr>
-      <tr><td>VoiceStudio</td><td>Riconoscimento e sintesi vocale in locale, 646 lingue, senza account: chiude la seconda via che la regola sulle fonti prescrive per un video, cioe' la trascrizione dove i sottotitoli automatici non esistono</td><td><a href="https://github.com/debpalash/VoiceStudio">github.com/debpalash/VoiceStudio</a></td><td>AGPL-3.0</td></tr>
+      <tr><td>VoiceStudio</td><td>Riconoscimento e sintesi vocale in locale, 646 lingue, senza account: chiude la seconda via che la regola sulle fonti prescrive per un video, cioè la trascrizione dove i sottotitoli automatici non esistono</td><td><a href="https://github.com/debpalash/VoiceStudio">github.com/debpalash/VoiceStudio</a></td><td>AGPL-3.0</td></tr>
       <tr><td>scientific-agent-skills</td><td>166 skill scientifiche per lo standard aperto Agent Skills; il pacchetto non installa, genera la mappa con autore, licenza, presenza di codice eseguibile e sovrapposizioni con il catalogo</td><td><a href="https://github.com/K-Dense-AI/scientific-agent-skills">K-Dense-AI/scientific-agent-skills</a> &middot; <a href="https://arxiv.org/abs/2609.00065">arXiv:2609.00065</a></td><td><span class="badge b-mit">MIT</span></td></tr>
-      <tr><td>mattpocock/skills</td><td>37 skill di ingegneria; il pacchetto e' la mappa fra quelle e cio' che il sistema gia' ha, con le tre che vanno adattate perche' scrivono in file che qui hanno un altro nome</td><td><a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>mattpocock/skills</td><td>37 skill di ingegneria; il pacchetto è la mappa fra quelle e ciò che il sistema già ha, con le tre che vanno adattate perché scrivono in file che qui hanno un altro nome</td><td><a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a></td><td><span class="badge b-mit">MIT</span></td></tr>
       <tr><td>certifi</td><td>Archivio di radici dei certificati aggiornato, usato da fetch-reddit.py: una radice ISRG scaduta nell'archivio di sistema rendeva irraggiungibili siti in piedi, e con essi 130 nodi di una corsa</td><td><a href="https://github.com/certifi/python-certifi">github.com/certifi/python-certifi</a></td><td>MPL-2.0</td></tr>
 
       <tr class="src-group"><td colspan="4">Risparmio token</td></tr>
@@ -332,10 +329,10 @@ table.src a:hover{text-decoration:underline}
 
       <tr class="src-group"><td colspan="4">Orchestrazione multi-agente</td></tr>
       <tr><td>multiclaude</td><td>Supervisore per 3+ feature branch paralleli con gate review</td><td><a href="https://github.com/dlorenc/multiclaude">github.com/dlorenc/multiclaude</a></td><td><span class="badge b-mit">MIT</span></td></tr>
-      <tr><td>subagent-template</td><td>code-reviewer, security-auditor, debugger ed explorer come agenti template</td><td>Documentazione ufficiale Claude Code; debugger ed explorer dal bundle Cranot</td><td>—</td></tr>
+      <tr><td>subagent-template</td><td>code-reviewer, security-auditor, debugger ed explorer come agenti template</td><td>Documentazione ufficiale Claude Code; debugger ed explorer dal bundle Cranot</td><td>-</td></tr>
 
       <tr class="src-group"><td colspan="4">Strumento e convenzioni (bundle Cranot)</td></tr>
-      <tr><td>claude-code-guide</td><td>Guida community auto-aggiornante alle funzionalita' di Claude Code: fonte distillata dal pacchetto claude-code-handoff e origine (via bundle dell'utente) di stack-profiles, hooks-starter e dev-skills. Auto-update upstream reale ma con stallo osservato: gli script del pacchetto lo rilevano e avvisano</td><td><a href="https://github.com/Cranot/claude-code-guide">github.com/Cranot/claude-code-guide</a></td><td>Nessuna licenza dichiarata (si distillano i contenuti fattuali)</td></tr>
+      <tr><td>claude-code-guide</td><td>Guida community auto-aggiornante alle funzionalità di Claude Code: fonte distillata dal pacchetto claude-code-handoff e origine (via bundle dell'utente) di stack-profiles, hooks-starter e dev-skills. Auto-update upstream reale ma con stallo osservato: gli script del pacchetto lo rilevano e avvisano</td><td><a href="https://github.com/Cranot/claude-code-guide">github.com/Cranot/claude-code-guide</a></td><td>Nessuna licenza dichiarata (si distillano i contenuti fattuali)</td></tr>
       <tr><td>create-pull-request</td><td>Action GitHub usata dal workflow opzionale di claude-code-handoff per aprire la PR di aggiornamento</td><td><a href="https://github.com/peter-evans/create-pull-request">github.com/peter-evans/create-pull-request</a></td><td><span class="badge b-mit">MIT</span></td></tr>
 
       <tr class="src-group"><td colspan="4">Automazione e catalogo subagent community</td></tr>
@@ -350,21 +347,21 @@ table.src a:hover{text-decoration:underline}
       <tr><td>tmux-claude-session-manager</td><td>Plugin tmux con stato live delle sessioni Claude Code</td><td><a href="https://github.com/craftzdog/tmux-claude-session-manager">github.com/craftzdog/tmux-claude-session-manager</a></td><td><span class="badge b-mit">MIT</span></td></tr>
       <tr><td>claudecode.nvim</td><td>Plugin Neovim con protocollo MCP WebSocket in Lua pura</td><td><a href="https://github.com/coder/claudecode.nvim">github.com/coder/claudecode.nvim</a></td><td><span class="badge b-mit">MIT</span></td></tr>
 
-      <tr class="src-group"><td colspan="4">Stile e qualita'</td></tr>
+      <tr class="src-group"><td colspan="4">Stile e qualità</td></tr>
       <tr><td>humanizer</td><td>Rimuove 33 pattern di scrittura AI dal testo</td><td><a href="https://github.com/blader/humanizer">github.com/blader/humanizer</a></td><td><span class="badge b-mit">MIT</span></td></tr>
       <tr><td>taste-skill</td><td>Design-taste per interfacce: layout, tipografia, spaziatura, motion</td><td><a href="https://github.com/Leonxlnx/taste-skill">github.com/Leonxlnx/taste-skill</a></td><td><span class="badge b-mit">MIT</span></td></tr>
       <tr><td>code-simplifier</td><td>Filtro di semplificazione del codice con vincolo no-behaviour-change</td><td><a href="https://github.com/anthropics/claude-plugins-official">github.com/anthropics/claude-plugins-official</a></td><td><span class="badge b-off">Ufficiale Anthropic</span></td></tr>
       <tr><td>markdown-it-py</td><td>Dipendenza dev di md-unwrap: rende in HTML originale e output per l'oracolo di correttezza del formatter</td><td><a href="https://github.com/executablebooks/markdown-it-py">github.com/executablebooks/markdown-it-py</a></td><td><span class="badge b-mit">MIT</span></td></tr>
-      <tr><td>Prettier</td><td>Alternativa esterna a md-unwrap (<code>--prose-wrap never</code>), documentata nel README del pacchetto ma non adottata come default perche' normalizza anche liste, tabelle, titoli ed escaping</td><td><a href="https://github.com/prettier/prettier">github.com/prettier/prettier</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>Prettier</td><td>Alternativa esterna a md-unwrap (<code>--prose-wrap never</code>), documentata nel README del pacchetto ma non adottata come default perché normalizza anche liste, tabelle, titoli ed escaping</td><td><a href="https://github.com/prettier/prettier">github.com/prettier/prettier</a></td><td><span class="badge b-mit">MIT</span></td></tr>
 
       <tr class="src-group"><td colspan="4">Build e ambienti specifici</td></tr>
-      <tr><td>latex (eco-sistema)</td><td>Manifesto pacchetti TeX, script build .ps1/.sh, skill latex-build</td><td>Ecosystem LaTeX standard</td><td>—</td></tr>
+      <tr><td>latex (eco-sistema)</td><td>Manifesto pacchetti TeX, script build .ps1/.sh, skill latex-build</td><td>Ecosystem LaTeX standard</td><td>-</td></tr>
     </tbody>
   </table>
 
   <div class="fn">
-    I benchmark di risparmio token sono auto-dichiarati dagli autori dei rispettivi strumenti. Nessuno e' incluso nel bundle di default: ogni voce si attiva su gate esplicito e conferma per quel progetto specifico.<br><br>
-    Aggiornato incrementalmente, non rigenerato da zero, a ogni pacchetto o funzionalita' aggiunta al sistema: vedi il passo 6 di "Come estendere il sistema" nel README.md di radice.
+    I benchmark di risparmio token sono auto-dichiarati dagli autori dei rispettivi strumenti. Nessuno è incluso nel bundle di default: ogni voce si attiva su gate esplicito e conferma per quel progetto specifico.<br><br>
+    Aggiornato incrementalmente, non rigenerato da zero, a ogni pacchetto o funzionalità aggiunta al sistema: vedi il passo 6 di "Come estendere il sistema" nel README.md di radice.
   </div>
 
 </div>

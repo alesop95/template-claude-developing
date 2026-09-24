@@ -52,7 +52,7 @@ Ogni segno ha gli stessi campi. *Che cosa è* lo descrive. *Perché si produce* 
 
 **Prima e dopo.** "Non è una questione di strumenti: è una questione di metodo" diventa "Il problema è il metodo: con lo stesso strumento, due gruppi hanno ottenuto risultati opposti."
 
-**Una nota su questo template.** La prima corsa di P3 sugli stessi file di sistema ha trovato quattordici occorrenze della forma "non è X: è Y" in sei file, alcune scritte nella stessa giornata in cui è nato questo pacchetto. Il segno era dentro il sistema che lo descrive, e la misura resta qui come promemoria.
+**Una nota su questo template.** La prima corsa di P3 sugli stessi file di sistema ha trovato quattordici occorrenze della forma "non è X: è Y" in sei file, alcune scritte nella stessa giornata in cui è nato questo pacchetto. Il segno era dentro il sistema che lo descrive. Una revisione dello stesso giorno ha riscritto in forma affermativa tutte le occorrenze nel template, comprese quelle emerse dopo aver ripristinato gli accenti scritti con l'apostrofo, che il rilevatore non vedeva: a revisione conclusa P3 non segnala niente in nessun file del template.
 
 ### P4, tutto in tre
 
@@ -60,7 +60,7 @@ Ogni segno ha gli stessi campi. *Che cosa è* lo descrive. *Perché si produce* 
 
 **Perché si produce.** "LLMs overuse the rule of three", dal gruppo di aggettivi alla serie di tre frasi brevi, e la usano "to make superficial analyses appear more comprehensive" [F01].
 
-**Come si riconosce.** P4 segnala tre frasi di una o due parole di fila, e i documenti in cui almeno il settanta per cento di sei o più elenchi ha tre elementi. Misurata il 2026-09-23 sui file di sistema del template, cioè le regole sotto `.claude/rules/`, `PROJECT-SYSTEM.md`, `README.md`, `GUIDA-USO.md` e `CASE-STUDIES.md`, la seconda condizione scatta in sette file; in `PROJECT-SYSTEM.md` gli elenchi di tre sono 37 su 49. Lo strumento riconosce come elenco una serie di voci di una o due parole separate da virgole e chiuse da una congiunzione, e scambia ancora per elenco qualche proposizione breve: la quota va letta come ordine di grandezza.
+**Come si riconosce.** P4 segnala tre frasi di una o due parole di fila, e i documenti in cui almeno il settanta per cento di sei o più elenchi ha tre elementi. Misurata il 2026-09-23 sui file di sistema del template, cioè le regole sotto `.claude/rules/`, `PROJECT-SYSTEM.md`, `README.md`, `GUIDA-USO.md` e `CASE-STUDIES.md`, la seconda condizione scatta in sette file; in `PROJECT-SYSTEM.md` gli elenchi di tre erano 37 su 49. La revisione ha riscritto le triadi retoriche e ha lasciato quelle che elencano tre cose reali, come le tre primitive di un server MCP o tre cause distinte, e in `PROJECT-SYSTEM.md` il conto è sceso a 33 su 44: la soglia resta superata, e va bene così, perché lo scopo è la prosa e non il numero. Lo strumento riconosce come elenco una serie di voci di una o due parole separate da virgole e chiuse da una congiunzione, e scambia ancora per elenco qualche proposizione breve: la quota va letta come ordine di grandezza.
 
 **Che cosa si fa invece.** Si contano le cose che ci sono davvero. Se sono due, si scrivono due; se sono cinque, cinque.
 
@@ -122,7 +122,7 @@ La pagina di Wikipedia osserva che i testi generati usano il trattino lungo più
 
 **Perché si produce.** La skill di Anthropic cita "Accenting just a single word or phrase in a headline, like putting one word in italic/bold" [F06]; `taste-skill` indica Fraunces e Instrument Serif come "the two LLM-favorite display serifs" [F08].
 
-**Come si riconosce.** U3: un h1 o h2 che contiene un elemento em o i, o una classe italic. U10 segnala i caratteri indicati dalle fonti.
+**Come si riconosce.** U3: un h1 o h2 che contiene un elemento em o i, o una classe italic, oppure uno span che isola una parte breve del titolo, cioè la stessa enfasi ottenuta con un colore invece che con il corsivo. U10 segnala i caratteri indicati dalle fonti.
 
 **Che cosa si fa invece.** Si costruisce la gerarchia con la dimensione e il peso dell'intero titolo. Un'enfasi interna si usa quando quella parola è davvero il punto, e allora raramente è in un titolo.
 
@@ -132,7 +132,7 @@ La pagina di Wikipedia osserva che i testi generati usano il trattino lungo più
 
 **Perché si produce.** La skill di Anthropic la nomina come "tracked-out ALL-CAPS eyebrow label above every heading" [F06]; `taste-skill` ne ammette al massimo una ogni tre sezioni [F08].
 
-**Come si riconosce.** U4: più di un'etichetta maiuscola spaziata ogni tre titoli nello stesso file.
+**Come si riconosce.** U4: più di un'etichetta maiuscola spaziata ogni tre titoli nello stesso file, riconosciuta sia dalle classi di utilità sia da una regola CSS del file con maiuscolo e spaziatura delle lettere; nel secondo caso contano solo gli elementi seguiti subito da un titolo, perché un badge o una didascalia maiuscola non sono etichette sopra un titolo.
 
 **Che cosa si fa invece.** Si toglie l'etichetta e si lascia che il titolo dica da solo di che cosa parla la sezione. Si tiene dove orienta davvero, per esempio la categoria di un articolo in un elenco misto.
 
@@ -172,7 +172,7 @@ La pagina di Wikipedia osserva che i testi generati usano il trattino lungo più
 
 **Perché si produce.** La guida di Anthropic nomina "Predictable layouts and component patterns" [F07].
 
-**Come si riconosce.** U8 confronta lo scheletro dei primi tag interni di ogni sezione e segnala tre o più sezioni con la stessa struttura. Una classe comune non basta, perché è normale pratica CSS. Sulle pagine HTML del template stesso il controllo trova una pagina di catalogo con undici sezioni identiche: lì la ripetizione è corretta, perché i dati sono omogenei, e la risposta giusta è scriverlo.
+**Come si riconosce.** U8 confronta lo scheletro dei primi tag interni di ogni sezione e segnala tre o più sezioni con la stessa struttura. Una classe comune non basta, perché è normale pratica CSS. Sulle pagine HTML del template stesso il controllo trova una pagina di catalogo con undici sezioni identiche: lì la ripetizione è corretta, perché i dati sono omogenei, e la risposta giusta è scriverlo. L'altra pagina aveva invece palette crema e ambra, una frase del titolo isolata e colorata e un'etichetta sopra ogni titolo, ed è stata ridisegnata; la misura del contrasto ha trovato nella palette vecchia due coppie sotto la soglia WCAG, le note a piè a 2,88:1 e le date in ambra a 3,64:1.
 
 **Che cosa si fa invece.** Si lascia che la struttura segua il contenuto di ciascuna sezione. Dove i dati sono davvero omogenei, una tabella o un elenco servono meglio di una serie di card [F10].
 

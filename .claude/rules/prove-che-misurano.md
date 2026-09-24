@@ -78,9 +78,9 @@ Il criterio per riconoscere il passo discriminante, quando la sequenza la si sta
 
 Riguarda l'uscita degli strumenti di controllo, ed è la ragione per cui un controllo può esistere, funzionare, e non proteggere più niente.
 
-Un controllo che gira spesso finisce per segnalare, accanto ai difetti veri, un insieme di casi noti e deliberati: un file che contiene di proposito la forma che lo strumento cerca, un valore che è un requisito e non una svista, una convenzione a cui si è scelto di derogare. Nessuno di questi va corretto, quindi si impara a scorrere l'uscita fino in fondo cercando ciò che è nuovo. *Il costo non è il tempo speso a scorrere: è che a un certo punto non si scorre più*, e la prima segnalazione vera arriva in mezzo a un rumore che si è imparato a ignorare.
+Un controllo che gira spesso finisce per segnalare, accanto ai difetti veri, un insieme di casi noti e deliberati: un file che contiene di proposito la forma che lo strumento cerca, un valore che è un requisito e non una svista, una convenzione a cui si è scelto di derogare. Nessuno di questi va corretto, quindi si impara a scorrere l'uscita fino in fondo cercando ciò che è nuovo. *Il costo vero arriva il giorno in cui non si scorre più*, molto più del tempo speso a scorrere, e la prima segnalazione vera arriva in mezzo a un rumore che si è imparato a ignorare.
 
-Il caso osservato: due controlli tipografici segnalavano da settimane nove e due occorrenze rispettivamente, tutte note e tutte legittime. Dichiararle, con la ragione scritta accanto a ciascuna, ha portato entrambe le uscite a zero. Non è cambiato niente nei file; è cambiato che da quel momento **qualunque cosa compaia è nuova**.
+Il caso osservato: due controlli tipografici segnalavano da settimane nove e due occorrenze rispettivamente, tutte note e tutte legittime. Dichiararle, con la ragione scritta accanto a ciascuna, ha portato entrambe le uscite a zero. Nei file non è cambiato niente; da quel momento però **qualunque cosa compaia è nuova**.
 
 Da qui la prescrizione, che è più forte di quanto sembri: *un caso noto e accettato va dichiarato, non tollerato*. Le due cose si somigliano e differiscono in tutto. Tollerare significa che la conoscenza vive nella testa di chi guarda l'uscita, quindi si perde quando cambia chi guarda; dichiarare significa che vive accanto al caso, con il motivo, e che l'uscita torna a essere leggibile.
 
@@ -96,7 +96,7 @@ Uno strumento che modifica i file sul posto si prova nel modo ovvio: si copia qu
 
 Il difetto era piccolo, era lì da mesi, e la sua conseguenza no: *l'unico modo di provare quello strumento era lanciarlo sui file veri*. Su uno strumento che riscrive, e che in passato aveva già rotto la compilazione di un progetto, è precisamente la proprietà che non si può permettere.
 
-Ne discende una verifica da fare una volta per ogni strumento di questa famiglia, e costa un minuto: **si prova a puntarlo su una copia fuori dal repository**. Se non funziona, il difetto non è la scomodità, è che la prova sicura non esiste. Nel caso osservato il rimedio è stato trattare un percorso fuori dalla radice come non escludibile invece di interrompere, che è anche la semantica corretta, dato che le esclusioni sono dichiarate relative alla radice.
+Ne discende una verifica da fare una volta per ogni strumento di questa famiglia, e costa un minuto: **si prova a puntarlo su una copia fuori dal repository**. Se non funziona, il difetto è che la prova sicura non esiste, e la scomodità ne è solo il sintomo. Nel caso osservato il rimedio è stato trattare un percorso fuori dalla radice come non escludibile invece di interrompere, che è anche la semantica corretta, dato che le esclusioni sono dichiarate relative alla radice.
 
 ## Una finzione scritta guardando il codice descrive il codice, non la dipendenza
 

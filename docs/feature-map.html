@@ -1,4 +1,4 @@
-<title>template-claude-developing — Mappa completa delle feature</title>
+<title>template-claude-developing - Mappa completa delle feature</title>
 <style>
 :root{
   --ground:#F1F2F6;--surface:#fff;--sidebar:#1A1D2E;
@@ -80,7 +80,7 @@ a.repo:hover{text-decoration:underline}
     <a class="sl-a" href="#pkg-token"><span class="sl-n">07</span>Risparmio token</a>
     <a class="sl-a" href="#pkg-mcp"><span class="sl-n">08</span>MCP server</a>
     <a class="sl-a" href="#pkg-orch"><span class="sl-n">09</span>Orchestrazione</a>
-    <a class="sl-a" href="#pkg-style"><span class="sl-n">10</span>Stile e qualita'</a>
+    <a class="sl-a" href="#pkg-style"><span class="sl-n">10</span>Stile e qualità</a>
     <a class="sl-a" href="#pkg-cranot"><span class="sl-n">11</span>Strumento e convenzioni</a>
     <a class="sl-a" href="#pkg-community"><span class="sl-n">12</span>Automazione e community</a>
   </div>
@@ -92,14 +92,14 @@ a.repo:hover{text-decoration:underline}
     <strong>10</strong> aggiunti il 2026-07-01 (docx-to-docs, doc-ingest, academic-researcher, zotero-mcp, academix, semantic-scholar-mcp, refchecker-mcp, arxiv-cli, grobid, paperqa2)<br>
     <strong>8</strong> aggiunti il 2026-07-02 (learning-agent, knowledge-mcp, anki-mcp, codebase-learning, serena, repomix, deepwiki-skill, deepwiki-mcp)<br>
     <strong>2</strong> aggiunti il 2026-07-02 (notebooklm-bridge, notebooklm-mcp)<br>
-    <strong>4</strong> aggiunti il 2026-07-02 dal bundle Cranot (claude-code-handoff, stack-profiles, hooks-starter, dev-skills), piu' 2 agenti template (debugger, explorer)<br>
+    <strong>4</strong> aggiunti il 2026-07-02 dal bundle Cranot (claude-code-handoff, stack-profiles, hooks-starter, dev-skills), più 2 agenti template (debugger, explorer)<br>
     <strong>1</strong> aggiunto il 2026-07-02, originale al template (automation-starter), riportato in questa pagina solo ora<br>
     <strong>3</strong> aggiunti il 2026-07-02 (agent-catalog, wshobson-agents, voltagent-subagents)<br>
     <strong>1</strong> aggiunto il 2026-07-20, validato su un progetto reale (book-bib-extract)<br>
     <strong>1</strong> aggiunto il 2026-08-05, originale al template, validato sui file di questo repository (md-unwrap)<br><br>
-    <strong>12</strong> riportati il 2026-09-16: cinque di fondamenta gia' in catalogo e mai mappati (operations-log, documentazione-didattica, alignment, anonymization, fix-typography), tre di fonti di community (community-sources, discord-mcp, hermes-agent) e quattro nuovi (voicestudio, voicestudio-mcp, scientific-skills, matt-pocock-skills)<br>
-    <strong>1</strong> sezione nuova il 2026-09-16: il gate dei pacchetti per settore, che e' il modo in cui tutto il catalogo viene proposto<br><br>
-    Vedi anche: <a href="project-flow.html" style="color:#94A3B8;font-size:10px">project-flow.html</a> e <a href="../GUIDA-USO.md" style="color:#94A3B8;font-size:10px">GUIDA-USO.md</a>, la guida pratica organizzata per obiettivo: calendario delle attivita', tabella dal sintomo allo strumento, ricette per archetipo di progetto.</p>
+    <strong>12</strong> riportati il 2026-09-16: cinque di fondamenta già in catalogo e mai mappati (operations-log, documentazione-didattica, alignment, anonymization, fix-typography), tre di fonti di community (community-sources, discord-mcp, hermes-agent) e quattro nuovi (voicestudio, voicestudio-mcp, scientific-skills, matt-pocock-skills)<br>
+    <strong>1</strong> sezione nuova il 2026-09-16: il gate dei pacchetti per settore, che è il modo in cui tutto il catalogo viene proposto<br><br>
+    Vedi anche: <a href="project-flow.html" style="color:#94A3B8;font-size:10px">project-flow.html</a> e <a href="../GUIDA-USO.md" style="color:#94A3B8;font-size:10px">GUIDA-USO.md</a>, la guida pratica organizzata per obiettivo: calendario delle attività, tabella dal sintomo allo strumento, ricette per archetipo di progetto.</p>
   </div>
 </aside>
 
@@ -118,14 +118,14 @@ a.repo:hover{text-decoration:underline}
   </div>
 
   <section class="sec" id="core">
-    <div class="sec-hd"><span class="sec-num">01</span><h2 class="sec-title">Sistema core — lavoro originale</h2></div>
+    <div class="sec-hd"><span class="sec-num">01</span><h2 class="sec-title">Sistema core - lavoro originale</h2></div>
     <p class="sec-sub">Componenti progettati e scritti per questo template. Nessuna dipendenza esterna; portabili su qualsiasi progetto tramite i due prompt fissi.</p>
     <div class="card">
       <div class="card-hd"><span class="dot d-green"></span>Architettura e procedure</div>
       <table class="t">
         <thead><tr><th>Componente</th><th>Posizione</th><th>Funzione</th></tr></thead>
         <tbody>
-          <tr><td><strong>PROJECT-SYSTEM.md</strong></td><td><code>.claude/</code></td><td>Fonte di verita' dell'architettura; procedura di inizializzazione in sezioni numerate</td></tr>
+          <tr><td><strong>PROJECT-SYSTEM.md</strong></td><td><code>.claude/</code></td><td>Fonte di verità dell'architettura; procedura di inizializzazione in sezioni numerate</td></tr>
           <tr><td><strong>PROMPT-nuovo-progetto.md</strong></td><td><code>.claude/</code></td><td>Punto di ingresso per un progetto nuovo o quasi vuoto</td></tr>
           <tr><td><strong>PROMPT-allinea-progetto-esistente.md</strong></td><td><code>.claude/</code></td><td>Allineamento retroattivo di un progetto con codice e storia git preesistenti</td></tr>
           <tr><td><strong>PACKAGES.md</strong></td><td><code>.claude/templates/</code></td><td>Catalogo dei pacchetti opt-in; letto da init-project-system per proporre i gate</td></tr>
@@ -142,12 +142,12 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <div class="card">
-      <div class="card-hd"><span class="dot d-new"></span>Due presidi nuovi del motore — 2026-09-16</div>
+      <div class="card-hd"><span class="dot d-new"></span>Due presidi nuovi del motore - 2026-09-16</div>
       <table class="t">
         <thead><tr><th>Strumento</th><th>Che difetto intercetta</th><th>Quando gira</th></tr></thead>
         <tbody>
-          <tr><td><strong>verifica-ripresa.py</strong> <span class="badge b-new">Nuovo</span></td><td>Una sessione caduta a meta' lascia il progetto in uno stato che il file di ripresa non descrive, e un file di ripresa vecchio ha lo stesso aspetto di uno aggiornato. Confronta l'impronta registrata alla chiusura con lo stato reale di git: commit comparsi dopo, file rimasti a meta', memoria arretrata, schede ancorate a un commit che non esiste</td><td>Primo atto della sessione (skill <strong>riprendi</strong>); l'impronta si registra come ultimo atto, dopo i commit</td></tr>
-          <tr><td><strong>lint-doc-references.py</strong> <span class="badge b-new">Nuovo</span></td><td>Un documento che nomina un file inesistente e' una fotografia invecchiata: non produce un difetto nel codice, produce un difetto nel ragionamento di chi lo legge. Divide in categorie invece di ammucchiare, perche' cento segnalazioni di cui novanta legittime insegnano a ignorare le altre dieci</td><td>Prima di un commit; le radici si leggono da git e non si configurano</td></tr>
+          <tr><td><strong>verifica-ripresa.py</strong> <span class="badge b-new">Nuovo</span></td><td>Una sessione caduta a metà lascia il progetto in uno stato che il file di ripresa non descrive, e un file di ripresa vecchio ha lo stesso aspetto di uno aggiornato. Confronta l'impronta registrata alla chiusura con lo stato reale di git: commit comparsi dopo, file rimasti a metà, memoria arretrata, schede ancorate a un commit che non esiste</td><td>Primo atto della sessione (skill <strong>riprendi</strong>); l'impronta si registra come ultimo atto, dopo i commit</td></tr>
+          <tr><td><strong>lint-doc-references.py</strong> <span class="badge b-new">Nuovo</span></td><td>Un documento che nomina un file inesistente è una fotografia invecchiata: non produce un difetto nel codice, produce un difetto nel ragionamento di chi lo legge. Divide in categorie invece di ammucchiare, perché cento segnalazioni di cui novanta legittime insegnano a ignorare le altre dieci</td><td>Prima di un commit; le radici si leggono da git e non si configurano</td></tr>
         </tbody>
       </table>
     </div>
@@ -157,37 +157,37 @@ a.repo:hover{text-decoration:underline}
 
   <section class="sec" id="rules">
     <div class="sec-hd"><span class="sec-num">02</span><h2 class="sec-title">Regole modulari</h2></div>
-    <p class="sec-sub">Caricate su necessita'. Definiscono stile, sicurezza, identita' git e pratiche operative. Nove regole totali: alle sei storiche si sono aggiunte quella sulle fonti non recuperabili, quella sulla persistenza di cio' che si scrive in sessione, e quella sulle prove che misurano davvero un difetto.</p>
+    <p class="sec-sub">Caricate su necessità. Definiscono stile, sicurezza, identità git e pratiche operative. Nove regole totali: alle sei storiche si sono aggiunte quella sulle fonti non recuperabili, quella sulla persistenza di ciò che si scrive in sessione, e quella sulle prove che misurano davvero un difetto.</p>
     <div class="card">
       <div class="card-hd"><span class="dot d-green"></span>Regole preesistenti</div>
       <table class="t">
         <thead><tr><th>File</th><th>Contenuto</th></tr></thead>
         <tbody>
-          <tr><td><code>interaction-style.md</code></td><td>Registro discorsivo, no elenchi, no emoji, no trattini lunghi, acronimi in nota a pie' di pagina.</td></tr>
+          <tr><td><code>interaction-style.md</code></td><td>Registro discorsivo, no elenchi, no emoji, no trattini lunghi, acronimi in nota a piè di pagina.</td></tr>
           <tr><td><code>manual-screenshots.md</code></td><td>Quando e come chiedere uno screenshot; cartella Screenpresso su Windows, strumento latest-screenshot.ps1.</td></tr>
-          <tr><td><code>git-identity-and-repo.md</code></td><td>Identita' git locale, alias SSH per profilo, bootstrap remoto, protezione con user.useConfigOnly.</td></tr>
+          <tr><td><code>git-identity-and-repo.md</code></td><td>Identità git locale, alias SSH per profilo, bootstrap remoto, protezione con user.useConfigOnly.</td></tr>
         </tbody>
       </table>
     </div>
     <div class="card">
-      <div class="card-hd"><span class="dot d-new"></span>Regole nuove — aggiunte in questa sessione</div>
+      <div class="card-hd"><span class="dot d-new"></span>Regole nuove - aggiunte in questa sessione</div>
       <table class="t">
         <thead><tr><th>File</th><th>Contenuto</th><th>Source</th></tr></thead>
         <tbody>
           <tr><td><code>token-economy.md</code> <span class="badge b-new">Esteso</span></td><td>Aggiunta sezione "Igiene di sessione": /compact al 40-60%, CLAUDE_AUTOCOMPACT_PCT_OVERRIDE, pattern HANDOFF.md, caveat finestra 1M token, principio "un task = una chat".</td><td>claude-code-token-saving-playbook</td></tr>
-          <tr><td><code>security-permissions.md</code> <span class="badge b-new">Nuovo</span></td><td>6 modalita' di permesso, sandbox OS e limitazioni Windows, linee guida per --dangerously-skip-permissions, avvertenze Agent Teams sperimentali.</td><td>claude-code-security-permissions-sandboxing</td></tr>
+          <tr><td><code>security-permissions.md</code> <span class="badge b-new">Nuovo</span></td><td>6 modalità di permesso, sandbox OS e limitazioni Windows, linee guida per --dangerously-skip-permissions, avvertenze Agent Teams sperimentali.</td><td>claude-code-security-permissions-sandboxing</td></tr>
           <tr><td><code>git-commands-format.md</code> <span class="badge b-new">Nuovo</span></td><td>Comandi git presentati sempre come singola riga copiabile, sia per PowerShell che per bash. Messaggio di commit su una riga, max 72 caratteri.</td><td>questa sessione</td></tr>
         </tbody>
       </table>
     </div>
     <div class="card">
-      <div class="card-hd"><span class="dot d-amber"></span>Baseline di sicurezza aggiornata — templates/settings.json</div>
+      <div class="card-hd"><span class="dot d-amber"></span>Baseline di sicurezza aggiornata - templates/settings.json</div>
       <table class="t">
         <thead><tr><th>Tipo</th><th>Regole aggiunte</th></tr></thead>
         <tbody>
           <tr><td><strong>deny</strong> (nuove)</td><td><code>Read(.env)</code> · <code>Read(.env.*)</code> · <code>Read(~/.ssh/**)</code> · <code>Read(~/.aws/credentials)</code> · <code>Bash(rm -rf:*)</code></td></tr>
           <tr><td><strong>ask</strong> (nuove)</td><td><code>Bash(npm publish:*)</code> · <code>Bash(docker push:*)</code></td></tr>
-          <tr><td><strong>deny</strong> (gia' presenti)</td><td><code>git commit</code> · <code>git push</code> · <code>git reset --hard</code> · <code>git rebase</code> · <code>git config --global</code></td></tr>
+          <tr><td><strong>deny</strong> (già presenti)</td><td><code>git commit</code> · <code>git push</code> · <code>git reset --hard</code> · <code>git rebase</code> · <code>git config --global</code></td></tr>
         </tbody>
       </table>
     </div>
@@ -197,21 +197,21 @@ a.repo:hover{text-decoration:underline}
 
   <section class="sec" id="skills">
     <div class="sec-hd"><span class="sec-num">03</span><h2 class="sec-title">Skill</h2></div>
-    <p class="sec-sub">Workflow richiamabili on-demand. Il metadata costa ~30-100 token; il corpo si carica solo quando la skill e' pertinente al task.</p>
+    <p class="sec-sub">Workflow richiamabili on-demand. Il metadata costa ~30-100 token; il corpo si carica solo quando la skill è pertinente al task.</p>
     <div class="card">
-      <div class="card-hd"><span class="dot d-green"></span>Nove skill di sistema — lavoro originale</div>
+      <div class="card-hd"><span class="dot d-green"></span>Nove skill di sistema - lavoro originale</div>
       <table class="t">
         <thead><tr><th>Skill</th><th>Funzione</th><th>Invocazione tipica</th></tr></thead>
         <tbody>
           <tr><td><strong>init-project-system</strong></td><td>Installa l'anatomia minima del progetto; legge PACKAGES.md per i gate</td><td>Chiamata dai due prompt fissi</td></tr>
           <tr><td><strong>sync-context</strong></td><td>Confronta il last-verified-commit di ogni scheda con HEAD, propone delta update mirati</td><td>Inizio sessione o dopo git pull</td></tr>
-          <tr><td><strong>git-sync</strong></td><td>Prepara le operazioni git (add, status, diff), mai commit ne' push</td><td>Prima di committare</td></tr>
+          <tr><td><strong>git-sync</strong></td><td>Prepara le operazioni git (add, status, diff), mai commit né push</td><td>Prima di committare</td></tr>
           <tr><td><strong>repo-status</strong></td><td>Riepilogo: branch, commit recenti, file modificati, differenze non committate</td><td>Inizio sessione o on-demand</td></tr>
-          <tr><td><strong>gate-pacchetti</strong> <span class="badge b-new">Nuovo</span></td><td>Attraversa il catalogo per settore: riconosce dai fatti del progetto a quali settori appartenga, lo fa correggere, e propone i pacchetti dei soli settori riconosciuti uno per volta, con che cosa fa, perche' a questo progetto, e che cosa costa</td><td>Al Passo 4 dell'inizializzazione e a ogni tornata di allineamento</td></tr>
-          <tr><td><strong>riprendi</strong> <span class="badge b-new">Nuovo</span></td><td>Riapre una sessione verificando prima di fidarsi: confronta l'impronta registrata alla chiusura precedente con lo stato reale di git, e dice che cosa una sessione caduta a meta' non ha scritto. Solo dopo ricostruisce il punto di ripresa</td><td>Primo atto di ogni sessione nuova</td></tr>
-          <tr><td><strong>studio-didattico</strong></td><td>Tiene il livello documentale didattico: racconto evolutivo che contrappone com'era e perche' era fragile al salto di qualita', con deep-dive nel codice reale</td><td>Solo dove il progetto ha adottato la pratica; a ogni refactor o scelta non ovvia</td></tr>
+          <tr><td><strong>gate-pacchetti</strong> <span class="badge b-new">Nuovo</span></td><td>Attraversa il catalogo per settore: riconosce dai fatti del progetto a quali settori appartenga, lo fa correggere, e propone i pacchetti dei soli settori riconosciuti uno per volta, con che cosa fa, perché a questo progetto, e che cosa costa</td><td>Al Passo 4 dell'inizializzazione e a ogni tornata di allineamento</td></tr>
+          <tr><td><strong>riprendi</strong> <span class="badge b-new">Nuovo</span></td><td>Riapre una sessione verificando prima di fidarsi: confronta l'impronta registrata alla chiusura precedente con lo stato reale di git, e dice che cosa una sessione caduta a metà non ha scritto. Solo dopo ricostruisce il punto di ripresa</td><td>Primo atto di ogni sessione nuova</td></tr>
+          <tr><td><strong>studio-didattico</strong></td><td>Tiene il livello documentale didattico: racconto evolutivo che contrappone com'era e perché era fragile al salto di qualità, con deep-dive nel codice reale</td><td>Solo dove il progetto ha adottato la pratica; a ogni refactor o scelta non ovvia</td></tr>
           <tr><td><strong>onboard</strong></td><td>Spiegazione completa del progetto per chi parte da zero: struttura, flussi, decisioni chiave</td><td>Quando un nuovo membro o agente entra</td></tr>
-          <tr><td><strong>sync-readme</strong> <span class="badge b-new">Nuovo</span></td><td>Rilegge codice e documenti per aggiornare la prosa pubblica; invoca il controllo deterministico per indice, inventario e link</td><td>Quando cambiano le capacita' descritte dal README</td></tr>
+          <tr><td><strong>sync-readme</strong> <span class="badge b-new">Nuovo</span></td><td>Rilegge codice e documenti per aggiornare la prosa pubblica; invoca il controllo deterministico per indice, inventario e link</td><td>Quando cambiano le capacità descritte dal README</td></tr>
         </tbody>
       </table>
     </div>
@@ -223,14 +223,14 @@ a.repo:hover{text-decoration:underline}
     <div class="sec-hd"><span class="sec-num">04</span><h2 class="sec-title">Agenti di progetto</h2></div>
     <p class="sec-sub">Definizioni di subagent in .claude/agents/. Persona specializzata, contesto isolato, riporta solo il risultato finale. Formato nativo Claude Code.</p>
     <div class="card">
-      <div class="card-hd"><span class="dot d-new"></span>Quattro agenti template — pacchetto subagent-template</div>
+      <div class="card-hd"><span class="dot d-new"></span>Quattro agenti template - pacchetto subagent-template</div>
       <table class="t">
         <thead><tr><th>Agente</th><th>Modello</th><th>Tool</th><th>Cosa fa</th></tr></thead>
         <tbody>
           <tr><td><strong>code-reviewer</strong></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob</td><td>Revisiona struttura, error handling e sicurezza; classifica ogni finding CRITICAL / HIGH / MEDIUM / LOW; conclude con APPROVE, REQUEST_CHANGES o NEEDS_DISCUSSION</td></tr>
-          <tr><td><strong>security-auditor</strong></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob</td><td>Audit per autenticazione, autorizzazione, validazione input, esposizione dati, dipendenze con CVE note, secrets hardcoded; classifica per severita' e impatto reale</td></tr>
+          <tr><td><strong>security-auditor</strong></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob</td><td>Audit per autenticazione, autorizzazione, validazione input, esposizione dati, dipendenze con CVE note, secrets hardcoded; classifica per severità e impatto reale</td></tr>
           <tr><td><strong>debugger</strong> <span class="badge b-new">Nuovo</span></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob, Bash</td><td>Investigazione sistematica di un bug: contesto, ipotesi ordinate, verifica mirata, root cause, fix a blast radius minimo; non applica fix senza conferma. Dal bundle Cranot</td></tr>
-          <tr><td><strong>explorer</strong> <span class="badge b-new">Nuovo</span></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob</td><td>Mappa il codebase in sola lettura partendo dalle schede di contesto; sintesi con citazioni file:riga. Duplica in parte l'agente nativo Explore (dichiarato al gate); la variante di progetto e' versionata e conosce il sistema di memoria. Dal bundle Cranot</td></tr>
+          <tr><td><strong>explorer</strong> <span class="badge b-new">Nuovo</span></td><td>claude-sonnet-4-6</td><td>Read, Grep, Glob</td><td>Mappa il codebase in sola lettura partendo dalle schede di contesto; sintesi con citazioni file:riga. Duplica in parte l'agente nativo Explore (dichiarato al gate); la variante di progetto è versionata e conosce il sistema di memoria. Dal bundle Cranot</td></tr>
         </tbody>
       </table>
     </div>
@@ -242,13 +242,13 @@ a.repo:hover{text-decoration:underline}
     <div class="sec-hd"><span class="sec-num">05</span><h2 class="sec-title">Il gate dei pacchetti per settore</h2></div>
     <p class="sec-sub">Con settantanove voci, il modo in cui si scelgono conta quanto le voci stesse. La skill gate-pacchetti attraversa il catalogo per settore e non per riga: riconosce dai fatti del progetto a quali settori appartenga, dichiara il riconoscimento e lo fa correggere, e propone i soli pacchetti dei settori riconosciuti, uno per volta. Un progetto appartiene a due o tre settori su dieci: la scelta passa da decine di domande a una decina, tutte pertinenti.</p>
     <div class="card">
-      <div class="card-hd"><span class="dot d-new"></span>Come si presenta un pacchetto — tre frasi, mai meno</div>
+      <div class="card-hd"><span class="dot d-new"></span>Come si presenta un pacchetto - tre frasi, mai meno</div>
       <table class="t">
         <thead><tr><th>Frase</th><th>Che cosa deve dire</th><th>Difetto che evita</th></tr></thead>
         <tbody>
-          <tr><td><strong>Che cosa fa</strong></td><td>In linguaggio di chi lo usera', non di chi lo ha scritto</td><td>Una descrizione tecnica che non si capisce produce un no per incomprensione, non per scelta</td></tr>
-          <tr><td><strong>Perche' a questo progetto</strong></td><td>Legata a un fatto raccolto in questo repository, non al trigger generico del catalogo</td><td>"Utile ai progetti con molti documenti" non decide niente; "qui ci sono 40 file sotto docs/fonti/" si'</td></tr>
-          <tr><td><strong>Che cosa costa</strong></td><td>Dipendenze esterne, token che un MCP occupa a ogni turno anche inutilizzato, tabelle da sostituire, e soprattutto le capacita' che duplicherebbe</td><td>Due si' consecutivi su pacchetti sovrapposti producono una duplicazione che nessuno ha deciso</td></tr>
+          <tr><td><strong>Che cosa fa</strong></td><td>In linguaggio di chi lo userà, non di chi lo ha scritto</td><td>Una descrizione tecnica che non si capisce produce un no per incomprensione, non per scelta</td></tr>
+          <tr><td><strong>Perché a questo progetto</strong></td><td>Legata a un fatto raccolto in questo repository, non al trigger generico del catalogo</td><td>"Utile ai progetti con molti documenti" non decide niente; "qui ci sono 40 file sotto docs/fonti/" sì</td></tr>
+          <tr><td><strong>Che cosa costa</strong></td><td>Dipendenze esterne, token che un MCP occupa a ogni turno anche inutilizzato, tabelle da sostituire, e soprattutto le capacità che duplicherebbe</td><td>Due sì consecutivi su pacchetti sovrapposti producono una duplicazione che nessuno ha deciso</td></tr>
         </tbody>
       </table>
     </div>
@@ -257,28 +257,28 @@ a.repo:hover{text-decoration:underline}
       <table class="t">
         <thead><tr><th>Settore</th><th>Riconosciuto da</th></tr></thead>
         <tbody>
-          <tr><td><strong>Fondamenta e igiene del progetto</strong></td><td>Non dal dominio ma dalla durata: un progetto che vivra' mesi e passera' di mano li vuole quasi tutti</td></tr>
-          <tr><td><strong>Scrittura, documentazione e tipografia</strong></td><td>Il progetto produce prosa destinata a qualcuno, anche quando quel qualcuno e' la sessione di fra tre mesi</td></tr>
+          <tr><td><strong>Fondamenta e igiene del progetto</strong></td><td>Non dal dominio ma dalla durata: un progetto che vivrà mesi e passerà di mano li vuole quasi tutti</td></tr>
+          <tr><td><strong>Scrittura, documentazione e tipografia</strong></td><td>Il progetto produce prosa destinata a qualcuno, anche quando quel qualcuno è la sessione di fra tre mesi</td></tr>
           <tr><td><strong>Fonti, ricerca e corpus documentali</strong></td><td>Il progetto poggia su materiale che non ha scritto; le famiglie sono tre e quasi nessun progetto le ha tutte</td></tr>
           <tr><td><strong>Voce, audio e trascrizione</strong></td><td>Due usi opposti: leggere una fonte parlata, oppure produrre audio</td></tr>
-          <tr><td><strong>Domini scientifici e analisi dei dati</strong></td><td>L'oggetto del progetto e' scientifico; la domanda giusta e' di quale settore scientifico</td></tr>
-          <tr><td><strong>Comprensione di una codebase</strong></td><td>Il codice esiste gia' e va capito: ereditato, grande, o non toccato da mesi</td></tr>
-          <tr><td><strong>Sviluppo, qualita' e revisione del codice</strong></td><td>Si scrive codice; qui le capacita' di revisione si sovrappongono su tre piani e vanno scelte, non sommate</td></tr>
-          <tr><td><strong>Apprendimento guidato</strong></td><td>L'obiettivo dichiarato e' imparare, non produrre contenuti didattici per altri</td></tr>
+          <tr><td><strong>Domini scientifici e analisi dei dati</strong></td><td>L'oggetto del progetto è scientifico; la domanda giusta è di quale settore scientifico</td></tr>
+          <tr><td><strong>Comprensione di una codebase</strong></td><td>Il codice esiste già e va capito: ereditato, grande, o non toccato da mesi</td></tr>
+          <tr><td><strong>Sviluppo, qualità e revisione del codice</strong></td><td>Si scrive codice; qui le capacità di revisione si sovrappongono su tre piani e vanno scelte, non sommate</td></tr>
+          <tr><td><strong>Apprendimento guidato</strong></td><td>L'obiettivo dichiarato è imparare, non produrre contenuti didattici per altri</td></tr>
           <tr><td><strong>Economia del contesto e misura del consumo</strong></td><td>Sempre valutabile, con una regola d'ordine: prima si misura la linea di partenza, poi si installa</td></tr>
-          <tr><td><strong>Orchestrazione, sessioni e cataloghi di agenti</strong></td><td>Trigger quantitativo: sotto le tre sessioni o i tre rami paralleli costa piu' di quanto renda</td></tr>
+          <tr><td><strong>Orchestrazione, sessioni e cataloghi di agenti</strong></td><td>Trigger quantitativo: sotto le tre sessioni o i tre rami paralleli costa più di quanto renda</td></tr>
         </tbody>
       </table>
     </div>
     <div class="card">
-      <div class="card-hd"><span class="dot d-new"></span>Il gate si riesegue, e questa e' la parte che lo rende utile</div>
+      <div class="card-hd"><span class="dot d-new"></span>Il gate si riesegue, e questa è la parte che lo rende utile</div>
       <table class="t">
         <thead><tr><th>Quando</th><th>Che cosa cambia</th></tr></thead>
         <tbody>
-          <tr><td>Inizializzazione</td><td>I settori si riconoscono dall'obiettivo dichiarato, perche' i fatti del repository non esistono ancora</td></tr>
-          <tr><td>Ogni tornata di allineamento</td><td>Si dichiara che cosa e' cambiato: settori nuovi perche' il progetto e' cambiato, pacchetti comparsi nel catalogo, decisioni ancora valide</td></tr>
-          <tr><td>Un no registrato</td><td>Non si ripropone identico: si mostra la decisione e si chiede solo se il presupposto e' cambiato</td></tr>
-          <tr><td>Perche' non basta una volta</td><td>Un progetto che a gennaio non raccoglieva fonti e a marzo ne raccoglie ha cambiato settore senza che nessuno lo abbia dichiarato</td></tr>
+          <tr><td>Inizializzazione</td><td>I settori si riconoscono dall'obiettivo dichiarato, perché i fatti del repository non esistono ancora</td></tr>
+          <tr><td>Ogni tornata di allineamento</td><td>Si dichiara che cosa è cambiato: settori nuovi perché il progetto è cambiato, pacchetti comparsi nel catalogo, decisioni ancora valide</td></tr>
+          <tr><td>Un no registrato</td><td>Non si ripropone identico: si mostra la decisione e si chiede solo se il presupposto è cambiato</td></tr>
+          <tr><td>Perché non basta una volta</td><td>Un progetto che a gennaio non raccoglieva fonti e a marzo ne raccoglie ha cambiato settore senza che nessuno lo abbia dichiarato</td></tr>
         </tbody>
       </table>
     </div>
@@ -287,7 +287,7 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-dev">
-    <div class="sec-hd"><span class="sec-num">06</span><h2 class="sec-title">Pacchetti — Ambiente e editor</h2></div>
+    <div class="sec-hd"><span class="sec-num">06</span><h2 class="sec-title">Pacchetti - Ambiente e editor</h2></div>
     <div class="card">
       <div class="card-hd"><span class="dot d-indigo"></span>Ambiente di sviluppo</div>
       <table class="t">
@@ -307,7 +307,7 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-know">
-    <div class="sec-hd"><span class="sec-num">07</span><h2 class="sec-title">Pacchetti — Conoscenza e navigazione</h2></div>
+    <div class="sec-hd"><span class="sec-num">07</span><h2 class="sec-title">Pacchetti - Conoscenza e navigazione</h2></div>
     <div class="card">
       <div class="card-hd"><span class="dot d-indigo"></span>Conoscenza</div>
       <table class="t">
@@ -316,19 +316,19 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>knowledge-wiki</strong></td><td>LLM Wiki: sources/ immutabili, wiki/ compilata dall'LLM, schema WIKI-SCHEMA.md, skill wiki-digest</td><td>Progetti con conoscenza trasversale accumulata nel tempo</td><td>Pattern: <a class="repo" href="#">gist.github.com/karpathy/442a6bf…</a></td></tr>
           <tr><td><strong>book-to-skill</strong></td><td>PDF tecnico → skill interrogabile on-demand con /slug; path A (skill) o path B (fonte wiki)</td><td>Progetti con libri o PDF tecnici di riferimento</td><td><a class="repo" href="https://github.com/virgiliojr94/book-to-skill">github.com/virgiliojr94/book-to-skill</a> · MIT</td></tr>
           <tr><td><strong>docx-to-docs</strong> <span class="badge b-new">Nuovo</span></td><td>Converte un .docx voluminoso in un albero docs/ Markdown versionato: un file per sezione, README indice generati, annotazioni/redazioni/pulizia --clean sopravvivono alla rigenerazione</td><td>Il progetto parte da un .docx o corpus scritto a mano da rendere documentazione navigabile</td><td>Basato su <a class="repo" href="https://github.com/python-openxml/python-docx">github.com/python-openxml/python-docx</a> · MIT</td></tr>
-          <tr><td><strong>doc-ingest</strong> <span class="badge b-new">Nuovo</span></td><td>Ingestione incrementale di un corpus .pdf/.docx/.pptx/.xlsx/.html in cache Markdown a zero token: manifest a content-hash, indice _INDEX.md di Livello 1, motore accurato e OCR opzionali</td><td>Il progetto ha piu' documenti voluminosi da consultare senza versionarli; complementa docx-to-docs</td><td><a class="repo" href="https://github.com/microsoft/markitdown">github.com/microsoft/markitdown</a> · MIT (+ Docling e pytesseract opzionali)</td></tr>
-          <tr><td><strong>book-bib-extract</strong> <span class="badge b-new">Nuovo</span></td><td>Estrae anagrafica bibliografica (autore, titolo, anno, editore, ISBN) dal colophon di libri gia' ingeriti con doc-ingest; registro unificato a tre stati condiviso con book-digest; verifica visiva del colophon per gli scan senza OCR affidabile</td><td>Il progetto costruisce una bibliografia da libri fisici/scansionati senza DOI; copre il vuoto tra doc-ingest (struttura) e academic-researcher (paper con DOI)</td><td>Originale al template; validato su un progetto reale, 153 voci di registro, vedi CASE-STUDIES.md</td></tr>
+          <tr><td><strong>doc-ingest</strong> <span class="badge b-new">Nuovo</span></td><td>Ingestione incrementale di un corpus .pdf/.docx/.pptx/.xlsx/.html in cache Markdown a zero token: manifest a content-hash, indice _INDEX.md di Livello 1, motore accurato e OCR opzionali</td><td>Il progetto ha più documenti voluminosi da consultare senza versionarli; complementa docx-to-docs</td><td><a class="repo" href="https://github.com/microsoft/markitdown">github.com/microsoft/markitdown</a> · MIT (+ Docling e pytesseract opzionali)</td></tr>
+          <tr><td><strong>book-bib-extract</strong> <span class="badge b-new">Nuovo</span></td><td>Estrae anagrafica bibliografica (autore, titolo, anno, editore, ISBN) dal colophon di libri già ingeriti con doc-ingest; registro unificato a tre stati condiviso con book-digest; verifica visiva del colophon per gli scan senza OCR affidabile</td><td>Il progetto costruisce una bibliografia da libri fisici/scansionati senza DOI; copre il vuoto tra doc-ingest (struttura) e academic-researcher (paper con DOI)</td><td>Originale al template; validato su un progetto reale, 153 voci di registro, vedi CASE-STUDIES.md</td></tr>
           <tr><td><strong>andrej-karpathy-skills</strong> <span class="badge b-new">Nuovo</span></td><td>4 principi anti-over-engineering in CLAUDE.md: no assunzioni silenziose, no 500 righe dove ne bastano 50</td><td>Qualsiasi progetto con output codice intenso</td><td><a class="repo" href="https://github.com/forrestchang/andrej-karpathy-skills">github.com/forrestchang/andrej-karpathy-skills</a> · MIT</td></tr>
           <tr><td><strong>graphify</strong></td><td>Grafo di conoscenza dell'intero progetto: nodi, relazioni, community, nodi centrali, visualizzazione interattiva</td><td>Progetti grandi o sconosciuti dove le relazioni non emergono leggendo i file singoli</td><td><a class="repo" href="https://github.com/safishamsi/graphify">github.com/safishamsi/graphify</a> · MIT</td></tr>
           <tr><td><strong>codebase-memory-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Grafo strutturale del codice (call chain, 158 linguaggi via tree-sitter); 10x-120x meno token su query strutturali</td><td>Progetti oltre 50K righe. Complementa code-context e graphify</td><td><a class="repo" href="https://github.com/DeusData/codebase-memory-mcp">github.com/DeusData/codebase-memory-mcp</a> · MIT</td></tr>
-          <tr><td><strong>claude-mem</strong> <span class="badge b-new">Nuovo</span></td><td>Memoria semantica persistente cross-sessione (SQLite + Chroma, tutto locale); retrieval a 3 livelli; web viewer su localhost:37777</td><td>Progetti multi-settimana. Complementare al deterministico .claude/memory/ gia' nel template</td><td><a class="repo" href="https://github.com/thedotmack/claude-mem">github.com/thedotmack/claude-mem</a> · MIT</td></tr>
+          <tr><td><strong>claude-mem</strong> <span class="badge b-new">Nuovo</span></td><td>Memoria semantica persistente cross-sessione (SQLite + Chroma, tutto locale); retrieval a 3 livelli; web viewer su localhost:37777</td><td>Progetti multi-settimana. Complementare al deterministico .claude/memory/ già nel template</td><td><a class="repo" href="https://github.com/thedotmack/claude-mem">github.com/thedotmack/claude-mem</a> · MIT</td></tr>
           <tr><td><strong>academic-researcher</strong> <span class="badge b-new">Nuovo</span></td><td>Ambiente di ricerca accademica: scoping, tracciamento tripartito delle fonti, sync Zotero-JabRef del .bib, Corpus Analysis Suite (10 prompt). 5 skill complete, 3 parzialmente stub (calibrazione di dominio aperta)</td><td>Progetti di ricerca accademica, tesi, o analisi sistematica di un corpus di paper</td><td>Distillato da modulo di ricerca dedicato, integrato con un metodo esterno attribuito (screenshot @techwith.ram) per literature-search, research-scoping, deep-paper-reading e corpus-analysis; vedi righe MCP e tool esterni sotto</td></tr>
-          <tr><td><strong>notebooklm-bridge</strong> <span class="badge b-new">Nuovo</span></td><td>Loop di ricerca fondata NotebookLM gratuito + Claude a 4 passi (sintesi citata → ragionamento → verifica → stesura), con verifica di disponibilita' account Google/browser; tiene il corpus fuori dal contesto e ci fa ragionare solo la sintesi citata (leva di token economy oltre che di ricerca)</td><td>Il progetto ragiona o scrive da un corpus di fonti proprie da tenere fuori dal contesto di Claude; incrocio di token economy e ricerca</td><td>Piano gratuito tassativo (solo browser, no API Enterprise a pagamento); modo manuale conforme di default, assistito via notebooklm-mcp opt-in. Deriva da screenshot di un metodo pubblico dell'utente, non ancora validato</td></tr>
-          <tr><td><strong>arxiv-cli</strong> <span class="badge b-new">Nuovo</span></td><td>CLI standalone per recupero rapido dei paper arXiv piu' recenti per categoria/query, senza demone</td><td>Primo passo veloce di literature-search nel pacchetto academic-researcher</td><td><a class="repo" href="https://github.com/AstraBert/arxiv-cli">github.com/AstraBert/arxiv-cli</a> · MIT</td></tr>
+          <tr><td><strong>notebooklm-bridge</strong> <span class="badge b-new">Nuovo</span></td><td>Loop di ricerca fondata NotebookLM gratuito + Claude a 4 passi (sintesi citata → ragionamento → verifica → stesura), con verifica di disponibilità account Google/browser; tiene il corpus fuori dal contesto e ci fa ragionare solo la sintesi citata (leva di token economy oltre che di ricerca)</td><td>Il progetto ragiona o scrive da un corpus di fonti proprie da tenere fuori dal contesto di Claude; incrocio di token economy e ricerca</td><td>Piano gratuito tassativo (solo browser, no API Enterprise a pagamento); modo manuale conforme di default, assistito via notebooklm-mcp opt-in. Deriva da screenshot di un metodo pubblico dell'utente, non ancora validato</td></tr>
+          <tr><td><strong>arxiv-cli</strong> <span class="badge b-new">Nuovo</span></td><td>CLI standalone per recupero rapido dei paper arXiv più recenti per categoria/query, senza demone</td><td>Primo passo veloce di literature-search nel pacchetto academic-researcher</td><td><a class="repo" href="https://github.com/AstraBert/arxiv-cli">github.com/AstraBert/arxiv-cli</a> · MIT</td></tr>
           <tr><td><strong>grobid</strong> <span class="badge b-new">Nuovo</span></td><td>Parsing di PDF scientifici in XML/TEI strutturato, incluso il parsing dei riferimenti bibliografici (F1 &gt;0.87)</td><td>Lettura profonda dei paper nel pacchetto academic-researcher; richiede Docker</td><td>Open source dal 2011, mantenuto da Luca Foppiano/Inria</td></tr>
           <tr><td><strong>paperqa2</strong> <span class="badge b-new">Nuovo</span></td><td>Framework RAG agentico per letteratura scientifica con citazioni in-testo verificate e controllo retrazioni</td><td>Risposte su un corpus di PDF nel pacchetto academic-researcher, con citazioni verificate</td><td><a class="repo" href="https://github.com/Future-House/paper-qa">github.com/Future-House/paper-qa</a> · licenza da verificare</td></tr>
           <tr><td><strong>learning-agent</strong> <span class="badge b-new">Nuovo</span></td><td>Tutor di apprendimento guidato: profilo learner, roadmap per categoria (lingua, programmazione, materia concettuale), 3 subagent (tutor, kb-retriever, examiner), 3 skill/comandi (/profile, /learn, /review), adattamenti opt-in per profilo cognitivo</td><td>Il progetto ha come scopo dichiarato l'apprendimento personale di un topic a partire da una knowledge base di file dell'utente</td><td>Deriva da ricerca dell'utente di luglio 2026; livello di orchestrazione completo, KB e spaced repetition restano MCP a gate (vedi righe sotto)</td></tr>
-          <tr><td><strong>codebase-learning</strong> <span class="badge b-new">Nuovo</span></td><td>Comando /learn-repo a 5 fasi (panoramica, astrazioni centrali, flussi, design puro, idiomi dello stack) e subagent code-tutor che cita sempre path e riga reali</td><td>Il progetto e' dichiarato finito o quasi finito di sviluppare e si vuole essere guidati a capirne l'architettura invece di continuare a modificarlo</td><td>Deriva da un handoff di ricerca dell'utente di luglio 2026, non ancora validato su un progetto reale; distinto da learning-agent (topic esterno vs repository corrente); vedi righe MCP sotto</td></tr>
+          <tr><td><strong>codebase-learning</strong> <span class="badge b-new">Nuovo</span></td><td>Comando /learn-repo a 5 fasi (panoramica, astrazioni centrali, flussi, design puro, idiomi dello stack) e subagent code-tutor che cita sempre path e riga reali</td><td>Il progetto è dichiarato finito o quasi finito di sviluppare e si vuole essere guidati a capirne l'architettura invece di continuare a modificarlo</td><td>Deriva da un handoff di ricerca dell'utente di luglio 2026, non ancora validato su un progetto reale; distinto da learning-agent (topic esterno vs repository corrente); vedi righe MCP sotto</td></tr>
           <tr><td><strong>deepwiki-skill</strong> <span class="badge b-new">Nuovo</span></td><td>Auto-genera documentazione di apprendimento con citazioni precise a riga: pipeline analyze → generate (subagent in parallelo) → validate</td><td>Pacchetto codebase-learning, per persistere il materiale in docs/learning/ invece di consumarlo solo in sessione</td><td><a class="repo" href="https://github.com/natsu1211/deepwiki-skill">github.com/natsu1211/deepwiki-skill</a> · OSS</td></tr>
         </tbody>
       </table>
@@ -338,15 +338,15 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-token">
-    <div class="sec-hd"><span class="sec-num">08</span><h2 class="sec-title">Pacchetti — Risparmio token</h2></div>
-    <p class="sec-sub">Sette tool open source, uno per fronte di consumo. Il risparmio e' cumulativo.</p>
+    <div class="sec-hd"><span class="sec-num">08</span><h2 class="sec-title">Pacchetti - Risparmio token</h2></div>
+    <p class="sec-sub">Sette tool open source, uno per fronte di consumo. Il risparmio è cumulativo.</p>
     <div class="card">
-      <div class="card-hd"><span class="dot d-indigo"></span>Stack token-saving — da claude-code-token-saving-playbook</div>
+      <div class="card-hd"><span class="dot d-indigo"></span>Stack token-saving - da claude-code-token-saving-playbook</div>
       <table class="t">
         <thead><tr><th>Pacchetto</th><th>Fronte</th><th>Risparmio dichiarato</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
         <tbody>
           <tr><td><strong>caveman</strong></td><td>Output testuale Claude (prosa)</td><td>50-75%</td><td>Sessioni operative pesanti; NON con documentazione</td><td><a class="repo" href="https://github.com/juliusbrussee/caveman">github.com/juliusbrussee/caveman</a> · MIT</td></tr>
-          <tr><td><strong>ccusage</strong> <span class="badge b-new">Nuovo</span></td><td>Misurazione baseline</td><td>—</td><td>Sempre, prima di qualsiasi ottimizzazione</td><td><a class="repo" href="https://github.com/ryoppippi/ccusage">github.com/ryoppippi/ccusage</a> · MIT</td></tr>
+          <tr><td><strong>ccusage</strong> <span class="badge b-new">Nuovo</span></td><td>Misurazione baseline</td><td>-</td><td>Sempre, prima di qualsiasi ottimizzazione</td><td><a class="repo" href="https://github.com/ryoppippi/ccusage">github.com/ryoppippi/ccusage</a> · MIT</td></tr>
           <tr><td><strong>rtk</strong> <span class="badge b-new">Nuovo</span></td><td>Output shell (git, cargo, pytest, npm, 100+ comandi)</td><td>60-90%</td><td>CI/test-heavy su Linux o WSL2</td><td><a class="repo" href="https://github.com/rtk-ai/rtk">github.com/rtk-ai/rtk</a> · MIT</td></tr>
           <tr><td><strong>ponytail</strong> <span class="badge b-new">Nuovo</span></td><td>Codice scritto da Claude</td><td>46-94%</td><td>Sessioni coding output-intenso</td><td><a class="repo" href="https://github.com/DietrichGebert/ponytail">github.com/DietrichGebert/ponytail</a> · MIT</td></tr>
           <tr><td><strong>context-mode</strong> <span class="badge b-new">Nuovo</span></td><td>Output tool grandi (Playwright, log, dump)</td><td>fino al 98%</td><td>Sessioni con output tool molto pesanti</td><td><a class="repo" href="https://github.com/mksglu/context-mode">github.com/mksglu/context-mode</a> · MIT</td></tr>
@@ -360,10 +360,10 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-mcp">
-    <div class="sec-hd"><span class="sec-num">09</span><h2 class="sec-title">Pacchetti — MCP server</h2></div>
-    <p class="sec-sub">Max 3-6 server connessi totali; preferire sempre l'implementazione ufficiale del vendor. Tutti nuovi in questa sessione (eccetto code-context, gia' presente).</p>
+    <div class="sec-hd"><span class="sec-num">09</span><h2 class="sec-title">Pacchetti - MCP server</h2></div>
+    <p class="sec-sub">Max 3-6 server connessi totali; preferire sempre l'implementazione ufficiale del vendor. Tutti nuovi in questa sessione (eccetto code-context, già presente).</p>
     <div class="card">
-      <div class="card-hd"><span class="dot d-new"></span>7 server MCP aggiunti — da claude-code-mcp-servers-stack-2026</div>
+      <div class="card-hd"><span class="dot d-new"></span>7 server MCP aggiunti - da claude-code-mcp-servers-stack-2026</div>
       <table class="t">
         <thead><tr><th>Server</th><th>Categoria</th><th>Gate</th><th>Source</th></tr></thead>
         <tbody>
@@ -382,7 +382,7 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>anki-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Spaced repetition via proxy locale verso AnkiConnect</td><td>Pacchetto learning-agent, scheduling automatizzato del ripasso</td><td><a class="repo" href="https://github.com/ankimcp/anki-mcp-server">github.com/ankimcp/anki-mcp-server</a> · Community</td></tr>
           <tr><td><strong>serena</strong> <span class="badge b-new">Nuovo</span></td><td>Grafo semantico del codice via language server: navigazione a livello di simbolo su 20-40+ linguaggi</td><td>Pacchetto codebase-learning, repo grandi o multi-linguaggio dove la ricerca testuale non basta</td><td><a class="repo" href="https://github.com/oraios/serena">github.com/oraios/serena</a> · MIT</td></tr>
           <tr><td><strong>repomix</strong> <span class="badge b-new">Nuovo</span></td><td>Impacchetta l'intera codebase in un file consolidato ottimizzato per l'AI</td><td>Pacchetto codebase-learning, vista consolidata iniziale prima del dettaglio</td><td><a class="repo" href="https://repomix.com">repomix.com</a> · MIT</td></tr>
-          <tr><td><strong>deepwiki-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Q&amp;A architetturale su repository GitHub pubbliche gia' indicizzate</td><td>Pacchetto codebase-learning, solo se il repository e' effettivamente pubblico</td><td>Endpoint ufficiale mcp.deepwiki.com · Gratis solo repo pubblici</td></tr>
+          <tr><td><strong>deepwiki-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Q&amp;A architetturale su repository GitHub pubbliche già indicizzate</td><td>Pacchetto codebase-learning, solo se il repository è effettivamente pubblico</td><td>Endpoint ufficiale mcp.deepwiki.com · Gratis solo repo pubblici</td></tr>
           <tr><td><strong>notebooklm-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Pilota il NotebookLM gratuito nel browser via automazione (Patchright), riusa un profilo Chrome con login Google, legge le citazioni dal DOM</td><td>Pacchetto notebooklm-bridge, modo assistito opt-in; l'utente vuole che Claude piloti NotebookLM invece del copia-incolla manuale</td><td><a class="repo" href="https://github.com/PleasePrompto/notebooklm-mcp">github.com/PleasePrompto/notebooklm-mcp</a> · MIT · Community, NON ufficiale; automazione del browser sul piano gratuito in zona grigia dei ToS</td></tr>
         </tbody>
       </table>
@@ -392,14 +392,14 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-orch">
-    <div class="sec-hd"><span class="sec-num">10</span><h2 class="sec-title">Pacchetti — Orchestrazione multi-agente</h2></div>
+    <div class="sec-hd"><span class="sec-num">10</span><h2 class="sec-title">Pacchetti - Orchestrazione multi-agente</h2></div>
     <div class="card">
-      <div class="card-hd"><span class="dot d-new"></span>Orchestrazione — da claude-code-subagents-orchestration-playbook</div>
+      <div class="card-hd"><span class="dot d-new"></span>Orchestrazione - da claude-code-subagents-orchestration-playbook</div>
       <table class="t">
         <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
         <tbody>
           <tr><td><strong>subagent-template</strong></td><td>Quattro agenti di esempio in templates/agents/ (code-reviewer, security-auditor, debugger, explorer) come punto di partenza, da scegliere uno per uno</td><td>Progetti con review automatizzata, audit ricorrenti o investigazione sistematica dei bug</td><td>Documentazione ufficiale Claude Code; debugger ed explorer dal bundle Cranot</td></tr>
-          <tr><td><strong>multiclaude</strong> <span class="badge b-new">Nuovo</span></td><td>Supervisore che assegna task a subagent via file Markdown; modalita' singleplayer o multiplayer</td><td>3+ feature branch paralleli con gate di review umana</td><td><a class="repo" href="https://github.com/dlorenc/multiclaude">github.com/dlorenc/multiclaude</a> · MIT</td></tr>
+          <tr><td><strong>multiclaude</strong> <span class="badge b-new">Nuovo</span></td><td>Supervisore che assegna task a subagent via file Markdown; modalità singleplayer o multiplayer</td><td>3+ feature branch paralleli con gate di review umana</td><td><a class="repo" href="https://github.com/dlorenc/multiclaude">github.com/dlorenc/multiclaude</a> · MIT</td></tr>
         </tbody>
       </table>
     </div>
@@ -408,7 +408,7 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-style">
-    <div class="sec-hd"><span class="sec-num">11</span><h2 class="sec-title">Pacchetti — Stile e qualita'</h2></div>
+    <div class="sec-hd"><span class="sec-num">11</span><h2 class="sec-title">Pacchetti - Stile e qualità</h2></div>
     <div class="card">
       <div class="card-hd"><span class="dot d-indigo"></span>Stile</div>
       <table class="t">
@@ -426,16 +426,16 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-cranot">
-    <div class="sec-hd"><span class="sec-num">12</span><h2 class="sec-title">Pacchetti — Strumento e convenzioni (bundle Cranot)</h2></div>
+    <div class="sec-hd"><span class="sec-num">12</span><h2 class="sec-title">Pacchetti - Strumento e convenzioni (bundle Cranot)</h2></div>
     <p class="sec-sub">Quattro pacchetti derivati dal bundle di template generato dall'utente a partire dalla guida community Cranot/claude-code-guide. Il primo ha come oggetto lo strumento Claude Code stesso; gli altri tre portano convenzioni, hook e skill pronti. Integrazione 2026-07-02.</p>
     <div class="card">
-      <div class="card-hd"><span class="dot d-new"></span>Bundle Cranot — 4 pacchetti nuovi</div>
+      <div class="card-hd"><span class="dot d-new"></span>Bundle Cranot - 4 pacchetti nuovi</div>
       <table class="t">
         <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Note</th></tr></thead>
         <tbody>
           <tr><td><strong>claude-code-handoff</strong> <span class="badge b-new">Nuovo</span></td><td>Riferimento distillato delle opzioni Claude Code (flag CLI, comandi, permessi, MCP, skills, subagent, hooks) con auto-aggiornamento: script .ps1/.sh che confronta la versione upstream e ri-distilla via claude -p, comando /refresh-handoff, workflow GitHub Actions opzionale, stato tracciato in handoff-state.json</td><td>Qualsiasi progetto; si propone all'init e quando l'utente chiede quali opzioni offre lo strumento</td><td><a class="repo" href="https://github.com/Cranot/claude-code-guide">github.com/Cranot/claude-code-guide</a> · nessuna licenza dichiarata (si distillano i contenuti fattuali, la fonte grezza resta locale). Auto-update upstream reale ma con stallo osservato (fermo da feb 2026 alla verifica del 2026-07-02): gli script rilevano lo stallo (&gt;14 giorni) e avvisano</td></tr>
-          <tr><td><strong>stack-profiles</strong> <span class="badge b-new">Nuovo</span></td><td>Profili di regole pronti per stack ricorrenti (ts-mcp, python, react, n8n, generico): convenzioni di stile, comandi tipici, controlli pre-commit, come regola modulare rules/stack-profile.md</td><td>Lo stack e' riconosciuto dai manifest del progetto; generico come fallback esplicito</td><td>Bundle Cranot, riscritto nello stile delle regole del sistema; normativo, complementare alla scheda STACK.md</td></tr>
-          <tr><td><strong>hooks-starter</strong> <span class="badge b-new">7 hook</span> <span class="badge b-new">Nuovo</span></td><td>Tre hook pronti, mai attivi di default: session-context (SessionStart, contesto di ripresa automatico), protect-sensitive-files (PreToolUse Write/Edit), secret-scan (PreToolUse Bash su git commit); doppia forma .ps1/.sh, blocco via exit 2 + stderr</td><td>Automatizzare la ripresa (sez. 12) o concretizzare i guard-rail (sez. 14 di PROJECT-SYSTEM.md); attivazione sempre manuale via settings.json</td><td>Bundle Cranot, riscritto sul protocollo hook corrente; secret-scan e' difesa in profondita' (il deny baseline su git commit resta primario)</td></tr>
+          <tr><td><strong>stack-profiles</strong> <span class="badge b-new">Nuovo</span></td><td>Profili di regole pronti per stack ricorrenti (ts-mcp, python, react, n8n, generico): convenzioni di stile, comandi tipici, controlli pre-commit, come regola modulare rules/stack-profile.md</td><td>Lo stack è riconosciuto dai manifest del progetto; generico come fallback esplicito</td><td>Bundle Cranot, riscritto nello stile delle regole del sistema; normativo, complementare alla scheda STACK.md</td></tr>
+          <tr><td><strong>hooks-starter</strong> <span class="badge b-new">7 hook</span> <span class="badge b-new">Nuovo</span></td><td>Tre hook pronti, mai attivi di default: session-context (SessionStart, contesto di ripresa automatico), protect-sensitive-files (PreToolUse Write/Edit), secret-scan (PreToolUse Bash su git commit); doppia forma .ps1/.sh, blocco via exit 2 + stderr</td><td>Automatizzare la ripresa (sez. 12) o concretizzare i guard-rail (sez. 14 di PROJECT-SYSTEM.md); attivazione sempre manuale via settings.json</td><td>Bundle Cranot, riscritto sul protocollo hook corrente; secret-scan è difesa in profondità (il deny baseline su git commit resta primario)</td></tr>
           <tr><td><strong>dev-skills</strong> <span class="badge b-new">Nuovo</span></td><td>Quattro skill di sviluppo a scelta singola: test-generator (test sui pattern del progetto), mcp-tool-scaffold (tool MCP orientati all'LLM), code-review e security-review (varianti di progetto delle revisioni)</td><td>Sviluppo attivo con procedure versionate; le due di review si propongono solo dichiarando la sovrapposizione con le skill native /code-review e /security-review</td><td>Bundle Cranot; le skill omonime mettono in ombra le native nel progetto (nota naming nel README del pacchetto)</td></tr>
         </tbody>
       </table>
@@ -445,10 +445,10 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-community">
-    <div class="sec-hd"><span class="sec-num">13</span><h2 class="sec-title">Pacchetti — Automazione e catalogo subagent community</h2></div>
+    <div class="sec-hd"><span class="sec-num">13</span><h2 class="sec-title">Pacchetti - Automazione e catalogo subagent community</h2></div>
     <p class="sec-sub">Quattro pacchetti del 2026-07-02: uno di automazione headless/schedulata originale al template, tre per pescare o installare subagent specializzati da fonti community senza scriverli da zero.</p>
     <div class="card">
-      <div class="card-hd"><span class="dot d-new"></span>Automazione — originale al template</div>
+      <div class="card-hd"><span class="dot d-new"></span>Automazione - originale al template</div>
       <table class="t">
         <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Note</th></tr></thead>
         <tbody>
@@ -462,8 +462,8 @@ a.repo:hover{text-decoration:underline}
         <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
         <tbody>
           <tr><td><strong>agent-catalog</strong> <span class="badge b-new">Nuovo</span></td><td>Pesca a richiesta, uno alla volta, subagent per stack/framework dalla fonte flat 0xfurai/claude-code-subagents (138 agenti, file Markdown senza plugin); 3 comandi (list/fetch/check) e script dual-OS con confronto commit a costo zero, stessa strategia di claude-code-handoff; hesreallyhim/awesome-claude-code tracciato come fonte "meta" per il solo drift</td><td>Serve un agente iper-specifico non coperto da un plugin marketplace nativo</td><td><a class="repo" href="https://github.com/0xfurai/claude-code-subagents">github.com/0xfurai/claude-code-subagents</a> · MIT · verificato dal vivo (list/fetch/check su 0xfurai, entrambi gli OS)</td></tr>
-          <tr><td><strong>wshobson-agents</strong> <span class="badge b-new">Nuovo</span></td><td>Marketplace di plugin nativo con 194 agent, 158 skill, 106 comandi slash per dominio</td><td>Installare unita' complete e curate per dominio con aggiornamento gestito dal plugin marketplace</td><td><a class="repo" href="https://github.com/wshobson/agents">github.com/wshobson/agents</a> · MIT · 37,4k stelle</td></tr>
-          <tr><td><strong>voltagent-subagents</strong> <span class="badge b-new">Nuovo</span></td><td>Marketplace di plugin nativo con 154+ subagent in 10 categorie (core dev, linguaggi, infra, quality/security, data/AI, DX, domini specializzati, business, meta-orchestrazione, ricerca)</td><td>Installare un intero dominio di subagent gia' curato invece di pescarli uno a uno</td><td><a class="repo" href="https://github.com/VoltAgent/awesome-claude-code-subagents">github.com/VoltAgent/awesome-claude-code-subagents</a> · MIT · 22,7k stelle</td></tr>
+          <tr><td><strong>wshobson-agents</strong> <span class="badge b-new">Nuovo</span></td><td>Marketplace di plugin nativo con 194 agent, 158 skill, 106 comandi slash per dominio</td><td>Installare unità complete e curate per dominio con aggiornamento gestito dal plugin marketplace</td><td><a class="repo" href="https://github.com/wshobson/agents">github.com/wshobson/agents</a> · MIT · 37,4k stelle</td></tr>
+          <tr><td><strong>voltagent-subagents</strong> <span class="badge b-new">Nuovo</span></td><td>Marketplace di plugin nativo con 154+ subagent in 10 categorie (core dev, linguaggi, infra, quality/security, data/AI, DX, domini specializzati, business, meta-orchestrazione, ricerca)</td><td>Installare un intero dominio di subagent già curato invece di pescarli uno a uno</td><td><a class="repo" href="https://github.com/VoltAgent/awesome-claude-code-subagents">github.com/VoltAgent/awesome-claude-code-subagents</a> · MIT · 22,7k stelle</td></tr>
         </tbody>
       </table>
     </div>
@@ -472,19 +472,19 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-fondamenta">
-    <div class="sec-hd"><span class="sec-num">14</span><h2 class="sec-title">Pacchetti — Fondamenta, registri e igiene</h2></div>
-    <p class="sec-sub">Cinque pacchetti originali al template che la mappa non aveva ancora: non dipendono da che cosa il progetto faccia, ma da quanto a lungo vivra' e da quante mani lo toccheranno.</p>
+    <div class="sec-hd"><span class="sec-num">14</span><h2 class="sec-title">Pacchetti - Fondamenta, registri e igiene</h2></div>
+    <p class="sec-sub">Cinque pacchetti originali al template che la mappa non aveva ancora: non dipendono da che cosa il progetto faccia, ma da quanto a lungo vivrà e da quante mani lo toccheranno.</p>
     <div class="card">
       <div class="card-hd"><span class="dot d-new"></span>Registri, scadenze e dati che identificano</div>
       <table class="t">
         <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Note</th></tr></thead>
         <tbody>
-          <tr><td><strong>operations-log</strong></td><td>Registro cronologico degli interventi operativi: che cosa e' stato fatto, a che cosa serve, come e' stato verificato e con quale esito. Copre la granularita' che i file di memoria non coprono</td><td>Progetti con interventi operativi ripetuti di cui serve la traccia</td><td>Originale al template</td></tr>
+          <tr><td><strong>operations-log</strong></td><td>Registro cronologico degli interventi operativi: che cosa è stato fatto, a che cosa serve, come è stato verificato e con quale esito. Copre la granularità che i file di memoria non coprono</td><td>Progetti con interventi operativi ripetuti di cui serve la traccia</td><td>Originale al template</td></tr>
           <tr><td><strong>readme-sync</strong> <span class="badge b-new">Nuovo</span></td><td>Indice navigabile dai titoli reali, link locali verificati e inventario dei pacchetti dal catalogo; una skill aggiorna la prosa dalle fonti</td><td>Progetti con README pubblico che cresce nel tempo</td><td>Originale al template; Python standard library, senza rete</td></tr>
-          <tr><td><strong>documentazione-didattica</strong></td><td>Accanto al registro di <em>che cosa e' accaduto</em>, il registro di <em>perche' una scelta e' migliore di un'altra</em>: racconto evolutivo che contrappone com'era e perche' era fragile al salto di qualita', con deep-dive nel codice reale</td><td>Chi lavora sul progetto vuole imparare rileggendo le proprie decisioni, non solo saperne lo stato</td><td>Originale al template; skill studio-didattico</td></tr>
-          <tr><td><strong>timeline-progetto</strong> <span class="badge b-new">Nuovo</span></td><td>Linea temporale sempre aggiornata, un microstep per voce, con accanto la ragione tecnologica di quel passo. Generata dal work-log e dal registro delle decisioni, mai scritta a mano; un passo senza ragione dichiarata resta dichiarato scoperto invece di ricevere una spiegazione inventata a posteriori</td><td>Progetti lunghi dove la storia tecnica serve per decidere il prossimo passo, o va mostrata a chi non c'era</td><td>Originale al template; artefatto e fonti vivono nel repository e mai nella directory dell'account; uscita deterministica perche' il valore non e' solo leggerla ma vederne il diff; 17 controlli</td></tr>
-          <tr><td><strong>alignment</strong></td><td>Controllo eseguibile delle affermazioni che invecchiano in silenzio: scadenze scritte in prosa con la loro conseguenza, eta' di una misura contro la cadenza dichiarata, campo di firma</td><td>Progetti che scrivono affermazioni con una data di scadenza implicita</td><td>Originale al template</td></tr>
-          <tr><td><strong>anonymization</strong></td><td>Guard-rail sui <em>dati che identificano</em> persone, luoghi e infrastrutture reali: indirizzi IP, indirizzi fisici, nomi propri, caselle di posta. Categoria distinta e complementare rispetto ai segreti</td><td>Repository che diventera' pubblico, o che contiene materiale di terzi</td><td>Originale al template; complementare a secret-scan</td></tr>
+          <tr><td><strong>documentazione-didattica</strong></td><td>Accanto al registro di <em>che cosa è accaduto</em>, il registro di <em>perché una scelta è migliore di un'altra</em>: racconto evolutivo che contrappone com'era e perché era fragile al salto di qualità, con deep-dive nel codice reale</td><td>Chi lavora sul progetto vuole imparare rileggendo le proprie decisioni, non solo saperne lo stato</td><td>Originale al template; skill studio-didattico</td></tr>
+          <tr><td><strong>timeline-progetto</strong> <span class="badge b-new">Nuovo</span></td><td>Linea temporale sempre aggiornata, un microstep per voce, con accanto la ragione tecnologica di quel passo. Generata dal work-log e dal registro delle decisioni, mai scritta a mano; un passo senza ragione dichiarata resta dichiarato scoperto invece di ricevere una spiegazione inventata a posteriori</td><td>Progetti lunghi dove la storia tecnica serve per decidere il prossimo passo, o va mostrata a chi non c'era</td><td>Originale al template; artefatto e fonti vivono nel repository e mai nella directory dell'account; uscita deterministica perché il valore non è solo leggerla ma vederne il diff; 17 controlli</td></tr>
+          <tr><td><strong>alignment</strong></td><td>Controllo eseguibile delle affermazioni che invecchiano in silenzio: scadenze scritte in prosa con la loro conseguenza, età di una misura contro la cadenza dichiarata, campo di firma</td><td>Progetti che scrivono affermazioni con una data di scadenza implicita</td><td>Originale al template</td></tr>
+          <tr><td><strong>anonymization</strong></td><td>Guard-rail sui <em>dati che identificano</em> persone, luoghi e infrastrutture reali: indirizzi IP, indirizzi fisici, nomi propri, caselle di posta. Categoria distinta e complementare rispetto ai segreti</td><td>Repository che diventerà pubblico, o che contiene materiale di terzi</td><td>Originale al template; complementare a secret-scan</td></tr>
           <tr><td><strong>fix-typography</strong></td><td>Tre strumenti che attuano le convenzioni tipografiche della regola interaction-style: accenti scritti con l'apostrofo, accenti mancanti, trattini lunghi. Mascherano gli identificatori LaTeX prima di operare</td><td>Il progetto scrive prosa in italiano</td><td>Originale al template; il secondo strumento dichiara come indecidibili i casi che richiedono di capire la frase invece di indovinarli</td></tr>
         </tbody>
       </table>
@@ -494,7 +494,7 @@ a.repo:hover{text-decoration:underline}
   <div class="divider"></div>
 
   <section class="sec" id="pkg-fonti-voce">
-    <div class="sec-hd"><span class="sec-num">15</span><h2 class="sec-title">Pacchetti — Fonti di community, voce e scienza</h2></div>
+    <div class="sec-hd"><span class="sec-num">15</span><h2 class="sec-title">Pacchetti - Fonti di community, voce e scienza</h2></div>
     <p class="sec-sub">Sette pacchetti su tre fronti che il template non copriva: le fonti che vivono dentro canali di conversazione e catene di discussioni, il parlato che va trasformato in testo, e i due grandi cataloghi esterni di skill. Integrazione 2026-09-16.</p>
     <div class="card">
       <div class="card-hd"><span class="dot d-new"></span>Fonti che nessuno strumento di sessione raggiunge</div>
@@ -503,34 +503,34 @@ a.repo:hover{text-decoration:underline}
         <tbody>
           <tr><td><strong>community-sources</strong> <span class="badge b-new">Nuovo</span></td><td>Sei strumenti: tre che recuperano (canale Discord via bot account con cursore, esportazione ampia via DiscordChatExporter, grafo dei rinvii a partire da un post di Reddit attraverso un archivio pubblico di terze parti) e tre che riducono (export di chat in Markdown filtrato, sottotitoli a scorrimento in parlato, corsa del lettore in censimento di fonti raggruppate per cluster)</td><td>Il progetto poggia su conoscenza che vive in canali di community o in catene di discussioni pubbliche</td><td>Originale al template · Python 3, sola libreria standard · 110 controlli sul lettore di Reddit, 14 sul censimento, contro trasporto finto</td></tr>
           <tr><td><strong>discord-mcp</strong></td><td>Server MCP community che espone i tool per leggere e cercare in canali Discord attraverso un bot account ufficiale: la stessa via legittima di community-sources, disponibile come tool durante una sessione invece che come programma</td><td>Consultazione frequente e conversazionale di un canale, invece di una esportazione periodica</td><td>Community · vale il vincolo generale sul numero di server connessi</td></tr>
-          <tr><td><strong>hermes-agent</strong></td><td>Agente residente auto-ospitato di Nous Research: gira come servizio su una macchina propria, con gateway di messaggistica verso piu' piattaforme</td><td>Serve un agente sempre in ascolto su canali esterni, fuori da una sessione interattiva</td><td>Nous Research · strumento esterno</td></tr>
+          <tr><td><strong>hermes-agent</strong></td><td>Agente residente auto-ospitato di Nous Research: gira come servizio su una macchina propria, con gateway di messaggistica verso più piattaforme</td><td>Serve un agente sempre in ascolto su canali esterni, fuori da una sessione interattiva</td><td>Nous Research · strumento esterno</td></tr>
         </tbody>
       </table>
     </div>
     <div class="card">
-      <div class="card-hd"><span class="dot d-new"></span>Voce e trascrizione — chiude la seconda via della regola sulle fonti</div>
+      <div class="card-hd"><span class="dot d-new"></span>Voce e trascrizione - chiude la seconda via della regola sulle fonti</div>
       <table class="t">
         <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
         <tbody>
-          <tr><td><strong>voicestudio</strong> <span class="badge b-new">Nuovo</span></td><td>Riconoscimento e sintesi vocale in locale, senza account e senza mandare l'audio altrove, in 646 lingue. Lo strumento istanziato trascrive un file audio o video e scrive il testo sotto _notes/fonti/ con la provenienza davanti: sorgente, servizio, modello, e la dichiarazione che il testo non e' riletto</td><td>Fonti parlate per cui i sottotitoli automatici non esistono; oppure produzione di audio, audiolibri, doppiaggio, dettatura</td><td><a class="repo" href="https://github.com/debpalash/VoiceStudio">github.com/debpalash/VoiceStudio</a> · AGPL-3.0 · 19 controlli contro trasporto finto · clonare una voce richiede il permesso di chi quella voce ce l'ha</td></tr>
-          <tr><td><strong>voicestudio-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Server MCP montato sul servizio locale: sintesi, clonazione, trascrizione ed elenco delle voci come tool di sessione</td><td>La voce serve dentro il lavoro, non solo a trascrivere una fonte</td><td>Due variabili da decidere prima: OMNIVOICE_MCP_OUTPUT_MODE=files tiene l'audio fuori dal contesto, OMNIVOICE_MCP_BASE_PATH e' il confine di sicurezza. Trasporto non autenticato: resta sulla macchina</td></tr>
+          <tr><td><strong>voicestudio</strong> <span class="badge b-new">Nuovo</span></td><td>Riconoscimento e sintesi vocale in locale, senza account e senza mandare l'audio altrove, in 646 lingue. Lo strumento istanziato trascrive un file audio o video e scrive il testo sotto _notes/fonti/ con la provenienza davanti: sorgente, servizio, modello, e la dichiarazione che il testo non è riletto</td><td>Fonti parlate per cui i sottotitoli automatici non esistono; oppure produzione di audio, audiolibri, doppiaggio, dettatura</td><td><a class="repo" href="https://github.com/debpalash/VoiceStudio">github.com/debpalash/VoiceStudio</a> · AGPL-3.0 · 19 controlli contro trasporto finto · clonare una voce richiede il permesso di chi quella voce ce l'ha</td></tr>
+          <tr><td><strong>voicestudio-mcp</strong> <span class="badge b-new">Nuovo</span></td><td>Server MCP montato sul servizio locale: sintesi, clonazione, trascrizione ed elenco delle voci come tool di sessione</td><td>La voce serve dentro il lavoro, non solo a trascrivere una fonte</td><td>Due variabili da decidere prima: OMNIVOICE_MCP_OUTPUT_MODE=files tiene l'audio fuori dal contesto, OMNIVOICE_MCP_BASE_PATH è il confine di sicurezza. Trasporto non autenticato: resta sulla macchina</td></tr>
         </tbody>
       </table>
     </div>
     <div class="card">
-      <div class="card-hd"><span class="dot d-new"></span>I due cataloghi esterni di skill — mappati, non vendorati</div>
+      <div class="card-hd"><span class="dot d-new"></span>I due cataloghi esterni di skill - mappati, non vendorati</div>
       <table class="t">
         <thead><tr><th>Pacchetto</th><th>Funzione</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
         <tbody>
-          <tr><td><strong>scientific-skills</strong> <span class="badge b-new">Nuovo</span></td><td>166 skill scientifiche per lo standard aperto Agent Skills, oltre 100 basi di dati. Il pacchetto non installa: genera la vista che manca a monte, cioe' ogni skill con autore, licenza, presenza di programmi eseguibili e sovrapposizione con il catalogo di questo sistema, e fissa la procedura in quattro mosse per prenderne una</td><td>Il dominio del progetto e' scientifico; oppure servono le sole skill di comunicazione scientifica, offerte per quelle e mai in blocco</td><td><a class="repo" href="https://github.com/K-Dense-AI/scientific-agent-skills">K-Dense-AI/scientific-agent-skills</a> · MIT · arXiv:2609.00065 · misurato: 106/166 portano codice eseguibile, 30 non sono della casa, 5 hanno licenza proprietaria · installa gh skill install, non il pacchetto</td></tr>
-          <tr><td><strong>matt-pocock-skills</strong> <span class="badge b-new">Nuovo</span></td><td>La mappa fra 37 skill di ingegneria e cio' che questo sistema gia' ha: quali coprono un buco reale (interrogazione che fa emergere cio' che non e' stato deciso, diagnosi disciplinata dei difetti difficili, procedura guidata per i passi solo umani, questionario per una decisione di un terzo), quali duplicano, quali vanno adattate perche' scrivono in file che qui hanno un altro nome</td><td>Il progetto scrive codice; tre skill valgono anche per un progetto documentale; il gruppo del tracciatore solo dove un tracciatore esista</td><td><a class="repo" href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a> · MIT · non si prendono entrambe le vie di installazione, o ogni skill resta in doppia copia</td></tr>
+          <tr><td><strong>scientific-skills</strong> <span class="badge b-new">Nuovo</span></td><td>166 skill scientifiche per lo standard aperto Agent Skills, oltre 100 basi di dati. Il pacchetto non installa: genera la vista che manca a monte, cioè ogni skill con autore, licenza, presenza di programmi eseguibili e sovrapposizione con il catalogo di questo sistema, e fissa la procedura in quattro mosse per prenderne una</td><td>Il dominio del progetto è scientifico; oppure servono le sole skill di comunicazione scientifica, offerte per quelle e mai in blocco</td><td><a class="repo" href="https://github.com/K-Dense-AI/scientific-agent-skills">K-Dense-AI/scientific-agent-skills</a> · MIT · arXiv:2609.00065 · misurato: 106/166 portano codice eseguibile, 30 non sono della casa, 5 hanno licenza proprietaria · installa gh skill install, non il pacchetto</td></tr>
+          <tr><td><strong>matt-pocock-skills</strong> <span class="badge b-new">Nuovo</span></td><td>La mappa fra 37 skill di ingegneria e ciò che questo sistema già ha: quali coprono un buco reale (interrogazione che fa emergere ciò che non è stato deciso, diagnosi disciplinata dei difetti difficili, procedura guidata per i passi solo umani, questionario per una decisione di un terzo), quali duplicano, quali vanno adattate perché scrivono in file che qui hanno un altro nome</td><td>Il progetto scrive codice; tre skill valgono anche per un progetto documentale; il gruppo del tracciatore solo dove un tracciatore esista</td><td><a class="repo" href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a> · MIT · non si prendono entrambe le vie di installazione, o ogni skill resta in doppia copia</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <div class="fn">
-    Tutti i repository sono open source (MIT salvo indicazione diversa). Le voci "Ufficiale" sono mantenute direttamente dal vendor. I benchmark di risparmio token sono auto-dichiarati dagli autori. Nessuna dipendenza e' inclusa di default: ogni voce si attiva su gate esplicito e conferma dell'utente per quel progetto specifico.<br><br>
-    Aggiornato incrementalmente, non rigenerato da zero, a ogni pacchetto o funzionalita' aggiunta al sistema: vedi il passo 6 di "Come estendere il sistema" nel README.md di radice.
+    Tutti i repository sono open source (MIT salvo indicazione diversa). Le voci "Ufficiale" sono mantenute direttamente dal vendor. I benchmark di risparmio token sono auto-dichiarati dagli autori. Nessuna dipendenza è inclusa di default: ogni voce si attiva su gate esplicito e conferma dell'utente per quel progetto specifico.<br><br>
+    Aggiornato incrementalmente, non rigenerato da zero, a ogni pacchetto o funzionalità aggiunta al sistema: vedi il passo 6 di "Come estendere il sistema" nel README.md di radice.
   </div>
 </main>
