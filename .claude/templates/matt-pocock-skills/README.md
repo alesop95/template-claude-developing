@@ -67,7 +67,7 @@ Tre di queste skill scrivono in file che nel sistema di progetto esistono già c
 
 Il primo caso è il documento del vocabolario condiviso. La raccolta lo chiama `CONTEXT.md` e lo tiene nella radice; qui la conoscenza strutturale sta nelle schede di `.claude/context/`, e il posto giusto per il glossario di dominio è la scheda che copre l'area, o una scheda propria se il dominio è largo. La riconciliazione con il codice passa dal frontmatter di quelle schede, che un `CONTEXT.md` nella radice non ha: tenerlo fuori significa avere un documento che nessun `sync-context` verifica mai.
 
-Il secondo caso sono le decisioni. `grill-with-docs` e `domain-modeling` le registrano come ADR nel posto che la configurazione indica; qui il registro è `.claude/memory/decisions.md`, numerato, e ha un vincolo che le skill non conoscono: l'agente non scrive di propria iniziativa nella memoria, propone il delta e lo applica quando l'utente lo chiede. L'adattamento è quindi doppio, di percorso e di permesso.
+Il secondo caso sono le decisioni. `grill-with-docs` e `domain-modeling` le registrano come ADR nel posto che la configurazione indica; qui il registro è `.claude/memory/decisions.md`, numerato, e ha una convenzione che le skill non conoscono: l'agente lo aggiorna nello stesso giro in cui la decisione nasce, e l'utente la rilegge nel diff prima del commit. L'adattamento è quindi di percorso e di tempistica.
 
 Il terzo caso è il passaggio di consegne. La raccolta lo scrive come documento a sé; qui va in `_notes/RESUME-PROMPT.md`, che è ignorato da git per scelta e va aggiornato a fine sessione.
 

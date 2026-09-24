@@ -14,9 +14,11 @@ Non basta che il contenuto sia deducibile da un file: deve esservi scritto. Una 
 
 Non conta neppure un aggiornamento differito. La direttiva dice di aggiornare ogni volta, e la ragione è che il debito di scrittura si comporta come il debito di lettura: cresce in silenzio e si paga quando conviene meno. Un giro di lavoro che produce un risultato e non lo scrive lascia il progetto in uno stato in cui la chat e il disco divergono, che è precisamente lo stato che un sistema di memoria esiste per evitare.
 
-## Il vincolo che resta intatto
+## La memoria si aggiorna da sola, il versionamento resta umano
 
-La regola non autorizza a toccare `context/` e `memory/` di propria iniziativa quando l'utente non lo ha chiesto: quel vincolo resta, e la sua ragione è che il versionamento della memoria stia sotto controllo umano. Le due cose convivono così: l'agente scrive sempre i documenti di conoscenza, cioè studi, censimenti, referenze e registro delle fonti, e per la memoria e le schede propone il delta e lo applica quando l'utente lo chiede, salvo che la richiesta di aggiornare sia già stata data in forma generale.
+L'aggiornamento di `memory/` e `context/` è automatico e avviene a ogni giro di chat sostanziale, senza che l'utente debba chiederlo: work log, snapshot `memory/index.md`, registro delle decisioni, registro delle pendenze e schede toccate dal lavoro si scrivono nel medesimo giro in cui il contenuto nasce, esattamente come i documenti di conoscenza. Una versione precedente di questa regola chiedeva all'agente di proporre il delta e di applicarlo solo su richiesta; la direttiva d'uso del 2026-09-24 l'ha superata, perché in pratica la richiesta non arrivava a ogni giro e la memoria restava indietro rispetto alla chat, cioè nello stato che questa regola esiste per impedire.
+
+Il controllo umano non sparisce, si sposta dove è efficace: sul diff e sul commit. L'agente scrive, l'utente rilegge con `git diff` e decide che cosa versionare, perché `git add`, commit e push restano manuali. Una scrittura sbagliata in memoria si scarta prima del commit con lo stesso gesto con cui si scarta una modifica al codice. Restano esclusi dall'automatismo soltanto i giri puramente conversazionali, che non producono misure, decisioni, correzioni, pendenze o fonti.
 
 ## Il presidio
 

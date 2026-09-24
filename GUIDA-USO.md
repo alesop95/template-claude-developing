@@ -93,7 +93,7 @@ Per `chat-non-e-memoria.md` in particolare, ciò che la regola prescrive è un c
 
 L'osservabile è l'ultima riga: alla fine di ogni giro di lavoro sostanziale l'agente dichiara quali file ha scritto. Quella riga è il presidio della regola. Se c'è, il contenuto è su disco; se manca, il contenuto è rimasto in chat ed è già perduto, anche quando la risposta era ottima. Quindi il modo in cui usi questa regola è: leggere quella riga, e quando non c'è, chiederla.
 
-Una seconda cosa la regola la dice e vale ripeterla qui perché è la parte che sorprende: l'agente non scrive di propria iniziativa in `.claude/memory/` e in `.claude/context/`. Propone il delta e lo applica quando glielo chiedi, perché il versionamento della memoria resta sotto controllo umano. L'eccezione dichiarata riguarda i documenti di conoscenza, cioè studi, censimenti e registri di fonti, che l'agente scrive sempre: là il rischio è opposto, ed è che il contenuto resti in chat.
+Una seconda cosa la regola la dice e vale ripeterla qui: l'agente aggiorna `.claude/memory/` e `.claude/context/` da solo, a ogni giro di lavoro sostanziale, senza che tu glielo chieda, come fa con i documenti di conoscenza. Il rischio che la regola combatte è che il contenuto resti in chat. Il controllo umano sta nel versionamento: rileggi il diff e decidi tu che cosa committare.
 
 ## Il ciclo di una sessione, nella forma concreta
 
@@ -178,7 +178,7 @@ Il modo di verificare che il principio regga è secco, e conviene usarlo davvero
 
 ### Strato uno: dentro il repository, tracciato
 
-È la memoria vera, l'unica che sopravvive a un clone, ed è versionata sotto controllo umano.
+È la memoria vera, l'unica che sopravvive a un clone: l'agente la aggiorna a ogni giro, e il suo versionamento resta sotto controllo umano.
 
 ```
 .claude/memory/index.md        snapshot: branch, commit di riferimento, stato di verifica delle schede, punto di ripresa
@@ -191,7 +191,7 @@ AGENTS.md                      ponte Codex verso le istruzioni canoniche
 docs/                          documenti generati che il progetto decide di versionare
 ```
 
-Non viene cancellato da niente e da nessuno. Cresce, e l'unico presidio è che non diverga dal codice, che è il mestiere di `sync-context`. I wrapper Codex non si aggiornano a mano: `sync-codex-skills.py` li deriva dalle skill canoniche sotto `.claude/skills/` e il suo modo `--check` rileva il drift. L'agente non scrive nella memoria di propria iniziativa: propone il delta e lo applica quando glielo chiedi.
+Non viene cancellato da niente e da nessuno. Cresce, e l'unico presidio è che non diverga dal codice, che è il mestiere di `sync-context`. I wrapper Codex non si aggiornano a mano: `sync-codex-skills.py` li deriva dalle skill canoniche sotto `.claude/skills/` e il suo modo `--check` rileva il drift. L'agente la aggiorna a ogni giro di lavoro sostanziale; sei tu a rileggere il diff e a committare.
 
 ### Strato due: dentro il repository, ignorato da git
 
@@ -273,7 +273,7 @@ Ciò che il progetto sa di sé sta nello strato uno ed è versionato, quindi sop
 
 Non committa e non pusha mai. L'agente prepara i file e consegna i comandi; le operazioni di version control restano dell'utente. Non è diffidenza verso lo strumento ma la sola garanzia che nessuna modifica entri nella storia senza che una persona l'abbia guardata.
 
-Non scrive di propria iniziativa nella memoria e nelle schede, per la ragione già detta sopra.
+Aggiorna memoria e schede a ogni giro sostanziale, per la ragione già detta sopra, e non committa mai.
 
 Non lascia che la memoria del progetto viva fuori dal progetto, che è l'intera sezione precedente.
 

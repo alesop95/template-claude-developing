@@ -40,7 +40,7 @@ Per i commit comparsi dopo la registrazione si guarda che cosa hanno toccato, co
 
 Per i file rimasti nell'albero di lavoro si chiede, non si decide. Un file a metà può essere un lavoro da riprendere o uno da buttare, e la differenza non si legge dal contenuto.
 
-Per i documenti di memoria arretrati si propone il delta e lo si applica quando l'utente lo chiede, come vuole il vincolo generale sulla memoria: la skill non riscrive `memory/` di propria iniziativa.
+I documenti di memoria arretrati si aggiornano subito, nello stesso giro, come vuole `rules/chat-non-e-memoria.md`, e si dichiara quali file sono stati scritti così che l'utente li rilegga nel diff prima del commit.
 
 Per una memoria più avanti in un altro albero non si propone nessun delta, perché copiarla o fonderla qui sono le due correzioni sbagliate che la regola `alberi-di-lavoro.md` descrive: si dichiara che la memoria di questo albero è quella di un'altra branch, e da quel momento `index.md`, `decisions.md` e `progress.md` si leggono dall'albero autorevole per percorso assoluto, mentre codice e schede di contesto restano quelli di questo albero. Se il file di ripresa di questo albero non si apre già con quell'avviso, si propone di aggiungerlo in testa, che è il solo posto non versionato e quindi il solo che non eredita il tranello.
 
