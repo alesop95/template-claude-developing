@@ -179,9 +179,9 @@ Per i progetti che costruiscono una bibliografia a partire da libri fisici o sca
 
 ## Ricerca accademica (academic-researcher)
 
-Per i progetti di ricerca accademica, di tesi, o di analisi sistematica di un corpus di paper, il pacchetto opzionale `academic-researcher` scaffolda un intero ambiente di ricerca assistita: scoping del topic con le domande di gate corrette (dominio disciplinare, libreria Zotero esistente o meno, output LaTeX o Word, livello di autonomia), tracciamento tripartito di ogni fonte come verificata, da verificare o scartata, sincronizzazione di `research-vault/bibliography.bib` tra Zotero come libreria di lavoro e JabRef come validatore umano finale, e la Corpus Analysis Suite, dieci prompt collaudati (Intake Protocol, Contradiction Finder, Citation Chain, Gap Scanner, Methodology Audit, Master Synthesis, Assumption Killer, Knowledge Map Builder, So What Test, Canon Update) per analizzare un corpus di paper già caricato in conversazione. Il pacchetto è distillato da un modulo di ricerca dedicato, che si instanzia insieme al pacchetto come riferimento consultabile in `research-vault/reference/`, integrato con un metodo esterno attribuito (screenshot di un post pubblico, account `@techwith.ram`) per la parte di ricerca letteratura, lo scoping di progetto, la lettura profonda e l'ultima delle dieci modalità della Corpus Analysis Suite.
+Per i progetti di ricerca accademica, di tesi, di stato dell'arte tecnico o di benchmark R&D, il pacchetto opzionale `academic-researcher` scaffolda un ambiente di ricerca assistita: scoping del topic, tracciamento delle fonti bibliografiche, sincronizzazione di `research-vault/bibliography.bib` tra Zotero e JabRef, e la Corpus Analysis Suite per un corpus di paper già caricato. La skill `senior-researcher` coordina una ricerca per topic e produce un brief con query, URL accademici e tecnici, matrice dei claim e passaggi verificati; su richiesta prepara anche una trattazione simil accademica con metodo e bibliografia. Include un protocollo per disegnare benchmark e analisi statistiche senza trasferire risultati da altri progetti. Il pacchetto resta distillato dal modulo di ricerca dedicato che si instanzia in `research-vault/reference/`, con integrazioni esterne attribuite nelle skill pertinenti.
 
-Cinque delle otto skill del pacchetto (`corpus-analysis`, `citation-tracker`, `bib-sync`, `research-scoping`, `literature-search`) hanno un corpo operativo completo, perché il modulo di origine o il metodo esterno attribuito ne fissa il comportamento in modo concreto; le altre tre (`deep-paper-reading`, `gap-analysis`, `skill-autogen`) sono parzialmente stub: dispongono già di un prompt o di un'euristica di default usabile da subito, ma lasciano aperta una calibrazione specifica del progetto, quali MCP di ricerca sono connessi, se Docker e GROBID sono disponibili, quale dominio disciplinare calibra le soglie di rilevanza. Il pacchetto non installa da solo alcun MCP: le voci concrete raccomandate dal modulo di origine, `zotero-mcp`, `academix`, `semantic-scholar-mcp`, `refchecker-mcp`, più i tool esterni `arxiv-cli`, `grobid` e `paperqa2`, restano righe separate del catalogo, proposte una alla volta rispettando il limite di 3-4 MCP nuovi per sessione. Il dettaglio completo, coi crediti e la mappa di istanziazione, è in `.claude/templates/academic-researcher/README.md`.
+Cinque delle nove skill del pacchetto (`corpus-analysis`, `citation-tracker`, `bib-sync`, `research-scoping`, `literature-search`) seguono il modulo di origine o un metodo esterno attribuito; `senior-researcher` aggiunge il workflow tecnico e il protocollo di benchmark, mentre `deep-paper-reading`, `gap-analysis` e `skill-autogen` restano parzialmente stub da calibrare nel progetto. Il gate di avvio e allineamento chiede separatamente se collegare OpenAlex MCP, usare PaperQA2 su un corpus locale e installare Feynman come CLI autonoma. Sono scelte per progetto, indipendenti dall'attivazione di `academic-researcher`; il [runbook operativo](.claude/templates/academic-researcher/INTEGRAZIONI-TOOL.md) descrive configurazione per Claude Code e Codex, prerequisiti e verifica. `zotero-mcp`, `academix`, `semantic-scholar-mcp`, `refchecker-mcp`, `arxiv-cli` e GROBID restano altre opzioni nel catalogo. Gli output Feynman diventano candidati da controllare su fonti primarie; il [pilota e le fonti della ricognizione](.claude/templates/academic-researcher/RICOGNIZIONE-FEYNMAN.md) spiegano il limite. Il dettaglio del pacchetto è in [.claude/templates/academic-researcher/README.md](.claude/templates/academic-researcher/README.md).
 
 ## Ricerca fondata su fonti proprie (notebooklm-bridge)
 
@@ -377,7 +377,7 @@ template-claude-developing/
       knowledge-wiki/  pacchetto opzionale LLM Wiki (sources/ + wiki/ + schema + skill wiki-digest)
       book-to-skill/   pacchetto opzionale: skill book-digest (PDF in skill on-demand, locale)
       book-bib-extract/  pacchetto opzionale: skill book-bib-extract (anagrafica bibliografica da libri fisici/scansionati senza DOI), tools extract-titlepages.py e render-bib-registry.py, registro unificato con book-digest
-      academic-researcher/  pacchetto opzionale: 8 skill di ricerca (5 complete, 3 parzialmente stub), regola no-uncited-claims, documento di riferimento
+      academic-researcher/  pacchetto opzionale: 9 skill di ricerca (5 da fonte, 1 nuova, 3 parzialmente stub), regola no-uncited-claims, documento di riferimento
       notebooklm-bridge/  pacchetto opzionale: loop di ricerca fondata NotebookLM gratuito + Claude, skill notebooklm-bridge, strumenti di verifica notebooklm-check.ps1/.sh
       learning-agent/   pacchetto opzionale: tutor di apprendimento guidato, 3 agent (tutor, kb-retriever, examiner), 3 skill/comandi (profile, learn, review), LEARNER_PROFILE.md, documento di riferimento
       codebase-learning/  pacchetto opzionale: comando /learn-repo a 5 fasi, subagent code-tutor, documento di riferimento
@@ -402,7 +402,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**34 pacchetti a cartella** su **81 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**34 pacchetti a cartella** su **83 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -436,7 +436,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 - `book-to-skill` - PDF tecnico in skill on-demand: [.claude/templates/book-to-skill/README.md](.claude/templates/book-to-skill/README.md)
 - `book-bib-extract` - anagrafica bibliografica da libri fisici/scansionati senza DOI: [.claude/templates/book-bib-extract/README.md](.claude/templates/book-bib-extract/README.md)
 - `notebooklm-bridge` - ricerca fondata NotebookLM gratuito + Claude: [.claude/templates/notebooklm-bridge/README.md](.claude/templates/notebooklm-bridge/README.md)
-- `academic-researcher` - ambiente di ricerca accademica: [.claude/templates/academic-researcher/README.md](.claude/templates/academic-researcher/README.md)
+- `academic-researcher` - ambiente di ricerca accademica e tecnica con brief e benchmark: [.claude/templates/academic-researcher/README.md](.claude/templates/academic-researcher/README.md)
 
 ### Voce, audio e trascrizione
 
@@ -546,10 +546,12 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - `linear-mcp`, server MCP ufficiale Linear per CRUD issue e sprint (richiede piano Standard+): implementazione ufficiale Linear
 - `zotero-mcp` di 54yyyu, MCP per la libreria bibliografica Zotero con ricerca semantica e CLI, base del pacchetto `academic-researcher`: https://github.com/54yyyu/zotero-mcp
 - `Academix` di xingyulu23, MCP di ricerca letteratura aggregata su OpenAlex, DBLP, Semantic Scholar, arXiv e Crossref con export BibTeX: https://github.com/xingyulu23/Academix
+- `Feynman` di Companion-Inc, CLI MIT di ricerca e audit paper/codice, opzione da collaudare prima dell'uso predefinito: https://github.com/Companion-Inc/feynman
+- `OpenAlex MCP` di OurResearch, server ufficiale MIT per ricerca e risoluzione di riferimenti: https://github.com/ourresearch/openalex-mcp-server
 - `semantic-scholar-mcp` di akapet00, MCP di ricerca su Semantic Scholar con export BibTeX e tracking di sessione: https://github.com/akapet00/semantic-scholar-mcp
 - `mcp-refchecker` di JonasBaath, MCP di verifica anti-hallucination delle citazioni contro Semantic Scholar, OpenAlex e Crossref (costruito su `academic-refchecker`, MIT): https://github.com/JonasBaath/mcp-refchecker
 - GROBID, motore open source di parsing PDF scientifico in XML/TEI strutturato, mantenuto da Luca Foppiano/Inria dal 2011, usato dal pacchetto `academic-researcher` per la lettura profonda dei paper
-- `paper-qa` (PaperQA2) di Future-House, framework RAG agentico per letteratura scientifica con citazioni verificate: https://github.com/Future-House/paper-qa
+- `paper-qa` (PaperQA2) di Future-House, framework RAG Apache-2.0 per corpus scientifici con citazioni da controllare: https://github.com/Future-House/paper-qa
 - `arxiv-cli` di AstraBert, CLI standalone per recupero rapido di paper arXiv senza MCP (licenza MIT): https://github.com/AstraBert/arxiv-cli
 - `knowledge-mcp` di olafgeibig, knowledge base locale con RAG ibrido vettoriale più grafo basato su LightRAG, base del pacchetto `learning-agent`: https://github.com/olafgeibig/knowledge-mcp
 - `anki-mcp-server` del progetto ankimcp, proxy locale verso AnkiConnect per spaced repetition senza telemetria, base del pacchetto `learning-agent`: https://github.com/ankimcp/anki-mcp-server (ankimcp.ai)

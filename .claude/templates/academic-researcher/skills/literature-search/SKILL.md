@@ -2,7 +2,7 @@
 name: literature-search
 description: >
   Cerca nuovi paper per un topic di ricerca attraverso due percorsi alternativi: via MCP di
-  letteratura (academix, semantic-scholar-mcp, vedi ../PACKAGES.md) quando il progetto li ha
+  letteratura (OpenAlex ufficiale, academix, semantic-scholar-mcp) quando il progetto li ha
   connessi, oppure, in loro assenza o in aggiunta, via Extended Thinking e Research Mode di
   Claude.ai con due prompt dedicati: uno di mappatura del campo prima di cercare paper singoli, uno
   di scoperta mirata di link PDF da fonti ufficiali. In entrambi i percorsi ogni risultato entra in
@@ -18,7 +18,7 @@ Questa skill copre lo stadio 2 della pipeline a stadi (sezione 9 punto 2 del doc
 
 ## Percorso A - via MCP
 
-Con `academix` o `semantic-scholar-mcp` connessi, la ricerca interroga direttamente questi server, che già restituiscono metadati strutturati (titolo, autori, anno, venue, DOI o arXiv-ID) e, nel caso di `academix`, l'export BibTeX nativo. Ogni risultato va comunque aggiunto alla lista di candidati (sezione "Cosa succede dopo" qui sotto) prima di poter essere citato: la connessione di un MCP non esenta dal passaggio per `citation-tracker`.
+Con il connector OpenAlex ufficiale, `academix` o `semantic-scholar-mcp` connessi, la ricerca interroga il server scelto nel gate. OpenAlex espone `search_works` e restituisce la query OQL canonica da conservare insieme a data, filtri e risultati; `academix` può fornire export BibTeX nativo. Ogni risultato va comunque aggiunto alla lista di candidati (sezione "Cosa succede dopo" qui sotto) prima di poter essere citato: la connessione di un MCP non esenta dal passaggio per `citation-tracker`.
 
 ## Percorso B - via Extended Thinking e Research Mode
 
