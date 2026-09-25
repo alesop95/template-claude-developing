@@ -144,6 +144,7 @@ Strumento di verifica della ripresa, che invece e di progetto e si istanzia: con
 templates/tools/verifica-ripresa.py        ->  tools/verifica-ripresa.py   (tracciato)
 templates/tools/chiudi-sessione.ps1        ->  tools/chiudi-sessione.ps1   (tracciato)
 templates/tools/chiudi-sessione.sh         ->  tools/chiudi-sessione.sh    (tracciato)
+templates/tools/installa-chiudi.sh          ->  uso dal bundle per il profilo Bash/Zsh (non istanziato)
 templates/tools/lint-doc-references.py     ->  tools/lint-doc-references.py (tracciato)
 ```
 

@@ -2,6 +2,8 @@
 
 > Catena completa per far convivere **N radici di Claude Code e M radici di Codex CLI** sulla stessa macchina, isolate, ripristinabili da zero e ripulite all'uscita. Installazione, avvio, pulizia selettiva, comandi brevi di shell e misura del consumo. È generico: non contiene alcun valore di alcuna macchina.
 
+L'attuazione corrente di questo pacchetto è PowerShell su Windows: i sette script di installazione, avvio, pulizia e consumo non hanno ancora varianti Linux. Il comando `chiudi` del sistema di progetto ha invece una variante Bash installabile separatamente con `templates/tools/installa-chiudi.sh`. Chi porta il template su Linux può usare quel flusso di chiusura, ma deve ancora progettare e provare la gestione multi-account di questo pacchetto per ottenere la stessa capacità della macchina Windows.
+
 ## Cosa risolve
 
 Usare più account dello stesso agente, o due agenti diversi, sulla stessa macchina pone quattro problemi che nessuno dei due strumenti risolve da sé: tenere le identità **isolate**, poterle **ricostruire** dopo una formattazione, **ripulire** ciò che resta a fine sessione, e **sapere quanto si è consumato** su ciascuna.

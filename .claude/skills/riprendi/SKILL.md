@@ -66,7 +66,7 @@ python tools/verifica-ripresa.py --registra
 
 Va fatto insieme all'aggiornamento del file di ripresa, cioè dopo aver scritto lo stato raggiunto e il prossimo passo, e dopo che l'utente ha fatto i propri commit, perché l'impronta fotografa lo stato in quel momento. Se si registra prima dei commit, la sessione successiva troverà una divergenza che non è una caduta ma una registrazione fatta troppo presto, e quel falso positivo insegna a ignorare il controllo, che è il modo in cui un presidio muore.
 
-Il modo ordinario di farlo è `tools/chiudi-sessione.ps1`, che l'utente lancia dopo aver chiuso la sessione e che registra solo dopo aver verificato che il commit sia arrivato al remoto; all'agente resta di aggiornare il file di ripresa e di scrivere in `_notes/COMMIT-MSG.txt` il messaggio di commit proposto.
+Il modo ordinario di farlo è `chiudi`, che l'utente lancia dopo aver chiuso la sessione: sul progetto esegue `tools/chiudi-sessione.ps1` in PowerShell oppure `tools/chiudi-sessione.sh` in Bash o Zsh, e registra solo dopo aver verificato che il commit sia arrivato a `origin` sul ramo corrente. All'agente resta di aggiornare il file di ripresa e di scrivere in `_notes/COMMIT-MSG.txt` il messaggio di commit proposto.
 
 Una sessione che finisce senza registrare non produce un danno: produce esattamente la situazione che questa skill sa riconoscere, cioè un file di ripresa che non descrive il presente. È il comportamento voluto, ed è la ragione per cui l'impronta si registra e non si deduce.
 

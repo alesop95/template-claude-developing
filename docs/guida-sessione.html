@@ -94,10 +94,10 @@ footer{margin-top:28px;padding-top:10px;border-top:1px solid var(--rule);font:12
 
 <h2 id="macchina"><span class="n">1</span>Una volta per macchina</h2>
 <ol class="steps">
-<li><b>Comandi nel profilo</b>: <code>.claude/templates/agenti-terminale/tools/Installa-Comandi.ps1</code> installa <code>claude-account&lt;N&gt;</code>, <code>codex-account&lt;N&gt;</code> e <code>chiudi</code>. Poi apri un terminale nuovo. <span class="why">Un terminale già aperto non rilegge il profilo.</span></li>
+<li><b>Comandi nel profilo</b>: su Windows <code>.claude/templates/agenti-terminale/tools/Installa-Comandi.ps1</code> installa <code>claude-account&lt;N&gt;</code>, <code>codex-account&lt;N&gt;</code> e <code>chiudi</code>; su Linux e macOS <code>bash .claude/templates/tools/installa-chiudi.sh</code> installa <code>chiudi</code> nel profilo Bash o Zsh. Poi apri un terminale nuovo. <span class="why">Un terminale già aperto non rilegge il profilo.</span></li>
 <li><b>Hook git attivi</b> in ogni repository: <code>git config --local core.hooksPath .githooks</code>. Su Linux/macOS anche <code>chmod +x .githooks/*</code>. <span class="why">Senza, pre-commit e commit-msg non girano.</span></li>
 <li><b>Identità locale</b> in ogni repository (<code>user.name</code>, <code>user.email</code>) e, una volta, <code>git config --global user.useConfigOnly true</code>. <span class="why">Git rifiuta di committare senza identità locale; chiudi si ferma prima.</span></li>
-<li><b>Wipe per account</b> installato come hook SessionEnd (<code>session-end-wipe.ps1</code>). Si verifica con <code>check-account-hygiene.ps1</code>.</li>
+<li><b>Wipe per account</b> installato come hook SessionEnd (<code>session-end-wipe.ps1</code> su Windows, <code>session-end-wipe.sh</code> su Linux e macOS). Si verifica con <code>check-account-hygiene.ps1</code> o con la variante <code>.sh</code>.</li>
 </ol>
 
 <h2 id="apertura"><span class="n">2</span>Apertura di una sessione</h2>
@@ -136,21 +136,21 @@ claude-account2</pre>
 <tr><th>Passo</th><th>Cosa</th><th>Se va male</th></tr>
 <tr><td>1 Stato</td><td>Cartella, ramo, file cambiati, diff riassuntivo senza pager</td><td>HEAD staccato: si ferma, niente commit</td></tr>
 <tr><td>2 Controlli</td><td>Trova quelli istanziati (nel template 13) e li esegue</td><td>Uno rosso: si ferma prima del commit</td></tr>
-<tr><td>3 Messaggio</td><td>Da <code>-Messaggio</code>, altrimenti <code>COMMIT-MSG.txt</code>, altrimenti lo chiede</td><td>Vuoto: si ferma</td></tr>
+<tr><td>3 Messaggio</td><td>Da <code>-Messaggio</code> (Bash: <code>-m</code>), altrimenti <code>COMMIT-MSG.txt</code>, altrimenti lo chiede</td><td>Vuoto: si ferma</td></tr>
 <tr><td>4 Identità</td><td>Mostra l'autore (identità git locale)</td><td>Mancante: si ferma</td></tr>
 <tr><td>5 Conferma</td><td><code>[s/N]</code> su file, ramo, messaggio</td><td>Tutto tranne <code>s</code>: annulla</td></tr>
 <tr><td>6 Commit</td><td>Scatta l'hook <code>commit-msg</code></td><td>Co-Authored-By, firme o oggetto &gt; 72: rifiutato</td></tr>
-<tr><td>7 Push</td><td>Ramo nuovo: <code>push -u</code>. Senza <code>origin</code>: saltato. Poi verifica HEAD = remoto</td><td>Push fallito: si ferma, impronta non registrata</td></tr>
+<tr><td>7 Push</td><td><code>push -u</code> verso <code>origin</code> e il ramo corrente. Senza <code>origin</code>: saltato. Poi verifica HEAD = ramo remoto</td><td>Push fallito: si ferma, impronta non registrata</td></tr>
 <tr><td>8 Impronta</td><td><code>verifica-ripresa.py --registra</code></td><td>KO: chiude con uscita 3</td></tr>
 <tr><td>9 Wipe</td><td>Tutti gli account con lo script, se nessuna CLI/editor Claude è aperto</td><td>Sessioni aperte: rimandato, comandi stampati</td></tr>
 </table></div>
 <div class="tbl"><table>
 <tr><th>Opzione</th><th>Effetto</th></tr>
-<tr><td><code>chiudi -SoloControlli</code></td><td>Stato e controlli, nessun commit</td></tr>
-<tr><td><code>chiudi -Messaggio "…"</code></td><td>Messaggio esplicito</td></tr>
-<tr><td><code>chiudi -Si</code></td><td>Senza conferma</td></tr>
-<tr><td><code>chiudi -NoWipe</code></td><td>Salta il wipe</td></tr>
-<tr><td><code>chiudi -Account account2</code></td><td>Wipe di un solo account</td></tr>
+<tr><td><code>chiudi -SoloControlli</code> / <code>chiudi --solo-controlli</code></td><td>Stato e controlli, nessun commit</td></tr>
+<tr><td><code>chiudi -Messaggio "…"</code> / <code>chiudi -m "…"</code></td><td>Messaggio esplicito</td></tr>
+<tr><td><code>chiudi -Si</code> / <code>chiudi --si</code></td><td>Senza conferma</td></tr>
+<tr><td><code>chiudi -NoWipe</code> / <code>chiudi --no-wipe</code></td><td>Salta il wipe</td></tr>
+<tr><td><code>chiudi -Account account2</code> / <code>chiudi --account account2</code></td><td>Wipe di un solo account</td></tr>
 </table></div>
 <div class="tbl"><table>
 <tr><th>Uscita</th><th>Significato</th></tr>

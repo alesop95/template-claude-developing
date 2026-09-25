@@ -194,6 +194,7 @@ if ($cambi.Count -gt 0) {
     }
 
     & git add -A
+    if ($LASTEXITCODE -ne 0) { Write-Host "Stage fallito: niente e' stato committato." -ForegroundColor Red; exit 1 }
     & git commit -m $Messaggio
     if ($LASTEXITCODE -ne 0) { Write-Host "Commit rifiutato (hook o errore): correggere e rilanciare." -ForegroundColor Red; exit 1 }
     if (Test-Path $fileMsg) { Remove-Item $fileMsg -Force }
@@ -206,13 +207,13 @@ if (-not $haOrigin) {
 } elseif (-not (& git rev-parse -q --verify HEAD)) {
     Nota "nessun commit sul ramo: niente da pushare"
 } else {
-    # Un ramo nuovo non ha ancora un ramo remoto collegato: lo si crea e lo si collega.
-    $upstream = (& git rev-parse --abbrev-ref --symbolic-full-name "@{u}" 2>$null)
-    if (-not $upstream) { & git push -u origin $ramo } else { & git push }
+    # Destinazione esplicita: un upstream diverso da origin non deve deviare la chiusura.
+    & git push -u origin "HEAD:refs/heads/$ramo"
     if ($LASTEXITCODE -ne 0) { Write-Host "Push fallito: l'impronta non si registra finche' il remoto non e' allineato." -ForegroundColor Red; exit 1 }
-    & git fetch -q
     $locale = (& git rev-parse HEAD)
-    $suRemoto = (& git rev-parse "@{u}" 2>$null)
+    $refRemota = (& git ls-remote --exit-code origin "refs/heads/$ramo")
+    if ($LASTEXITCODE -ne 0 -or -not $refRemota) { Ko "verifica del ramo remoto fallita"; exit 1 }
+    $suRemoto = ($refRemota -split '\s+')[0]
     if ($locale -ne $suRemoto) { Ko "HEAD $locale diverso dal remoto $suRemoto"; exit 1 }
     Ok "HEAD e remoto coincidono su '$ramo' ($($locale.Substring(0,7)))"
 }
