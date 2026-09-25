@@ -64,12 +64,19 @@ function Nota([string]$t) { Write-Host "   $t" -ForegroundColor DarkGray }
 if (-not $Radice) { $Radice = (& git -C $PSScriptRoot rev-parse --show-toplevel 2>$null) }
 if (-not $Radice) { Write-Host "Non trovo il repository: passare -Radice." -ForegroundColor Red; exit 2 }
 Set-Location $Radice
-$bundle = Test-Path ".claude\templates\PACKAGES.md"
+# Il bundle si riconosce da due file insieme. PACKAGES.md da solo non basta: la procedura di
+# allineamento importa l'intera cartella .claude\templates\ in ogni progetto, e un progetto
+# allineato veniva preso per il bundle, con i controlli e le opzioni riservati al template che
+# su un progetto falliscono. PROMPT-nuovo-progetto.md vive solo nel bundle e non si importa mai.
+$bundle = (Test-Path ".claude\templates\PACKAGES.md") -and (Test-Path ".claude\PROMPT-nuovo-progetto.md")
 
 # Stessa ricerca a cascata degli hook di sessione: nel progetto gli strumenti stanno in tools\,
 # nel template sotto .claude\templates\.
-$cartelle = @("tools", ".claude\templates\tools", ".claude\templates\md-unwrap\tools",
-              ".claude\templates\readme-sync\tools", ".claude\templates\fix-typography\tools")
+# In un progetto si eseguono soltanto i controlli istanziati in tools\: le copie dei modelli sotto
+# .claude\templates\ sono pacchetti non ancora adottati, e lanciarli come controlli del progetto
+# fermerebbe il commit per strumenti che nessuno ha scelto.
+$cartelle = if ($bundle) { @("tools", ".claude\templates\tools", ".claude\templates\md-unwrap\tools",
+              ".claude\templates\readme-sync\tools", ".claude\templates\fix-typography\tools") } else { @("tools") }
 function Trova([string]$nome) {
     foreach ($c in $cartelle) { $p = Join-Path $c $nome; if (Test-Path $p) { return $p } }
     return $null

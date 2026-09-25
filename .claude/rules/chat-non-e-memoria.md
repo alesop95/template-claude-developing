@@ -23,3 +23,5 @@ Il controllo umano non sparisce, si sposta dove è efficace: sul diff e sul comm
 ## Il presidio
 
 Alla fine di ogni giro di lavoro sostanziale l'agente dichiara, in una riga, quali file ha scritto. È il modo in cui la regola si verifica invece di essere solo dichiarata: se quella riga non c'è, il contenuto è rimasto in chat.
+
+Il presidio ha una seconda parte, nata da una direttiva d'uso del 2026-09-10 in un progetto istanziato: alla fine di ogni giro sostanziale si riscrive anche `_notes/RESUME-PROMPT.md`, che è l'iniezione con cui la sessione successiva riparte esattamente da dove questa si è fermata, e non soltanto alla chiusura della sessione. La ragione è la stessa della prima parte e vale anche quando tutto il resto è stato scritto correttamente: lo stato di avanzamento sta sparso fra indice, pendenze, decisioni e materiali su disco, e ricomporlo costa una lettura lunga a chi riprende; una sessione che cade a metà, poi, non arriva mai alla chiusura. Un file che lo ricompone non duplica quei documenti se dichiara di essere volatile e rimanda a essi per la conoscenza durevole, ed è il patto che quel file dichiara in testa.

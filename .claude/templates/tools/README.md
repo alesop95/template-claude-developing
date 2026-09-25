@@ -30,6 +30,16 @@ python tools/lint-md-commands.py .
 
 È in sola lettura e non scrive nulla: esce 0 se non trova niente, 1 altrimenti, quindi si può usare come gate in pre-commit o in CI accanto a `md-unwrap --check`. Un blocco viene considerato shell solo se lo dichiara la info string (`bash`, `powershell`, `sh`, `console` e simili) oppure se non ha info string e contiene comandi: un blocco `markdown` o `text` che cita un comando resta prosa, e la prosa può finire legittimamente con un backtick di code span. Le continuazioni backslash dentro un blocco dichiarato `bash` restano segnalate ma sono legittime se il comando è specifico di quella shell e non è destinato al copia-incolla cross-piattaforma: la segnalazione serve a decidere, non a imporre.
 
+## lint-md-tables.py
+
+Verifica la struttura delle tabelle Markdown, che `md-unwrap` per contratto non tocca: segnala una riga vuota dentro una cella, che chiude la tabella e manda il resto della cella fuori dalla griglia come prosa, e una riga con meno colonne dell'intestazione, che il renderer lascia vuota senza protestare. Sono i due difetti che la regola `interaction-style.md` enuncia per le tabelle, e nessuno dei due produce un errore visibile. Nato in un progetto istanziato il 2026-09-01, dove due voci di un registro erano rimaste per un giorno senza la colonna obbligatoria.
+
+```
+python tools/lint-md-tables.py .
+```
+
+È in sola lettura: esce 0 se non trova niente, 1 altrimenti, e si usa come gate accanto a `md-unwrap --check` e a `lint-md-commands.py`.
+
 ## detect-ssh-profiles.py
 
 Rileva, in sola lettura, i profili SSH verso GitHub configurati sulla macchina dove gira, e serve al Passo 0.5 dell'inizializzazione e dell'allineamento. Esiste perché la regola `git-identity-and-repo.md` non può sapere quali alias e quali chiavi esistano dove viene letta: un alias e una convenzione della singola installazione, non un fatto del sistema di progetto, e assumerlo porta a configurare un remoto che punta a un profilo inesistente, con un errore che si manifesta solo al primo push. Lo strumento e unico e non ha una variante per sistema operativo, perché il formato di `ssh_config` non ne ha.

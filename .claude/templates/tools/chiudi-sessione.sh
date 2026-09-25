@@ -39,9 +39,15 @@ dir_script="$(cd "$(dirname "$0")" && pwd)"
 [ -n "$radice" ] || radice="$(git -C "$dir_script" rev-parse --show-toplevel 2>/dev/null)"
 [ -n "$radice" ] || { echo "Non trovo il repository: passare --radice." >&2; exit 2; }
 cd "$radice" || exit 2
-bundle=0; [ -f .claude/templates/PACKAGES.md ] && bundle=1
+# Il bundle si riconosce da due file insieme: PACKAGES.md da solo compare anche in ogni progetto
+# allineato, perche' la procedura importa l'intera cartella dei modelli; PROMPT-nuovo-progetto.md
+# vive solo nel bundle e non si importa mai.
+bundle=0; [ -f .claude/templates/PACKAGES.md ] && [ -f .claude/PROMPT-nuovo-progetto.md ] && bundle=1
 
 cartelle="tools .claude/templates/tools .claude/templates/md-unwrap/tools .claude/templates/readme-sync/tools .claude/templates/fix-typography/tools"
+# In un progetto si eseguono soltanto i controlli istanziati in tools/: le copie dei modelli sono
+# pacchetti non ancora adottati, e lanciarli fermerebbe il commit per strumenti che nessuno ha scelto.
+[ $bundle = 0 ] && cartelle="tools"
 trova() { for c in $cartelle; do [ -f "$c/$1" ] && { echo "$c/$1"; return; }; done; }
 
 python=""
