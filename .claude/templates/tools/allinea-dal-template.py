@@ -19,6 +19,12 @@ Esiti per file:
   UGUALE      contenuto identico alla testa del template
   NUOVO       presente nel template, assente nel progetto: si copia
   VECCHIO     versione storica intatta del template: si aggiorna
+  ADATTATO    modificato localmente e contiene gia tutte le modifiche del
+              template: e una personalizzazione del progetto, non si tocca
+  SUPERATO    non coincide con nessuna versione storica, ma ogni sua riga compare
+              in qualcuna: e una copia anteriore alla storia registrata, senza
+              contenuto proprio, e si aggiorna. Si elenca perche una riga tolta
+              di proposito nel progetto tornerebbe
   MERGE       modificato localmente, merge a tre vie pulito: si applica
   CONFLITTO   modificato localmente, merge con conflitti: a mano
   SPOSTATO    il template lo ha rinominato; la copia locale era intatta o si
@@ -41,7 +47,9 @@ Uso:
   python allinea-dal-template.py ... --applica --rimuovi  # anche le origini di SPOSTATO e i RIMOSSO
   python allinea-dal-template.py ... --json rapporto.json
 
-Senza --applica non scrive niente. Esce con 1 se restano CONFLITTO.
+Senza --applica non scrive niente. Esce con 0 se non restano conflitti, con 1
+se ne restano, con 2 per qualunque errore: chi lo chiama in blocco distingue
+cosi un progetto da guardare da uno strumento che non ha potuto misurare.
 La fine riga di un file esistente si conserva quando lo si riscrive.
 """
 from __future__ import annotations
@@ -68,7 +76,8 @@ CODICE = {".py", ".ps1", ".sh", ".js", ".mjs"}
 def git(repo: Path, *args: str, binario: bool = False):
     r = subprocess.run(["git", "-C", str(repo), *args], capture_output=True)
     if r.returncode != 0:
-        sys.exit(f"git {' '.join(args)}: {r.stderr.decode(errors='replace')}")
+        print(f"errore: git {' '.join(args)}: {r.stderr.decode(errors='replace')}", file=sys.stderr)
+        sys.exit(2)
     return r.stdout if binario else r.stdout.decode("utf-8", errors="replace")
 
 
@@ -105,8 +114,29 @@ def storia(template: Path):
     return blob, rinomine
 
 
+_lettore: subprocess.Popen | None = None
+_blob_cache: dict[str, bytes] = {}
+
+
 def leggi_blob(template: Path, oid: str) -> bytes:
-    return git(template, "cat-file", "blob", oid, binario=True)
+    """Un solo processo git cat-file --batch per tutta la corsa: un processo per
+    blob costava 35 ms l'uno, cioe venti secondi a progetto."""
+    global _lettore
+    if oid in _blob_cache:
+        return _blob_cache[oid]
+    if _lettore is None:
+        _lettore = subprocess.Popen(["git", "-C", str(template), "cat-file", "--batch"],
+                                    stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    _lettore.stdin.write(oid.encode() + b"\n")
+    _lettore.stdin.flush()
+    testa = _lettore.stdout.readline().split()
+    if len(testa) != 3 or testa[1] != b"blob":
+        print(f"errore: blob {oid} non leggibile dal template", file=sys.stderr)
+        sys.exit(2)
+    dati = _lettore.stdout.read(int(testa[2]))
+    _lettore.stdout.read(1)  # a capo che chiude il record
+    _blob_cache[oid] = dati
+    return dati
 
 
 def file_testa(template: Path) -> dict[str, str]:
@@ -140,6 +170,30 @@ def base_piu_vicina(template: Path, candidati: set[str], locale: bytes) -> bytes
     return migliore
 
 
+_righe_cache: dict[frozenset, set[str]] = {}
+
+
+COMUNI: dict[str, set[str]] = {}
+
+
+def righe_proprie(template: Path, candidati: set[str], locale: bytes, percorso: str) -> tuple[list[str], bool]:
+    """Le righe non vuote del file locale che non compaiono in nessuna versione storica
+    del template, e se tolte quelle che --righe-comuni dichiara condivise fra progetti
+    non ne resta nessuna. Una riga identica nello stesso file di piu progetti viene da
+    una versione del template anteriore alla sua storia git, non dal singolo progetto."""
+    chiave = frozenset(candidati)
+    if chiave not in _righe_cache:
+        u: set[str] = set()
+        for oid in candidati:
+            u.update(lf(leggi_blob(template, oid)).decode("utf-8", errors="replace").splitlines())
+        _righe_cache[chiave] = u
+    u = _righe_cache[chiave]
+    proprie = [r for r in locale.decode("utf-8", errors="replace").splitlines() if r.strip() and r not in u]
+    comuni = COMUNI.get(percorso, set())
+    return proprie, bool(candidati) and all(r in comuni for r in proprie)
+
+
+
 def merge3(locale: bytes, base: bytes, testa: bytes) -> tuple[bytes, int]:
     with tempfile.TemporaryDirectory() as d:
         a, b, c = (Path(d) / n for n in ("locale", "base", "template"))
@@ -147,7 +201,8 @@ def merge3(locale: bytes, base: bytes, testa: bytes) -> tuple[bytes, int]:
         r = subprocess.run(["git", "merge-file", "-p", "-L", "locale", "-L", "base", "-L", "template",
                             str(a), str(b), str(c)], capture_output=True)
         if r.returncode < 0:
-            sys.exit("git merge-file fallito")
+            print("errore: git merge-file fallito", file=sys.stderr)
+            sys.exit(2)
         return r.stdout, r.returncode
 
 
@@ -166,8 +221,12 @@ def main():
     ap.add_argument("--applica", action="store_true")
     ap.add_argument("--rimuovi", action="store_true", help="con --applica, rimuove origini spostate e file rimossi")
     ap.add_argument("--json", type=Path)
+    ap.add_argument("--righe-comuni", type=Path, help="JSON {percorso nel template: [righe]} di righe "
+                    "anteriori alla storia del template, ricavate dal consenso fra progetti (allinea-tutti.ps1)")
     a = ap.parse_args()
     tpl, prj = a.template.resolve(), a.progetto.resolve()
+    if a.righe_comuni:
+        COMUNI.update({k: set(v) for k, v in json.loads(a.righe_comuni.read_text(encoding="utf-8")).items()})
 
     blob, rinomine = storia(tpl)
     testa = file_testa(tpl)
@@ -198,10 +257,21 @@ def main():
                     voce["esito"] = "CONFLITTO"; voce["nota"] = "nessuna base storica"
                 else:
                     unito, n = merge3(loc, base, t)
-                    if n == 0:
+                    if n == 0 and unito == loc:
+                        voce["esito"] = "ADATTATO"
+                    elif n == 0:
                         voce["esito"], voce["_dati"] = "MERGE", unito
                     else:
-                        voce["esito"], voce["_dati_conflitto"], voce["conflitti"] = "CONFLITTO", unito, n
+                        # il merge non basta: se il file non ha righe davvero sue, e una copia
+                        # anteriore alla storia registrata e si prende la testa del template
+                        rp = righe_proprie(tpl, storici, loc, tpl_rel)
+                        if rp[1]:
+                            voce["esito"], voce["_dati"] = "SUPERATO", t
+                            if rp[0]:
+                                voce["nota"] = f"{len(rp[0])} righe anteriori alla storia del template, comuni ad altri progetti"
+                        else:
+                            voce["esito"], voce["_dati_conflitto"], voce["conflitti"] = "CONFLITTO", unito, n
+                            voce["righe_proprie"] = rp[0]
         esiti.append(voce)
 
     # 1. file della testa del template nel perimetro
@@ -228,10 +298,14 @@ def main():
                 voce["esito"], voce["_dati"] = "SPOSTATO", t
             else:
                 unito, n = merge3(loc, base_piu_vicina(tpl, storici, loc), t)
+                rp = righe_proprie(tpl, storici, loc, dst) if n else ([], False)
                 if n == 0:
                     voce["esito"], voce["_dati"], voce["nota"] = "SPOSTATO", unito, "copia locale estesa, fusa pulita"
+                elif rp[1]:
+                    voce["esito"], voce["_dati"], voce["nota"] = "SPOSTATO", t, "copia anteriore alla storia del template"
                 else:
                     voce["esito"], voce["_dati_conflitto"], voce["conflitti"] = "CONFLITTO", unito, n
+                    voce["righe_proprie"] = rp[0]
             # la destinazione e gia valutata al passo 1 come NUOVO: la sostituisce questa voce
             esiti[:] = [e for e in esiti if not (e["file"] == dst and e["esito"] == "NUOVO")]
             esiti.append(voce)
@@ -266,6 +340,8 @@ def main():
         if not f.is_file():
             continue
         rel = f.relative_to(docs).as_posix()
+        if "/" not in rel:
+            continue  # docs/README.md e simili sono del progetto: solo docs/<pacchetto>/ viene dal template
         src = f".claude/templates/{rel}"
         if src in testa:
             valuta(f"docs/{rel}", src, blob.get(src, set()))
@@ -273,7 +349,7 @@ def main():
     # applicazione
     if a.applica:
         for e in esiti:
-            if e["esito"] in ("NUOVO", "VECCHIO", "MERGE"):
+            if e["esito"] in ("NUOVO", "VECCHIO", "SUPERATO", "MERGE"):
                 scrivi(prj / e["file"], e["_dati"])
             elif e["esito"] == "SPOSTATO":
                 scrivi(prj / e["template"], e["_dati"])
@@ -289,10 +365,10 @@ def main():
                 e["nota"] = f"conflitti in {out.relative_to(prj).as_posix()}"
 
     # rapporto
-    ordine = ["CONFLITTO", "MERGE", "SPOSTATO", "RIMOSSO", "VECCHIO", "NUOVO", "LOCALE", "UGUALE"]
+    ordine = ["CONFLITTO", "SUPERATO", "MERGE", "SPOSTATO", "RIMOSSO", "VECCHIO", "NUOVO", "ADATTATO", "LOCALE", "UGUALE"]
     conta = {k: sum(1 for e in esiti if e["esito"] == k) for k in ordine}
     for k in ordine:
-        if k == "UGUALE":
+        if k in ("UGUALE", "ADATTATO", "LOCALE"):
             continue
         for e in (x for x in esiti if x["esito"] == k):
             extra = f" -> {e['template']}" if k == "SPOSTATO" else ""
@@ -308,4 +384,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SystemExit:
+        raise
+    except Exception as e:  # un errore imprevisto non deve somigliare a un conflitto
+        print(f"errore: {type(e).__name__}: {e}", file=sys.stderr)
+        sys.exit(2)

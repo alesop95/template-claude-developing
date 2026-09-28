@@ -330,7 +330,12 @@ def main():
 
     conteggio, cambiati, saltati = {}, [], []
     for percorso in file:
-        rel = os.path.normpath(os.path.relpath(percorso, ROOT))
+        try:
+            rel = os.path.normpath(os.path.relpath(percorso, ROOT))
+        except ValueError:
+            # unita' diversa dalla radice, tipicamente una copia di prova in una cartella
+            # temporanea: le esclusioni sono relative alla radice, quindi non la riguardano
+            rel = os.path.abspath(percorso)
         if (os.path.abspath(percorso) == io_stesso
                 or os.path.basename(percorso) in FAMIGLIA or rel in esclusi
                 or (sotto_templates(percorso) and not args.includi_modelli)):

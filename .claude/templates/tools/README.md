@@ -195,3 +195,27 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/claude-incognito.ps1 -
 ```
 
 Su Linux la variante e `claude-incognito.sh` (`bash claude-incognito.sh <percorso>`). La tecnica si basa sulla specifica XDG Base Directory più la redirezione di `HOME`; vedi PROJECT-SYSTEM.md sezione 15.
+
+## allinea-dal-template.py
+
+Allinea un progetto istanziato alla testa del template senza modello linguistico, usando la storia git del template come arbitro. Per ogni file del perimetro, cioè `PROJECT-SYSTEM.md`, `rules/`, le skill di sistema, `templates/`, gli strumenti di codice copiati sotto `tools/` e le guide copiate sotto `docs/<pacchetto>/`, calcola l'hash di blob git del file locale a fini riga normalizzate e lo cerca fra tutti i blob che quel percorso ha avuto nel template, rinomine comprese. Un riscontro significa che la copia locale è una versione vecchia mai toccata, e si aggiorna senza perdere niente; nessun riscontro significa che è stata modificata sul posto, e si fonde a tre vie con `git merge-file` sulla versione storica più vicina. Un file modificato che contiene già tutte le modifiche del template è una personalizzazione e non si tocca. Quando il merge fallisce, lo strumento guarda le righe del file che non compaiono in nessuna versione storica del template: se non ce n'è nessuna, oppure sono tutte righe che `--righe-comuni` dichiara condivise fra progetti, il file è una copia anteriore alla storia registrata e si aggiorna alla testa con l'esito SUPERATO, elencato perché una riga tolta di proposito nel progetto tornerebbe. Non tocca mai `memory/`, `context/`, `CLAUDE.md`, `settings` né i file di dati istanziati sotto `tools/`, perché descrivono il progetto.
+
+```powershell
+python .claude/templates/tools/allinea-dal-template.py --template E:/template-claude-developing --progetto .
+python .claude/templates/tools/allinea-dal-template.py --template E:/template-claude-developing --progetto . --applica --rimuovi
+```
+
+Legge soltanto la storia committata del template: una modifica non committata al template non si propaga, ed è voluto. Esce con 0 senza conflitti, con 1 se ne restano, con 2 per un errore. La fine riga di un file esistente si conserva.
+
+## allinea-tutti.ps1
+
+Porta allo stato corrente del template tutti i progetti che ne portano la struttura, cioè ogni cartella sotto le radici indicate, `D:\` ed `E:\` per default, che contiene `.claude/PROJECT-SYSTEM.md`. Non conosce i progetti per nome: li scopre a ogni corsa. È lo strumento da lanciare ogni volta che il template avanza.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .claude/templates/tools/allinea-tutti.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .claude/templates/tools/allinea-tutti.ps1 -Applica
+```
+
+La corsa ha tre fasi: guardie e prima misura; consenso, cioè le righe assenti da tutta la storia del template ma identiche nello stesso file di almeno `-Consenso` progetti, 3 per default, che vengono da una versione del template anteriore alla sua storia git; seconda misura con quelle righe e, con `-Applica`, scrittura. Sulla prima corsa del 2026-09-28 il consenso ha riconosciuto 9 righe in 4 file, tutte della vecchia regola sull'identità e della vecchia mappatura degli account, e ha portato i progetti con conflitti da 24 a 6 su 35. A vuoto misura e basta. Con `-Applica` scrive solo dove passano tutte le guardie: `.claude` del template committato, un solo processo alla volta, e per ogni progetto repository git, albero principale e non un worktree aggiuntivo, non un clone del template, nessun merge o rebase a metà, una branch in uscita, albero pulito, nessun conflitto. Dopo aver scritto rimisura e pretende zero file da trattare, e controlla che nessun file cambiato stia fuori da `.claude/`, `tools/` e `docs/`; solo allora scrive nel progetto `.claude/allineamento-template.json`, che dichiara a quale commit e a quale albero `.claude` del template la sua struttura corrisponde. Segnala anche, senza bloccare, le norme su richiesta che il `CLAUDE.md` del progetto non nomina e il carico degli instruction file oltre soglia.
+
+Il registro di quali progetti sono allineati, e a quale commit, sta in `_notes/allineamento/registro.json` del template, ignorato da git perché contiene percorsi di progetti; ogni corsa lascia accanto il proprio log e i rapporti JSON. Commit e push restano manuali, progetto per progetto, e le righe di innesco, la memoria e i conflitti si chiudono con una sessione nel progetto. Esce con 0 quando tutto è allineato o applicato, con 1 quando qualche progetto va guardato, con 2 quando una guardia iniziale fallisce.
