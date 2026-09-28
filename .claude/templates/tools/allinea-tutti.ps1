@@ -166,6 +166,51 @@ function Misura([string]$prj, [string]$json, [switch]$Scrivi) {
   return $codice
 }
 
+# Prove interne degli strumenti che l'allineamento ha appena riscritto.
+#
+# Perche' esiste: le verifiche gia' presenti dicono che i file scritti sono quelli attesi e che
+# nessuno sta fuori dal perimetro, cioe' guardano *dove* si e' scritto. Nessuna guarda *se il
+# codice scritto gira*. Un rapporto pulito e un git diff pulito non lo dimostrano, e su una
+# passata che tocca decine di progetti nessuno lo verifica a mano: il caso che questo passo
+# copre e' un aggiornamento o una fusione a tre vie che lascia un file sintatticamente valido e
+# funzionalmente rotto, che e' precisamente cio' che nessuno guarda dopo una passata riuscita.
+#
+# Che cosa NON copre, e va detto perche' credere che copra piu' di quanto copre e' peggio che
+# non averlo. Il difetto che ha motivato questo passo, il 2026-09-28, era di un'altra specie:
+# due strumenti si fermavano con ValueError quando il bersaglio stava su un'unita' diversa dalla
+# radice, e il secondo solo sul ramo di scrittura. Verificato invece di supposto: la prova
+# interna di quello strumento **passa anche sulla versione rotta**, perche' esercita l'analisi
+# del testo e non la gestione dei percorsi. Una prova interna copre cio' che il suo autore ha
+# pensato di coprire, e un presupposto sull'ambiente non e' fra quelle cose quasi mai. Questo
+# passo distingue quindi uno strumento che non gira da uno che gira: e' meno di quanto
+# servirebbe e molto piu' di niente.
+#
+# Si provano i soli strumenti che l'allineamento ha toccato, letti dal rapporto *prima* della
+# scrittura, e fra quelli i soli che una prova interna la dichiarano: cercare il nome
+# dell'argomento nel sorgente e' deterministico, mentre lanciarlo alla cieca su una copia locale
+# che non ce l'ha produrrebbe un fallimento che non e' un fallimento. Per la stessa ragione un
+# argomento rifiutato da argparse si legge come assenza di prova e non come difetto.
+function Prove-Strumenti([string]$prj, $esitiPrima) {
+  $falliti = @(); $provati = 0
+  $tocchi = @($esitiPrima | Where-Object { $_.file -like 'tools/*.py' -and ($AZIONABILI -contains $_.esito) })
+  foreach ($e in $tocchi) {
+    $f = Join-Path $prj ($e.file -replace '/', '\')
+    if (-not (Test-Path -LiteralPath $f)) { continue }
+    $src = Get-Content -LiteralPath $f -Raw -Encoding UTF8 -ErrorAction SilentlyContinue
+    $flag = $null
+    if ($src -match '--self-test') { $flag = '--self-test' } elseif ($src -match '--autotest') { $flag = '--autotest' }
+    if (-not $flag) { continue }
+    $out = & python $f $flag 2>&1
+    $codice = $LASTEXITCODE
+    $testo = ($out | Out-String)
+    [System.IO.File]::AppendAllText($fileLog, "--- prova interna $($e.file) $flag (uscita $codice)`r`n" + $testo + "`r`n", $utf8)
+    if ($codice -eq 0) { $provati++ }
+    elseif ($testo -match 'unrecognized arguments|invalid choice|not recognized') { }
+    else { $falliti += $e.file }
+  }
+  return [pscustomobject]@{ provati = $provati; falliti = $falliti }
+}
+
 $registro = @{}
 if (Test-Path -LiteralPath $fileRegistro) {
   try { (Leggi-Json $fileRegistro).PSObject.Properties | ForEach-Object { $registro[$_.Name] = $_.Value } }
@@ -244,7 +289,10 @@ try {
       $json = Join-Path $dirCorsa "$($o.slug).json"
       if ((Misura $prj $json) -ge 2) { $o.stato = 'errore-strumento' }
       else {
-        $o.c = Conta (Leggi-Json $json)
+        # Il rapporto si legge una volta sola e si conserva: la passata di scrittura riscrive
+        # lo stesso file, quindi dopo non si saprebbe piu' quali strumenti sono stati toccati.
+        $esitiPrima = Leggi-Json $json
+        $o.c = Conta $esitiPrima
         $o.stato = if ($o.c.azionabili -eq 0) { 'allineato' } elseif ($o.c.CONFLITTO -gt 0) { 'conflitti' } else { 'da-allineare' }
         if ($o.sporco -and $o.stato -ne 'allineato') { $o.stato = 'albero-sporco' }
 
@@ -259,7 +307,18 @@ try {
             $c2 = Conta (Leggi-Json $json2)
             if ($c2.azionabili -gt 0) { $o.stato = 'incompleto' }
             elseif ($fuori) { $o.stato = 'fuori-perimetro'; $o.avvisi += 'cambiati fuori perimetro: ' + ($fuori -join ', ') }
-            else { $o.stato = 'applicato' }
+            else {
+              $o.stato = 'applicato'
+              $pr = Prove-Strumenti $prj $esitiPrima
+              if ($pr.falliti) {
+                # Lo stato non e' fra quelli finali, quindi il progetto finisce fra quelli da
+                # guardare a mano, l'uscita e 1 e il marcatore di allineamento non viene scritto:
+                # un progetto i cui strumenti non girano non e un progetto allineato.
+                $o.stato = 'prove-fallite'
+                $o.avvisi += 'prova interna fallita: ' + ($pr.falliti -join ', ')
+              }
+              elseif ($pr.provati -gt 0) { Log ('{0,-44} {1}' -f '', "prove interne degli strumenti: $($pr.provati) superate") }
+            }
           }
         }
         if ($Applica -and $o.stato -in 'applicato', 'allineato') {

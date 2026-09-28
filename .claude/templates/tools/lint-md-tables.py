@@ -212,7 +212,15 @@ def main():
         except (UnicodeDecodeError, OSError):
             continue
         for numero, tipo, dettaglio in analizza(testo):
-            rel = os.path.relpath(p, RADICE)
+            # Su Windows `relpath` solleva quando i due percorsi stanno su unita' diverse, e
+            # non e' un caso di scuola: lo strumento puo' legittimamente essere puntato su una
+            # copia in una cartella temporanea, che e' il modo naturale di provarlo senza
+            # toccare l'originale. Fuori dalla radice si mostra il percorso assoluto.
+            # Corretto il 2026-09-28, stesso difetto gia' chiuso in `fix-dashes.py`.
+            try:
+                rel = os.path.relpath(p, RADICE)
+            except ValueError:
+                rel = os.path.abspath(p)
             print("%s:%d %s: %s" % (rel, numero, tipo, dettaglio))
             totale += 1
     print("")

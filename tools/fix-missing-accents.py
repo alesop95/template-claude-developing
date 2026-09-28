@@ -676,7 +676,14 @@ def main():
         except UnicodeDecodeError:
             continue
         if cambia:
-            cambiati.append(os.path.relpath(percorso, ROOT))
+            # Stessa guardia di `fix-dashes.py` e `fix-accents.py`: `relpath` solleva su unita'
+            # diverse, e questo ramo e' quello della scrittura, quindi il difetto non si vedeva
+            # con `--check`. Corretto il 2026-09-28 cercando la famiglia invece del singolo.
+            try:
+                rel = os.path.relpath(percorso, ROOT)
+            except ValueError:
+                rel = os.path.abspath(percorso)
+            cambiati.append(rel)
             if not args.check and not args.ambigue:
                 with open(percorso, "wb") as f:
                     f.write(dati)
