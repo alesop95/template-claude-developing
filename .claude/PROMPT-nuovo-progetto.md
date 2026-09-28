@@ -16,6 +16,8 @@ Procedi così, fermandoti a chiedere conferma prima di ogni azione difficilmente
    - `PROJECT-SYSTEM.md` (la fonte di verità della procedura)
    - l'intera cartella `rules/`
    - le skill del motore, del flusso git, del gate dei pacchetti e di onboarding sotto `skills/`: `init-project-system`, `sync-context`, `git-sync`, `repo-status`, `gate-pacchetti`, `riprendi`, `onboard`
+   - le skill che portano le norme caricate su richiesta, ciascuna con il proprio `RIFERIMENTO.md`: `prove-che-misurano`, `fonti-non-recuperabili`, `alberi-di-lavoro`, `separazione-ambienti`. Sono norme a tutti gli effetti e non skill facoltative: stanno lì invece che sotto `rules/` perché valgono in certe situazioni e non in ogni sessione, secondo la sezione 24 di `PROJECT-SYSTEM.md`
+   - lo strumento `templates/tools/misura-istruzioni.py`, da istanziare sotto `tools/`
    - l'intera cartella `templates/` (scheletri canonici dell'anatomia da istanziare) NON copiare `settings.local.json` né eventuali `memory/` o `context/` del progetto di riferimento: la memoria e le schede di questo progetto si creano qui da zero, istanziando i template. Il `settings.json`, il `CLAUDE.md` e l'anatomia si generano da `templates/`, non si prendono dal progetto di riferimento. Su Windows usa PowerShell con `Copy-Item`; mostrami prima cosa intendi copiare e dove, poi procedi su mia conferma.
 
 2. Verifica che `PROJECT-SYSTEM.md` sia ora presente sotto `.claude/`. Se manca, fermati e segnalalo: senza il file portabile il sistema non si può installare.
