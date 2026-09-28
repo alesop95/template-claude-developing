@@ -5,7 +5,7 @@
 Perché esiste, e che problema risolve davvero
 ---------------------------------------------
 Per certe tecniche, in certi domini, un canale di conversazione di community è la sola
-documentazione esistente, e la regola `.claude/rules/web-sources-not-fetchable.md` lo
+documentazione esistente, e la norma `.claude/skills/fonti-non-recuperabili/RIFERIMENTO.md` lo
 registra fra le fonti che nessuno strumento di sessione raggiunge. Le vie di accesso sono
 tre e vanno tenute distinte, perché differiscono sul piano delle regole prima che su
 quello tecnico.

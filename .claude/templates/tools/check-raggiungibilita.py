@@ -75,10 +75,8 @@ SEMPRE_ATTIVE = {
     "regola:git-identity-and-repo": "identità git locale, vale in ogni progetto",
     "regola:interaction-style": "stile di documentazione e interazione, vale in ogni progetto",
     "regola:manual-screenshots": "riscontro visivo dei passi manuali, vale in ogni progetto",
-    "regola:prove-che-misurano": "non vacuità delle prove, vale in ogni progetto che ne scriva",
     "regola:security-permissions": "modalità di permesso e sandbox, vale in ogni sessione",
     "regola:token-economy": "economia del contesto, vale in ogni sessione",
-    "regola:web-sources-not-fetchable": "fonti non recuperabili, vale in ogni progetto che ne citi",
 }
 
 

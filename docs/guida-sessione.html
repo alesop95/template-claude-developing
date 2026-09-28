@@ -67,7 +67,7 @@ footer{margin-top:28px;padding-top:10px;border-top:1px solid var(--rule);font:12
 <div class="sheet">
 <header>
   <h1>Guida di sessione: dall'apertura al commit</h1>
-  <div class="meta">template-claude-developing e progetti istanziati<br>Windows / PowerShell · Claude Code e Codex · 2026-09-24</div>
+  <div class="meta">template-claude-developing e progetti istanziati<br>Windows / PowerShell · Claude Code e Codex · 2026-09-28<br>fonte unica versionata: <code>docs/guida-sessione.html</code></div>
 </header>
 
 <ul class="toc">
@@ -75,12 +75,13 @@ footer{margin-top:28px;padding-top:10px;border-top:1px solid var(--rule);font:12
   <li><a href="#macchina">1. Una volta per macchina</a></li>
   <li><a href="#apertura">2. Apertura</a></li>
   <li><a href="#lavoro">3. Durante il lavoro</a></li>
-  <li><a href="#milestone">4. Milestone</a></li>
-  <li><a href="#chiusura">5. Fine sessione</a></li>
-  <li><a href="#chiudi">6. Cosa fa chiudi</a></li>
-  <li><a href="#casi">7. Casi d'uso</a></li>
-  <li><a href="#garanzie">8. Garanzie e limiti</a></li>
-  <li><a href="#riferimenti">9. Comandi e regole</a></li>
+  <li><a href="#norme">4. Le norme dell'agente</a></li>
+  <li><a href="#milestone">5. Milestone</a></li>
+  <li><a href="#chiusura">6. Fine sessione</a></li>
+  <li><a href="#chiudi">7. Cosa fa chiudi</a></li>
+  <li><a href="#casi">8. Casi d'uso</a></li>
+  <li><a href="#garanzie">9. Garanzie e limiti</a></li>
+  <li><a href="#riferimenti">10. Comandi e regole</a></li>
 </ul>
 
 <h2 id="principio"><span class="n">0</span>Il principio</h2>
@@ -113,8 +114,72 @@ claude-account2</pre>
 <h2 id="lavoro"><span class="n">3</span>Durante il lavoro (automatico)</h2>
 <p>A ogni giro <b>sostanziale</b>, cioè quando nasce una decisione, una misura, una correzione, una pendenza o una fonte, l'agente scrive su disco nello stesso giro: memoria, schede, documenti, <code>_notes/RESUME-PROMPT.md</code>. Chiude ogni risposta con la riga <b>File scritti</b>.</p>
 <div class="note"><b>Come controlli.</b> Dopo un giro con contenuto nuovo deve esserci la riga "File scritti". Se manca, chiedila: quel contenuto è rimasto solo in chat. I giri di sola spiegazione non scrivono niente, perché non c'è niente di nuovo da salvare.</div>
+<p class="why">Mentre lavori, l'agente carica anche le norme che servono a quel momento e che non stanno sempre in contesto: come funziona e perché, nella sezione 4.</p>
 
-<h2 id="milestone"><span class="n">4</span>Milestone: un blocco concluso = un commit = un chiudi</h2>
+<h2 id="norme"><span class="n">4</span>Le norme dell'agente: sempre acceso, e acceso quando serve</h2>
+<p>Questa sezione esiste dal <b>2026-09-28</b> e descrive l'unica cosa che è cambiata nel modo di lavorare. Vale la pena leggerla una volta, perché dice che cosa l'agente sa in ogni momento e che cosa no.</p>
+
+<h3>Che cosa viene caricato prima che tu scriva</h3>
+<p>All'avvio di ogni sessione, prima del tuo primo messaggio, vengono concatenati in contesto il <code>CLAUDE.md</code> del tuo account, quello del progetto, il <code>CLAUDE.local.md</code> e <b>ogni file <code>.md</code> sotto <code>.claude/rules/</code></b>, trovato anche nelle sottocartelle. Una regola priva di frontmatter <code>paths:</code> viene caricata per intero, con la stessa priorità del <code>CLAUDE.md</code> di progetto. Oltre una soglia complessiva, oggi <b>150.000 caratteri</b>, la sessione si apre con un avviso, e lo stesso avviso compare su <code>/status</code>.</p>
+<div class="note"><b>Nulla viene troncato.</b> L'unico taglio duro documentato riguarda il singolo file oltre i 4 MiB, che viene saltato. L'avviso non toglie niente dal contesto: dice che ne stai occupando troppo.</div>
+
+<h3>Perché il carico conta molto prima della soglia</h3>
+<p>I costi sono due, e nessuno dei due è l'avviso. Il primo è il contesto speso: 150.000 caratteri di prosa italiana valgono circa 45.000 token stimati, cioè quasi un quarto di una finestra da 200.000, spesi ogni volta anche nelle sessioni in cui quella norma non serviva. Il secondo è l'<b>aderenza</b>, che la documentazione della piattaforma lega esplicitamente alla dimensione: molte norme lunghe accese insieme competono per l'attenzione. Tenere tutto sempre acceso non è la scelta prudente che sembra, è il modo in cui ciascuna norma conta di meno.</p>
+
+<h3>I tre livelli, e che cosa succede a ciascuno dopo una compattazione</h3>
+<div class="tbl"><table>
+<tr><th>Livello</th><th>Dove sta</th><th>Quando entra in contesto</th><th>Dopo /compact</th></tr>
+<tr><td>Regola sempre attiva</td><td><code>.claude/rules/*.md</code> senza <code>paths:</code></td><td>a ogni avvio, per intero</td><td>re-iniettata da disco, integra</td></tr>
+<tr><td>Norma su richiesta</td><td><code>.claude/skills/&lt;nome&gt;/RIFERIMENTO.md</code></td><td>quando l'agente invoca la skill</td><td>rientra con un tetto per skill, le più vecchie escono</td></tr>
+<tr><td>Regola con <code>paths:</code></td><td><code>.claude/rules/*.md</code> con <code>paths:</code></td><td>quando l'agente <b>legge</b> un file che corrisponde al glob</td><td>riassunta via come il resto</td></tr>
+</table></div>
+<p class="why">Il terzo livello qui si usa poco, per una ragione precisa: scatta sulle letture e non sulle scritture, quindi una norma sulle prove non si caricherebbe mentre l'agente scrive una prova nuova.</p>
+
+<h3>Il criterio che decide dove va una norma</h3>
+<div class="note">Una norma resta <b>sempre attiva</b> quando la sua applicabilità <b>non dipende da una scelta di configurazione del progetto</b>. Lo stile di scrittura vale in ogni sessione di ogni progetto; la norma sugli alberi di lavoro vale solo dove qualcuno ha scelto di usarli. Il criterio è verificabile, quindi non si discute caso per caso.</div>
+
+<h3>Le sette sempre attive</h3>
+<div class="tbl"><table>
+<tr><th>Regola</th><th>Cosa stabilisce</th></tr>
+<tr><td><code>interaction-style.md</code></td><td>Stile della prosa tecnica e forma dei file Markdown</td></tr>
+<tr><td><code>chat-non-e-memoria.md</code></td><td>Ciò che nasce in chat va su disco nello stesso giro</td></tr>
+<tr><td><code>git-commands-format.md</code></td><td>Milestone con chiudi, forma dei comandi, contesto dichiarato</td></tr>
+<tr><td><code>git-identity-and-repo.md</code></td><td>Identità git locale, alias SSH, i quattro assi di identità</td></tr>
+<tr><td><code>token-economy.md</code></td><td>Economia del contesto e igiene di sessione</td></tr>
+<tr><td><code>security-permissions.md</code></td><td>Modalità di permesso, sandbox, baseline deny</td></tr>
+<tr><td><code>manual-screenshots.md</code></td><td>Quando l'agente deve chiederti uno screenshot</td></tr>
+</table></div>
+
+<h3>Le quattro su richiesta, con il loro innesco</h3>
+<p>L'agente le invoca da sé, perché la descrizione di ogni skill nomina la situazione con le parole con cui si presenta, e il <code>CLAUDE.md</code> porta un indice di quattro righe che fa da puntatore nel livello che sopravvive alla compattazione. <b>Puoi sempre forzarne una digitandone il nome</b>: è l'unica cosa che prima non potevi fare, perché una regola non si invoca.</p>
+<div class="tbl"><table>
+<tr><th>Quando si accende</th><th>Norma</th></tr>
+<tr><td>Scrivi o valuti una prova, chiudi un difetto, una verifica manuale smentisce una suite verde, aggiungi una guardia, stai per dire che un intervento è completo</td><td><code>/prove-che-misurano</code></td></tr>
+<tr><td>Un recupero web dà 403 o una pagina anti-bot, la fonte è su Reddit o Discord, serve la trascrizione di un video, stai per annotare una fonte non letta</td><td><code>/fonti-non-recuperabili</code></td></tr>
+<tr><td><code>git worktree list</code> mostra più di un albero, se ne crea o se ne rimuove uno, va deciso da dove si legge la memoria</td><td><code>/alberi-di-lavoro</code></td></tr>
+<tr><td>Si inizializza o si allinea il progetto, oppure cambia il modo di provare e rilasciare</td><td><code>/separazione-ambienti</code></td></tr>
+</table></div>
+
+<h3>Misurare il carico, che è ciò che rende la soglia un controllo</h3>
+<pre>python tools/misura-istruzioni.py</pre>
+<p>Stampa dal più pesante tutto ciò che viene caricato davvero, separa la parte di progetto da quella del tuo account (che sta fuori dal repository e che nessun commit controlla), e fallisce oltre una soglia di guardia di <b>100.000 caratteri</b> sulla sola parte di progetto. Gira da solo come passo <code>instruction-budget</code> del pre-commit e come controllo di <code>chiudi</code>, quindi un commit che sfondasse il budget si ferma prima.</p>
+<div class="tbl"><table>
+<tr><th>Misura</th><th>Prima del 2026-09-28</th><th>Dopo</th></tr>
+<tr><td>Regole sempre attive</td><td>11, per 143.759 caratteri</td><td>7, per 69.601</td></tr>
+<tr><td>Totale caricato in questo repository</td><td>150.531, oltre il limite di 150.000</td><td>77.938, di cui 75.533 di progetto</td></tr>
+<tr><td>Costo stimato per sessione</td><td>circa 45.600 token</td><td>circa 23.000 token</td></tr>
+</table></div>
+
+<h3>Se l'avviso ricompare</h3>
+<ol class="steps">
+<li>Lancia <code>python tools/misura-istruzioni.py</code> e guarda le prime righe: il carico è sempre concentrato in pochi file.</li>
+<li>Per ciascuno chiediti se la sua applicabilità dipende da una scelta di configurazione del progetto. Se dipende, quella norma va in una skill.</li>
+<li>Chiedi all'agente di spostarla: il testo diventa <code>.claude/skills/&lt;nome&gt;/RIFERIMENTO.md</code>, con un <code>SKILL.md</code> breve e una riga nell'indice del <code>CLAUDE.md</code>.</li>
+<li>Se il peso di troppo è nel <code>CLAUDE.md</code> del tuo account, sta fuori dal repository: si alleggerisce lì, e la misura lo mostra a parte proprio per questo.</li>
+</ol>
+<div class="warn"><b>Attenzione ai pacchetti.</b> Sei pacchetti opzionali installano una regola sempre attiva, per 30.795 caratteri se li adotti tutti. Il catalogo dichiara ora il costo di ciascuno e il gate lo conta prima di proporli, ma in un progetto allineato tempo fa quel conto non è mai stato fatto: è il primo posto dove guardare.</div>
+
+<h2 id="milestone"><span class="n">5</span>Milestone: un blocco concluso = un commit = un chiudi</h2>
 <ol class="steps">
 <li>Un blocco coerente è finito e verificato (una funzione, una correzione, una regola, un documento). L'agente scrive il messaggio in <code>_notes/COMMIT-MSG.txt</code> e ti dice: <i>"milestone pronta: lancia chiudi"</i>, con il messaggio.</li>
 <li>Nel tuo terminale, dentro il progetto: <code>chiudi</code>.</li>
@@ -123,7 +188,7 @@ claude-account2</pre>
 </ol>
 <p class="why">Due milestone nello stesso giro si propongono una alla volta. Nessun blocco concluso, nessun commit.</p>
 
-<h2 id="chiusura"><span class="n">5</span>Fine sessione</h2>
+<h2 id="chiusura"><span class="n">6</span>Fine sessione</h2>
 <ol class="steps">
 <li>L'agente ha già aggiornato <code>RESUME-PROMPT.md</code> e, se c'è lavoro da fissare, <code>COMMIT-MSG.txt</code>.</li>
 <li><b>Chiudi Claude o Codex.</b> <span class="why">Il wipe lavora sui file che la sessione riscrive finché è aperta.</span></li>
@@ -131,11 +196,11 @@ claude-account2</pre>
 </ol>
 <p class="why">Se c'è ancora un'altra sessione Claude aperta (un altro progetto, l'editor), il wipe viene rimandato e chiudi stampa i comandi da lanciare dopo. Niente di male: lo farà la prossima chiusura.</p>
 
-<h2 id="chiudi"><span class="n">6</span>Cosa fa chiudi, passo per passo</h2>
+<h2 id="chiudi"><span class="n">7</span>Cosa fa chiudi, passo per passo</h2>
 <div class="tbl"><table>
 <tr><th>Passo</th><th>Cosa</th><th>Se va male</th></tr>
 <tr><td>1 Stato</td><td>Cartella, ramo, file cambiati, diff riassuntivo senza pager</td><td>HEAD staccato: si ferma, niente commit</td></tr>
-<tr><td>2 Controlli</td><td>Trova quelli istanziati (nel template 13) e li esegue</td><td>Uno rosso: si ferma prima del commit</td></tr>
+<tr><td>2 Controlli</td><td>Trova quelli istanziati (nel template 14, fra cui il budget degli instruction file) e li esegue</td><td>Uno rosso: si ferma prima del commit</td></tr>
 <tr><td>3 Messaggio</td><td>Da <code>-Messaggio</code> (Bash: <code>-m</code>), altrimenti <code>COMMIT-MSG.txt</code>, altrimenti lo chiede</td><td>Vuoto: si ferma</td></tr>
 <tr><td>4 Identità</td><td>Mostra l'autore (identità git locale)</td><td>Mancante: si ferma</td></tr>
 <tr><td>5 Conferma</td><td><code>[s/N]</code> su file, ramo, messaggio</td><td>Tutto tranne <code>s</code>: annulla</td></tr>
@@ -160,7 +225,7 @@ claude-account2</pre>
 <tr><td><code>3</code></td><td>Commit e push fatti, ma un passo successivo ha dato KO (leggi sopra)</td></tr>
 </table></div>
 
-<h2 id="casi"><span class="n">7</span>Casi d'uso</h2>
+<h2 id="casi"><span class="n">8</span>Casi d'uso</h2>
 <div class="cases">
 <div class="case"><span class="tag">quotidiano</span><h3>Salvo e continuo</h3><p>Milestone a metà: <code>chiudi</code>, <code>s</code>, e riprendi a scrivere nella stessa chat.</p></div>
 <div class="case"><span class="tag">quotidiano</span><h3>Fine giornata</h3><p>Chiudi Claude, <code>chiudi</code>, <code>s</code>. Domani: <code>claude-account2</code>, <code>/riprendi</code>.</p></div>
@@ -179,10 +244,12 @@ claude-account2</pre>
 <div class="case"><span class="tag">git</span><h3>Commit di una parte sola</h3><p>chiudi committa tutto. Per una parte, l'agente ti dà i comandi git per esteso (<code>git add</code> dei soli file, <code>git commit -m</code>, <code>git push</code>).</p></div>
 <div class="case"><span class="tag">progetti</span><h3>Progetto senza chiudi</h3><p><code>chiudi</code> dice che non è istanziato. Allinea il progetto: <code>/riprendi</code>, <code>/gate-pacchetti</code>.</p></div>
 <div class="case"><span class="tag">wipe</span><h3>Wipe rimandato</h3><p>Altre sessioni Claude aperte. Chiudile e lancia i comandi stampati, o lascia fare alla prossima chiusura.</p></div>
+<div class="case"><span class="tag">norme</span><h3>All'avvio: instruction file oltre il limite</h3><p>Le regole sempre attive pesano troppo. <code>python tools/misura-istruzioni.py</code>, poi sposta in una skill le norme la cui applicabilità dipende da una scelta di configurazione. Sezione 4.</p></div>
+<div class="case"><span class="tag">norme</span><h3>L'agente non ha caricato la norma</h3><p>Sta lavorando su prove, fonti irraggiungibili, alberi di lavoro o separazione ambienti senza la norma. Digitane il nome: <code>/prove-che-misurano</code> e le altre tre della sezione 4.</p></div>
 <div class="case"><span class="tag">conferma</span><h3>Ho risposto N</h3><p>Niente committato. Correggi ciò che non ti convince e rilancia.</p></div>
 </div>
 
-<h2 id="garanzie"><span class="n">8</span>Garanzie e limiti</h2>
+<h2 id="garanzie"><span class="n">9</span>Garanzie e limiti</h2>
 <div class="tbl"><table>
 <tr><th>Non può succedere</th><th>Perché</th></tr>
 <tr><td>Commit senza la tua conferma</td><td>chiudi chiede <code>[s/N]</code>; gli agenti non eseguono git commit</td></tr>
@@ -193,8 +260,9 @@ claude-account2</pre>
 <tr><td>Wipe della memoria di progetto</td><td>Il wipe tocca solo la home dell'account, mai le cartelle di progetto</td></tr>
 </table></div>
 <div class="warn"><b>Limite.</b> Si può perdere solo ciò che resta in chat senza essere scritto su disco. È il motivo della riga "File scritti".</div>
+<div class="warn"><b>Secondo limite, dichiarato.</b> Una norma su richiesta si carica sul <i>giudizio</i> dell'agente, una regola sempre attiva no; e dopo una compattazione il corpo di una skill rientra con un tetto, mentre una regola viene re-iniettata da disco. La contromisura è l'indice nel <code>CLAUDE.md</code>, che sta nel livello che sopravvive. Se vedi che una norma non è stata caricata, digitane il nome: costa un comando e toglie il dubbio.</div>
 
-<h2 id="riferimenti"><span class="n">9</span>Comandi e regole</h2>
+<h2 id="riferimenti"><span class="n">10</span>Comandi e regole</h2>
 <div class="tbl"><table>
 <tr><th>Skill</th><th>Quando</th></tr>
 <tr><td><code>/status</code></td><td>Apertura: verifica l'account</td></tr>
@@ -207,6 +275,9 @@ claude-account2</pre>
 <tr><td><code>/gate-pacchetti</code></td><td>Inizializzazione o allineamento</td></tr>
 <tr><td><code>/separazione-ambienti</code></td><td>Inizializzazione o allineamento</td></tr>
 <tr><td><code>/sync-readme</code></td><td>Cambia una capacità pubblica del template</td></tr>
+<tr><td><code>/prove-che-misurano</code></td><td>Norma su richiesta: prove che passano senza misurare</td></tr>
+<tr><td><code>/fonti-non-recuperabili</code></td><td>Norma su richiesta: fonti web che non si leggono</td></tr>
+<tr><td><code>/alberi-di-lavoro</code></td><td>Norma su richiesta: memoria con più alberi di lavoro</td></tr>
 </table></div>
 <div class="tbl"><table>
 <tr><th>Regola</th><th>Cosa stabilisce</th></tr>
@@ -214,8 +285,9 @@ claude-account2</pre>
 <tr><td><code>git-commands-format.md</code></td><td>Milestone con chiudi, messaggio di una riga ≤ 72, nessuna attribuzione, contesto dichiarato</td></tr>
 <tr><td><code>git-identity-and-repo.md</code></td><td>Identità git locale, alias SSH, useConfigOnly</td></tr>
 <tr><td><code>PROJECT-SYSTEM.md</code> §12</td><td>Ordine di ripresa e chiusura</td></tr>
+<tr><td><code>PROJECT-SYSTEM.md</code> §24</td><td>Budget degli instruction file: che cosa sta in rules/ e che cosa in una skill</td></tr>
 </table></div>
 
-<footer>Fonte versionata: docs/guida-sessione.html · strumento: .claude/templates/tools/chiudi-sessione.ps1 / .sh</footer>
+<footer>Fonte unica di verità: <code>docs/guida-sessione.html</code>, versionata nel repository. Copie esportate dal browser sono istantanee e invecchiano: si rileggono da qui. Strumenti: <code>.claude/templates/tools/chiudi-sessione.ps1</code> / <code>.sh</code>, <code>misura-istruzioni.py</code> · Norme: <code>.claude/rules/</code> e <code>.claude/skills/*/RIFERIMENTO.md</code> · Standard: <code>.claude/PROJECT-SYSTEM.md</code></footer>
 </div>
 </html>

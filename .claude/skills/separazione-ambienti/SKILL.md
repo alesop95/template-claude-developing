@@ -19,7 +19,7 @@ disable-model-invocation: true
 
 ## Che cosa fa questa skill, e che cosa non fa
 
-La regola `.claude/rules/separazione-ambienti.md` stabilisce che non esiste un modo di default di separare test e produzione e che la scelta si fa con l'utente. Questa skill è la procedura con cui quella scelta avviene davvero nella conversazione, e il suo scopo è duplice: che l'utente scelga la forma adatta al proprio progetto, e che capisca che cosa ha scelto. Il secondo scopo non è un contorno del primo. Una scelta subita senza capirla verrà rifatta al primo incidente, e una scelta capita permette di riconoscere, fra sei mesi, quando il presupposto su cui poggiava è cambiato.
+La norma `.claude/skills/separazione-ambienti/RIFERIMENTO.md` stabilisce che non esiste un modo di default di separare test e produzione e che la scelta si fa con l'utente. Questa skill è la procedura con cui quella scelta avviene davvero nella conversazione, e il suo scopo è duplice: che l'utente scelga la forma adatta al proprio progetto, e che capisca che cosa ha scelto. Il secondo scopo non è un contorno del primo. Una scelta subita senza capirla verrà rifatta al primo incidente, e una scelta capita permette di riconoscere, fra sei mesi, quando il presupposto su cui poggiava è cambiato.
 
 La conoscenza non sta qui. Il catalogo e il gate stanno nella regola, le spiegazioni nella guida `.claude/templates/separazione-ambienti/GUIDA.md`, le fonti nel registro `FONTI.md` accanto a essa. La skill legge la sezione pertinente della guida prima di spiegare una forma e ne riporta il contenuto in sintesi, con le sigle delle fonti, invece di spiegarla a memoria: così ciò che l'utente sente e ciò che trova sul disco dopo è la stessa cosa, e se le due divergono ha ragione la guida.
 
@@ -68,7 +68,7 @@ L'esito si scrive subito, secondo `chat-non-e-memoria.md`, in due posti. Nella s
 
 ## Passo 6 - Portare nel progetto la guida, e dire come si usa
 
-Se la scelta è fatta, si istanzia il pacchetto secondo il suo README: guida e registro delle fonti interi sotto `docs/separazione-ambienti/`, gli esempi solo se corrispondono alla forma scelta e adattati al progetto. Se la combinazione comprende L2, si applica anche la regola `alberi-di-lavoro.md` e si predispone la tabella degli alberi nella scheda. Se comprende P2, si aggiunge allo snapshot `memory/index.md` la riga degli ambienti.
+Se la scelta è fatta, si istanzia il pacchetto secondo il suo README: guida e registro delle fonti interi sotto `docs/separazione-ambienti/`, gli esempi solo se corrispondono alla forma scelta e adattati al progetto. Se la combinazione comprende L2, si applica anche la norma `skills/alberi-di-lavoro/RIFERIMENTO.md` e si predispone la tabella degli alberi nella scheda. Se comprende P2, si aggiunge allo snapshot `memory/index.md` la riga degli ambienti.
 
 Poi si chiude con il recap d'uso, breve e concreto: i comandi con cui si accende, si prova, si promuove e si torna indietro nella forma scelta, presi dall'estratto annotato della guida e adattati al progetto, e la regola che presidia il rischio principale. Una forma scelta di cui non si conoscono i comandi è una forma che non verrà seguita.
 

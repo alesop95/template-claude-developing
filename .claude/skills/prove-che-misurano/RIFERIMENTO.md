@@ -1,6 +1,6 @@
 # Prove che misurano davvero qualcosa
 
-> Regola modulare. Non riguarda come si scrive un test in un linguaggio o con un framework, che cambia da progetto a progetto, ma come si stabilisce che un test stia misurando il difetto che dice di misurare. Si applica ogni volta che si scrive o si valuta una prova automatica. Le quattro sezioni vengono tutte da difetti sopravvissuti a prove verdi in progetti istanziati da questo template, non da considerazioni generali.
+> Riferimento normativo della skill `prove-che-misurano`, che lo carica su richiesta invece di tenerlo in contesto a ogni sessione. Non riguarda come si scrive un test in un linguaggio o con un framework, che cambia da progetto a progetto, ma come si stabilisce che un test stia misurando il difetto che dice di misurare. Si applica ogni volta che si scrive o si valuta una prova automatica. Le quattro sezioni vengono tutte da difetti sopravvissuti a prove verdi in progetti istanziati da questo template, non da considerazioni generali.
 
 ## Il problema
 

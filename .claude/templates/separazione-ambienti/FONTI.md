@@ -1,10 +1,10 @@
 # Registro delle fonti: separazione fra test e produzione
 
-> Registro delle fonti su cui poggiano la regola `.claude/rules/separazione-ambienti.md`, la guida `GUIDA.md` di questo pacchetto e la skill `separazione-ambienti`. Ogni affermazione della guida che non viene da un caso osservato rimanda a una voce di questo registro con la sua sigla fra parentesi quadre, per esempio [F13]. Le voci `C` sono i casi osservati nei progetti, descritti senza nomi propri; le voci `F` sono fonti pubblicate.
+> Registro delle fonti su cui poggiano la norma `.claude/skills/separazione-ambienti/RIFERIMENTO.md`, la guida `GUIDA.md` di questo pacchetto e la skill `separazione-ambienti`. Ogni affermazione della guida che non viene da un caso osservato rimanda a una voce di questo registro con la sua sigla fra parentesi quadre, per esempio [F13]. Le voci `C` sono i casi osservati nei progetti, descritti senza nomi propri; le voci `F` sono fonti pubblicate.
 
 ## Metodo, e che cosa questo registro garantisce
 
-Le fonti pubblicate sono state lette il 2026-09-23 da tre ricerche delegate, ciascuna con il mandato di non scrivere nulla a memoria e di riportare solo ciò che risultava dal corpo della pagina effettivamente recuperata. La via ordinaria è stata il recupero diretto della pagina; dove il recupero restituiva solo la navigazione del sito, la pagina è stata scaricata dal terminale e il corpo verificato prima di estrarne le citazioni, secondo la regola `.claude/rules/web-sources-not-fetchable.md`. Le pagine che hanno richiesto la seconda via sono dichiarate nella loro voce. Nessuna delle trentasette pagine previste è risultata irraggiungibile.
+Le fonti pubblicate sono state lette il 2026-09-23 da tre ricerche delegate, ciascuna con il mandato di non scrivere nulla a memoria e di riportare solo ciò che risultava dal corpo della pagina effettivamente recuperata. La via ordinaria è stata il recupero diretto della pagina; dove il recupero restituiva solo la navigazione del sito, la pagina è stata scaricata dal terminale e il corpo verificato prima di estrarne le citazioni, secondo la norma `.claude/skills/fonti-non-recuperabili/RIFERIMENTO.md`. Le pagine che hanno richiesto la seconda via sono dichiarate nella loro voce. Nessuna delle trentasette pagine previste è risultata irraggiungibile.
 
 Le citazioni sono letterali, in lingua originale e brevi, e servono a chi rilegge per ritrovare il punto nella fonte, non a sostituirla. Tre avvertenze valgono per tutto il registro. La prima è che una data di aggiornamento dichiarata dalla pagina è un dato della pagina, mentre l'assenza di data non dice che il contenuto sia vecchio, e va scritta come assenza. La seconda è che la licenza del contenuto è riportata solo dove la pagina la dichiara, e "non dichiarata" non significa libera. La terza è che una documentazione di prodotto descrive il comportamento del prodotto alla data di consultazione: le voci `F24`-`F37` vanno riverificate quando il prodotto cambia versione, e la data di consultazione accanto a ciascuna è ciò che permette di sapere quando.
 
@@ -292,7 +292,7 @@ Organizzazione: progetto Git. Indirizzo: https://git-scm.com/docs/git-worktree. 
 
 Affermazioni. "A git repository can support multiple working trees, allowing you to check out more than one branch at a time"; `add` "refuses to create a new worktree when <commit-ish> is a branch name and is already checked out by another worktree"; "Only clean worktrees (no untracked files and no modification in tracked files) can be removed"; "all pseudo refs are per-worktree and all refs starting with refs/ are shared", e il file `config` "is shared across all worktrees" salvo `extensions.worktreeConfig`.
 
-Usata in: guida, forma L2; regola `alberi-di-lavoro.md`.
+Usata in: guida, forma L2; norma `skills/alberi-di-lavoro/RIFERIMENTO.md`.
 
 ### F26 - Firebase, ambienti
 
@@ -404,7 +404,7 @@ Usata in: guida, regola ed esempi di composizione, rischio dell'ambiente di prov
 
 ## Fonti non ancora consultate, e perché sono qui
 
-Due fonti sono citate spesso su questi temi e non sono state lette: il libro *Continuous Delivery* di Jez Humble e David Farley, del 2010, e *Accelerate* di Nicole Forsgren, Jez Humble e Gene Kim, del 2018, da cui nasce la ricerca DORA. Non sono accessibili come pagine e il template non se ne serve: F04, F05 e F09-F12 ne sono le forme pubblicate dagli stessi autori. Restano elencate come luogo dove cercare, non come fonti verificate, secondo la regola `web-sources-not-fetchable.md`.
+Due fonti sono citate spesso su questi temi e non sono state lette: il libro *Continuous Delivery* di Jez Humble e David Farley, del 2010, e *Accelerate* di Nicole Forsgren, Jez Humble e Gene Kim, del 2018, da cui nasce la ricerca DORA. Non sono accessibili come pagine e il template non se ne serve: F04, F05 e F09-F12 ne sono le forme pubblicate dagli stessi autori. Restano elencate come luogo dove cercare, non come fonti verificate, secondo la norma `skills/fonti-non-recuperabili/RIFERIMENTO.md`.
 
 [^1]: *CNCF*, Cloud Native Computing Foundation, fondazione della Linux Foundation che governa progetti come Kubernetes e gruppi di lavoro come quello su GitOps.
 [^2]: *OWASP*, Open Worldwide Application Security Project, fondazione senza scopo di lucro che pubblica riferimenti aperti sulla sicurezza applicativa.

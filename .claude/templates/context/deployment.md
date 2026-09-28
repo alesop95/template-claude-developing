@@ -13,7 +13,7 @@ last-verified-commit: <hash dell'ultima verifica o aggiornamento>
 
 ## Modello di separazione fra test e produzione
 
-> Scelto al gate dell'inizializzazione o dell'allineamento fra i modelli del catalogo `.claude/rules/separazione-ambienti.md`, e registrato anche come ADR in `memory/decisions.md`. Non si deduce: se il gate non è stato fatto, la sezione lo dice.
+> Scelto al gate dell'inizializzazione o dell'allineamento fra i modelli del catalogo `.claude/skills/separazione-ambienti/RIFERIMENTO.md`, e registrato anche come ADR in `memory/decisions.md`. Non si deduce: se il gate non è stato fatto, la sezione lo dice.
 
 - Modello: <una sigla per asse dal catalogo, per esempio R2 a richiesta, P1, D0, L1>
 - Stato: <in esercizio / previsto e non ancora creato, per ciascun ambiente>
@@ -27,7 +27,7 @@ last-verified-commit: <hash dell'ultima verifica o aggiornamento>
 
 ## Alberi di lavoro
 
-> Da compilare solo se il progetto tiene gli ambienti in alberi di lavoro separati (`git worktree`), secondo la regola `.claude/rules/alberi-di-lavoro.md`. Con un albero solo la sezione si rimuove.
+> Da compilare solo se il progetto tiene gli ambienti in alberi di lavoro separati (`git worktree`), secondo la norma `.claude/skills/alberi-di-lavoro/RIFERIMENTO.md`. Con un albero solo la sezione si rimuove.
 
 | Percorso assoluto | Branch | Ambiente | Porta | Note |
 |---|---|---|---|---|

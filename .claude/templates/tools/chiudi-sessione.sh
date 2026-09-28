@@ -84,6 +84,7 @@ sync-readme.py|--check $b|README.md|0
 lint-md-commands.py|.||0
 lint-doc-references.py|--solo-vivi $b||0
 check-eol.py|.||0
+misura-istruzioni.py|||0
 fix-accents.py|--check $m .||0
 fix-dashes.py|--check $m .||0
 fix-missing-accents.py|--check $m .||0

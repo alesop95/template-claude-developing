@@ -4,7 +4,7 @@
 
 ## Metodo
 
-Le fonti pubblicate sono state lette il 2026-09-23 da due ricerche delegate, con il mandato di non scrivere nulla a memoria e di riportare solo ciò che risultava dal corpo della pagina recuperata. Dove il recupero ordinario falliva, la pagina è stata scaricata dal terminale e il corpo verificato, secondo `.claude/rules/web-sources-not-fetchable.md`; le voci interessate lo dichiarano. Le citazioni sono letterali, brevi e in lingua originale. Due voci, F06 e F07, sono state lette attraverso un'estrazione automatica della pagina e non riga per riga, e lo dichiarano nei limiti: il loro elenco di pattern non è garantito completo.
+Le fonti pubblicate sono state lette il 2026-09-23 da due ricerche delegate, con il mandato di non scrivere nulla a memoria e di riportare solo ciò che risultava dal corpo della pagina recuperata. Dove il recupero ordinario falliva, la pagina è stata scaricata dal terminale e il corpo verificato, secondo `.claude/skills/fonti-non-recuperabili/RIFERIMENTO.md`; le voci interessate lo dichiarano. Le citazioni sono letterali, brevi e in lingua originale. Due voci, F06 e F07, sono state lette attraverso un'estrazione automatica della pagina e non riga per riga, e lo dichiarano nei limiti: il loro elenco di pattern non è garantito completo.
 
 Le misure fatte in proprio non stanno qui ma nella guida, ciascuna con la data e il perimetro su cui è stata presa, secondo la regola sull'onestà del contenuto.
 

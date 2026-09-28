@@ -131,6 +131,7 @@ $controlli = @(
     @{ n = "lint-md-commands.py";     a = @(".") },
     @{ n = "lint-doc-references.py";  a = @("--solo-vivi") + $b },
     @{ n = "check-eol.py";            a = @(".") },
+    @{ n = "misura-istruzioni.py";    a = @() },
     @{ n = "fix-accents.py";          a = @("--check") + $m + @(".") },
     @{ n = "fix-dashes.py";           a = @("--check") + $m + @(".") },
     @{ n = "fix-missing-accents.py";  a = @("--check") + $m + @(".") },

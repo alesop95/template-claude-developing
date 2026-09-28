@@ -34,7 +34,7 @@ Quale token, e perché la scelta va registrata
 Questo strumento funziona sia con il token di un bot sia con quello di un account
 personale, e la differenza non è tecnica ma di regole: la seconda via è vietata dalle
 condizioni d'uso della piattaforma, con la terminazione dell'account come sanzione
-dichiarata, e la regola `.claude/rules/web-sources-not-fetchable.md` espone il criterio per
+dichiarata, e la norma `.claude/skills/fonti-non-recuperabili/RIFERIMENTO.md` espone il criterio per
 esteso. Se un progetto la sceglie, la scelta va registrata come decisione con i suoi
 termini reali e non fatta scivolare dentro un altro lavoro.
 

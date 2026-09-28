@@ -8,7 +8,7 @@ Dei tre che recuperano, `fetch-discord.py` legge un canale attraverso un bot acc
 
 Dei tre che riducono, `read-chat-export.py` trasforma l'export in JSON di un canale, Discord o Telegram, in Markdown filtrato per parola chiave e per intervallo di date. `vtt-to-text.py` ricostruisce il parlato di un video dai sottotitoli a scorrimento, che ripetono ogni riga e senza questo passo producono un file tre o quattro volte più lungo del parlato. `censimento-fonti.py` prende una corsa del lettore di Reddit, cioè centinaia di nodi e archi, e ne fa un elenco di fonti distinte raggruppate per argomento, con le righe pronte per il registro delle fonti del progetto.
 
-La regola che le distingue è `.claude/rules/web-sources-not-fetchable.md`, che appartiene alle regole sempre caricate e non a questo pacchetto: il pacchetto è lo strumento, la regola è il criterio. Chi istanzia questo pacchetto senza quella regola si ritrova con un programma che funziona e senza il vocabolario per decidere quando usarlo.
+La regola che le distingue è `.claude/skills/fonti-non-recuperabili/RIFERIMENTO.md`, che appartiene alle regole sempre caricate e non a questo pacchetto: il pacchetto è lo strumento, la regola è il criterio. Chi istanzia questo pacchetto senza quella regola si ritrova con un programma che funziona e senza il vocabolario per decidere quando usarlo.
 
 ## Che cosa istanzia
 

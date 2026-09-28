@@ -1,10 +1,19 @@
 # template-claude-developing
 
-> Istruzioni di team di questo repository, che è il template stesso del sistema di progetto e non un progetto che lo adotta. Lo standard completo sta in `.claude/PROJECT-SYSTEM.md`, le regole normative caricate su necessità in `.claude/rules/`, il catalogo dei pacchetti opzionali in `.claude/templates/PACKAGES.md`, e il percorso per estendere il sistema nella sezione "Come estendere il sistema" del `README.md` di radice.
+> Istruzioni di team di questo repository, che è il template stesso del sistema di progetto e non un progetto che lo adotta. Lo standard completo sta in `.claude/PROJECT-SYSTEM.md`, le regole sempre attive in `.claude/rules/`, le norme caricate su richiesta nelle skill che l'indice qui sotto elenca, il catalogo dei pacchetti opzionali in `.claude/templates/PACKAGES.md`, e il percorso per estendere il sistema nella sezione "Come estendere il sistema" del `README.md` di radice.
 
 Quando cambia una capacità pubblica del template, usa la skill `.claude/skills/sync-readme/` per aggiornare la prosa del README e poi esegui `python .claude/templates/readme-sync/tools/sync-readme.py --write --bundle`. Prima di consegnare comandi di version control esegui la stessa CLI con `--check --bundle`: controlla indice, inventario e link locali.
 
 A fine sessione aggiorna `_notes/RESUME-PROMPT.md` e scrivi in `_notes/COMMIT-MSG.txt` il messaggio di commit proposto. La chiusura la esegue l'utente, dopo aver chiuso Claude, con `.claude/templates/tools/chiudi-sessione.ps1`: controlli, commit con conferma, push verificato, impronta e wipe. Lo stesso vale per ogni milestone a metà sessione: a blocco concluso scrivi `_notes/COMMIT-MSG.txt` e proponi `chiudi`, una milestone per commit, invece di consegnare comandi git sparsi.
+
+## Norme caricate su richiesta
+
+Quattro norme del sistema non stanno in `.claude/rules/` e non entrano quindi in contesto a ogni sessione: vivono come `RIFERIMENTO.md` dentro la skill che le governa e si caricano quando la loro situazione si presenta. La ragione, con il budget che la impone, sta nella sezione 24 di `.claude/PROJECT-SYSTEM.md`. L'indice che segue è ciò che rende affidabile quel caricamento, perché nomina la situazione con le parole con cui si presenta invece del nome del file: riconosciuta una di queste situazioni, si invoca la skill prima di procedere.
+
+- Si scrive o si valuta una prova automatica, si chiude un difetto, una verifica manuale smentisce una suite verde, si aggiunge una guardia o un'esclusione, si sta per dichiarare completo un intervento il cui scopo era un effetto misurabile: skill `prove-che-misurano`.
+- Un recupero web fallisce con 403, con un rinvio alla pagina di accesso o con una pagina di verifica anti-bot, la fonte sta su Reddit o su Discord, serve la trascrizione di un video, si sta per annotare nel registro una fonte non letta: skill `fonti-non-recuperabili`.
+- `git worktree list` mostra più di un albero, se ne crea o se ne rimuove uno, si apre una sessione in un albero che non è il principale, si deve decidere da dove leggere la memoria versionata: skill `alberi-di-lavoro`.
+- Si inizializza o si allinea il progetto, oppure cambia il modo in cui si prova e si rilascia, e va deciso come separare test e produzione: skill `separazione-ambienti`.
 
 ## Convenzione Markdown
 

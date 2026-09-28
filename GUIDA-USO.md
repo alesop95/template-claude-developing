@@ -50,6 +50,9 @@ Le skill si invocano digitando il loro nome preceduto dalla barra, nel terminale
 | `/repo-status` | Riepilogo di branch, commit recenti, file modificati, differenze non committate | Quando vuoi lo stato senza altro |
 | `/git-sync` | Prepara le operazioni git e ti consegna i comandi da eseguire | Prima di committare |
 | `/onboard` | Spiega il progetto da zero leggendo schede, memoria e decisioni | Quando entra qualcuno, o quando rientri dopo mesi |
+| `/prove-che-misurano` | Carica la norma sulle prove che passano senza misurare niente | L'agente la invoca da sé; la digiti se vuoi forzarla |
+| `/fonti-non-recuperabili` | Carica la norma sulle fonti web che non si riesce a leggere | L'agente la invoca da sé; la digiti se vuoi forzarla |
+| `/alberi-di-lavoro` | Carica la norma sulla memoria versionata quando gli alberi sono più di uno | L'agente la invoca da sé; la digiti se vuoi forzarla |
 | `/studio-didattico` | Aggiunge una voce al racconto evolutivo e la sua scheda di dettaglio | A ogni refactor o scelta di qualità non ovvia, se il progetto ha adottato la pratica |
 | `/hooks` | Mostra quali hook sono registrati davvero | Dopo aver registrato un hook, per verificare che ci sia |
 
@@ -68,6 +71,7 @@ Gli strumenti si lanciano invece come programmi, dalla radice del progetto. Il p
 | `python tools/lint-md-commands.py .` | Comandi spezzati dentro i blocchi di codice, che non si copiano in una riga sola |
 | `python tools/lint-doc-references.py --solo-vivi` | Documenti vivi che nominano file inesistenti |
 | `python tools/check-eol.py .` | File di testo che mescolano CRLF e LF, che al primo salvataggio si riscrivono per intero |
+| `python tools/misura-istruzioni.py` | Carico degli instruction file caricati a ogni avvio, dal più pesante; fallisce oltre la soglia |
 | `python tools/costruisci-timeline.py` | Rigenera la linea temporale del progetto |
 | `python tools/costruisci-timeline.py --senza-ragione` | Elenca i microstep senza una ragione dichiarata |
 | `python tools/Test-Allineamento.py` | Le affermazioni che stanno invecchiando: scadenze, misure vecchie, invarianti |
@@ -90,6 +94,10 @@ Questa è la domanda che `chat-non-e-memoria.md` solleva, e vale per tutte le re
 
 Una regola non si lancia e non si invoca. È un file Markdown che entra nel contesto della sessione e cambia il comportamento dell'agente, e il modo in cui la si "usa" è che esista nel progetto e sia indicizzata. Non c'è un comando, non c'è un momento in cui si attiva: se il file c'è, la regola è in vigore.
 
+Da qui discende il vincolo che dal 2026-09-28 divide le norme in due livelli, e conviene conoscerlo perché cambia dove si cerca una norma, non come la si usa. Tutto ciò che sta sotto `.claude/rules/` viene caricato a ogni avvio di sessione, integralmente e prima che tu scriva una riga, e concorre a un budget della piattaforma che oggi vale 150.000 caratteri. Il costo non è l'avviso che compare quando lo si supera: è il contesto speso in ogni sessione anche quando quella norma non serviva, e l'aderenza, che cala quando molte norme lunghe competono per l'attenzione. Perciò in `.claude/rules/` resta soltanto ciò che vale in ogni sessione, e il criterio è verificabile: una norma sta lì quando la sua applicabilità non dipende da una scelta di configurazione del progetto. Lo stile di scrittura vale sempre; la norma sugli alberi di lavoro vale solo se il progetto ha scelto di usarli.
+
+Le norme dell'altro livello vivono come `RIFERIMENTO.md` dentro la skill che le governa, e si caricano quando la loro situazione si presenta. Per te non cambia niente da fare: l'agente le invoca da sé, perché la descrizione della skill nomina la situazione, e il `CLAUDE.md` porta un indice di quattro righe che dice quando. Cambia una sola cosa, ed è un potere in più: se ti accorgi che l'agente sta lavorando su prove automatiche, su una fonte che non riesce a leggere, su più alberi di lavoro o sulla separazione fra test e produzione senza aver caricato la norma, puoi digitarne il nome e forzarla. La norma non è indebolita, è solo altrove; ciò che la indeboliva era stare sempre accesa insieme ad altre dieci.
+
 Per `chat-non-e-memoria.md` in particolare, ciò che la regola prescrive è un comportamento dell'agente e ha un *osservabile preciso*, che è il modo in cui puoi verificare che stia funzionando invece di sperarlo. La regola dice che nessun contenuto sostanziale resti nella sola conversazione: un numero misurato va in un documento, una correzione nel work-log, una decisione nel registro come ADR, un lavoro rimandato fra le pendenze, una fonte nel registro delle fonti. E dice che l'aggiornamento avvenga nel medesimo giro di lavoro in cui il contenuto nasce, non a fine sessione quando il contesto è pieno e l'attenzione bassa.
 
 L'osservabile è l'ultima riga: alla fine di ogni giro di lavoro sostanziale l'agente dichiara quali file ha scritto. Quella riga è il presidio della regola. Se c'è, il contenuto è su disco; se manca, il contenuto è rimasto in chat ed è già perduto, anche quando la risposta era ottima. Quindi il modo in cui usi questa regola è: leggere quella riga, e quando non c'è, chiederla.
@@ -97,6 +105,8 @@ L'osservabile è l'ultima riga: alla fine di ogni giro di lavoro sostanziale l'a
 Una seconda cosa la regola la dice e vale ripeterla qui: l'agente aggiorna `.claude/memory/` e `.claude/context/` da solo, a ogni giro di lavoro sostanziale, senza che tu glielo chieda, come fa con i documenti di conoscenza. Il rischio che la regola combatte è che il contenuto resti in chat. Il controllo umano sta nel versionamento: rileggi il diff e decidi tu che cosa committare.
 
 ## Il ciclo di una sessione, nella forma concreta
+
+Il flusso cronologico completo, dall'apertura al commit, con i casi d'uso, le uscite di `chiudi` e le norme che si accendono durante il lavoro, sta in `docs/guida-sessione.html`, versionata e stampabile: è la fonte unica di quel flusso, e una copia esportata dal browser invecchia dal momento in cui la salvi. Questa sezione ne è il riassunto discorsivo, mentre il resto di questa guida copre il sistema nel suo insieme.
 
 All'apertura, se hai registrato l'hook, la verifica e lo stato arrivano da soli e ti trovi davanti un recap. Se non lo hai registrato, digiti `/riprendi`. In entrambi i casi il passo successivo è `/sync-context`, che l'hook chiede all'agente di fare e che puoi sempre digitare tu.
 
@@ -117,6 +127,7 @@ Tutta la sequenza sta in un comando solo, da lanciare nel proprio terminale dopo
 | Ogni giro di lavoro sostanziale | Scrivere su disco ciò che è nato in chat | sì, è la regola `chat-non-e-memoria.md` in vigore | verifichi la riga che dichiara i file scritti |
 | Ogni file `.md` scritto | Paragrafi su riga sorgente unica | sì, con l'hook `md-unwrap-auto` | `python tools/md-unwrap.py <file>` |
 | Prima di un commit | I quattro controlli di convenzione | sui commit dell'agente sì, con `pre-commit-checks`; sui tuoi solo con un hook nativo di git | lanci i quattro comandi della tabella sopra |
+| Prima di un commit | Carico degli instruction file sotto la soglia | sui commit manuali sì, con il passo `instruction-budget` del pre-commit | `python tools/misura-istruzioni.py` |
 | Prima di un commit | Segreti nel diff in stage | come sopra, con `secret-scan` | `git diff --cached` e lo guardi |
 | Ogni chiusura di sessione | Controlli, commit, push, impronta e wipe in sequenza | un comando, da lanciare dopo aver chiuso Claude | `.\tools\chiudi-sessione.ps1` |
 | Ogni chiusura di sessione | Registrare l'impronta | sì, con l'hook `chiusura-sessione` | `python tools/verifica-ripresa.py --registra` |
@@ -138,7 +149,7 @@ Qui la risposta alla domanda "si lancia automatico?" è: quasi mai, e per una ra
 | "Come separo test e produzione in questo progetto?" | Non esiste un default: dipende da stack, macchina e persone | `/separazione-ambienti`, che riconosce il modello in uso, spiega le alternative con la guida `.claude/templates/separazione-ambienti/GUIDA.md` e registra l'esito in `context/deployment.md` |
 | "Questo testo o questa pagina sembrano scritti da un modello" | Segni ricorrenti di prosa o di interfaccia generate | `python tools/lint-prosa.py <file>` e `python tools/lint-ui.py <cartella>`, poi la voce del segno in `docs/anti-slop/GUIDA.md` |
 | "Ho aggiunto una regola o una skill e nessun progetto la usa" | Nessun gate la propone | `python .claude/templates/tools/check-raggiungibilita.py` |
-| "Ho aperto un secondo albero di lavoro e la memoria sembra indietro" | La memoria versionata vale per la branch, e questa non è la più avanti | `/riprendi`, che la segnala con il percorso dell'albero autorevole; poi leggi `.claude/rules/alberi-di-lavoro.md` |
+| "Ho aperto un secondo albero di lavoro e la memoria sembra indietro" | La memoria versionata vale per la branch, e questa non è la più avanti | `/riprendi`, che la segnala con il percorso dell'albero autorevole; poi leggi `.claude/skills/alberi-di-lavoro/RIFERIMENTO.md` |
 | "Perché a marzo abbiamo scelto questa libreria?" | Il fatto è registrato, la ragione no | `python tools/costruisci-timeline.py`, poi apri `docs/TIMELINE.html` |
 | "Questo documento dice una cosa che forse non è più vera" | Un'affermazione con una scadenza implicita | `python tools/Test-Allineamento.py` |
 | "Il diff è pieno di righe che nessuno ha toccato" | Paragrafi hard-wrapped che si ri-avvolgono | automatico a ogni scrittura con l'hook; altrimenti `python tools/md-unwrap.py .` |
@@ -148,7 +159,7 @@ Qui la risposta alla domanda "si lancia automatico?" è: quasi mai, e per una ra
 | "Una modifica di due righe compare come modifica dell'intero file" | Fini riga miste nello stesso file | `python tools/check-eol.py .` |
 | "Sto per rendere pubblico il repository" | Dati che identificano persone o infrastrutture | `python tools/Test-Anonymization.py` |
 | "Il commit è partito con l'email sbagliata" | Identità git non impostata a livello locale | `python .claude/templates/tools/detect-ssh-profiles.py --repo .` |
-| "Questa fonte esiste ma non riesco a leggerla" | Una fonte fuori dalla portata degli strumenti di sessione | leggi `.claude/rules/web-sources-not-fetchable.md`, poi gli strumenti di `community-sources` |
+| "Questa fonte esiste ma non riesco a leggerla" | Una fonte fuori dalla portata degli strumenti di sessione | leggi `.claude/skills/fonti-non-recuperabili/RIFERIMENTO.md`, poi gli strumenti di `community-sources` |
 | "La sessione consuma troppo contesto" | Prima si misura, poi si interviene | `ccusage`, poi il settore dell'economia del contesto |
 | "Ho un video e nessuna trascrizione" | Sottotitoli se ci sono, riconoscimento vocale se no | `python tools/vtt-to-text.py FILE.vtt`, altrimenti `python tools/trascrivi.py VIDEO --nome fonte` |
 
@@ -168,7 +179,7 @@ Le ricette che seguono sono quindi una scorciatoia per te, non un comportamento 
 
 **Un progetto ereditato, di cui non conosci la struttura.** Prompt di allineamento, poi `code-context` come primo strato perché costa poco e dà struttura e simboli. Si sale di profondità solo se serve: `repomix` per una vista consolidata iniziale, `serena` per la navigazione a livello di simbolo, `codebase-memory-mcp` per il grafo delle chiamate su un repository davvero grande, `codebase-learning` se l'obiettivo è capirlo e non solo modificarlo. La tentazione da evitare è attivarli tutti: sono quattro indici dello stesso codice, e su un progetto piccolo tre sono rumore.
 
-**Un progetto che raccoglie fonti di community.** `community-sources` con i suoi sei strumenti, e la regola `web-sources-not-fetchable.md` che ne è il criterio: il pacchetto è lo strumento, la regola dice quale via scegliere. Si aggiunge `voicestudio` se fra le fonti ci sono video senza sottotitoli. Resta fuori la tentazione di esportare tutto: la ricerca mirata dentro il canale, fatta da chi conosce la domanda, rende più di un export in blocco, perché il filtro incorpora la domanda.
+**Un progetto che raccoglie fonti di community.** `community-sources` con i suoi sei strumenti, e la norma `skills/fonti-non-recuperabili/RIFERIMENTO.md` che ne è il criterio: il pacchetto è lo strumento, la regola dice quale via scegliere. Si aggiunge `voicestudio` se fra le fonti ci sono video senza sottotitoli. Resta fuori la tentazione di esportare tutto: la ricerca mirata dentro il canale, fatta da chi conosce la domanda, rende più di un export in blocco, perché il filtro incorpora la domanda.
 
 **Un progetto scientifico o di ricerca R&D.** `scientific-skills` per la mappa disciplinare e `academic-researcher` se servono brief, bibliografia o protocollo di benchmark. Si decide quale catena bibliografica mantenere e si registra la scelta. Il gate chiede poi separatamente se collegare OpenAlex MCP per scoperta e metadati, PaperQA2 per il corpus locale e Feynman per ricerca o audit con una CLI autonoma; ogni sì, no o rinvio vale solo per quel progetto. Il [runbook delle integrazioni](.claude/templates/academic-researcher/INTEGRAZIONI-TOOL.md) spiega prerequisiti, configurazione e verifica per Claude Code e Codex.
 

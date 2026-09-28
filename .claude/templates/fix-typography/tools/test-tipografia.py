@@ -357,7 +357,7 @@ def prova_guardia_modelli():
 
 # Le due prove seguenti nascono da altrettanti difetti visti il 2026-09-16 rileggendo il diff
 # di una corsa reale, non da una prova che li cercasse: nessuna li cercava, ed e' esattamente
-# la condizione che `prove-che-misurano.md` descrive. Entrambi appartengono alla stessa
+# la condizione che `skills/prove-che-misurano/RIFERIMENTO.md` descrive. Entrambi appartengono alla stessa
 # famiglia di quello che la mascheratura degli identificatori risolve sui file .tex, cioe' un
 # testo che a video e' prosa e nel programma e' un riferimento.
 def prova_stringhe_python():

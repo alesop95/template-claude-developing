@@ -1,6 +1,6 @@
 # Separazione fra test e produzione: un catalogo e un gate, non un default
 
-> Regola modulare, da caricare all'inizializzazione e a ogni tornata di allineamento, e ogni volta che un progetto cambia il modo in cui prova e rilascia. Non prescrive un modo di separare gli ambienti: raccoglie i modi osservati nei progetti reali, dice quando ciascuno conviene e che cosa costa, e stabilisce che la scelta si fa con l'utente e si registra. Nasce da una ricognizione del 2026-09-23 su nove progetti istanziati o affiancati al template, fra applicazioni su piattaforma gestita, portali su VPS, stack in container su macchine virtuali, un ERP e applicazioni di terze parti; i nomi sono tolti secondo il criterio della sezione 16 di `PROJECT-SYSTEM.md`. La spiegazione tecnico-didattica di ogni forma sta nella guida `.claude/templates/separazione-ambienti/GUIDA.md`, e le fonti, nove casi osservati e trentasette fonti pubblicate lette il 2026-09-23, nel registro `FONTI.md` accanto a essa; le sigle fra parentesi quadre in questa regola rimandano a quel registro. La procedura dell'interazione è la skill `separazione-ambienti`.
+> Riferimento normativo della skill `separazione-ambienti`, che lo legge all'inizializzazione e a ogni tornata di allineamento, e ogni volta che un progetto cambia il modo in cui prova e rilascia. Non prescrive un modo di separare gli ambienti: raccoglie i modi osservati nei progetti reali, dice quando ciascuno conviene e che cosa costa, e stabilisce che la scelta si fa con l'utente e si registra. Nasce da una ricognizione del 2026-09-23 su nove progetti istanziati o affiancati al template, fra applicazioni su piattaforma gestita, portali su VPS, stack in container su macchine virtuali, un ERP e applicazioni di terze parti; i nomi sono tolti secondo il criterio della sezione 16 di `PROJECT-SYSTEM.md`. La spiegazione tecnico-didattica di ogni forma sta nella guida `.claude/templates/separazione-ambienti/GUIDA.md`, e le fonti, nove casi osservati e trentasette fonti pubblicate lette il 2026-09-23, nel registro `FONTI.md` accanto a essa; le sigle fra parentesi quadre in questa regola rimandano a quel registro. La procedura dell'interazione è la skill `separazione-ambienti`.
 
 ## Il principio
 
@@ -46,7 +46,7 @@ D3, istantanea dei volumi di produzione su richiesta esplicita. L'ambiente di pr
 
 L1, un albero solo e il cambio di branch. È il default e basta nella maggior parte dei casi, compresi tutti quelli in cui gli ambienti vivono su macchine, progetti o stack diversi.
 
-L2, un albero di lavoro per branch con `git worktree`. Serve quando più stati del codice devono girare insieme sulla stessa macchina, ciascuno con il proprio server di sviluppo, o quando più sessioni lavorano in parallelo su rami diversi. Porta con sé il tranello della memoria versionata che vale per la branch, ed è governato dalla regola `alberi-di-lavoro.md`.
+L2, un albero di lavoro per branch con `git worktree`. Serve quando più stati del codice devono girare insieme sulla stessa macchina, ciascuno con il proprio server di sviluppo, o quando più sessioni lavorano in parallelo su rami diversi. Porta con sé il tranello della memoria versionata che vale per la branch, ed è governato dalla norma `skills/alberi-di-lavoro/RIFERIMENTO.md`.
 
 L3, cloni indipendenti, uno per ambiente, sulla macchina che esegue. È la forma che accompagna R2 nella variante sempre accesa: un clone sulla branch di produzione e uno su quella di staging, allineati a mano. Un albero di lavoro in più ne sarebbe la variante che risparmia il secondo clone.
 
@@ -85,7 +85,7 @@ La tabella seguente è il punto di partenza della proposta, non la risposta: ogn
 | ERP o gestionale di terze parti con moduli propri | R2 o R1 con D2; P3 solo se già in uso, con la via d'uscita |
 | Sito o applicazione destinata a una macchina pubblica | R3 con pipeline e immagine, P1 o P2, D0 |
 | Applicazione di terze parti senza codice proprio | R0 con backup verificato e snapshot prima degli aggiornamenti |
-| Più stati del codice da far girare insieme, o sessioni parallele su rami diversi | L2 con la regola `alberi-di-lavoro.md`, combinabile con qualunque R |
+| Più stati del codice da far girare insieme, o sessioni parallele su rami diversi | L2 con la norma `skills/alberi-di-lavoro/RIFERIMENTO.md`, combinabile con qualunque R |
 | Gruppo che cresce, rilasci frequenti, pipeline affidabile | P4 con le pratiche trasversali della guida, forma non ancora osservata |
 
 L'esito si scrive in due posti nello stesso giro di lavoro, secondo `chat-non-e-memoria.md`: la sezione "Modello di separazione" della scheda `context/deployment.md`, con la sigla per asse, il fatto che la decide e i rischi trasversali che il modello non esclude, e una voce ADR in `memory/decisions.md` costruita dallo scheletro del pacchetto, e la guida con il registro delle fonti si istanzia sotto `docs/separazione-ambienti/` secondo il README del pacchetto. Se l'utente rimanda la scelta, anche il rinvio si registra, perché un gate non registrato verrà riproposto identico alla tornata successiva.

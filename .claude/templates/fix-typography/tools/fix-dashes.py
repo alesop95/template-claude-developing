@@ -371,7 +371,7 @@ def main():
     # In modalita' di verifica l'esito e' anche un codice di uscita, non solo un rapporto. Senza
     # questa riga lo strumento usciva zero pure elencando i file da correggere, e chiunque lo
     # usasse come controllo, l'hook pre-commit o una persona che concatena i comandi, otteneva un
-    # via libera indistinguibile da quello vero: il difetto che `prove-che-misurano.md` chiama
+    # via libera indistinguibile da quello vero: il difetto che `skills/prove-che-misurano/RIFERIMENTO.md` chiama
     # vacuita', qui non in una prova ma nel controllo stesso. Fa fede `cambiati`, cioe' cio' che
     # lo strumento sa correggere da se'; le forme ambigue e i residui restano un avviso, perche'
     # nessuno puo' deciderli meccanicamente e farne cadere il controllo lo bloccherebbe per

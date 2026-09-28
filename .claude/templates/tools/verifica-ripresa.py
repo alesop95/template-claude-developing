@@ -34,7 +34,7 @@ Dove il progetto usa più alberi di lavoro, confronta anche la memoria di questo
 degli altri: la memoria versionata vale per la branch su cui è scritta, e un albero aperto su una
 branch indietro ne riceve una ben formata e vecchia. Segnala ogni altro albero la cui branch abbia
 cambiato `.claude/memory/` dopo essersi separata da questa, o vi abbia modifiche non committate,
-e ne nomina il percorso: è da lì che la memoria si legge (regola `alberi-di-lavoro.md`).
+e ne nomina il percorso: è da lì che la memoria si legge (norma `skills/alberi-di-lavoro/RIFERIMENTO.md`).
 
 Che cosa non può sapere, e va detto invece di lasciarlo intuire
 ---------------------------------------------------------------
@@ -278,7 +278,7 @@ def alberi_con_memoria_avanti(radice=None):
 
     La memoria versionata vale per la branch su cui è scritta, non per il progetto: un albero
     aperto su una branch indietro riceve uno snapshot e un registro delle decisioni ben formati e
-    vecchi, e nulla al loro interno lo dice (regola `alberi-di-lavoro.md`). Per ogni altro albero
+    vecchi, e nulla al loro interno lo dice (norma `skills/alberi-di-lavoro/RIFERIMENTO.md`). Per ogni altro albero
     si guarda che cosa la sua branch ha cambiato sotto `.claude/memory/` dal punto in cui si è
     separata da HEAD, con la notazione a tre punti, e se vi sono modifiche non committate alla
     memoria. Ritorna una lista di (percorso, branch, file avanti, file non committati).

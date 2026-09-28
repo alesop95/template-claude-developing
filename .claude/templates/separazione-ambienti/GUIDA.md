@@ -1,6 +1,6 @@
 # Guida ai paradigmi di separazione fra test e produzione
 
-> Documento tecnico-didattico del pacchetto `separazione-ambienti`. La regola `.claude/rules/separazione-ambienti.md` dice che cosa si sceglie e come si registra; questa guida spiega che cosa significa ogni scelta rispetto alle altre, perché funziona, che cosa costa e come fallisce. La skill `separazione-ambienti` attinge da qui le spiegazioni che dà durante il gate, così che la spiegazione in conversazione e quella sul disco siano la stessa. Le sigle fra parentesi quadre rimandano al registro `FONTI.md`: le `C` sono casi osservati nei progetti, le `F` fonti pubblicate.
+> Documento tecnico-didattico del pacchetto `separazione-ambienti`. La norma `.claude/skills/separazione-ambienti/RIFERIMENTO.md` dice che cosa si sceglie e come si registra; questa guida spiega che cosa significa ogni scelta rispetto alle altre, perché funziona, che cosa costa e come fallisce. La skill `separazione-ambienti` attinge da qui le spiegazioni che dà durante il gate, così che la spiegazione in conversazione e quella sul disco siano la stessa. Le sigle fra parentesi quadre rimandano al registro `FONTI.md`: le `C` sono casi osservati nei progetti, le `F` fonti pubblicate.
 
 ## Perché si separa, e che cosa si separa davvero
 
@@ -292,7 +292,7 @@ Nel caso osservato la neutralizzazione era un modulo proprio con un insieme di i
 
 **Che cosa significa sceglierla.** Significa far girare insieme più stati del codice sulla stessa macchina, ciascuno con il proprio server di sviluppo, o far lavorare in parallelo più sessioni su rami diversi. Rispetto a L1 evita di cambiare branch avanti e indietro; rispetto a L3 condivide gli oggetti git invece di duplicarli.
 
-**Che cosa richiede e come fallisce.** Tre vincoli di git non si leggono dal comando: una branch non può stare in uscita in due alberi, salvo forzarlo [F25]; un albero si rimuove solo pulito [F25]; e la configurazione del repository è condivisa fra gli alberi salvo l'estensione dedicata [F25]. Il fallimento più insidioso non è di git ma del sistema di memoria: la memoria versionata vale per la branch su cui è scritta, e un albero su una branch indietro riceve uno snapshot ben formato e vecchio. La regola `alberi-di-lavoro.md` ne governa le conseguenze.
+**Che cosa richiede e come fallisce.** Tre vincoli di git non si leggono dal comando: una branch non può stare in uscita in due alberi, salvo forzarlo [F25]; un albero si rimuove solo pulito [F25]; e la configurazione del repository è condivisa fra gli alberi salvo l'estensione dedicata [F25]. Il fallimento più insidioso non è di git ma del sistema di memoria: la memoria versionata vale per la branch su cui è scritta, e un albero su una branch indietro riceve uno snapshot ben formato e vecchio. La norma `skills/alberi-di-lavoro/RIFERIMENTO.md` ne governa le conseguenze.
 
 ### L3, cloni indipendenti, uno per ambiente
 

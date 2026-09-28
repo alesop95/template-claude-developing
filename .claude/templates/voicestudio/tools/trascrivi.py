@@ -4,7 +4,7 @@
 
 Perché esiste
 -------------
-La regola `.claude/rules/web-sources-not-fetchable.md` dice che per un video la forma utile
+La norma `.claude/skills/fonti-non-recuperabili/RIFERIMENTO.md` dice che per un video la forma utile
 non è il video ma la sua trascrizione, e prescrive due vie: i sottotitoli automatici dove
 esistono, che si scaricano e si ripuliscono con `vtt-to-text.py` del pacchetto
 `community-sources`, e il riconoscimento vocale dove non esistono. Fino a che la seconda via

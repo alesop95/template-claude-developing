@@ -1,6 +1,6 @@
 # Fonti web non recuperabili automaticamente
 
-> Regola modulare. Stabilisce cosa fare quando una fonte esiste ed è rilevante ma non si riesce a recuperarla con gli strumenti di sessione, così che il progetto non degradi silenziosamente una fonte a nota a margine. Vale per qualunque dominio, e usa Reddit e Discord come casi studiati perché sono quelli che si incontrano più spesso.
+> Riferimento normativo della skill `fonti-non-recuperabili`, che lo carica su richiesta invece di tenerlo in contesto a ogni sessione. Stabilisce cosa fare quando una fonte esiste ed è rilevante ma non si riesce a recuperarla con gli strumenti di sessione, così che il progetto non degradi silenziosamente una fonte a nota a margine. Vale per qualunque dominio, e usa Reddit e Discord come casi studiati perché sono quelli che si incontrano più spesso.
 
 ## Il principio
 

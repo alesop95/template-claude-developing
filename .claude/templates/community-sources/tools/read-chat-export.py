@@ -6,7 +6,7 @@ Perché esiste
 --------------
 Le community su Discord sono, per alcune tecniche, la sola documentazione esistente, ma
 un canale non è recuperabile né dal crawler del modello né da una richiesta HTTP: la
-regola `.claude/rules/web-sources-not-fetchable.md` lo registra fra le fonti che
+norma `.claude/skills/fonti-non-recuperabili/RIFERIMENTO.md` lo registra fra le fonti che
 richiedono un passaggio manuale. Un export prodotto dall'utente colma quel buco, ma il
 JSON che ne esce è verboso e pieno di campi che non servono: un canale di poche migliaia
 di messaggi diventa decine di megabyte, cioè inutilizzabile in conversazione.

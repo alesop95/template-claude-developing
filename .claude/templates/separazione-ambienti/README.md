@@ -30,7 +30,7 @@ Il registro delle fonti ha una voce per fonte, con indirizzo letto, data dichiar
 
 ## Rapporto con la regola e con la skill
 
-Tre oggetti, tre ruoli, e nessuna duplicazione. La regola `.claude/rules/separazione-ambienti.md` è la norma breve: il catalogo delle forme, i rischi trasversali, il gate e dove si registra l'esito. La skill `.claude/skills/separazione-ambienti/` è la procedura dell'interazione: raccoglie i fatti, pone le domande, propone e spiega. Questo pacchetto è la conoscenza: la skill ne legge la sezione pertinente invece di improvvisare la spiegazione, così che ciò che l'utente sente al gate e ciò che trova sul disco dopo sia la stessa cosa.
+Tre oggetti, tre ruoli, e nessuna duplicazione. La norma `.claude/skills/separazione-ambienti/RIFERIMENTO.md` è la norma breve: il catalogo delle forme, i rischi trasversali, il gate e dove si registra l'esito. La skill `.claude/skills/separazione-ambienti/` è la procedura dell'interazione: raccoglie i fatti, pone le domande, propone e spiega. Questo pacchetto è la conoscenza: la skill ne legge la sezione pertinente invece di improvvisare la spiegazione, così che ciò che l'utente sente al gate e ciò che trova sul disco dopo sia la stessa cosa.
 
 ## Cosa istanzia, e dove
 
