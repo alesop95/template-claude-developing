@@ -147,6 +147,8 @@ python tools/check-eol.py
 python tools/check-eol.py --dettaglio
 ```
 
+C'è un caso che questo controllo non vede per costruzione: il file convertito **per intero**, che resta coerente e quindi non è misto. Succede ogni volta che un file LF viene riscritto su Windows da uno script Python aperto in modo testo, perché in scrittura ogni `\n` diventa `\r\n`: una sostituzione di due righe produce un diff dell'intero file, e se nessuno guarda la statistica del diff entra così nella storia. Osservato il 2026-09-30 in un progetto istanziato, su quattro file in un solo giro, fra cui un componente di cui si cambiavano due righe e che il diff mostrava riscritto per intero. Il sintomo è un `git diff --stat` sproporzionato rispetto alla modifica. Il controllo è `git ls-files --eol <file>`, che mostra `i/lf w/crlf` quando l'indice e il disco divergono. Il rimedio è a monte: uno script che modifica un file lo legge e lo scrive in binario, oppure con `newline=""` sia in lettura sia in scrittura, così che le interruzioni escano come erano entrate.
+
 ## check-copie-modelli.py
 
 Confronta ogni strumento istanziato con il suo modello sotto `.claude/templates/`. Un progetto che adotta lo standard copia gli strumenti condivisi dentro la propria anatomia, e dal momento della copia le due esistono in parallelo senza che niente le tenga insieme: si corregge la copia, perché è quella che gira, e il modello resta indietro.
