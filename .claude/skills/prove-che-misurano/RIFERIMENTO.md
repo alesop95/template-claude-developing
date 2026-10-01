@@ -130,6 +130,18 @@ Lo stesso principio ha una seconda faccia, incontrata poche ore dopo sullo stess
 
 C'è un corollario sul significato, che è la trappola più silenziosa. Quando il campo è opzionale, l'assenza **già significa** "non specificato": aggiungere un valore esplicito con quel nome crea due rappresentazioni dello stesso stato, che è la stessa famiglia di difetti dei due contatori che contano la stessa cosa e danno risposte diverse. Il valore esplicito si giustifica solo se distingue davvero due stati, per esempio "nessuno ha ancora compilato" da "la persona ha scelto di non dirlo", e quella distinzione va chiesta a chi possiede il prodotto, non dedotta: se nessuno legge il campo, la distinzione non è osservabile da nessuna parte e quindi non esiste ancora.
 
+## Uno stato messo nell'indirizzo va governato dall'indirizzo sempre, non solo all'avvio
+
+Aggiunto il giorno stesso della sezione precedente, perché la verifica dal vivo ha trovato un difetto che nessuna delle prove scritte poteva vedere, e la ragione per cui non poteva è la parte che vale.
+
+La richiesta era che un'interfaccia a schede sopravvivesse a un ricaricamento. La correzione ha messo la scheda attiva nel frammento dell'indirizzo e lo ha letto **al montaggio**. Soddisfa la richiesta alla lettera, e tutte le prove, sia automatiche sia manuali, passavano: un ricaricamento rimonta il componente, quindi il frammento viene riletto.
+
+Il difetto si vede solo cambiando l'indirizzo **a pagina aperta**. Un indirizzo che differisce soltanto per il frammento non è una navigazione nuova: la pagina non si ricarica, il componente non si rimonta, l'inizializzatore non gira di nuovo e lo schermo non si muove. Da quel momento la barra degli indirizzi dichiara una cosa e lo schermo ne mostra un'altra, e un ricaricamento successivo porta su una terza ancora. **Lo stato è in due posti che divergono in silenzio**, che è la stessa famiglia di difetti dei due contatori della stessa cosa.
+
+La regola: se si mette uno stato nell'indirizzo, l'indirizzo deve governarlo **sempre**, quindi oltre alla lettura iniziale serve l'ascolto del cambiamento. Mezza autorità è peggio di nessuna, perché nessuna lascia una sola fonte di verità mentre mezza ne lascia due e ne dichiara una.
+
+Due cose sul metodo, che sono il motivo per cui questa sezione sta qui e non in una guida di interfacce. La prima: **la prova manuale che ha trovato il difetto non era quella scritta per trovarlo**, era il passo di ripiego, cioè quello messo in lista per verificare che un valore sbagliato non rompesse niente. Un passo di non regressione ha trovato un difetto che il passo discriminante non poteva vedere, e questo è un argomento per tenerli entrambi invece di saltare il secondo perché "tanto passa". La seconda: una prova automatica scritta sullo stesso modello mentale del codice eredita il suo punto cieco. Le prove verificavano il montaggio perché il codice leggeva al montaggio; la domanda che mancava, e che si può porre a tavolino, è **chi altro può cambiare questo stato, e per quali vie**.
+
 ## Un avviso che ricompare sempre uguale smette di essere un avviso
 
 Riguarda l'uscita degli strumenti di controllo, ed è la ragione per cui un controllo può esistere, funzionare, e non proteggere più niente.
