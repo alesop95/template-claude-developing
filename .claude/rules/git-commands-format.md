@@ -70,6 +70,18 @@ Una milestone è un commit, e `chiudi` è il solo modo ordinario di farlo, sia a
 
 I comandi git per esteso, nel formato descritto sopra, restano per i casi che `chiudi` non copre: un progetto dove lo script non è istanziato, un commit che deve includere solo una parte delle modifiche presenti, un'operazione diversa dal commit sul ramo in uscita.
 
+## Il push si raggruppa, il commit no, e a dirlo è il budget della verifica automatica
+
+Sezione nata da un progetto istanziato che ha esaurito la quota mensile di minuti della propria verifica automatica e si è bloccato per un giorno e mezzo su una modifica pronta. La misura che l'ha chiarita non è il numero di corse ma il loro costo per lavoro: la fatturazione arrotonda **per lavoro** al minuto superiore, quindi un flusso da quattro lavori e uno da due costano insieme una ventina di minuti **a ogni push**, qualunque cosa contenga quel push. Convertita in budget, una quota mensile di duemila minuti vale circa novanta push su un ramo con richiesta di fusione aperta, non novanta giornate di lavoro.
+
+Ne discende una separazione che vale ovunque esista una verifica a consumo. **Il commit resta granulare**, perchè la storia deve poter distinguere una milestone dall'altra e un commit non costa niente: è scrittura locale. **Il push si raggruppa**, perchè è il push a innescare la spesa. Più milestone maturate nello stesso giro restano commit distinti e partono con un solo `git push`.
+
+Il caso peggiore, e il più facile da commettere, è il commit di sola documentazione spinto da solo su un ramo con richiesta di fusione aperta: costa come uno di codice e non verifica niente che non fosse già verde. Si tiene in locale fino al push di codice, oppure va sul ramo principale se la convenzione del progetto ci manda la documentazione, dove un filtro per percorso può escluderlo davvero.
+
+Quel "davvero" è letterale e contiene la trappola. Un filtro di percorso sull'innesco della richiesta di fusione **si valuta sul diff completo della richiesta**, testa contro base, non sui file dell'ultimo push: se la richiesta contiene anche una riga di codice, il filtro non esclude più nessuno dei push successivi, e chi lo legge nel file del flusso crede di avere una protezione che non c'è. Sull'innesco del push verso il ramo principale, invece, il filtro si valuta sui file di quel push e funziona come ci si aspetta. Una protezione che si crede attiva e non lo è costa più di una assente, perchè fa smettere di cercare il risparmio altrove.
+
+Due verifiche da fare una volta per progetto, prima di accusare il ritmo dei commit. Che i flussi dichiarino `concurrency` con `cancel-in-progress`, altrimenti due push ravvicinati sullo stesso ramo pagano entrambi per intero. E che la misura venga dai tempi per lavoro, perchè l'endpoint di temporizzazione delle corse può rispondere zero minuti fatturabili anche su una corsa di sei minuti.
+
 ## Messaggio di commit
 
 Il messaggio di commit è una sola stringa tra doppi apici, al massimo 72 caratteri, che descrive le modifiche in italiano nella forma "Aggiunte X, Y" oppure "Nuova regola X: descrizione" oppure "Aggiornato Y: cosa cambia". Se il contesto richiede più dettaglio, lo si scrive nella risposta testuale prima dei comandi, non nel messaggio di commit.
