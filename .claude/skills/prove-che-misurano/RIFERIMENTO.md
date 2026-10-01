@@ -102,6 +102,14 @@ Ne discende che una casella di una sequenza manuale porta tre cose e non una. Il
 
 Il criterio per scriverla, quando la sequenza la si sta redigendo: si prova a immaginare un'esecuzione che segue ogni parola della casella e che tuttavia non toccherebbe il difetto. Se quell'esecuzione esiste, alla casella manca il luogo o la precondizione.
 
+### Una precondizione che non si può osservare è un'assunzione, e il tempo la logora
+
+Aggiunto dopo che anche la prescrizione qui sopra è stata applicata e la verifica ha trovato un terzo modo di non concludere. La precondizione era scritta accanto al passo, con i numeri attesi, e chi eseguiva l'ha letta. Mancava una cosa sola: **il modo di guardarla**. La proprietà richiesta era l'assenza di un campo su certi record, e quel campo non è mostrato da nessuna schermata, perché si scrive solo alla creazione e in modifica non compare. Chi eseguiva poteva quindi vedere il risultato ma non la premessa, e la premessa restava un'assunzione travestita da controllo.
+
+Una precondizione porta perciò un quarto elemento oltre al gesto, al luogo e alla proprietà: **dove si osserva quella proprietà**, con lo stesso grado di precisione del luogo del risultato. Se la risposta è che non si osserva da nessuna parte, il passo non è verificabile come scritto e la sequenza deve dire cosa fare al suo posto, per esempio leggere il dato alla fonte invece che nell'interfaccia, oppure costruire deliberatamente un record che abbia la proprietà voluta.
+
+Il caso ha portato con sé una seconda osservazione, più banale e altrettanto costosa. Fra la scrittura della sequenza e la sua esecuzione era passato un giorno, e **i dati reali erano cambiati**: un record confermato in meno, e la categoria che il passo nominava passata da uno a zero. I numeri attesi scritti nella casella non corrispondevano più, e senza il modo di osservare la precondizione non c'era modo di dire se lo scostamento fosse il dato che si era mosso o il codice che sbagliava. Ne discende che una sequenza manuale scritta su dati vivi dichiara **la data della fotografia** da cui i numeri attesi provengono, e che l'invariante, cioè la relazione fra i numeri, vale più dei numeri stessi: la somma delle categorie deve fare il totale, qualunque sia il totale di oggi.
+
 ## Un avviso che ricompare sempre uguale smette di essere un avviso
 
 Riguarda l'uscita degli strumenti di controllo, ed è la ragione per cui un controllo può esistere, funzionare, e non proteggere più niente.
