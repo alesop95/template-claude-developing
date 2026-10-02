@@ -403,7 +403,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**34 pacchetti a cartella** su **83 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**35 pacchetti a cartella** su **84 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -419,6 +419,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 - `anonymization` - guard-rail sui dati che identificano persone e infrastrutture reali: [.claude/templates/anonymization/README.md](.claude/templates/anonymization/README.md)
 - `timeline-progetto` - linea temporale generata, un microstep per voce con la ragione tecnologica adottata: [.claude/templates/timeline-progetto/README.md](.claude/templates/timeline-progetto/README.md)
 - `roadmap` - lista del lavoro aperto generata dallo stato corrente: [.claude/templates/roadmap/README.md](.claude/templates/roadmap/README.md)
+- `micro-passi` - un passo per volta con l'output atteso, e il dettaglio nei documenti: [.claude/templates/micro-passi/README.md](.claude/templates/micro-passi/README.md)
 
 ### Scrittura, documentazione e tipografia
 
