@@ -58,6 +58,8 @@ Caso osservato: un'interfaccia di persistenza con semantica di *fusione*, dove u
 
 La domanda da porsi prima di fermarsi al carico: fra quello che consegno e l'effetto che voglio, c'è qualcosa che interpreta? Se sì, la prova va scritta al livello dove quell'interpretazione è osservabile, non a quello che ci sta sopra.
 
+Esiste anche il caso speculare, e non lo vede nessuna delle prove di componente. Chi scrive il contenuto dà per scontato che il destinatario interpreti, e invece il destinatario è trasparente. Caso osservato: testi di interfaccia in una risorsa di traduzione, con il grassetto scritto in sintassi Markdown, stampati da un componente che rende il testo così com'è. A video comparivano gli asterischi in entrambe le lingue, con la suite verde. Il cieco era la finzione della funzione di traduzione, che restituisce la chiave e non il valore: così ogni prova di componente è strutturalmente incapace di guardare il contenuto della risorsa. La prova che misura sta sulla risorsa stessa, dove il difetto nasce, e verifica che nessun valore contenga una sintassi che nessun componente interpreta.
+
 ## Un'asserzione di assenza passa anche per la ragione sbagliata
 
 Provare che una cosa c'è e provare che una cosa non c'è non sono simmetrici, e la differenza è il genere di errore che ciascuna ammette. Un'asserzione di presenza fallisce se il selettore è sbagliato, quindi un selettore sbagliato si manifesta subito. Un'asserzione di assenza **passa** se il selettore è sbagliato, perché un selettore che non sa cercare non trova niente, esattamente come non trova niente quando la cosa è stata davvero rimossa. I due casi producono lo stesso verde e non sono distinguibili guardandolo.
