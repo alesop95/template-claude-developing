@@ -108,6 +108,18 @@ python tools/verifica-ripresa.py --breve
 python tools/verifica-ripresa.py --self-test
 ```
 
+## verifica-schede.py
+
+Misura le schede di `.claude/context/` rispetto al codice che dichiarano di coprire. È il confronto della skill `sync-context` reso meccanico, con tre cecità di quel confronto trasformate in difetti che fanno fallire: una scheda con `covers-paths` ma senza `last-verified-commit`, che nessun confronto guarda; un'ancora che non è un commit del repository, come il segnaposto `PENDING-FIRST-COMMIT` dimenticato dopo il primo commit; un percorso coperto che non corrisponde a nessun file, che segna sempre verde. Le schede superate, cioè con file coperti cambiati dopo l'ancora, sono informazione; con `--rigoroso` fanno fallire anch'esse, ed è la forma da usare quando si dichiara di aver allineato tutto.
+
+Nato in un progetto istanziato, dove la prima corsa ha trovato tre schede mai ancorate dopo che il confronto per commit le aveva date per allineate per tre mesi. Non vede la quarta cecità della skill, cioè una scheda ancorata mentre già divergeva: quella si trova soltanto confrontando per contenuto.
+
+```
+python tools/verifica-schede.py
+python tools/verifica-schede.py --rigoroso
+python tools/verifica-schede.py --self-test
+```
+
 ## chiudi-sessione.ps1 / chiudi-sessione.sh / installa-chiudi.sh
 
 Chiude una sessione con un comando solo, nell'ordine in cui i passi non si danneggiano a vicenda. Mostra ramo, file cambiati e diff riassuntivo senza pager; trova da solo i controlli istanziati nel progetto e li esegue tutti, fermandosi prima del commit se uno fallisce; prende il messaggio di commit da `-Messaggio`, oppure da `_notes/COMMIT-MSG.txt` che l'agente prepara a fine lavoro, oppure lo chiede; chiede conferma, committa tutto e pusha; verifica che HEAD coincida con il ramo remoto; registra l'impronta con `verifica-ripresa.py --registra`; infine esegue lo script di wipe di ogni account che ne ha uno installato, ma solo se nessun processo Claude Code da terminale o da editor è ancora aperto, altrimenti stampa i comandi da lanciare dopo.

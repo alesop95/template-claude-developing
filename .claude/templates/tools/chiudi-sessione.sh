@@ -85,6 +85,8 @@ lint-md-commands.py|.||0
 lint-doc-references.py|--solo-vivi $b||0
 check-eol.py|.||0
 misura-istruzioni.py|||0
+verifica-schede.py||.claude/context|0
+lint-didattica.py||.claude/context/studio-didattico-master.md|0
 fix-accents.py|--check $m .||0
 fix-dashes.py|--check $m .||0
 fix-missing-accents.py|--check $m .||0
