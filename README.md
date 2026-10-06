@@ -404,7 +404,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**35 pacchetti a cartella** su **84 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**36 pacchetti a cartella** su **85 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -435,6 +435,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 ### Fonti, ricerca e corpus documentali
 
 - `community-sources` - lettore di canali di community con un bot account ufficiale: [.claude/templates/community-sources/README.md](.claude/templates/community-sources/README.md)
+- `verifica-link` - ogni collegamento scritto nei documenti del progetto confrontato con il registro delle fonti, con il perimetro dichiarato: [.claude/templates/verifica-link/README.md](.claude/templates/verifica-link/README.md)
 - `doc-ingest` - ingestione incrementale di un corpus a zero token: [.claude/templates/doc-ingest/README.md](.claude/templates/doc-ingest/README.md)
 - `book-to-skill` - PDF tecnico in skill on-demand: [.claude/templates/book-to-skill/README.md](.claude/templates/book-to-skill/README.md)
 - `book-bib-extract` - anagrafica bibliografica da libri fisici/scansionati senza DOI: [.claude/templates/book-bib-extract/README.md](.claude/templates/book-bib-extract/README.md)

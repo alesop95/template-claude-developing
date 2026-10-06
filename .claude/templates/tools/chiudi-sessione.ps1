@@ -76,7 +76,8 @@ $bundle = (Test-Path ".claude\templates\PACKAGES.md") -and (Test-Path ".claude\P
 # .claude\templates\ sono pacchetti non ancora adottati, e lanciarli come controlli del progetto
 # fermerebbe il commit per strumenti che nessuno ha scelto.
 $cartelle = if ($bundle) { @("tools", ".claude\templates\tools", ".claude\templates\md-unwrap\tools",
-              ".claude\templates\readme-sync\tools", ".claude\templates\fix-typography\tools") } else { @("tools") }
+              ".claude\templates\readme-sync\tools", ".claude\templates\fix-typography\tools",
+              ".claude\templates\verifica-link\tools") } else { @("tools") }
 function Trova([string]$nome) {
     foreach ($c in $cartelle) { $p = Join-Path $c $nome; if (Test-Path $p) { return $p } }
     return $null
@@ -138,10 +139,14 @@ $controlli = @(
     @{ n = "fix-dashes.py";           a = @("--check") + $m + @(".") },
     @{ n = "fix-missing-accents.py";  a = @("--check") + $m + @(".") },
     @{ n = "sync-codex-skills.py";    a = @("--project-root", ".", "--check"); serve = ".claude\skills" },
+    # Pacchetto verifica-link: istanziato se c'e' la sua configurazione; senza rete, perche' un
+    # controllo prima del commit non deve dipendere dalla rete. Nel bundle girano le sole prove.
+    @{ n = "verifica-link-progetto.py"; a = @("--check", "--senza-rete"); serve = "tools\verifica-link-progetto.json" },
     @{ n = "check-copie-modelli.py";  a = @(); solobundle = $true },
     @{ n = "check-catalogo.py";       a = @(); solobundle = $true },
     @{ n = "check-raggiungibilita.py"; a = @(); solobundle = $true },
-    @{ n = "test-tipografia.py";      a = @(); solobundle = $true }
+    @{ n = "test-tipografia.py";      a = @(); solobundle = $true },
+    @{ n = "verifica-link-progetto.py"; a = @("--prova"); solobundle = $true }
 )
 
 $falliti = @()

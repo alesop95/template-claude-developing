@@ -49,7 +49,7 @@ cd "$radice" || exit 2
 # vive solo nel bundle e non si importa mai.
 bundle=0; [ -f .claude/templates/PACKAGES.md ] && [ -f .claude/PROMPT-nuovo-progetto.md ] && bundle=1
 
-cartelle="tools .claude/templates/tools .claude/templates/md-unwrap/tools .claude/templates/readme-sync/tools .claude/templates/fix-typography/tools"
+cartelle="tools .claude/templates/tools .claude/templates/md-unwrap/tools .claude/templates/readme-sync/tools .claude/templates/fix-typography/tools .claude/templates/verifica-link/tools"
 # In un progetto si eseguono soltanto i controlli istanziati in tools/: le copie dei modelli sono
 # pacchetti non ancora adottati, e lanciarli fermerebbe il commit per strumenti che nessuno ha scelto.
 [ $bundle = 0 ] && cartelle="tools"
@@ -91,10 +91,12 @@ fix-accents.py|--check $m .||0
 fix-dashes.py|--check $m .||0
 fix-missing-accents.py|--check $m .||0
 sync-codex-skills.py|--project-root . --check|.claude/skills|0
+verifica-link-progetto.py|--check --senza-rete|tools/verifica-link-progetto.json|0
 check-copie-modelli.py|||1
 check-catalogo.py|||1
 check-raggiungibilita.py|||1
-test-tipografia.py|||1"
+test-tipografia.py|||1
+verifica-link-progetto.py|--prova||1"
 
 falliti=""
 if [ -z "$python" ]; then ko "Python non trovato"; falliti="python"
