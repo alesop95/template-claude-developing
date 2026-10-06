@@ -348,6 +348,7 @@ template-claude-developing/
     settings.local.json          permessi personali, ignorato
     rules/                       norme sempre attive: caricate a ogni avvio, contano nel budget
       chat-non-e-memoria.md      tutto cio che si scrive in sessione si scrive anche su disco
+      documenti-personali.md     documenti personali mai letti, convertiti o sintetizzati senza richiesta espressa
       git-commands-format.md     comandi git manuali, una riga per comando, contesto dichiarato
       git-identity-and-repo.md   identita git locale, alias SSH, bootstrap del remoto
       interaction-style.md       stile della documentazione tecnica
