@@ -52,7 +52,7 @@ bundle=0; [ -f .claude/templates/PACKAGES.md ] && [ -f .claude/PROMPT-nuovo-prog
 cartelle="tools .claude/templates/tools .claude/templates/md-unwrap/tools .claude/templates/readme-sync/tools .claude/templates/fix-typography/tools .claude/templates/verifica-link/tools"
 # In un progetto si eseguono soltanto i controlli istanziati in tools/: le copie dei modelli sono
 # pacchetti non ancora adottati, e lanciarli fermerebbe il commit per strumenti che nessuno ha scelto.
-[ $bundle = 0 ] && cartelle="tools"
+[ $bundle = 0 ] && cartelle="tools scripts"
 trova() { for c in $cartelle; do [ -f "$c/$1" ] && { echo "$c/$1"; return; }; done; }
 
 python=""
@@ -82,6 +82,7 @@ b=""; m=""; o=""
 controlli="md-unwrap.py|--check --only-tracked $o .||0
 sync-readme.py|--check $b|README.md|0
 lint-md-commands.py|.||0
+Test-Anonymization.py|--quiet||0
 lint-doc-references.py|--solo-vivi $b||0
 check-eol.py|.||0
 misura-istruzioni.py|||0

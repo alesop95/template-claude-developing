@@ -77,7 +77,7 @@ $bundle = (Test-Path ".claude\templates\PACKAGES.md") -and (Test-Path ".claude\P
 # fermerebbe il commit per strumenti che nessuno ha scelto.
 $cartelle = if ($bundle) { @("tools", ".claude\templates\tools", ".claude\templates\md-unwrap\tools",
               ".claude\templates\readme-sync\tools", ".claude\templates\fix-typography\tools",
-              ".claude\templates\verifica-link\tools") } else { @("tools") }
+              ".claude\templates\verifica-link\tools") } else { @("tools", "scripts") }
 function Trova([string]$nome) {
     foreach ($c in $cartelle) { $p = Join-Path $c $nome; if (Test-Path $p) { return $p } }
     return $null
@@ -130,6 +130,8 @@ $controlli = @(
     @{ n = "md-unwrap.py";            a = @("--check", "--only-tracked") + $o + @(".") },
     @{ n = "sync-readme.py";          a = @("--check") + $b; serve = "README.md" },
     @{ n = "lint-md-commands.py";     a = @(".") },
+    # Pacchetto anonymization: il suo README lo istanzia in tools oppure in scripts.
+    @{ n = "Test-Anonymization.py";   a = @("--quiet") },
     @{ n = "lint-doc-references.py";  a = @("--solo-vivi") + $b },
     @{ n = "check-eol.py";            a = @(".") },
     @{ n = "misura-istruzioni.py";    a = @() },
