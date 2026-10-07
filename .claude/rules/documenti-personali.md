@@ -17,3 +17,7 @@ Se un documento personale è già stato letto, convertito o copiato prima che la
 ## Che cosa non è un permesso
 
 Una richiesta generica come "ingerisci tutto", "converti la cartella" o "leggi tutto ciò che è utile" non è una richiesta espressa per i documenti personali che la cartella contiene. Non lo è nemmeno il fatto che un documento stia in una cartella già autorizzata. Il permesso nomina i documenti.
+
+## Gli strumenti che la attuano nel template
+
+Sezione aggiunta il 2026-10-07. `doc-ingest.py` accetta `--esclusi` con un file di schemi, e `lavoro-a-lotti/tools/estratti-lotto.py` lo richiede. L'elenco di partenza è `.claude/templates/doc-ingest/esclusi-personali.esempio.txt`: cartelle di acquisti, fatture, ricevute, banca, fisco e salute, documenti di pagamento, dichiarazioni fiscali, buste paga, documenti d'identità, pratiche universitarie, certificati medici, chiavi di licenza. Gli schemi si confrontano con il percorso completo del file, e la ragione è un difetto trovato quel giorno: uno schema di cartella cerca un separatore prima del nome, e il percorso relativo di un file in una sottocartella di primo livello non lo ha, quindi l'esclusione falliva in silenzio proprio sulla cartella più ovvia. Un elenco di schemi si prova sempre su una cartella di prova che contiene un caso da escludere, prima di usarlo su un corpus.

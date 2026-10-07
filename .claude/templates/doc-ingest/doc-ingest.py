@@ -164,7 +164,22 @@ def render_index(entries):
 
 
 # --- orchestrazione -------------------------------------------------------------
-def iter_source_files(source_dir, cache_dir):
+def carica_esclusi(percorso):
+    """Schemi dei documenti personali da non aprire mai (regola documenti-personali.md).
+
+    Un'espressione regolare per riga, confrontata senza maiuscole con il percorso completo
+    del file; righe vuote e righe che iniziano con # si ignorano. Se il file indicato non
+    esiste lo strumento si ferma, perché un'ingestione di massa senza esclusione è proprio
+    il caso che la regola esiste per impedire.
+    """
+    p = Path(percorso)
+    if not p.exists():
+        sys.exit(f"doc-ingest: manca {p}, il file degli schemi dei documenti personali")
+    righe = (r.strip() for r in p.read_text(encoding="utf-8").splitlines())
+    return [re.compile(r, re.IGNORECASE) for r in righe if r and not r.startswith("#")]
+
+
+def iter_source_files(source_dir, cache_dir, esclusi=None):
     cache_resolved = cache_dir.resolve()
     for root, dirs, files in os.walk(source_dir):
         root_path = Path(root)
@@ -175,10 +190,16 @@ def iter_source_files(source_dir, cache_dir):
         for name in files:
             path = root_path / name
             if path.suffix.lower() in SUPPORTED_EXTENSIONS:
+                # Lo schema si confronta con il percorso completo, perché gli schemi delle
+                # cartelle cercano un separatore prima del nome, che il percorso relativo
+                # di un file in una sottocartella di primo livello non ha.
+                if esclusi and any(s.search(str(path.resolve())) for s in esclusi):
+                    print(f"[personale escluso] {path.relative_to(source_dir)}", file=sys.stderr)
+                    continue
                 yield path
 
 
-def run(source_dir, cache_dir, engine, ocr, force):
+def run(source_dir, cache_dir, engine, ocr, force, esclusi=None):
     source_dir = Path(source_dir)
     cache_dir = Path(cache_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
@@ -188,7 +209,7 @@ def run(source_dir, cache_dir, engine, ocr, force):
     entries = []
     counts = {"nuovo": 0, "aggiornato": 0, "invariato": 0, "errore": 0}
 
-    for path in iter_source_files(source_dir, cache_dir):
+    for path in iter_source_files(source_dir, cache_dir, esclusi):
         source_rel = str(path.relative_to(source_dir))
         digest = sha256_of(path)
         cache_rel = source_rel + ".md"
@@ -263,8 +284,14 @@ def main():
         action="store_true",
         help="Ignora il manifest e riconverte tutti i file",
     )
+    parser.add_argument(
+        "--esclusi",
+        help="File degli schemi dei documenti personali da non aprire, una regex per riga "
+             "(regola documenti-personali.md; esempio in esclusi-personali.esempio.txt)",
+    )
     args = parser.parse_args()
-    ok = run(args.source, args.out, args.engine, args.ocr, args.force)
+    esclusi = carica_esclusi(args.esclusi) if args.esclusi else None
+    ok = run(args.source, args.out, args.engine, args.ocr, args.force, esclusi)
     sys.exit(0 if ok else 1)
 
 
