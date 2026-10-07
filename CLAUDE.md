@@ -16,6 +16,7 @@ Quattro norme del sistema non stanno in `.claude/rules/` e non entrano quindi in
 - Un recupero web fallisce con 403, con un rinvio alla pagina di accesso o con una pagina di verifica anti-bot, la fonte sta su Reddit o su Discord, serve la trascrizione di un video, si sta per annotare nel registro una fonte non letta: skill `fonti-non-recuperabili`.
 - `git worktree list` mostra più di un albero, se ne crea o se ne rimuove uno, si apre una sessione in un albero che non è il principale, si deve decidere da dove leggere la memoria versionata: skill `alberi-di-lavoro`.
 - Si inizializza o si allinea il progetto, oppure cambia il modo in cui si prova e si rilascia, e va deciso come separare test e produzione: skill `separazione-ambienti`.
+- Si imposta o si verifica user.name e user.email, si collega o si cambia il remoto o l'alias SSH, si inizializza un repository, un push fallisce per permessi, `/status` mostra un account Claude diverso da quello atteso, si autentica o si usa `gh`: skill `identita-git`.
 
 ## Convenzione Markdown
 
@@ -34,4 +35,4 @@ La seconda forma è la verifica non distruttiva da eseguire prima di preparare u
 
 ## Vincoli di team
 
-Le operazioni di `git add`, commit e push restano sempre manuali dell'utente: l'agente prepara i file, non committa. Il formato con cui si presentano i comandi git è quello della regola `.claude/rules/git-commands-format.md`, l'identità git quella di `.claude/rules/git-identity-and-repo.md`. Lo stile di documentazione e di interazione è quello di `.claude/rules/interaction-style.md`, e vale per ogni file scritto qui dentro, template inclusi.
+Le operazioni di `git add`, commit e push restano sempre manuali dell'utente: l'agente prepara i file, non committa. Il formato con cui si presentano i comandi git è quello della regola `.claude/rules/git-commands-format.md`, l'identità git quella della skill `identita-git`, `.claude/skills/identita-git/RIFERIMENTO.md`. Lo stile di documentazione e di interazione è quello di `.claude/rules/interaction-style.md`, e vale per ogni file scritto qui dentro, template inclusi.

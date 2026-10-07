@@ -127,7 +127,7 @@ if [ "$ncambi" != 0 ]; then
         read -r -p "   Messaggio di commit: " messaggio || { echo "Input non disponibile: mi fermo."; exit 1; }
     fi
     [ -n "$messaggio" ] || { echo "Messaggio vuoto: mi fermo."; exit 1; }
-    # git-identity-and-repo.md: si firma solo con l'identita' locale del repository.
+    # skill identita-git: si firma solo con l'identita' locale del repository.
     nome="$(git config --local user.name)"; email="$(git config --local user.email)"
     [ -n "$nome" ] && [ -n "$email" ] || { echo "Identita' git locale non impostata: impostare user.name e user.email del repository e rilanciare."; exit 1; }
     nota "$ncambi file  ->  \"$messaggio\""

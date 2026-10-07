@@ -98,4 +98,4 @@ Nessun commit porta attribuzioni a un agente: niente righe `Co-Authored-By`, nie
 
 ## Identità da verificare
 
-Prima di fornire i comandi, l'agente verifica che la configurazione locale del repository sia corretta (user.name, user.email, remote origin) secondo la regola `git-identity-and-repo.md`. Se l'identità locale non è impostata, propone i comandi di configurazione prima di quelli di commit.
+Prima di fornire i comandi, l'agente verifica che la configurazione locale del repository sia corretta (user.name, user.email, remote origin) secondo il riferimento della skill `identita-git`, che si carica se la verifica non è già stata fatta in sessione. Se l'identità locale non è impostata, propone i comandi di configurazione prima di quelli di commit.

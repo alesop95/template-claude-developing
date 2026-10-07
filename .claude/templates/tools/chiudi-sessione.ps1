@@ -23,7 +23,7 @@
 # lascia lavorare invece di duplicarlo.
 #   - git-commands-format.md, contesto dichiarato: cartella, ramo e stato si stampano prima di
 #     tutto; con HEAD staccato ci si ferma.
-#   - git-identity-and-repo.md: senza user.name e user.email locali ci si ferma prima del commit,
+#   - skill identita-git (RIFERIMENTO.md): senza user.name e user.email locali ci si ferma prima del commit,
 #     e l'identita' con cui si firmera' si stampa accanto al messaggio.
 #   - git-commands-format.md, messaggio di commit: una riga sola, nessuna attribuzione a un agente,
 #     al massimo 72 caratteri. Lo fa rispettare l'hook .githooks/commit-msg, che vale per ogni
@@ -190,7 +190,7 @@ if ($cambi.Count -gt 0) {
     if (-not $Messaggio) { Write-Host "Messaggio vuoto: mi fermo." -ForegroundColor Red; exit 1 }
     $nome = (& git config --local user.name); $email = (& git config --local user.email)
     if (-not $nome -or -not $email) {
-        Write-Host "Identita' git locale non impostata (git-identity-and-repo.md): impostare user.name e user.email del repository e rilanciare." -ForegroundColor Red
+        Write-Host "Identita' git locale non impostata (skill identita-git): impostare user.name e user.email del repository e rilanciare." -ForegroundColor Red
         exit 1
     }
     Write-Host "   $($cambi.Count) file  ->  `"$Messaggio`""

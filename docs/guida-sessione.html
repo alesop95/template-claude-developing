@@ -144,20 +144,21 @@ claude-account2</pre>
 <tr><td><code>interaction-style.md</code></td><td>Stile della prosa tecnica e forma dei file Markdown</td></tr>
 <tr><td><code>chat-non-e-memoria.md</code></td><td>Ciò che nasce in chat va su disco nello stesso giro</td></tr>
 <tr><td><code>git-commands-format.md</code></td><td>Milestone con chiudi, forma dei comandi, contesto dichiarato</td></tr>
-<tr><td><code>git-identity-and-repo.md</code></td><td>Identità git locale, alias SSH, i quattro assi di identità</td></tr>
+<tr><td><code>documenti-personali.md</code></td><td>Documenti personali mai letti senza richiesta espressa</td></tr>
 <tr><td><code>token-economy.md</code></td><td>Economia del contesto e igiene di sessione</td></tr>
 <tr><td><code>security-permissions.md</code></td><td>Modalità di permesso, sandbox, baseline deny</td></tr>
 <tr><td><code>manual-screenshots.md</code></td><td>Quando l'agente deve chiederti uno screenshot</td></tr>
 </table></div>
 
-<h3>Le quattro su richiesta, con il loro innesco</h3>
-<p>L'agente le invoca da sé, perché la descrizione di ogni skill nomina la situazione con le parole con cui si presenta, e il <code>CLAUDE.md</code> porta un indice di quattro righe che fa da puntatore nel livello che sopravvive alla compattazione. <b>Puoi sempre forzarne una digitandone il nome</b>: è l'unica cosa che prima non potevi fare, perché una regola non si invoca.</p>
+<h3>Le cinque su richiesta, con il loro innesco</h3>
+<p>L'agente le invoca da sé, perché la descrizione di ogni skill nomina la situazione con le parole con cui si presenta, e il <code>CLAUDE.md</code> porta un indice di cinque righe che fa da puntatore nel livello che sopravvive alla compattazione. <b>Puoi sempre forzarne una digitandone il nome</b>: è l'unica cosa che prima non potevi fare, perché una regola non si invoca.</p>
 <div class="tbl"><table>
 <tr><th>Quando si accende</th><th>Norma</th></tr>
 <tr><td>Scrivi o valuti una prova, chiudi un difetto, una verifica manuale smentisce una suite verde, aggiungi una guardia, stai per dire che un intervento è completo</td><td><code>/prove-che-misurano</code></td></tr>
 <tr><td>Un recupero web dà 403 o una pagina anti-bot, la fonte è su Reddit o Discord, serve la trascrizione di un video, stai per annotare una fonte non letta</td><td><code>/fonti-non-recuperabili</code></td></tr>
 <tr><td><code>git worktree list</code> mostra più di un albero, se ne crea o se ne rimuove uno, va deciso da dove si legge la memoria</td><td><code>/alberi-di-lavoro</code></td></tr>
 <tr><td>Si inizializza o si allinea il progetto, oppure cambia il modo di provare e rilasciare</td><td><code>/separazione-ambienti</code></td></tr>
+<tr><td>Si imposta o si verifica l'identità git o il remoto, un push fallisce per permessi, l'account Claude non è quello atteso, si usa <code>gh</code></td><td><code>/identita-git</code></td></tr>
 </table></div>
 
 <h3>Misurare il carico, che è ciò che rende la soglia un controllo</h3>
@@ -278,12 +279,13 @@ claude-account2</pre>
 <tr><td><code>/prove-che-misurano</code></td><td>Norma su richiesta: prove che passano senza misurare</td></tr>
 <tr><td><code>/fonti-non-recuperabili</code></td><td>Norma su richiesta: fonti web che non si leggono</td></tr>
 <tr><td><code>/alberi-di-lavoro</code></td><td>Norma su richiesta: memoria con più alberi di lavoro</td></tr>
+<tr><td><code>/identita-git</code></td><td>Norma su richiesta: identità git, alias SSH, account e gh</td></tr>
 </table></div>
 <div class="tbl"><table>
 <tr><th>Regola</th><th>Cosa stabilisce</th></tr>
 <tr><td><code>chat-non-e-memoria.md</code></td><td>Memoria su disco a ogni giro sostanziale; controllo umano su diff e commit</td></tr>
 <tr><td><code>git-commands-format.md</code></td><td>Milestone con chiudi, messaggio di una riga ≤ 72, nessuna attribuzione, contesto dichiarato</td></tr>
-<tr><td><code>git-identity-and-repo.md</code></td><td>Identità git locale, alias SSH, useConfigOnly</td></tr>
+<tr><td><code>/identita-git</code></td><td>Identità git locale, alias SSH, useConfigOnly</td></tr>
 <tr><td><code>PROJECT-SYSTEM.md</code> §12</td><td>Ordine di ripresa e chiusura</td></tr>
 <tr><td><code>PROJECT-SYSTEM.md</code> §24</td><td>Budget degli instruction file: che cosa sta in rules/ e che cosa in una skill</td></tr>
 </table></div>

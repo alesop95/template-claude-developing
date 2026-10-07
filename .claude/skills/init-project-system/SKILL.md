@@ -5,7 +5,7 @@ description: >
   descritto in .claude/PROJECT-SYSTEM.md. Prima verifica quale account Claude Code e attivo
   sulla macchina (setup multi-account via CLAUDE_CONFIG_DIR) e chiede conferma se ne risulta
   più di uno; poi chiede quale identità git usare per i futuri commit e a quale repository
-  GitHub agganciare il remoto, configurandola a livello locale (vedi rules/git-identity-and-repo.md).
+  GitHub agganciare il remoto, configurandola a livello locale (vedi skills/identita-git/RIFERIMENTO.md).
   Infine esegue il runbook di inizializzazione passo per passo, fermandosi a chiedere conferma
   dove un'azione tocca il version control o e difficilmente reversibile. Non esegue mai
   git add/commit/push: li gestisce l'utente.
@@ -53,7 +53,7 @@ echo "=== Profili di configurazione presenti sulla macchina ==="; ls -d "$HOME"/
 Interpretazione dell'esito e azione:
 
 1. Contare le directory `.claude*` trovate. Ognuna e un profilo Claude Code isolato (credenziali, cronologia, impostazioni). La presenza della directory predefinita `.claude` accanto a una o più `.claude-accountN` va segnalata come possibile profilo residuo, perché può confondere la diagnosi.
-2. Identificare l'account attivo in questa sessione dal valore di processo di `CLAUDE_CONFIG_DIR`. Il binding fra una directory e un account non si deduce mai dal nome della directory: si legge con `/status` o dal campo `emailAddress` di `<dir>/.claude.json`, e va riletto a ogni sessione, perché al rinnovo di un token scaduto Claude può ri-vincolare in modo silenzioso una directory all'account attivo nel browser su claude.ai (meccanismo descritto in `git-identity-and-repo.md`, sezione sul re-auth silenzioso). Dove una macchina adotti una numerazione, per esempio `.claude-account1` e `.claude-account2`, quella è una convenzione locale: riportare i percorsi rilevati e le email lette, senza inventare associazioni.
+2. Identificare l'account attivo in questa sessione dal valore di processo di `CLAUDE_CONFIG_DIR`. Il binding fra una directory e un account non si deduce mai dal nome della directory: si legge con `/status` o dal campo `emailAddress` di `<dir>/.claude.json`, e va riletto a ogni sessione, perché al rinnovo di un token scaduto Claude può ri-vincolare in modo silenzioso una directory all'account attivo nel browser su claude.ai (meccanismo descritto in `skills/identita-git/RIFERIMENTO.md`, sezione sul re-auth silenzioso). Dove una macchina adotti una numerazione, per esempio `.claude-account1` e `.claude-account2`, quella è una convenzione locale: riportare i percorsi rilevati e le email lette, senza inventare associazioni.
 3. Se esiste un solo profilo, dichiarare quale account e in uso e proseguire al punto 5.
 4. Se esistono più profili, chiedere all'utente con quale account intende inizializzare il progetto, mostrando quello attualmente attivo. Se l'utente indica un account diverso da quello attivo, NON proseguire: spiegare che il cambio richiede di rilanciare Claude Code con quella directory di configurazione, perché la variabile e letta solo all'avvio del processo. Proseguire solo quando l'account attivo coincide con quello voluto.
 5. Eseguire il check di igiene dell'account nella variante del sistema dichiarato, `templates/tools/check-account-hygiene.ps1` su Windows e `.sh` su Linux. Verifica che l'account abbia `autoMemoryEnabled: false`, l'hook `SessionEnd` di wipe, e che lo script di wipe installato sia configurato per questa macchina e non per un'altra.
@@ -61,7 +61,7 @@ Interpretazione dell'esito e azione:
 
 ## Passo 0.5 - Selezione dell'identità git e del remote
 
-Subito dopo l'account Claude, e prima del runbook, decidere con quale identità git verranno firmati i commit e a quale repository GitHub agganciare il remoto. Identità git e account Claude sono cose distinte: la prima e la coppia user.name/user.email più la chiave SSH, la seconda e il profilo di configurazione di Claude Code. Il dettaglio autoritativo della procedura, dei profili disponibili e del caso repo con README e in `rules/git-identity-and-repo.md`.
+Subito dopo l'account Claude, e prima del runbook, decidere con quale identità git verranno firmati i commit e a quale repository GitHub agganciare il remoto. Identità git e account Claude sono cose distinte: la prima e la coppia user.name/user.email più la chiave SSH, la seconda e il profilo di configurazione di Claude Code. Il dettaglio autoritativo della procedura, dei profili disponibili e del caso repo con README e in `skills/identita-git/RIFERIMENTO.md`.
 
 La rilevazione si fa leggendo la configurazione SSH reale della macchina, mai citando alias a memoria: gli alias sono una convenzione della singola installazione e su una macchina diversa hanno altri nomi e selezionano altre chiavi, con percorsi diversi. Lo strumento è lo stesso su Windows e su Linux, perché il formato di `ssh_config` lo è.
 

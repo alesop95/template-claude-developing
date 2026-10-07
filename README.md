@@ -119,7 +119,7 @@ Quando invece il `.docx` va trasformato in documentazione tecnica navigabile e v
 
 ## Igiene del version control e identità git
 
-Prima di considerare sano un repository si verifica che non siano rimasti file indicizzati per errore e soprattutto che non siano mai stati committati segreti, controllando i file tracciati e l'intera storia dei commit. La regola `.claude/rules/git-identity-and-repo.md` definisce come impostare sempre l'identità git a livello locale di repository, come collegare il remoto tramite l'alias SSH corretto, e come proteggersi con `user.useConfigOnly` dal commit con l'identità sbagliata su una macchina con più profili.
+Prima di considerare sano un repository si verifica che non siano rimasti file indicizzati per errore e soprattutto che non siano mai stati committati segreti, controllando i file tracciati e l'intera storia dei commit. Il riferimento della skill `identita-git`, `.claude/skills/identita-git/RIFERIMENTO.md`, definisce come impostare sempre l'identità git a livello locale di repository, come collegare il remoto tramite l'alias SSH corretto, e come proteggersi con `user.useConfigOnly` dal commit con l'identità sbagliata su una macchina con più profili.
 
 La convenzione degli alias SSH, ad esempio `github-personal` per l'identità personale e `github-corp` per quella di lavoro, e uno schema riusabile su qualsiasi macchina: si possono adottare gli stessi nomi ovunque. I valori concreti dietro ogni alias, ovvero il percorso della chiave, lo `user.name` e lo `user.email`, sono invece specifici della macchina e si rileggono dal relativo `~/.ssh/config` senza inventarli.
 
@@ -350,7 +350,6 @@ template-claude-developing/
       chat-non-e-memoria.md      tutto cio che si scrive in sessione si scrive anche su disco
       documenti-personali.md     documenti personali mai letti, convertiti o sintetizzati senza richiesta espressa
       git-commands-format.md     comandi git manuali, una riga per comando, contesto dichiarato
-      git-identity-and-repo.md   identita git locale, alias SSH, bootstrap del remoto
       interaction-style.md       stile della documentazione tecnica
       manual-screenshots.md      quando e come chiedere uno screenshot per i passi manuali
       security-permissions.md    modalita di permesso, sandbox, baseline deny e ask rules
@@ -366,6 +365,7 @@ template-claude-developing/
       prove-che-misurano/        norma su richiesta: le prove che passano senza misurare niente
       fonti-non-recuperabili/    norma su richiesta: le fonti web che non si riesce a leggere
       alberi-di-lavoro/          norma su richiesta: memoria versionata con piu alberi di lavoro
+      identita-git/              norma su richiesta: identita git locale, alias SSH, account e gh
     agents/  commands/  hooks/  plugins/    livelli di orchestrazione, vuoti di default
     templates/
       PACKAGES.md  registro dei pacchetti opzionali offerti al init/align
@@ -571,4 +571,4 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 
 ## Versionamento del repository
 
-L'identità git e il remoto si configurano localmente secondo `.claude/rules/git-identity-and-repo.md`, usando i valori rilevati sulla macchina che ospita il clone. `git add`, commit e push restano operazioni manuali dell'utente.
+L'identità git e il remoto si configurano localmente secondo la skill `identita-git`, usando i valori rilevati sulla macchina che ospita il clone. `git add`, commit e push restano operazioni manuali dell'utente.
