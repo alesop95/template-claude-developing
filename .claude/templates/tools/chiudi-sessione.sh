@@ -83,6 +83,8 @@ controlli="md-unwrap.py|--check --only-tracked $o .||0
 sync-readme.py|--check $b|README.md|0
 lint-md-commands.py|.||0
 Test-Anonymization.py|--quiet||0
+Test-Anonymization.py|--autotest||0
+doc-ingest.py|--autotest||0
 lint-doc-references.py|--solo-vivi $b||0
 check-eol.py|.||0
 misura-istruzioni.py|||0
@@ -97,6 +99,7 @@ check-copie-modelli.py|||1
 check-catalogo.py|||1
 check-raggiungibilita.py|||1
 test-tipografia.py|||1
+test-documenti-personali.py|||1
 verifica-link-progetto.py|--prova||1"
 
 falliti=""

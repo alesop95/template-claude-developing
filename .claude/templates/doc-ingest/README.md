@@ -42,6 +42,8 @@ Su un corpus che può contenere documenti personali, come un archivio di studio 
 python tools/doc-ingest.py percorso/al/corpus --esclusi _notes/privacy/esclusi-personali.txt
 ```
 
+`python tools/doc-ingest.py --autotest` prova l'elenco di esempio su un albero temporaneo con nomi di file nelle forme reali, trattini bassi, spazi, maiuscole e cartelle annidate, e controlla che si saltino tutti e soli i personali; `chiudi` la esegue a ogni commit. Un elenco locale adattato si prova allo stesso modo prima di usarlo su un corpus.
+
 Il comando e ripetibile: rieseguito senza modifiche ai sorgenti non riconverte nulla e si limita a confermare l'indice. `--force` ignora il manifest e riconverte l'intero corpus, utile dopo un aggiornamento del motore di estrazione. La cartella sorgente dei documenti, la cache e il manifest restano locali e ignorati da git; solo lo script si versiona.
 
 ## Crediti

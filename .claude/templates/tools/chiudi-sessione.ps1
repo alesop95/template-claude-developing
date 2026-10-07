@@ -132,6 +132,11 @@ $controlli = @(
     @{ n = "lint-md-commands.py";     a = @(".") },
     # Pacchetto anonymization: il suo README lo istanzia in tools oppure in scripts.
     @{ n = "Test-Anonymization.py";   a = @("--quiet") },
+    # Le prove della regola documenti-personali, dal 2026-10-07: i riconoscitori di IBAN e carte,
+    # e l'esclusione dei documenti personali, dove doc-ingest e' istanziato. Nel bundle le lancia
+    # test-documenti-personali.py, perche' i pacchetti stanno in cartelle che qui non si percorrono.
+    @{ n = "Test-Anonymization.py";   a = @("--autotest") },
+    @{ n = "doc-ingest.py";           a = @("--autotest") },
     @{ n = "lint-doc-references.py";  a = @("--solo-vivi") + $b },
     @{ n = "check-eol.py";            a = @(".") },
     @{ n = "misura-istruzioni.py";    a = @() },
@@ -148,6 +153,7 @@ $controlli = @(
     @{ n = "check-catalogo.py";       a = @(); solobundle = $true },
     @{ n = "check-raggiungibilita.py"; a = @(); solobundle = $true },
     @{ n = "test-tipografia.py";      a = @(); solobundle = $true },
+    @{ n = "test-documenti-personali.py"; a = @(); solobundle = $true },
     @{ n = "verifica-link-progetto.py"; a = @("--prova"); solobundle = $true }
 )
 

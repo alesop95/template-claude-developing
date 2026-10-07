@@ -260,7 +260,63 @@ def run(source_dir, cache_dir, engine, ocr, force, esclusi=None):
     return counts["errore"] == 0
 
 
+def autotest():
+    """Prova dell'esclusione dei documenti personali con l'elenco di esempio, dal 2026-10-07.
+
+    Costruisce un albero temporaneo con nomi di file nelle forme in cui si salvano davvero,
+    cioè con trattini bassi, spazi, maiuscole e cartelle annidate, e controlla che
+    `iter_source_files` salti tutti e soli i personali. La prova è nata da due difetti
+    trovati quel giorno nell'elenco: `\\bIBAN\\b` non trovava `coordinate_IBAN.pdf`, perché
+    per le espressioni regolari il trattino basso è parte della parola, e conto corrente,
+    carte e mutui non erano coperti. Controlla anche che senza elenco i file ci siano tutti,
+    perché una prova in cui nessun file viene trovato passerebbe senza misurare nulla.
+    """
+    import contextlib
+    import io
+    import tempfile
+    elenco = Path(__file__).with_name("esclusi-personali.esempio.txt")
+    personali = [
+        "Download/estratto_conto_2025-03.pdf", "Download/Estratto Conto Marzo.pdf",
+        "Download/coordinate_IBAN.pdf", "Download/modello_F24_2025.pdf", "Download/ISEE-2026.pdf",
+        "Download/contabile_bonifico.pdf", "Download/carta_di_credito_rendiconto.pdf",
+        "Download/movimenti_conto_corrente.xlsx", "Download/mutuo_piano.pdf",
+        "Download/busta_paga_2025.pdf", "Download/carta_identita.pdf", "Download/codice_fiscale.pdf",
+        "Banca/2025/qualunque.pdf", "Varie/Fatture/marzo.pdf", "Varie/conferma_ordine_12345.pdf",
+    ]
+    studio = [
+        "Studio/libro_algebra.pdf", "Studio/slides_reti.pptx", "Studio/conto_alla_rovescia.pdf",
+        "Studio/ordinamento_algoritmi.pdf", "Studio/carta_geografica.pdf", "Studio/Ibanez_chitarra.pdf",
+    ]
+    errori = 0
+    with tempfile.TemporaryDirectory() as d:
+        radice = Path(d) / "sorgente"
+        for rel in personali + studio:
+            f = radice / rel
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.write_bytes(b"prova")
+        cache = Path(d) / "cache"
+        esclusi = carica_esclusi(elenco)
+        with contextlib.redirect_stderr(io.StringIO()):
+            visti = {str(p.relative_to(radice)).replace(os.sep, "/") for p in iter_source_files(radice, cache, esclusi)}
+            tutti = {str(p.relative_to(radice)).replace(os.sep, "/") for p in iter_source_files(radice, cache, None)}
+        if tutti != set(personali + studio):
+            errori += 1
+            print("senza elenco mancano file: %s" % sorted(set(personali + studio) - tutti))
+        for rel in personali:
+            if rel in visti:
+                errori += 1
+                print("personale NON escluso: %s" % rel)
+        for rel in studio:
+            if rel not in visti:
+                errori += 1
+                print("materiale di studio escluso per errore: %s" % rel)
+    print("autotest: %d file, %d errori" % (len(personali) + len(studio), errori))
+    return 1 if errori else 0
+
+
 def main():
+    if "--autotest" in sys.argv[1:]:
+        sys.exit(autotest())
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[2])
     parser.add_argument("source", help="Cartella sorgente da scansionare ricorsivamente")
     parser.add_argument(
