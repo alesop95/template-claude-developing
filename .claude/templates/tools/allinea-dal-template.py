@@ -94,7 +94,7 @@ SKILL_SISTEMA = [
     "init-project-system", "sync-context", "git-sync", "repo-status",
     "gate-pacchetti", "riprendi", "onboard",
     "prove-che-misurano", "fonti-non-recuperabili", "alberi-di-lavoro",
-    "separazione-ambienti",
+    "separazione-ambienti", "identita-git",
 ]
 IGNORA = {"__pycache__", ".pytest_cache"}
 CODICE = {".py", ".ps1", ".sh", ".js", ".mjs"}
