@@ -14,7 +14,8 @@
 #   4. verifica che il push sia arrivato, cioe' che HEAD coincida con il ramo remoto;
 #   5. registra l'impronta di ripresa con verifica-ripresa.py --registra;
 #   6. wipe: esegue session-end-wipe.ps1 di ogni account che ne ha uno installato, ma solo se
-#      nessuna sessione Claude Code da terminale o da editor e' ancora aperta.
+#      nessuna sessione Claude Code da terminale o da editor e' ancora aperta; in coda stampa
+#      con stato-magazzino.ps1 che cosa resta in ogni account e quali sessioni lo trattengono.
 #
 # Commit e push restano un gesto dell'utente: e' l'utente a lanciare lo script e a confermare
 # dopo aver visto file e messaggio. L'agente, Claude Code o Codex, prepara il messaggio, non lo usa.
@@ -286,5 +287,15 @@ if ($script.Count -eq 0) {
         if ($LASTEXITCODE -eq 0) { Ok $s } else { Ko "$s (uscita $LASTEXITCODE)" }
     }
 }
+
+# Che cosa resta dopo il wipe, o dopo il suo rinvio: senza questo resoconto un rinvio si
+# leggeva solo nel diario dell'account, che nessuno apre. Lo strumento e' in sola lettura;
+# si cerca accanto a questo script e, in un progetto che non lo ha, nelle home degli account.
+$stato = @((Join-Path $PSScriptRoot 'stato-magazzino.ps1')) +
+    @(Get-ChildItem $env:USERPROFILE -Directory -Filter ".claude*" -Force -ErrorAction SilentlyContinue |
+      ForEach-Object { Join-Path $_.FullName "hooks\stato-magazzino.ps1" }) |
+    Where-Object { Test-Path $_ } | Select-Object -First 1
+if ($stato) { & powershell -NoProfile -ExecutionPolicy Bypass -File $stato }
+else { Nota "stato-magazzino.ps1 non trovato: resoconto dei residui saltato" }
 
 Fine ""
