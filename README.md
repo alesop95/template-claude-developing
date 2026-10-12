@@ -49,6 +49,7 @@ Questo file e il README della repository GitHub. Serve a far capire cos'e il tem
 - [Instradamento automatico dei modelli (instradamento-modelli)](#instradamento-automatico-dei-modelli-instradamento-modelli)
 - [Fonti che vivono in canali e catene di discussioni (community-sources)](#fonti-che-vivono-in-canali-e-catene-di-discussioni-community-sources)
 - [Voce e trascrizione in locale (voicestudio)](#voce-e-trascrizione-in-locale-voicestudio)
+- [Grafica, video e documenti pilotati dall'agente (craft-apps)](#grafica-video-e-documenti-pilotati-dallagente-craft-apps)
 - [I due cataloghi esterni di skill (scientific-skills, matt-pocock-skills)](#i-due-cataloghi-esterni-di-skill-scientific-skills-matt-pocock-skills)
 - [Ripresa di una sessione dopo una caduta](#ripresa-di-una-sessione-dopo-una-caduta)
 - [Separazione fra test e produzione](#separazione-fra-test-e-produzione)
@@ -262,6 +263,14 @@ La regola sulle fonti dice che per un video la forma utile non è il video ma la
 
 Lo strumento istanziato prende un file audio o video, ne ottiene il testo dal servizio locale e lo scrive sotto `_notes/fonti/` con la convenzione di nome che la regola prescrive, mettendo davanti al testo la provenienza: da dove viene il file, quale servizio e quale modello lo hanno trascritto, e la dichiarazione esplicita che si tratta di testo prodotto da riconoscimento vocale e non riletto. Quest'ultima riga non è cautela formale: i nomi propri e i numeri sono esattamente ciò che il riconoscimento sbaglia, e sono esattamente ciò per cui si cita una fonte tecnica. Il pacchetto copre anche il caso opposto, cioè la produzione di audio, audiolibri, doppiaggio e dettatura, e per chi ne ha bisogno documenta il server MCP del servizio con l'unica sua impostazione che non è un dettaglio, cioè quella che tiene l'audio generato fuori dal contesto scrivendolo su disco invece di restituirlo codificato dentro la risposta.
 
+## Grafica, video e documenti pilotati dall'agente (craft-apps)
+
+Fra i risultati di molti progetti c'è qualcosa che si produce aprendo a mano un programma che l'agente non vede: un'animazione da correggere fotogramma per fotogramma, una figura da impaginare, un corpus di PDF da cui estrarre e oscurare testo. Il pacchetto `craft-apps` collega all'agente la suite Craft di ArtCraft, dodici applicazioni desktop open source scritte in Rust che rifanno Photoshop, Illustrator, Premiere, Lightroom, Acrobat, After Effects, InDesign, Word, Pro Tools, PowerPoint, AutoCAD ed Excel, e che espongono ciascuna lo stesso registro di comandi del proprio menu per tre vie: una riga di comando, un canale JSON verso l'applicazione aperta e un server MCP. Apre il settore "Artefatti visivi e documentali" del catalogo, l'undicesimo.
+
+Tre misure prese sui binari installati, e non sulla documentazione, decidono come il pacchetto va usato. La prima è il costo di contesto: un solo server collegato per intero vale fra 4 800 e 33 800 token a sessione, prima del primo messaggio, quindi un server si collega per il lavoro che lo richiede e si toglie dopo, dove esiste un modo compatto lo si usa, e un lavoro a passo unico passa dalla riga di comando, che non costa contesto. La seconda è il confinamento: quattro applicazioni accettano di limitare l'accesso ai file a cartelle dichiarate, e una prova dal vivo mostra che il limite è imposto sul disco e non solo nella risposta, al prezzo che lo scripting viene negato del tutto mentre è attivo. La terza riguarda dove finiscono i dati, che è la domanda con due risposte che nessuno configura: l'autosalvataggio scrive copie del progetto in una cartella dei dati applicativi, fuori da ogni radice e fuori da ogni repository, e una cache tiene i fotogrammi renderizzati di ciò che si è aperto. Prima di puntare questi strumenti a una cartella dell'utente vale quindi la regola sui documenti personali.
+
+Gli strumenti istanziati fanno le tre cose che a mano si sbagliano. Scaricano e aggiornano le applicazioni verificando l'impronta SHA-256 pubblicata dal rilascio, parlando solo con GitHub e non con il servizio del fornitore che il launcher ufficiale interroga; su Windows e su Linux il canale predefinito non chiede privilegi di amministratore, e il comando elevato, dove serve, viene stampato invece che eseguito. Generano il collegamento MCP interrogando il binario installato invece di una tabella scritta a mano, perché la suite pubblica un rilascio ogni uno o due giorni e una tabella invecchia prima di essere letta. E rileggono un collegamento già scritto per dire che cosa vi è rimasto scoperto, che è il modo in cui l'autosalvataggio dimenticato in una configurazione reale è stato trovato. Il dettaglio, con le misure e il loro perimetro, è in [.claude/templates/craft-apps/README.md](.claude/templates/craft-apps/README.md).
+
 ## I due cataloghi esterni di skill (scientific-skills, matt-pocock-skills)
 
 Esistono raccolte di skill pubblicate da terzi troppo grandi o troppo curate perché valga la pena riscriverle, e per entrambe il sistema fa la stessa cosa: non le vendora e non le installa, ne produce la mappa che manca a monte. Il valore di un pacchetto, in questi casi, non è il contenuto ma la scelta.
@@ -322,7 +331,7 @@ Il pacchetto opzionale `roadmap` genera una lista del lavoro ancora aperto da un
 
 ## Il gate dei pacchetti per settore
 
-Con decine di voci in catalogo, il modo in cui si scelgono conta quanto le voci stesse. Un gate che le proponga una per una in fila è un gate che nessuno legge fino in fondo; uno che ne scelga tre a occhio nasconde le altre senza dirlo. La skill `gate-pacchetti` risolve il problema cambiando l'unità della domanda: il catalogo è diviso in dieci settori, e prima di aprire una tabella la skill riconosce dai fatti del progetto a quali settori esso appartenga. Un progetto ne ha due o tre su dieci, quindi la scelta passa da decine di domande a una decina, tutte pertinenti.
+Con decine di voci in catalogo, il modo in cui si scelgono conta quanto le voci stesse. Un gate che le proponga una per una in fila è un gate che nessuno legge fino in fondo; uno che ne scelga tre a occhio nasconde le altre senza dirlo. La skill `gate-pacchetti` risolve il problema cambiando l'unità della domanda: il catalogo è diviso in undici settori, e prima di aprire una tabella la skill riconosce dai fatti del progetto a quali settori esso appartenga. Un progetto ne ha due o tre su undici, quindi la scelta passa da decine di domande a una decina, tutte pertinenti.
 
 Il riconoscimento si dichiara e si fa correggere, perché è una ipotesi sul progetto e chi lo conosce è l'utente: si mostrano i settori riconosciuti con il fatto da cui li si è riconosciuti, e quelli esclusi con la ragione dell'esclusione. Dentro un settore riconosciuto ogni pacchetto arriva in tre frasi e mai meno, cioè che cosa fa in linguaggio di chi lo userà, perché a questo progetto potrebbe servire legando la ragione a un fatto di questo repository invece che al trigger generico, e che cosa costa, dove il costo comprende le dipendenze esterne, i token che un server MCP occupa a ogni turno anche quando non viene usato, e soprattutto le capacità che il pacchetto duplicherebbe.
 
@@ -428,7 +437,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**38 pacchetti a cartella** su **89 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**39 pacchetti a cartella** su **90 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -469,6 +478,10 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 ### Voce, audio e trascrizione
 
 - `voicestudio` - riconoscimento e sintesi vocale in locale, e la trascrizione di una fonte parlata con la sua provenienza: [.claude/templates/voicestudio/README.md](.claude/templates/voicestudio/README.md)
+
+### Artefatti visivi e documentali
+
+- `craft-apps` - dodici applicazioni desktop open source di grafica, video, PDF e documenti pilotate dall'agente via CLI o MCP, confinate alle cartelle del progetto, con scaricamento e aggiornamento verificati dall'impronta: [.claude/templates/craft-apps/README.md](.claude/templates/craft-apps/README.md)
 
 ### Domini scientifici e analisi dei dati
 
