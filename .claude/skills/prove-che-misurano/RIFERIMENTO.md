@@ -94,6 +94,18 @@ La prescrizione è un gesto, non una regola da ricordare. Quando una prova di in
 
 Il corollario che vale oltre il caso: **una prova di interazione andrebbe vista fallire per il motivo giusto, non solo fallire.** La non vacuità chiede di vederla rossa prima della correzione; questo aggiunge che il messaggio con cui è rossa va letto, perché due cause diverse producono lo stesso rosso.
 
+## Un guasto per dimenticanza non si coglie con una prova sul comportamento
+
+Prima di scrivere le prove di una funzione conviene chiedersi **in che modo si guasteré**, perché ci sono due specie di guasto e vogliono due specie di prova.
+
+Un guasto per **errore** si manifesta: qualcosa va in eccezione, un valore è diverso da quello atteso, uno schermo resta vuoto. La prova che lo coglie sta sul comportamento, nel punto in cui accade, ed è quella che viene naturale scrivere perché c'è un sintomo a suggerirla.
+
+Un guasto per **dimenticanza** non si manifesta affatto. Nasce dove una funzione è fatta di due pezzi che vivono in posti diversi, e uno dei due è quello che chi lavora nota subito mentre l'altro no: una voce di menù e il testo che le corrisponde, una colonna e la sua etichetta, una chiave di configurazione e il suo valore predefinito. Chi aggiunge il primo pezzo lo vede, perché senza di quello non compare niente; il secondo può dimenticarlo, e il risultato non è un errore ma un'identificazione grezza mostrata al posto di una frase, una colonna senza intestazione, un valore vuoto accettato in silenzio. Niente diventa rosso, e lo vede per primo chi usa il prodotto.
+
+La prova che coglie il secondo genere **non sta sul comportamento**: percorre l'elenco dei pezzi del primo tipo e chiede, per ciascuno, che il pezzo corrispondente esista. è una prova sulla **completezza di una corrispondenza fra due posti**, non su un'esecuzione, e si scrive una volta sola a prescindere da quanti elementi l'elenco conterré. La sua non vacuità si verifica aggiungendo all'elenco un elemento senza il suo corrispondente.
+
+Il motivo per cui va detto invece di essere lasciato all'intuito: questa prova **si salta volentieri**, perché non c'è nessun sintomo che la suggerisca e perché al momento di scriverla la corrispondenza è completa per costruzione, essendo stata appena creata da chi scrive. Il guasto arriva mesi dopo, dalla mano di qualcun altro.
+
 ## Quando una verifica manuale smentisce una prova verde
 
 Succede, ed è successo due volte in due giorni nello stesso progetto. La reazione corretta non è correggere il sintomo ma capire perché la prova non l'aveva visto, e scrivere quella ragione dove la leggerà chi scriverà la prossima prova. Un difetto trovato a mano dopo una suite verde è un difetto *della suite* oltre che del codice, e ignorare la seconda metà garantisce la ripetizione.
