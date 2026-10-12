@@ -84,6 +84,16 @@ La prescrizione. Prima di scrivere l'atteso di una prova che riguarda la forma d
 
 Corollario, perché è il motivo per cui l'errore passa inosservato. Una finzione comoda viene di solito scritta da chi conosceva il dominio al tempo in cui il modello era un altro, e resta corretta rispetto a quel modello. Non è un dato sbagliato: è un dato **vecchio**, e un dato vecchio supera ogni rilettura perché non contiene niente di falso, solo qualcosa che non è più il caso.
 
+## Una prova che fallisce in modo plausibile manda a cercare nel posto sbagliato
+
+Un evento sintetico che **imposta un valore** non riproduce sempre l'interazione che si vuole provare: alcuni componenti reagiscono alla sequenza di digitazione e non al valore finale, quindi il campo risulta pieno e la logica che dipende dalla digitazione non è mai partita. La prova allora fallisce dicendo che l'effetto atteso non c'è.
+
+Il punto non è la differenza fra i due modi di scrivere in un campo, che cambia da libreria a libreria e si risolve leggendone la documentazione. Il punto è la **forma del fallimento**: la prova fallisce **esattamente come fallirebbe se il difetto non fosse stato corretto**. Non c'è niente, nel messaggio, che distingua "la correzione non funziona" da "l'interazione non è mai avvenuta", e la prima ipotesi è sempre la propria colpa. Si perde tempo a rileggere il codice del progetto mentre la causa sta nell'attrezzo.
+
+La prescrizione è un gesto, non una regola da ricordare. Quando una prova di interazione fallisce dicendo che l'effetto non c'è, prima di toccare il codice si scrive una **prova usa e getta sul componente nudo della libreria**, fuori dal proprio, con dati finti e un effetto riconoscibile. Se lì il comportamento è lo stesso, la causa non è nel progetto. Costa un minuto, separa in un colpo solo il proprio codice da quello della dipendenza, e si cancella appena ha risposto.
+
+Il corollario che vale oltre il caso: **una prova di interazione andrebbe vista fallire per il motivo giusto, non solo fallire.** La non vacuità chiede di vederla rossa prima della correzione; questo aggiunge che il messaggio con cui è rossa va letto, perché due cause diverse producono lo stesso rosso.
+
 ## Quando una verifica manuale smentisce una prova verde
 
 Succede, ed è successo due volte in due giorni nello stesso progetto. La reazione corretta non è correggere il sintomo ma capire perché la prova non l'aveva visto, e scrivere quella ragione dove la leggerà chi scriverà la prossima prova. Un difetto trovato a mano dopo una suite verde è un difetto *della suite* oltre che del codice, e ignorare la seconda metà garantisce la ripetizione.
@@ -136,9 +146,9 @@ Caso osservato: una voce di lavoro chiedeva di aggiungere un terzo valore a un c
 
 La prima misura è **chi legge il campo**, cercato in tutto il codice e non nel punto che si sta per modificare. Risultato: nessuno. Il solo consumatore semantico era stato tolto poco prima da una correzione indipendente, e i due usi rimasti erano entrambi di forma identitaria, cioè il campo compariva dentro una chiave di confronto e dentro una chiave di riconciliazione dell'interfaccia. Un campo senza lettori non ha bisogno di un valore in più: ha bisogno di una decisione sulla propria esistenza, che è una domanda per chi possiede il prodotto e non per chi scrive il codice.
 
-La seconda misura è **quanto il campo sia popolato nei dati veri**. Risultato: sette unità su centonovantotto, cioè il novantasei per cento assente. Ne discendeva subito che la chiave di confronto che lo includeva non stava disambiguando niente per quasi tutti, perchè per loro quel termine confrontava un valore assente con un valore assente. Una protezione che i dati rendono inerte è indistinguibile da una assente finchè qualcuno non la conta.
+La seconda misura è **quanto il campo sia popolato nei dati veri**. Risultato: sette unità su centonovantotto, cioè il novantasei per cento assente. Ne discendeva subito che la chiave di confronto che lo includeva non stava disambiguando niente per quasi tutti, perché per loro quel termine confrontava un valore assente con un valore assente. Una protezione che i dati rendono inerte è indistinguibile da una assente finché qualcuno non la conta.
 
-La terza, che è la verifica dell'alternativa: **la chiave funzionerebbe senza quel campo?** Contate le coppie residue, erano tutte distinte, e non per fortuna, perchè l'identificatore del documento era costruito con gli stessi due elementi e quindi una collisione sarebbe già stata impossibile a monte. La protezione era ridondante per costruzione, non solo inerte nei fatti.
+La terza, che è la verifica dell'alternativa: **la chiave funzionerebbe senza quel campo?** Contate le coppie residue, erano tutte distinte, e non per fortuna, perché l'identificatore del documento era costruito con gli stessi due elementi e quindi una collisione sarebbe già stata impossibile a monte. La protezione era ridondante per costruzione, non solo inerte nei fatti.
 
 La regola che ne discende è breve. Davanti a una richiesta di estendere un tipo enumerato si contano tre cose prima di scrivere: **chi legge**, **quanto è popolato**, **che cosa resta se lo si toglie**. Nessuna delle tre si deduce dal codice che si sta per modificare, e tutte e tre possono trasformare un'aggiunta in una rimozione.
 
