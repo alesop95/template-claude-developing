@@ -45,11 +45,13 @@ Questo file e il README della repository GitHub. Serve a far capire cos'e il tem
 - [Agenti di progetto](#agenti-di-progetto)
 - [Catalogo di subagent community (agent-catalog)](#catalogo-di-subagent-community-agent-catalog)
 - [Lavori estesi a lotti (lavoro-a-lotti)](#lavori-estesi-a-lotti-lavoro-a-lotti)
+- [Instradamento automatico dei modelli (instradamento-modelli)](#instradamento-automatico-dei-modelli-instradamento-modelli)
 - [Fonti che vivono in canali e catene di discussioni (community-sources)](#fonti-che-vivono-in-canali-e-catene-di-discussioni-community-sources)
 - [Voce e trascrizione in locale (voicestudio)](#voce-e-trascrizione-in-locale-voicestudio)
 - [I due cataloghi esterni di skill (scientific-skills, matt-pocock-skills)](#i-due-cataloghi-esterni-di-skill-scientific-skills-matt-pocock-skills)
 - [Ripresa di una sessione dopo una caduta](#ripresa-di-una-sessione-dopo-una-caduta)
 - [Separazione fra test e produzione](#separazione-fra-test-e-produzione)
+- [Una suite deve raggiungere il servizio di prova](#una-suite-deve-raggiungere-il-servizio-di-prova)
 - [Ogni capacità si raggiunge da un gate, e arriva spiegata](#ogni-capacità-si-raggiunge-da-un-gate-e-arriva-spiegata)
 - [Linea temporale del progetto (timeline-progetto)](#linea-temporale-del-progetto-timeline-progetto)
 - [Ragioni delle scelte tecniche (documentazione-didattica)](#ragioni-delle-scelte-tecniche-documentazione-didattica)
@@ -231,6 +233,14 @@ Due fonti popolari e comparabili per qualità, `wshobson/agents` (194 agent) e `
 
 Il pacchetto opzionale `lavoro-a-lotti` serve quando il lavoro su un corpus supera la finestra di una sessione: prepara un registro JSONL locale e riprendibile, una regola per distribuire il lavoro fra agenti con quote indipendenti e un controllo che verifica gli artefatti prodotti invece di fidarsi dello stato dichiarato. Prima di adottarlo si stima il prodotto fra numero di elementi e costo per elemento, si cerca la parte risolvibile senza un modello e si verifica che ogni elemento produca un artefatto controllabile. Lo strumento non avvia agenti: definisce il contratto con cui interrompere e riprendere una mappatura prima dell'aggregazione finale. Il dettaglio è nel [README del pacchetto](.claude/templates/lavoro-a-lotti/README.md).
 
+## Instradamento automatico dei modelli (instradamento-modelli)
+
+Il pacchetto opzionale `instradamento-modelli` è una mod di Claude Code, cioè un plugin fatto di gestori di eventi che il programma chiama dentro il proprio processo, e serve a rendere meccanica una regola che il sistema conosceva già ma affidava alla memoria di chi lavora: il modello si sceglie dal compito, e un compito che consuma molti token senza richiedere giudizio fine va al modello più economico che lo sa fare. Quando un subagent sta per partire, un hook ne riscrive il modello secondo una tabella che associa il tipo di agente a un modello e a uno sforzo di ragionamento; un secondo hook applica quello sforzo alle sole richieste di quel subagent e somma i token di ogni richiesta separandoli per modello, distinguendo ingresso, uscita, cache letta e cache scritta.
+
+La configurazione è per account, che è la ragione per cui la mod non si copia dentro le radici ma vi si registra: il codice resta nel template, mentre ogni radice di account tiene il proprio `instradamento-modelli.json`, con una sovrascrittura facoltativa per progetto. Due account della stessa macchina possono quindi avere politiche diverse. Il modo predefinito non instrada niente e si limita a dichiarare in trascrizione che cosa instraderebbe, perché la prima regola del settore è misurare la linea di partenza prima di spostare il traffico; il comando `/instradamento` mostra tabella, conteggi e nomi di agente che la sessione non ha mai offerto, che è il modo in cui un refuso nella tabella smette di essere un risparmio che non arriva. E poiché un modo che non fa niente è un modo che si dimentica, la mod conta le occasioni mancate e, superata una soglia, ricorda da sé all'avvio di una sessione che sta misurando e non instradando, nominando il file da cambiare.
+
+Due cose che il pacchetto non è, e vale dirle perché la confusione costa. Non riduce i token, riduce il costo dei token, e su un piano a quota il guadagno si vede come lavoro che entra nella stessa finestra. E non è un gateway: resta dentro l'abbonamento e dentro i modelli Anthropic, mentre il collegamento a modelli di terze parti resta un lavoro a sé, con i suoi vincoli sulla fatturazione e sui dati. Il dettaglio, compreso il perimetro di ciò che la mod tocca e il modo di ispezionarlo con `claude plugin validate`, è nel [README del pacchetto](.claude/templates/instradamento-modelli/README.md).
+
 ## Fonti che vivono in canali e catene di discussioni (community-sources)
 
 Per certe tecniche, in certi domini, la sola documentazione esistente vive dentro un canale di conversazione di una community o dentro una catena di discussioni pubbliche che si citano a vicenda. Non è materiale che il crawler del modello raggiunga, e la norma `.claude/skills/fonti-non-recuperabili/RIFERIMENTO.md` lo registra come tale: il pacchetto `community-sources` è lo strumento, la regola è il criterio con cui si decide quale via usare.
@@ -272,6 +282,10 @@ La scelta si divide in quattro assi indipendenti, perché confonderli è l'error
 Tre oggetti tengono la capacità, ciascuno con un ruolo. La norma `.claude/skills/separazione-ambienti/RIFERIMENTO.md` è la norma breve: il catalogo, sei rischi trasversali osservati su modelli diversi, primo fra tutti l'ambiente di prova esposto alla rete accanto alla produzione trovato su quattro macchine, e il gate. La skill `.claude/skills/separazione-ambienti/` è la procedura dell'interazione. Il pacchetto `.claude/templates/separazione-ambienti/` è la conoscenza: `GUIDA.md` descrive ogni forma con gli stessi campi, così che due forme si confrontino campo per campo, con estratti annotati e con le pratiche trasversali che correggono i rischi senza cambiare forma, cioè costruire una volta e promuovere lo stesso artefatto, configurazione separata dal codice, parità fra ambienti, ambienti effimeri completi, rilasci blu e verde, canarini e al buio, migrazioni in due tempi, infrastruttura dichiarata e segreti per ambiente; `FONTI.md` registra i nove casi osservati, descritti per archetipo, e trentasette fonti pubblicate lette il 2026-09-23, ciascuna con indirizzo, data dichiarata, licenza, stato di lettura, citazioni letterali e punti del template in cui è usata; `esempi/` contiene due composizioni verificate con `docker compose config`, il modello delle variabili per ambiente e lo scheletro dell'ADR. Le pratiche raccomandate dalla letteratura e non ancora viste in un progetto sono dichiarate come tali, e passano fra le osservate quando un progetto le adotta.
 
 Gli alberi di lavoro sono una scelta fra le altre, e hanno una conseguenza che la norma `.claude/skills/alberi-di-lavoro/RIFERIMENTO.md` governa: la memoria versionata vale per la branch su cui è scritta, e un albero aperto su una branch indietro riceve uno snapshot e un registro delle decisioni ben formati e vecchi. La memoria si legge allora dall'albero della branch più avanti, per percorso assoluto, senza copiarla né fonderla, e `tools/verifica-ripresa.py` segnala all'apertura ogni altro albero la cui branch abbia fatto avanzare `.claude/memory/`, nominandone il percorso. Con una branch di staging condivisa lo stesso fenomeno si presenta in forma più lieve, e lo snapshot `memory/index.md` porta per questo la riga degli ambienti con i commit di produzione e di staging sul remoto. Il principio sta nella sezione 22 di `PROJECT-SYSTEM.md`.
+
+## Una suite deve raggiungere il servizio di prova
+
+Le prove di integrazione possono essere verdi senza aver incontrato il database o l'emulatore: alcuni test runner saltano i casi che richiedono un servizio quando manca la variabile d'ambiente. La skill `prove-che-misurano` include `verifica-ambiente-test.py`, che un progetto istanzia nella propria cartella `tools/`: un controllo preliminare riusabile che richiede un URL locale esplicito e, su richiesta, una porta raggiungibile. Si esegue prima della suite nel commit locale e nella CI del progetto che lo adotta. Il controllo non dimostra che i test abbiano eseguito i casi attesi: il report va letto, e i limiti della piattaforma remota si misurano nello staging reale.
 
 ## Ogni capacità si raggiunge da un gate, e arriva spiegata
 
@@ -404,7 +418,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**36 pacchetti a cartella** su **85 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**37 pacchetti a cartella** su **87 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -462,6 +476,10 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 ### Apprendimento guidato
 
 - `learning-agent` - tutor di apprendimento guidato di un topic: [.claude/templates/learning-agent/README.md](.claude/templates/learning-agent/README.md)
+
+### Economia del contesto e misura del consumo
+
+- `instradamento-modelli` - il lavoro meccanico dei subagent su un modello più economico, impostabile per account, con la misura dei token per modello: [.claude/templates/instradamento-modelli/README.md](.claude/templates/instradamento-modelli/README.md)
 
 ### Orchestrazione, sessioni e cataloghi di agenti
 

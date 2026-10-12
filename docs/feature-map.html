@@ -86,7 +86,7 @@ a.repo:hover{text-decoration:underline}
   </div>
   <div class="s-foot">
     <p>Voci <span class="badge b-new" style="font-size:9px">Nuovo</span> aggiunte nella sessione giugno 2026 dai 6 playbook.<br><br>
-    <strong>85</strong> pacchetti opt-in totali<br>
+    <strong>87</strong> pacchetti opt-in totali<br>
     <strong>1</strong> aggiunto il 2026-10-06, nato in un progetto reale: verifica-link, ogni collegamento scritto nei documenti confrontato con il registro delle fonti, con il perimetro dichiarato<br>
     <strong>1</strong> aggiunto il 2026-09-23: readme-sync, per navigazione, inventario e link del README<br>
     <strong>22</strong> nuovi nella sessione giugno 2026<br>
@@ -341,7 +341,7 @@ a.repo:hover{text-decoration:underline}
 
   <section class="sec" id="pkg-token">
     <div class="sec-hd"><span class="sec-num">08</span><h2 class="sec-title">Pacchetti - Risparmio token</h2></div>
-    <p class="sec-sub">Sette tool open source, uno per fronte di consumo. Il risparmio è cumulativo.</p>
+    <p class="sec-sub">Sette tool open source esterni, uno per fronte di consumo, più la mod nativa del template che instrada i subagent sul modello giusto e misura il consumo per modello. Il risparmio è cumulativo.</p>
     <div class="card">
       <div class="card-hd"><span class="dot d-indigo"></span>Stack token-saving - da claude-code-token-saving-playbook</div>
       <table class="t">
@@ -354,6 +354,16 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>context-mode</strong> <span class="badge b-new">Nuovo</span></td><td>Output tool grandi (Playwright, log, dump)</td><td>fino al 98%</td><td>Sessioni con output tool molto pesanti</td><td><a class="repo" href="https://github.com/mksglu/context-mode">github.com/mksglu/context-mode</a> · MIT</td></tr>
           <tr><td><strong>headroom</strong> <span class="badge b-new">Nuovo</span></td><td>Tutto l'input (tool, log, file, history) + output</td><td>47-95%</td><td>Sessioni molto lunghe dove RTK non basta</td><td><a class="repo" href="https://github.com/chopratejas/headroom">github.com/chopratejas/headroom</a> · MIT</td></tr>
           <tr><td><strong>claude-code-router</strong> <span class="badge b-new">Nuovo</span></td><td>Costo per token (model routing)</td><td>3-5x sul traffico spostato</td><td>Bolletta API come vincolo principale</td><td><a class="repo" href="https://github.com/musistudio/claude-code-router">github.com/musistudio/claude-code-router</a> · MIT</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="dot d-indigo"></span>Instradamento dei modelli - mod nativa, dentro il template</div>
+      <table class="t">
+        <thead><tr><th>Pacchetto</th><th>Fronte</th><th>Risparmio dichiarato</th><th>Gate</th><th>Source / Licenza</th></tr></thead>
+        <tbody>
+          <tr><td><strong>instradamento-modelli</strong> <span class="badge b-new">Nuovo</span></td><td>Costo per token dei subagent: modello e sforzo di ragionamento riscritti allo spawn, token di ogni richiesta sommati per modello</td><td>Non ancora misurato sul campo; atteso dal fattore nove di token-economy. Provato con 14 casi nativi, 16 sull'installatore e 10 mutazioni</td><td>Subagent frequenti su lavoro meccanico, oppure politica di modello diversa per account; NON dove ogni subagent fa lavoro di giudizio</td><td>.claude/templates/instradamento-modelli - interno al template, richiede Claude Code 2.1.287+</td></tr>
+          <tr><td><strong>mods-claude-code</strong> <span class="badge b-new">Nuovo</span></td><td>Catalogo di mod di terze parti: cruscotti di costo e contesto, misure di cache, alternative di instradamento</td><td>-</td><td>Serve una capacità dell'interfaccia o del ciclo di vita che il template non copre; si ispeziona con claude plugin validate prima di installare</td><td><a class="repo" href="https://github.com/karanb192/awesome-claude-code-mods">github.com/karanb192/awesome-claude-code-mods</a></td></tr>
         </tbody>
       </table>
     </div>
