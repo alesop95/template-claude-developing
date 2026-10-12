@@ -118,16 +118,29 @@ La conseguenza è che un server Craft aggiunto a Codex vale per tutte le session
 
 Si dichiara qui per non farlo passare per verificato altrove. Il numero di strumenti MCP è misurato sui tre binari installati; per le altre nove applicazioni è noto soltanto che il sottocomando esiste e quali nomi i documenti elencano, e i documenti risultano sottostimare, dato che quelli di PdfCraft ne nominano cinque contro i 143 reali. Le opzioni di confinamento delle nove applicazioni non installate sono lette dai loro documenti e non provate. L'assenza di telemetria è una dichiarazione dei README, confermata soltanto in negativo dal fatto che gli unici indirizzi trovati dentro il binario del launcher sono quelli descritti sopra; non è stata fatta nessuna osservazione del traffico di rete. La provenienza dei binari è verificata contro le impronte pubblicate dal progetto stesso, il che garantisce che il file scaricato sia quello pubblicato, non che ciò che è stato pubblicato sia innocuo.
 
+## Come il progetto sa quando serve, visto che il server non può restare acceso
+
+Le due cose stanno insieme e vanno lette insieme: un server che costa trentatremila token non può restare collegato per comodità, ma una capacità che nessuno nomina al momento giusto è una capacità che non verrà usata. La risposta sta su tre piani, ed è la stessa che questo sistema usa per le norme.
+
+Il primo piano decide se il progetto abbia la capacità, e passa una volta sola dal gate dei pacchetti, in inizializzazione e a ogni tornata di allineamento. Risponde alla domanda se fra i risultati del progetto ci sia un artefatto visivo o documentale, e non alla domanda se oggi serva.
+
+Il secondo piano decide quando, e vive nella skill `craft-apps` che il pacchetto istanzia. Una skill non entra in contesto finché la sua situazione non si presenta, quindi costa zero fino a quel momento: è esattamente il meccanismo con cui le norme caricate su richiesta stanno fuori dal budget delle regole sempre attive. La sua descrizione nomina le situazioni con le parole con cui si presentano, cioè modificare un'immagine, un PDF, un'animazione, un file audio, un impaginato, e il progetto la indicizza con una riga nel proprio `CLAUDE.md`, fra le norme caricate su richiesta. Quando la skill si carica, sceglie prima la via, e la via predefinita è la riga di comando, che non costa contesto.
+
+Il terzo piano riguarda i server davvero collegati, e si regge su un fatto verificato: un server dichiarato in `.mcp.json` ma non approvato resta in attesa e non viene connesso, quindi i suoi strumenti non entrano in contesto. L'aiuto di `claude mcp list` lo dice con le sue parole, cioè che i server non approvati sono mostrati come in attesa e non vi si viene connessi. Ne discende la forma che conviene a un progetto che tocca artefatti ogni tanto: le voci dei server restano scritte in `.mcp.json`, con il confinamento già verificato, e si tengono spente elencandole in `disabledMcpjsonServers` dentro `.claude/settings.local.json`. Accenderne una è togliere una riga da quell'elenco; il costo si paga solo nelle sessioni in cui è accesa. Una modifica di quell'elenco vale dalla sessione successiva, non da subito, ed è la ragione per cui il lavoro di adesso resta sulla riga di comando mentre il server si accende per il lavoro di domani.
+
 ## Istanziazione
 
-Il pacchetto copia in `tools/` del progetto i tre strumenti, più il modulo comune che li tiene d'accordo su che cosa sia installato e dove.
+Il pacchetto copia in `tools/` del progetto i tre strumenti, più il modulo comune che li tiene d'accordo su che cosa sia installato e dove, e in `.claude/skills/` la skill che li chiama quando la situazione si presenta.
 
 ```
-tools/craft-apps.py          inventario, scaricamento verificato, aggiornamento
-tools/craft-mcp.py           elenco delle capacità, generazione e controllo del collegamento
-tools/craft_apps_comune.py   tabella delle applicazioni e ricerca dei binari
-tools/test-craft-apps.py     28 prove, fra cui quella dal vivo sul confinamento
+tools/craft-apps.py            inventario, scaricamento verificato, aggiornamento
+tools/craft-mcp.py             elenco delle capacità, generazione e controllo del collegamento
+tools/craft_apps_comune.py     tabella delle applicazioni e ricerca dei binari
+tools/test-craft-apps.py       28 prove, fra cui quella dal vivo sul confinamento
+.claude/skills/craft-apps/     la skill, caricata su richiesta, che sceglie via e perimetro
 ```
+
+Istanziata la skill, si aggiunge al `CLAUDE.md` del progetto una riga fra le norme caricate su richiesta, perché il caricamento non dipenda dal ricordarsi che la skill esista: si nomina la situazione con le parole con cui si presenta, cioè che va modificato, ispezionato o convertito un artefatto visivo o documentale, oppure che si deve decidere se collegare uno di questi server a una sessione. Dove il progetto serve anche Codex, l'adattatore sottile sotto `.agents/skills/` rimanda alla stessa fonte senza duplicarla, come per le altre skill.
 
 Le applicazioni restano esterne e si installano a parte, con lo strumento stesso o con il launcher ufficiale. La prova dal vivo si salta da sé dove EffectCraft non è installato, così che la suite resti verde anche su una macchina che non ha la suite.
 
