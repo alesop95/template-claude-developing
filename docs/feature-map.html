@@ -86,7 +86,7 @@ a.repo:hover{text-decoration:underline}
   </div>
   <div class="s-foot">
     <p>Voci <span class="badge b-new" style="font-size:9px">Nuovo</span> aggiunte nella sessione giugno 2026 dai 6 playbook.<br><br>
-    <strong>88</strong> pacchetti opt-in totali<br>
+    <strong>89</strong> pacchetti opt-in totali<br>
     <strong>1</strong> aggiunto il 2026-10-12: rea, capire un software di cui non si ha il sorgente, con le prove accanto a ogni conclusione<br>
     <strong>1</strong> aggiunto il 2026-10-06, nato in un progetto reale: verifica-link, ogni collegamento scritto nei documenti confrontato con il registro delle fonti, con il perimetro dichiarato<br>
     <strong>1</strong> aggiunto il 2026-09-23: readme-sync, per navigazione, inventario e link del README<br>
@@ -114,7 +114,7 @@ a.repo:hover{text-decoration:underline}
       <div class="ps"><span class="ps-n">9</span><span class="ps-l">Skill</span></div>
       <div class="ps"><span class="ps-n">9</span><span class="ps-l">Regole</span></div>
       <div class="ps"><span class="ps-n">4</span><span class="ps-l">Agenti template</span></div>
-      <div class="ps"><span class="ps-n">88</span><span class="ps-l">Pacchetti opt-in</span></div>
+      <div class="ps"><span class="ps-n">89</span><span class="ps-l">Pacchetti opt-in</span></div>
       <div class="ps"><span class="ps-n">20</span><span class="ps-l">MCP server</span></div><div class="ps"><span class="ps-n">10</span><span class="ps-l">Settori del gate</span></div>
     </div>
   </div>
@@ -242,7 +242,7 @@ a.repo:hover{text-decoration:underline}
 
   <section class="sec" id="gate">
     <div class="sec-hd"><span class="sec-num">05</span><h2 class="sec-title">Il gate dei pacchetti per settore</h2></div>
-    <p class="sec-sub">Con ottantotto voci, il modo in cui si scelgono conta quanto le voci stesse. La skill gate-pacchetti attraversa il catalogo per settore e non per riga: riconosce dai fatti del progetto a quali settori appartenga, dichiara il riconoscimento e lo fa correggere, e propone i soli pacchetti dei settori riconosciuti, uno per volta. Un progetto appartiene a due o tre settori su dieci: la scelta passa da decine di domande a una decina, tutte pertinenti.</p>
+    <p class="sec-sub">Con ottantanove voci, il modo in cui si scelgono conta quanto le voci stesse. La skill gate-pacchetti attraversa il catalogo per settore e non per riga: riconosce dai fatti del progetto a quali settori appartenga, dichiara il riconoscimento e lo fa correggere, e propone i soli pacchetti dei settori riconosciuti, uno per volta. Un progetto appartiene a due o tre settori su dieci: la scelta passa da decine di domande a una decina, tutte pertinenti.</p>
     <div class="card">
       <div class="card-hd"><span class="dot d-new"></span>Come si presenta un pacchetto - tre frasi, mai meno</div>
       <table class="t">
@@ -452,6 +452,7 @@ a.repo:hover{text-decoration:underline}
           <tr><td><strong>stack-profiles</strong> <span class="badge b-new">Nuovo</span></td><td>Profili di regole pronti per stack ricorrenti (ts-mcp, python, react, n8n, generico): convenzioni di stile, comandi tipici, controlli pre-commit, come regola modulare rules/stack-profile.md</td><td>Lo stack è riconosciuto dai manifest del progetto; generico come fallback esplicito</td><td>Bundle Cranot, riscritto nello stile delle regole del sistema; normativo, complementare alla scheda STACK.md</td></tr>
           <tr><td><strong>hooks-starter</strong> <span class="badge b-new">7 hook</span> <span class="badge b-new">Nuovo</span></td><td>Tre hook pronti, mai attivi di default: session-context (SessionStart, contesto di ripresa automatico), protect-sensitive-files (PreToolUse Write/Edit), secret-scan (PreToolUse Bash su git commit); doppia forma .ps1/.sh, blocco via exit 2 + stderr</td><td>Automatizzare la ripresa (sez. 12) o concretizzare i guard-rail (sez. 14 di PROJECT-SYSTEM.md); attivazione sempre manuale via settings.json</td><td>Bundle Cranot, riscritto sul protocollo hook corrente; secret-scan è difesa in profondità (il deny baseline su git commit resta primario)</td></tr>
           <tr><td><strong>dev-skills</strong> <span class="badge b-new">Nuovo</span></td><td>Quattro skill di sviluppo a scelta singola: test-generator (test sui pattern del progetto), mcp-tool-scaffold (tool MCP orientati all'LLM), code-review e security-review (varianti di progetto delle revisioni)</td><td>Sviluppo attivo con procedure versionate; le due di review si propongono solo dichiarando la sovrapposizione con le skill native /code-review e /security-review</td><td>Bundle Cranot; le skill omonime mettono in ombra le native nel progetto (nota naming nel README del pacchetto)</td></tr>
+          <tr><td><strong>pipeline-app</strong> <span class="badge b-new">Nuovo</span></td><td>Valuta separatamente pre-commit, CI, prova del runtime e CD; valuta OpenNext solo per Next.js server su Cloudflare Workers</td><td>Applicazioni con build, test o servizi esterni e un percorso di rilascio da progettare o correggere; nessun hook pre-commit di default</td><td>Skill opzionale del template; realizza una sola fase o tutte quelle scelte, senza copiare la pipeline di un altro progetto</td></tr>
         </tbody>
       </table>
     </div>

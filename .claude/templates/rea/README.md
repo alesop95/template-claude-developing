@@ -2,7 +2,7 @@
 
 <!-- readme-summary: capire come funziona un software di cui non si ha il sorgente, con le prove accanto a ogni conclusione -->
 
-> Pacchetto opzionale del sistema di progetto. Non scaffolda nulla: REA è un server MCP e una interfaccia a riga di comando di terzi, che si registra nel client e vive fuori dal progetto. Ciò che entra in un repository è al più la riga che dichiara quale indagine è stata fatta e con quale autorizzazione.
+> Pacchetto opzionale del sistema di progetto. Lo strumento è di terzi, un server MCP con la sua riga di comando, e si registra nel client senza entrare nel progetto; quello che il pacchetto istanzia è la skill `rea-indagine`, che mette in ordine il cammino e apre con il cancello delle autorizzazioni. Ciò che entra in un repository è il documento di indagine, non il bersaglio.
 
 ## Perché esiste, sui due piani
 
@@ -40,7 +40,21 @@ Le protezioni esistono e sono mirate. L'osservazione del browser oscura sempre i
 
 ## Mappa di istanziazione
 
-Nessuna. Il pacchetto non copia file dentro il progetto ospite: l'installazione avviene nel client, cioè nella configurazione dell'account, e questo README più il suo riferimento d'uso restano nel template come documentazione della scelta. Se un progetto conduce una indagine con REA, ciò che si versiona è il risultato con la sua evidenza e la riga che dichiara l'autorizzazione, non lo strumento.
+Lo strumento non si copia: l'installazione avviene nel client, cioè nella configurazione dell'account, e questo README con il suo riferimento d'uso resta nel template come documentazione della scelta. Quello che un progetto istanzia è la skill che governa il cammino.
+
+```
+skills/rea-indagine/   ->  .claude/skills/rea-indagine/   (tracciato)
+```
+
+La skill è ciò che rende lo strumento chiedibile in lingua naturale invece che da riga di comando: le si dice che cosa si vuole capire e di quale programma, e lei fa partire prima il cancello delle autorizzazioni, poi l'analisi che non esegue il bersaglio, e solo se la domanda resta aperta quella che lo esegue, chiudendo con un documento di indagine. Un progetto che installi REA senza istanziare la skill ha lo strumento e non ha l'ordine in cui usarlo, che è la parte che qui conta di più.
+
+Se un progetto conduce una indagine, ciò che si versiona è quel documento, con la sua evidenza e la riga che dichiara l'autorizzazione, mai il bersaglio.
+
+## Il quadro normativo, verificato
+
+Il `RIFERIMENTO-uso.md` accanto a questo file porta, dal 2026-10-12, il quadro normativo europeo e italiano con le fonti primarie: la direttiva 2009/24/CE, gli articoli da 64-bis a 64-quater della legge 633/1941, e le sentenze SAS Institute contro World Programming, Top System contro Stato belga e Nintendo contro PC Box. Non è consulenza legale e lo dichiara, ma dice dove passano i confini invece di lasciarli indovinare.
+
+Tre cose, in sintesi, che cambiano il modo di usare lo strumento. Funzionalità, linguaggio di programmazione e formato dei file non sono protetti dal diritto d'autore, quindi riprodurre ciò che un programma fa non è di per sé una violazione. Osservare, studiare e provare un programma di cui si ha diritto di usare una copia è consentito senza chiedere permesso e senza che serva uno scopo di interoperabilità, e una clausola di licenza che lo vieti è nulla per legge. La decompilazione invece ha condizioni strette e, soprattutto, vincola l'uso di ciò che se ne ricava: le informazioni ottenute per interoperabilità servono solo a quella, e mai a produrre qualcosa di sostanzialmente simile nell'espressione. È per questo che il documento di indagine deve dire da quale strada è arrivata ciascuna informazione.
 
 ## Uso
 

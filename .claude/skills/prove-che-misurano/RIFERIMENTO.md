@@ -96,7 +96,7 @@ Il corollario che vale oltre il caso: **una prova di interazione andrebbe vista 
 
 ## Un guasto per dimenticanza non si coglie con una prova sul comportamento
 
-Prima di scrivere le prove di una funzione conviene chiedersi **in che modo si guasteré**, perché ci sono due specie di guasto e vogliono due specie di prova.
+Prima di scrivere le prove di una funzione conviene chiedersi **in che modo si guasterà**, perché ci sono due specie di guasto e vogliono due specie di prova.
 
 Un guasto per **errore** si manifesta: qualcosa va in eccezione, un valore è diverso da quello atteso, uno schermo resta vuoto. La prova che lo coglie sta sul comportamento, nel punto in cui accade, ed è quella che viene naturale scrivere perché c'è un sintomo a suggerirla.
 
@@ -245,3 +245,19 @@ Un progetto istanziato usa prove di integrazione che chiamano un PostgreSQL real
 Il tool `verifica-ambiente-test.py`, che in questo repository vive accanto alla skill in `.claude/skills/prove-che-misurano/tools/` e che un progetto istanzia nella propria cartella `tools/`, è un controllo preliminare per URL di servizi locali. Legge prima l'ambiente del processo e, solo se la variabile manca, un file di test indicato esplicitamente. Richiede uno schema, un host loopback e una porta esplicita; con `--tcp` verifica anche che il servizio accetti connessioni. Fallisce prima della suite se il bersaglio manca, è remoto o non risponde. Non stampa password o stringhe di connessione. Esempio, dalla radice di un progetto che lo ha istanziato: `python tools/verifica-ambiente-test.py --env-file .env.test --loopback-url DATABASE_URL --tcp`.
 
 Questo presidio misura soltanto la disponibilità e la destinazione del servizio. Non dimostra che le prove abbiano eseguito i casi importanti, né che l'emulatore riproduca i limiti della piattaforma remota. Dopo la suite si controllano i test eseguiti e quelli saltati; per i limiti osservabili solo nel servizio pubblicato serve una prova di staging distinta.
+
+## Prima di modificare un file con uno strumento, si misura il giro a vuoto
+
+Quando un file si modifica dentro uno strumento che lo importa e lo riesporta, come un editor di animazioni, di diagrammi o di fogli di calcolo, la prima cosa da misurare è il giro senza modifiche, confrontando il prima e il dopo **valore per valore**. Contare le strutture non basta: stesso numero di livelli, di forme e di nodi con zero avvisi è compatibile con una curva di interpolazione cambiata o con un numero arrotondato. Senza quella misura, ogni differenza vista dopo la modifica vera viene attribuita alla modifica, anche quando la produce lo strumento.
+
+Il confronto separa due specie di differenza, e la distinzione va fatta caso per caso perché a prima vista si somigliano. Le differenze **di scrittura**, cioè valori predefiniti scritti per esteso, uno scalare diventato vettore di un elemento, un terzo asse a zero, una curva lineare riscritta con altri punti di controllo ancora sulla diagonale, non cambiano niente a video. Le differenze **di sostanza** sì. Caso osservato: un giro in un editor di animazioni ha riscritto 2.414 valori, e otto curve sembravano diventate davvero non lineari. Cercate una per una, stavano tutte fra due valori uguali, dove la curva non sposta niente. Il criterio con cui si decide è l'effetto sul valore interpolato, non la forma della curva.
+
+La seconda conseguenza riguarda la revisione. Un'esportazione che riscrive tutto il file produce un diff in cui le righe cambiate davvero si perdono fra migliaia di righe solo riscritte. Dove la modifica è esprimibile sul sorgente, cioè colori, spessori, tempi o valori di un fotogramma chiave, si scrive con uno script che tocca solo quei campi, e lo strumento serve a vedere il risultato, non a produrlo.
+
+## Uno strumento d'anteprima è un altro motore
+
+Quando un file viene disegnato dall'applicazione con un motore e guardato durante il lavoro con un altro, cioè l'editor del formato, un visualizzatore o un'esportazione in immagine, quello che si vede nel secondo è una previsione di quello che mostrerà il primo, non una sua misura. Caso osservato: in un'animazione vettoriale un contorno aggiunto come gruppo sopra il contenuto di un livello appariva giusto nell'editor e coperto a metà nell'applicazione. Il motore dell'applicazione applica uno stile del contenitore a tutti i tracciati che lo precedono, gruppi compresi, e l'editor no. Lo ha mostrato il motore vero, fatto girare fuori dal browser dentro un DOM simulato: l'SVG prodotto ripeteva lo stesso tracciato tre volte. Ne segue che, dove i due motori possono divergere, la verifica si fa con quello dell'applicazione, e la regola che il confronto ha fatto emergere diventa una prova sul file, con un caso costruito sul difetto perché la prova non passi per costruzione.
+
+## Una correzione si chiude nominando la causa, non il sintomo
+
+Un sintomo può avere due cause, e una correzione chiusa sul sintomo dichiara chiusa anche quella che non ha toccato. Caso osservato: "la figura mostrava lo sfondo all'interno" è stato segnato come risolto dopo aver riempito una delle due regioni vuote. L'altra, aperta da un altro tracciato, è rimasta così per due mesi e mezzo mentre il registro diceva che il difetto non c'era più. La chiusura va scritta sulla causa tolta, cioè quale elemento e quale regola, perché è la sola forma che chi rilegge può confrontare con ciò che vede ancora.

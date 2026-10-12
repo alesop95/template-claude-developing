@@ -146,6 +146,48 @@ test('lo sforzo configurato arriva alle richieste di quel subagent soltanto', as
   expect(registro.passi[1].model).toBe('opus')
 })
 
+test('lo sforzo applicato si conta, e il conteggio distingue lo spawn dalla richiesta', async ($, on) => {
+  const registro = prepara(on, JSON.stringify(CONF_BASE))
+  await avvia($)
+
+  const esito = await $.agent.spawn({ prompt: 'fai', description: 'fai', subagentType: 'general-purpose' })
+  await passo($, { turnId: 't1', index: 0, model: 'sonnet', messageCount: 1, agentId: esito.agentId })
+  await passo($, { turnId: 't1', index: 1, model: 'sonnet', messageCount: 2, agentId: esito.agentId })
+
+  await $.command.run({ command: 'instradamento', args: '' })
+  const resoconto = registro.righe[registro.righe.length - 1]
+  expect(resoconto).toContain('1 spawn instradati con una regola di sforzo, 2 richieste lo hanno ricevuto')
+  expect(resoconto).toContain('low: 2')
+})
+
+test('uno sforzo che nessuna richiesta riceve viene dichiarato invece di passare inosservato', async ($, on) => {
+  const registro = prepara(on, JSON.stringify(CONF_BASE))
+  await avvia($)
+
+  // Lo spawn porta la regola di sforzo, ma nessuna richiesta di quel subagent
+  // passa da turn.step: e' esattamente il guasto che il contatore esiste per
+  // rendere visibile, e senza la riga di avviso si vedrebbe solo il modello
+  // riscritto e si darebbe per fatto il resto.
+  await $.agent.spawn({ prompt: 'fai', description: 'fai', subagentType: 'general-purpose' })
+
+  await $.command.run({ command: 'instradamento', args: '' })
+  const resoconto = registro.righe[registro.righe.length - 1]
+  expect(resoconto).toContain('1 spawn instradati con una regola di sforzo, 0 richieste lo hanno ricevuto')
+  expect(resoconto).toContain('ATTENZIONE: nessuna richiesta ha ricevuto lo sforzo')
+})
+
+test('lo sforzo entrante si registra accanto a quello applicato', async ($, on) => {
+  const registro = prepara(on, JSON.stringify(CONF_BASE))
+  await avvia($)
+
+  const esito = await $.agent.spawn({ prompt: 'fai', description: 'fai', subagentType: 'general-purpose' })
+  await passo($, { turnId: 't1', index: 0, model: 'sonnet', messageCount: 1, agentId: esito.agentId, effort: 'high' })
+
+  await $.command.run({ command: 'instradamento', args: '' })
+  const resoconto = registro.righe[registro.righe.length - 1]
+  expect(resoconto).toContain('(entranti: high 1)')
+})
+
 test('i token di ogni richiesta si sommano per modello e finiscono nello store', async ($, on) => {
   const registro = prepara(on, JSON.stringify(CONF_BASE))
   await avvia($)

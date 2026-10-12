@@ -39,6 +39,7 @@ Norme caricate su richiesta, una riga per situazione con le parole con cui si pr
 - Un recupero web fallisce con 403 o con una pagina di verifica anti-bot, la fonte sta su Reddit o su Discord, serve la trascrizione di un video, si sta per annotare una fonte non letta: skill `fonti-non-recuperabili`.
 - `git worktree list` mostra più di un albero, se ne crea o se ne rimuove uno, si deve decidere da dove leggere la memoria versionata: skill `alberi-di-lavoro`.
 - Si inizializza o si allinea il progetto, oppure cambia il modo in cui si prova e si rilascia, e va deciso come separare test e produzione: skill `separazione-ambienti`.
+- Il progetto è un'applicazione da distribuire e si deve decidere se servono controlli al commit, CI dopo il push, prove del runtime o CD, anche una sola fase: skill `pipeline-app`, solo se istanziata al gate dei pacchetti.
 - Si imposta o si verifica user.name e user.email, si collega o si cambia il remoto o l'alias SSH, si inizializza un repository, un push fallisce per permessi, `/status` mostra un account Claude diverso da quello atteso, si autentica o si usa `gh`: skill `identita-git`.
 
 ## Apprendimenti recenti

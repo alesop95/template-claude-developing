@@ -34,6 +34,13 @@ const CHIAVE_CONTATORI = 'contatori'
 const MODI = ['spento', 'osserva', 'instrada']
 
 const CHIAVE_PROPOSTE = 'proposte'
+// Lo sforzo sta in un contatore suo perche' risponde a una domanda diversa dai
+// token: non quanto e' costato, ma se la riscrittura dello sforzo abbia davvero
+// raggiunto le richieste del subagent. Il segnale e' nel rapporto fra due numeri,
+// gli spawn instradati con una regola di sforzo e le richieste che quello sforzo
+// lo hanno ricevuto: se il primo cresce e il secondo resta a zero, la riscrittura
+// non arriva, e senza questi due conteggi la cosa non si vede da nessuna parte.
+const CHIAVE_SFORZO = 'sforzo'
 
 const PREDEFINITA = {
   modo: 'osserva',
@@ -56,6 +63,10 @@ let contatoriSessione = {}
 let instradati = 0
 let proposti = 0
 let propostiDaRiversare = 0
+let spawnConSforzo = 0
+let spawnConSforzoDaRiversare = 0
+let richiesteConSforzo = {}
+let richiesteConSforzoDaRiversare = {}
 
 function contatoriVuoti() {
   return { richieste: 0, ingresso: 0, uscita: 0, cacheLetta: 0, cacheScritta: 0 }
@@ -71,6 +82,54 @@ function somma(contatori, modello, uso) {
   c.uscita += uso.output_tokens || 0
   c.cacheLetta += uso.cache_read_input_tokens || 0
   c.cacheScritta += uso.cache_creation_input_tokens || 0
+}
+
+function segnaSforzo(destinazione, applicato, entrante) {
+  const chiave = String(applicato)
+  if (!destinazione[chiave]) destinazione[chiave] = { totale: 0, da: {} }
+  const voce = destinazione[chiave]
+  voce.totale += 1
+  // Lo sforzo entrante e' quello che il motore aveva gia' deciso per la
+  // richiesta: serve a distinguere una riscrittura che cambia qualcosa da una
+  // che riscrive lo stesso valore, cioe' da un risparmio che non c'e'.
+  const da = entrante === undefined || entrante === null ? 'senza' : String(entrante)
+  voce.da[da] = (voce.da[da] || 0) + 1
+}
+
+function righeSforzo(spawn, richieste) {
+  const chiavi = Object.keys(richieste || {})
+  if (spawn === 0 && chiavi.length === 0) return []
+  const righe = []
+  const totale = chiavi.reduce(function (somma, k) { return somma + (richieste[k].totale || 0) }, 0)
+  righe.push('sforzo di ragionamento: ' + spawn + ' spawn instradati con una regola di sforzo, ' +
+    totale + ' richieste lo hanno ricevuto')
+  for (const chiave of chiavi.sort()) {
+    const voce = richieste[chiave]
+    const da = Object.keys(voce.da || {}).sort()
+      .map(function (k) { return k + ' ' + voce.da[k] }).join(', ')
+    righe.push('  ' + chiave + ': ' + voce.totale + (da ? '  (entranti: ' + da + ')' : ''))
+  }
+  // Il caso che questo conteggio esiste per rendere visibile: la regola e'
+  // scattata allo spawn e nessuna richiesta di quel subagent e' mai passata di
+  // qui, quindi lo sforzo non lo ha ricevuto nessuno. Senza questa riga si
+  // vedrebbe solo che il modello e' cambiato, e si darebbe per fatto il resto.
+  if (spawn > 0 && totale === 0) {
+    righe.push('  ATTENZIONE: nessuna richiesta ha ricevuto lo sforzo, la riscrittura non sta arrivando al subagent')
+  }
+  return righe
+}
+
+function fondiSforzi(destinazione, aggiunta) {
+  for (const chiave of Object.keys(aggiunta || {})) {
+    if (!destinazione[chiave]) destinazione[chiave] = { totale: 0, da: {} }
+    const a = aggiunta[chiave]
+    const d = destinazione[chiave]
+    d.totale += a.totale || 0
+    for (const nome of Object.keys(a.da || {})) {
+      d.da[nome] = (d.da[nome] || 0) + a.da[nome]
+    }
+  }
+  return destinazione
 }
 
 function fondiContatori(destinazione, aggiunta) {
@@ -209,6 +268,16 @@ async function salvaContatori($) {
       await $.store.set(CHIAVE_PROPOSTE, proposteSalvate + propostiDaRiversare)
       propostiDaRiversare = 0
     }
+    if (spawnConSforzoDaRiversare > 0 || Object.keys(richiesteConSforzoDaRiversare).length > 0) {
+      const salvatoSforzo = (await $.store.get(CHIAVE_SFORZO)) || {}
+      const unito = {
+        spawn: (salvatoSforzo.spawn || 0) + spawnConSforzoDaRiversare,
+        richieste: fondiSforzi(Object.assign({}, salvatoSforzo.richieste || {}), richiesteConSforzoDaRiversare),
+      }
+      await $.store.set(CHIAVE_SFORZO, unito)
+      spawnConSforzoDaRiversare = 0
+      richiesteConSforzoDaRiversare = {}
+    }
   } catch (errore) {
     // Lo store e' una comodita': se non risponde, il totale di sessione resta
     // in memoria e si somma al prossimo giro.
@@ -250,6 +319,7 @@ async function resoconto($) {
   righe.push('conversazione principale: ' +
     (c.modello || c.sforzo ? (c.modello || 'modello invariato') + (c.sforzo ? ' / sforzo ' + c.sforzo : '') : 'non toccata'))
   righe.push('spawn instradati in questa sessione: ' + instradati + ' su ' + proposti + ' proposti')
+  for (const riga of righeSforzo(spawnConSforzo, richiesteConSforzo)) righe.push(riga)
   righe.push('token di questa sessione, per modello:')
   for (const riga of tabellaContatori(contatoriSessione)) righe.push(riga)
 
@@ -261,6 +331,18 @@ async function resoconto($) {
   }
   righe.push('token cumulati sulla macchina, per modello:')
   for (const riga of tabellaContatori(cumulato || {})) righe.push(riga)
+
+  let sforzoCumulato = null
+  try {
+    sforzoCumulato = await $.store.get(CHIAVE_SFORZO)
+  } catch (errore) {
+    sforzoCumulato = null
+  }
+  if (sforzoCumulato) {
+    for (const riga of righeSforzo(sforzoCumulato.spawn || 0, sforzoCumulato.richieste || {})) {
+      righe.push(riga.indexOf('  ') === 0 ? riga : 'cumulato, ' + riga)
+    }
+  }
   return righe.join('\n')
 }
 
@@ -329,10 +411,15 @@ export function register(on) {
     if (argomento === 'azzera') {
       try {
         await $.store.set(CHIAVE_CONTATORI, {})
+        await $.store.set(CHIAVE_SFORZO, { spawn: 0, richieste: {} })
       } catch (errore) {
         avvisi.push('azzeramento fallito: ' + errore.message)
       }
       contatoriSessione = {}
+      richiesteConSforzo = {}
+      richiesteConSforzoDaRiversare = {}
+      spawnConSforzo = 0
+      spawnConSforzoDaRiversare = 0
     }
     await annuncia($, await resoconto($))
     return {}
@@ -380,7 +467,11 @@ export function register(on) {
     const esito = await next(evento)
     if (esito && !esito.deny) {
       instradati += 1
-      if (esito.agentId && regola.sforzo) sforzoPerAgente.set(esito.agentId, regola.sforzo)
+      if (esito.agentId && regola.sforzo) {
+        sforzoPerAgente.set(esito.agentId, regola.sforzo)
+        spawnConSforzo += 1
+        spawnConSforzoDaRiversare += 1
+      }
       await annuncia($, 'instradamento-modelli: ' + e.subagentType + ' su ' + (esito.model || regola.modello) +
         (regola.sforzo ? ' con sforzo ' + regola.sforzo : ''))
     }
@@ -406,7 +497,11 @@ export function register(on) {
           : (conf.conversazione || {}).sforzo
         const modello = e.agentId ? null : (conf.conversazione || {}).modello
         if (modello) evento = Object.assign({}, evento, { model: modello })
-        if (sforzo) evento = Object.assign({}, evento, { effort: sforzo })
+        if (sforzo) {
+          segnaSforzo(richiesteConSforzo, sforzo, e.effort)
+          segnaSforzo(richiesteConSforzoDaRiversare, sforzo, e.effort)
+          evento = Object.assign({}, evento, { effort: sforzo })
+        }
       }
     } catch (errore) {
       evento = e

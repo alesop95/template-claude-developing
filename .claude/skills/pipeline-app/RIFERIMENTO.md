@@ -1,0 +1,45 @@
+# Scegliere le fasi di una pipeline applicativa
+
+## Riconoscimento
+
+Osserva che cosa viene eseguito oggi e quando: `.husky/` o `.githooks/` per il commit locale; `.github/workflows/` per eventi `push`, `pull_request` e `workflow_dispatch`; manifest e lockfile per comandi e versioni; configurazioni di test, emulatori, service container e adapter; file di deploy per destinazioni, binding e segreti. Se il progetto ha solo contenuti statici, nessun servizio o nessun rilascio previsto, non proporre per inerzia un hook che avvia database, browser o build server. Se una fase esiste già, valuta se copre il guasto pertinente prima di proporne un'altra.
+
+| Fase | Momento e scopo | Segnale che può giustificarla | Costo e limite |
+|---|---|---|---|
+| Pre-commit | Sul computer dello sviluppatore, prima che Git crei il commit; blocca errori economici da trovare subito | File in stage da formattare o controllare, regressioni rapide e affidabili, una suite che altrimenti può saltare integrazioni | Rallenta ogni commit; dipende dai servizi disponibili localmente; può essere disattivato e non sostituisce CI |
+| CI | Su runner pulito dopo push o pull request; ricostruisce, controlla tipi, prova codice e migrazioni | App sviluppata nel tempo, più collaboratori, database o servizio esterno, rischio di differenze fra macchine | Consuma tempo runner; un esito verde vale solo per test realmente eseguiti |
+| Prova del runtime | Dopo il build per il bersaglio, con emulatori, service container, browser e dry-run quando pertinenti | Adapter, API di piattaforma, ORM, Auth o binding che girano diversamente da Node locale | L'emulazione verifica compatibilità, non quote, prestazioni e configurazione del servizio pubblicato |
+| CD | Dopo controlli e decisione di rilascio, pubblica in un ambiente nominato | Hosting scelto, artefatto verificabile, segreti e destinatari distinti | Scrive fuori dal repository; richiede identità, autorizzazioni, rollback e verifica sul servizio reale |
+
+Il pre-commit non è CI: gira prima che il commit esista, sul computer che lo crea, e non dimostra che il codice si installi da zero. La CI non è CD: un workflow può terminare dopo i test senza pubblicare nulla. Un `wrangler deploy --dry-run` controlla il confezionamento ma non pubblica. Staging e produzione sono due destinazioni, non due nomi intercambiabili per lo stesso database o Worker. La scelta della separazione degli ambienti resta governata dalla skill `separazione-ambienti`.
+
+## Come scegliere senza installare tutto
+
+1. Riconosci stack, destinazione di esecuzione, tipo di dati, servizi usati dai test e frequenza dei commit. Mostra i fatti osservati.
+2. Per ogni fase proponi `già adeguata`, `da correggere`, `da aggiungere`, `non necessaria ora` o `rinviata`, con motivo verificabile e costo operativo. Se l'utente chiede una fase precisa, realizza quella; non trasformarla in approvazione delle altre.
+3. Nel pre-commit scegli il minimo che dà un segnale rapido. `lint-staged` ha senso se i file staged richiedono correzioni automatiche; typecheck e test completi solo se tempo e fixture sono sostenibili per ogni commit. Se mancano servizi locali, una prova che li salta in silenzio è un difetto del controllo: predisponi il bersaglio o cambia la fase in cui la prova gira, dichiarandolo.
+4. In CI usa installazione riproducibile, runner e versioni dichiarati, fixture isolate e cleanup. Controlla il conteggio dei casi eseguiti e saltati. Un service container PostgreSQL e gli emulatori Firebase sono due modi di fornire dipendenze locali al runner; non sono servizi di produzione.
+5. Per il runtime di destinazione prova l'artefatto che sarà pubblicato, non soltanto l'app nel server di sviluppo. L'E2E con browser esercita il percorso HTTP; il dry-run verifica il pacchetto. Una prova sul servizio staging resta necessaria per quote, configurazione remota e integrazioni reali.
+6. In CD separa evento che verifica da evento che pubblica, dichiara ambiente e credenziali richieste, limita i segreti al job di deploy e conserva un gesto di rilascio compatibile con le istruzioni del progetto. Non inserire valori reali nei file tracciati. Se l'account remoto manca, prepara il workflow e i passi manuali, ma dichiara il deploy non eseguito.
+
+## Quando valutare OpenNext
+
+OpenNext entra in valutazione se **sono vere entrambe** le condizioni: l'app usa funzionalità server di Next.js e la destinazione scelta è Cloudflare Workers. Per un sito statico senza server o per una destinazione Node diversa, non introdurlo per analogia con un altro progetto. Next.js produce la build; `@opennextjs/cloudflare` la trasforma in Worker e asset; Wrangler configura, prova e pubblica; `workerd` esegue localmente il runtime Workers. Il runtime `nodejs` dichiarato da Next.js indica il modello di API dell'app; nel servizio pubblicato il codice gira in un isolate Workers con le API Node compatibili, non in un processo Node persistente. Verifica ogni dipendenza server, soprattutto librerie che usano API Node, moduli nativi, accesso al database e WebAssembly. Il flag `nodejs_compat` e la `compatibility_date` sono parte del contratto, non una garanzia che ogni API Node funzioni.
+
+Prova in ordine: build Next/OpenNext; confezionamento `wrangler deploy --dry-run` se serve verificare il percorso di upload; preview con `workerd` e test HTTP/E2E; deploy staging quando l'account e le risorse esistono; osservazione nel servizio pubblico. Confronta i limiti correnti sulla documentazione Cloudflare al momento della decisione: il caso CivitaNext ha mostrato che i vecchi 3 MiB compressi sono diventati 64 MiB **non compressi**, mentre il limite CPU gratuito di 10 ms per richiesta resta un rischio da misurare nello staging. Non generalizzare queste misure a un'altra app.
+
+## Casi osservati e limite della generalizzazione
+
+In CivitaNext, `.husky/pre-commit` usa `lint-staged`, TypeScript e Vitest; GitHub Actions crea PostgreSQL effimero, prova Next su Node, poi costruisce OpenNext e prova `workerd` con Playwright. Il problema osservato era `describe.skipIf(!DATABASE_URL)`: senza database il test poteva apparire verde pur saltando le integrazioni. Il tool `verifica-ambiente-test.py` della skill `prove-che-misurano` controlla la destinazione prima della suite. Nella stessa app il deploy staging è un job manuale separato e non è ancora stato eseguito.
+
+In my-wedding-day, GitHub Actions usa la Firebase Local Emulator Suite per Firestore, Auth e Functions. Qui il runtime e i servizi differiscono: copiare l'emulatore Firebase in un'app PostgreSQL/Workers non darebbe copertura utile. La lezione comune è fornire alla CI una dipendenza di prova riproducibile e verificare che i test la usino.
+
+## Fonti da ricontrollare quando si adotta
+
+- [GitHub Actions: eventi, job e `workflow_dispatch`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax)
+- [GitHub Actions: service container PostgreSQL](https://docs.github.com/en/actions/tutorials/use-containerized-services/create-postgresql-service-containers)
+- [GitHub Actions: ambienti e protezioni di deploy](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/control-deployments)
+- [Husky: hook Git](https://typicode.github.io/husky/get-started.html) e [lint-staged: backup e staging](https://github.com/lint-staged/lint-staged/blob/main/README.md)
+- [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite)
+- [OpenNext per Cloudflare](https://opennext.js.org/cloudflare) e [CLI](https://opennext.js.org/cloudflare/cli)
+- [Cloudflare: sviluppo locale con `workerd`](https://developers.cloudflare.com/workers/local-development/), [compatibilità Node](https://developers.cloudflare.com/workers/runtime-apis/nodejs/) e [limiti Workers](https://developers.cloudflare.com/workers/platform/limits/)
