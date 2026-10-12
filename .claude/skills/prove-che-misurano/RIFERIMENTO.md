@@ -74,6 +74,16 @@ Due prescrizioni, e la seconda vale anche quando la prima è stata rispettata.
 
 Corollario sul nome. Una prova il cui nome dice più di quanto il corpo verifica è peggio della sua assenza, perché chi legge l'elenco dei nomi la conta come copertura acquisita. Quando il corpo non può essere allargato subito, si stringe il nome.
 
+## Una prova scritta su una fixture comoda misura la fixture
+
+Il dato di prova si eredita. Un file di prova che esiste già porta le sue finzioni, e scrivere la prova successiva riusandole costa niente ed è quasi sempre giusto. Il caso in cui è sbagliato, e in cui l'errore non si vede, è quello in cui il difetto che si vuole fissare **dipende dalla forma del dato**: lì una finzione comoda può non contenere affatto il difetto, e la prova passa prima della correzione esattamente come dopo.
+
+Il caso che ha insegnato la regola. Un elenco raggruppato mostrava un'intestazione per gruppo e, sotto, le righe del gruppo. Un cambio di modello aveva reso il gruppo coincidente con il suo unico elemento, quindi l'intestazione ripeteva alla lettera la riga sottostante, ed era quella ripetizione che andava tolta. La prima stesura della prova riusò la finzione già presente nel file, dove il nome del gruppo e quello della riga erano stati scritti diversi per comodità di lettura. Con quel dato i due testi non coincidono, la ripetizione non esiste, e la prova sarebbe stata verde in entrambi i mondi. La finzione fu rifatta andando a leggere **come quel campo viene valorizzato in produzione**, che era una sola riga di codice nel modulo che crea i documenti: da lì la prova è diventata rossa, dichiarando due elementi dove ne chiedeva uno.
+
+La prescrizione. Prima di scrivere l'atteso di una prova che riguarda la forma di un dato, si legge chi scrive quel dato nel percorso reale, e la finzione si costruisce su quello. Non è una regola sulla fedeltà in generale, che costerebbe troppo e non servirebbe: vale per i campi su cui il difetto si gioca, e il modo di riconoscerli è chiedersi se cambiando il valore della finzione il difetto sparirebbe. Se la risposta è sì, la finzione è parte dell'oggetto misurato e non del contorno.
+
+Corollario, perché è il motivo per cui l'errore passa inosservato. Una finzione comoda viene di solito scritta da chi conosceva il dominio al tempo in cui il modello era un altro, e resta corretta rispetto a quel modello. Non è un dato sbagliato: è un dato **vecchio**, e un dato vecchio supera ogni rilettura perché non contiene niente di falso, solo qualcosa che non è più il caso.
+
 ## Quando una verifica manuale smentisce una prova verde
 
 Succede, ed è successo due volte in due giorni nello stesso progetto. La reazione corretta non è correggere il sintomo ma capire perché la prova non l'aveva visto, e scrivere quella ragione dove la leggerà chi scriverà la prossima prova. Un difetto trovato a mano dopo una suite verde è un difetto *della suite* oltre che del codice, e ignorare la seconda metà garantisce la ripetizione.

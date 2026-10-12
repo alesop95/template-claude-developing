@@ -25,6 +25,11 @@
 #   3. gli scratchpad condivisi in %LOCALAPPDATA%\Temp\claude;
 #   4. un riepilogo per account: quanto resta, perche', e il comando da lanciare.
 #
+# Di default la stampa e' compatta, una riga per sessione in tre blocchi: APERTE ORA, cioe'
+# legate a un processo vivo; CHIUSE, DA PULIRE, cioe' verbali rimasti senza processo, con
+# il segno "forse PID" quando un processo vivo senza file di sessione potrebbe esserne il
+# proprietario; COSA FARE, per account. -Dettagli stampa il resoconto completo.
+#
 # Non cancella nulla e non chiude nulla. L'unica azione possibile e' -Chiudi <PID>, che
 # chiede di riscrivere il PID per conferma da tastiera: lanciato dall'agente, che non ha
 # una tastiera, si ferma da solo. Un processo che non e' una sessione di Claude Code, o
@@ -35,6 +40,7 @@
 #
 # Uso:
 #   powershell -NoProfile -ExecutionPolicy Bypass -File stato-magazzino.ps1
+#   powershell -NoProfile -ExecutionPolicy Bypass -File stato-magazzino.ps1 -Dettagli
 #   powershell -NoProfile -ExecutionPolicy Bypass -File stato-magazzino.ps1 -SenzaTesti
 #   powershell -NoProfile -ExecutionPolicy Bypass -File stato-magazzino.ps1 -Chiudi 13528
 #   powershell -NoProfile -ExecutionPolicy Bypass -File stato-magazzino.ps1 -Autotest
@@ -42,13 +48,14 @@
 param(
   [string]$Radice = $env:USERPROFILE,                              # dove stanno le home .claude*
   [string]$TempClaude = (Join-Path $env:LOCALAPPDATA 'Temp\claude'),  # radice condivisa degli scratchpad
+  [string]$McpCache = (Join-Path $env:LOCALAPPDATA 'claude-cli-nodejs\Cache'),  # log dei server MCP, per progetto
   [switch]$SenzaTesti,      # non mostra titoli e richieste delle sessioni
+  [switch]$Dettagli,        # resoconto completo invece della stampa compatta
   [int]$Larghezza = 110,    # caratteri massimi per ogni testo citato
   [int]$Chiudi = 0,         # PID di una sessione da chiudere, con conferma da tastiera
-  [switch]$Autotest
+  [switch]$Autotest,
+  [switch]$Libreria         # caricato con il punto da session-end-wipe.ps1: definisce le funzioni e basta
 )
-$ErrorActionPreference = 'Stop'
-try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch {}
 
 $script:Effimeri = @('sessions','session-env','shell-snapshots','file-history','plans','tasks',
                      'paste-cache','backups','memory','cache','jobs','ide','todos','statsig','telemetry')
@@ -129,7 +136,11 @@ function Read-Diario($base) {
     $d.Testo = $rim
   }
   elseif ($abo) { $d.Esito = 'fermato'; $d.Testo = $abo }
-  elseif ($righe -contains 'Fatto.') { $d.Esito = 'fatto' }
+  elseif ($righe -contains 'Fatto.') {
+    $d.Esito = 'fatto'
+    $cons = $righe | Where-Object { $_ -match '^Conservate (\d+) sessioni' } | Select-Object -First 1
+    if ($cons) { $d.Testo = $cons }
+  }
   else { $d.Esito = 'incompleto'; $d.Testo = ($righe | Select-Object -Last 1) }
   return [pscustomobject]$d
 }
@@ -192,10 +203,117 @@ function Read-Magazzino($radice, $tempClaude) {
       }
     }
   }
-  return [pscustomobject]@{ Account = $account; Scratchpad = $scratch }
+  $mcp = @()
+  if ($tempClaude -and $McpCache -and (Test-Path -LiteralPath $McpCache)) {
+    foreach ($slug in @(Get-ChildItem -LiteralPath $McpCache -Directory -Force)) {
+      $mcp += [pscustomobject]@{ Slug = $slug.Name; Byte = (Get-Dimensione $slug.FullName); Ultima = $slug.LastWriteTime }
+    }
+  }
+  return [pscustomobject]@{ Account = $account; Scratchpad = $scratch; Mcp = $mcp }
+}
+
+# --- Codex ---------------------------------------------------------------------
+# Stesse regole di Pulisci-Codex.ps1 del pacchetto agenti-terminale: una sessione Codex
+# e' viva se il suo thread-writer-locks\<id>.lock e' bloccato da un processo, e il demone
+# app-server di una radice si riconosce dall'eseguibile sotto <radice>\packages.
+function Get-CodexVivi($radice) {
+  $vivi = @{}
+  $dir = Join-Path $radice 'thread-writer-locks'
+  if (-not (Test-Path -LiteralPath $dir)) { return $vivi }
+  foreach ($f in @(Get-ChildItem -LiteralPath $dir -File -Force -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike '.*' })) {
+    $fs = $null
+    try {
+      $fs = [IO.File]::Open($f.FullName, 'Open', 'ReadWrite', 'ReadWrite')
+      try { $fs.Lock(0, 1); $fs.Unlock(0, 1) } catch { $vivi[$f.BaseName] = $true }
+    }
+    catch { $vivi[$f.BaseName] = $true }
+    finally { if ($fs) { $fs.Close() } }
+  }
+  return $vivi
+}
+function Read-Codex($radice) {
+  $out = @()
+  $exe = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | ForEach-Object { [string]$_.ExecutablePath })
+  foreach ($h in @(Get-ChildItem -LiteralPath $radice -Directory -Force -Filter '.codex*' -ErrorAction SilentlyContinue |
+      Where-Object { Test-Path (Join-Path $_.FullName 'sessions') })) {
+    $vivi = Get-CodexVivi $h.FullName
+    $sess = @()
+    foreach ($f in @(Get-ChildItem -LiteralPath (Join-Path $h.FullName 'sessions') -Recurse -File -Filter 'rollout-*.jsonl' -ErrorAction SilentlyContinue)) {
+      $id = if ($f.BaseName -match '([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})') { $Matches[1] } else { $null }
+      $m = Select-String -LiteralPath $f.FullName -Pattern '"cwd":"((?:[^"\\]|\\.)*)"' -List -ErrorAction SilentlyContinue
+      $sess += [pscustomobject]@{ Id = $id; Cwd = $(if ($m) { $m.Matches[0].Groups[1].Value -replace '\\\\', '\' } else { $null }); Ultima = $f.LastWriteTime; Viva = [bool]($id -and $vivi.ContainsKey($id)) }
+    }
+    $pref = (Join-Path $h.FullName 'packages') + '\'
+    $out += [pscustomobject]@{
+      Nome = $h.Name; Base = $h.FullName; Sessioni = $sess
+      Demone = [bool](@($exe | Where-Object { $_ -and $_.TrimStart('\', '?').StartsWith($pref, 'OrdinalIgnoreCase') }).Count)
+    }
+  }
+  return $out
 }
 
 # --- processi ----------------------------------------------------------------
+
+# Account e cartella di un processo, letti dal suo PEB in sola lettura: CLAUDE_CONFIG_DIR
+# dall'ambiente e la cartella corrente dai parametri di processo. Aggiunto il 2026-10-09:
+# il PID 13528, una sessione viva senza file di sessione, era attribuito per ipotesi a tre
+# verbali di altri account, mentre il processo stesso dichiarava account3 e la cartella
+# E:\retrogame-mod-pok-dev. Si apre il processo con i soli diritti di interrogazione e di
+# lettura della memoria, possibili sui processi dello stesso utente; se non riesce, il
+# legame torna all'ipotesi.
+if (-not ('StatoMagazzino.Peb' -as [type])) {
+  Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+namespace StatoMagazzino {
+  public static class Peb {
+    [DllImport("ntdll.dll")] static extern int NtQueryInformationProcess(IntPtr h, int c, byte[] info, int len, out int ret);
+    [DllImport("kernel32.dll", SetLastError=true)] static extern IntPtr OpenProcess(int acc, bool inh, int pid);
+    [DllImport("kernel32.dll", SetLastError=true)] static extern bool ReadProcessMemory(IntPtr h, IntPtr a, byte[] b, IntPtr n, out IntPtr r);
+    [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr h);
+    static byte[] Leggi(IntPtr h, long a, int n) {
+      var b = new byte[n]; IntPtr r;
+      if (!ReadProcessMemory(h, new IntPtr(a), b, new IntPtr(n), out r)) throw new Exception("lettura");
+      return b;
+    }
+    // Restituisce { cartella corrente, valore di CLAUDE_CONFIG_DIR o "" se assente }.
+    public static string[] Contesto(int pid) {
+      IntPtr h = OpenProcess(0x0410, false, pid);
+      if (h == IntPtr.Zero) throw new Exception("apertura");
+      try {
+        var pbi = new byte[48]; int ret;
+        if (NtQueryInformationProcess(h, 0, pbi, pbi.Length, out ret) != 0) throw new Exception("interrogazione");
+        long peb = BitConverter.ToInt64(pbi, 8);
+        long pp = BitConverter.ToInt64(Leggi(h, peb + 0x20, 8), 0);
+        var us = Leggi(h, pp + 0x38, 16);
+        int len = BitConverter.ToUInt16(us, 0); long buf = BitConverter.ToInt64(us, 8);
+        string cwd = len == 0 ? "" : System.Text.Encoding.Unicode.GetString(Leggi(h, buf, len));
+        long envPtr = BitConverter.ToInt64(Leggi(h, pp + 0x80, 8), 0);
+        long envSize = BitConverter.ToInt64(Leggi(h, pp + 0x3F0, 8), 0);
+        if (envSize <= 0 || envSize > 1048576) envSize = 65536;
+        string env = System.Text.Encoding.Unicode.GetString(Leggi(h, envPtr, (int)envSize));
+        string cfg = "";
+        foreach (var v in env.Split('\0')) {
+          if (v.StartsWith("CLAUDE_CONFIG_DIR=", StringComparison.OrdinalIgnoreCase)) { cfg = v.Substring(18); break; }
+        }
+        return new string[] { cwd, cfg };
+      } finally { CloseHandle(h); }
+    }
+  }
+}
+"@
+}
+function Get-ContestoProcesso([int]$pidP) {
+  try {
+    $c = [StatoMagazzino.Peb]::Contesto($pidP)
+    $cfg = if ($c[1]) { $c[1].TrimEnd('\', '/') } else { Join-Path $env:USERPROFILE '.claude' }
+    return [pscustomobject]@{ Cwd = $c[0].TrimEnd('\', '/'); ConfigDir = $cfg }
+  } catch { return $null }
+}
+# Lo slug con cui Claude Code nomina la cartella di un progetto: ogni carattere che non e'
+# una lettera o una cifra diventa un trattino. Verificato sugli slug presenti sulla macchina,
+# per esempio 'E:\retrogame-mod-pok-dev' -> 'E--retrogame-mod-pok-dev'.
+function ConvertTo-Slug($percorso) { return (([string]$percorso).TrimEnd('\', '/') -replace '[^A-Za-z0-9]', '-') }
 
 # Stesso criterio della guardia 0.4 di session-end-wipe.ps1, cosi' che i PID mostrati qui
 # siano esattamente quelli che il wipe conta: claude.exe fuori da WindowsApps e senza
@@ -223,6 +341,7 @@ function Get-ProcessiClaude {
       Catena = ($catena -join ' > '); Cpu = $(if ($gp) { [int]$gp.CPU } else { $null })
       RamMB = $(if ($gp) { [int]($gp.WorkingSet64 / 1MB) } else { $null })
       Proprio = $antenati.ContainsKey([int]$p.ProcessId)
+      Contesto = (Get-ContestoProcesso ([int]$p.ProcessId))
     }
   }
 }
@@ -243,7 +362,7 @@ function Get-Legami($processi, $magazzino) {
   $legami = @()
   foreach ($pr in $processi) {
     $f = $file | Where-Object { $_.Pid -eq $pr.Pid -and ($_.ProcStart -eq 0 -or [math]::Abs($_.ProcStart - $pr.AvvioFileTime) -le $tolleranza) } | Select-Object -First 1
-    $legami += [pscustomobject]@{ Processo = $pr; File = $f; Certo = [bool]$f; Candidati = @() }
+    $legami += [pscustomobject]@{ Processo = $pr; File = $f; Certo = [bool]$f; Candidati = @(); Protette = @(); Ambito = $null; Account = $null; Slug = $null }
   }
   $rivendicati = @{}
   foreach ($l in $legami) { if ($l.Certo -and $l.File.SessionId) { $rivendicati[$l.File.SessionId] = $true } }
@@ -251,11 +370,66 @@ function Get-Legami($processi, $magazzino) {
     if ($l.Certo) { continue }
     $avvio = $l.Processo.Avvio
     $c = @($tuttiVerbali | Where-Object { -not $rivendicati.ContainsKey($_.Verbale.Id) -and $_.Verbale.Ultima -ge $avvio })
+    # Se il processo dichiara account e cartella, le candidate si cercano solo li', e si
+    # proteggono tutte: sono verbali dello stesso progetto e dello stesso account scritti
+    # dopo il suo avvio. Un account fuori dalla radice esaminata non ha candidate qui.
+    $ctx = $l.Processo.Contesto
+    if ($ctx -and $ctx.ConfigDir) {
+      $acc = @($magazzino.Account | Where-Object { [IO.Path]::GetFullPath($_.Base).TrimEnd('') -ieq [IO.Path]::GetFullPath($ctx.ConfigDir).TrimEnd('') }) | Select-Object -First 1
+      $l.Ambito = 'processo'
+      $l.Account = if ($acc) { $acc.Nome } else { (Split-Path -Leaf $ctx.ConfigDir) -replace '^\.claude-', '' }
+      $l.Slug = if ($ctx.Cwd) { ConvertTo-Slug $ctx.Cwd } else { $null }
+      $c = @($c | Where-Object { $acc -and $_.Account -eq $acc.Nome -and (-not $l.Slug -or $_.Slug -ieq $l.Slug) })
+    }
+    else { $l.Ambito = 'ipotesi' }
     $nuovi = @($c | Where-Object { $_.Verbale.Prima -and $_.Verbale.Prima -ge $avvio.AddMinutes(-1) } | Sort-Object { $_.Verbale.Prima })
     $ripresi = @($c | Where-Object { -not ($_.Verbale.Prima -and $_.Verbale.Prima -ge $avvio.AddMinutes(-1)) } | Sort-Object { $_.Verbale.Ultima } -Descending)
     $l.Candidati = @($nuovi + $ripresi)
+    $l.Protette = if ($l.Ambito -eq 'processo') { @($l.Candidati) } else { @($l.Candidati | Select-Object -First 3) }
   }
   return $legami
+}
+
+# Che cosa il wipe non deve toccare. Si proteggono le sessioni legate con certezza a un
+# processo vivo e, per ogni processo vivo senza file di sessione, i suoi primi tre
+# candidati: e' la scelta del proprietario del 2026-10-08, conservare finche' quel
+# processo esiste cio' che potrebbe essere suo. La sessione che esegue lo script, cioe'
+# quella che sta chiudendo e ha lanciato l'hook, non si protegge. PrimoAvvio e' l'avvio
+# piu' vecchio fra i processi vivi: serve per cio' che non porta il nome di una sessione,
+# che si conserva solo se scritto dopo quell'istante.
+function Get-Protezione($legami) {
+  $ids = @{}; $primo = $null; $incerti = @(); $accountVivi = @{}; $vive = @()
+  # Progetti di un processo vivo senza file di sessione ma con account e cartella noti: li'
+  # si conserva cio' che e' stato scritto dopo il suo avvio, perche' il nome della sua
+  # sessione non si conosce. Chiavi: 'account|slug' per i verbali, 'slug' per scratchpad e
+  # log MCP, che sono comuni a tutti gli account. Valore: l'avvio piu' vecchio.
+  $slugAccount = @{}; $slugComune = @{}
+  foreach ($l in $legami) {
+    if ($l.Processo.Proprio) { continue }
+    $vive += $l.Processo.Pid
+    if (-not $primo -or $l.Processo.Avvio -lt $primo) { $primo = $l.Processo.Avvio }
+    if ($l.Certo) {
+      if ($l.File.SessionId) { $ids[$l.File.SessionId] = ('PID {0}, certa' -f $l.Processo.Pid) }
+      $accountVivi[$l.File.Account] = $true
+    }
+    else {
+      $incerti += $l.Processo.Pid
+      $etichetta = if ($l.Ambito -eq 'processo') { 'PID {0}, stesso account e progetto' -f $l.Processo.Pid } else { 'forse PID {0}' -f $l.Processo.Pid }
+      foreach ($c in $l.Protette) {
+        if (-not $ids.ContainsKey($c.Verbale.Id)) { $ids[$c.Verbale.Id] = $etichetta }
+        $accountVivi[$c.Account] = $true
+      }
+      if ($l.Ambito -eq 'processo') {
+        if ($l.Account) { $accountVivi[$l.Account] = $true }
+        if ($l.Slug) {
+          foreach ($k in @(('{0}|{1}' -f $l.Account, $l.Slug).ToLowerInvariant())) { if (-not $slugAccount.ContainsKey($k) -or $l.Processo.Avvio -lt $slugAccount[$k]) { $slugAccount[$k] = $l.Processo.Avvio } }
+          $k = $l.Slug.ToLowerInvariant()
+          if (-not $slugComune.ContainsKey($k) -or $l.Processo.Avvio -lt $slugComune[$k]) { $slugComune[$k] = $l.Processo.Avvio }
+        }
+      }
+    }
+  }
+  [pscustomobject]@{ Ids = $ids; PrimoAvvio = $primo; Incerti = $incerti; AccountVivi = $accountVivi; Vive = $vive; SlugAccount = $slugAccount; SlugComune = $slugComune }
 }
 
 # --- stampa ------------------------------------------------------------------
@@ -284,8 +458,8 @@ function Write-Resoconto($magazzino, $legami) {
   if (-not $legami) { Write-Host '   nessuna: il wipe di ogni account puo'' girare senza rinvio.' }
   foreach ($l in ($legami | Sort-Object { $_.Processo.Avvio })) {
     $pr = $l.Processo
-    $acc = if ($l.Certo) { $l.File.Account } else { '?' }
-    $leg = if ($l.Certo) { 'certo' } else { 'ipotesi' }
+    $acc = if ($l.Certo) { $l.File.Account } elseif ($l.Ambito -eq 'processo') { $l.Account } else { '?' }
+    $leg = if ($l.Certo) { 'certo' } elseif ($l.Ambito -eq 'processo') { 'dal processo, sessione senza file' } else { 'ipotesi' }
     $mio = if ($pr.Proprio) { '   [e'' la sessione che esegue questo script]' } else { '' }
     Write-Host ''
     Write-Host ("   PID {0}   avviata {1}   account {2} ({3})   CPU {4} s   RAM {5} MB{6}" -f $pr.Pid, (Format-Data $pr.Avvio), $acc, $leg, $pr.Cpu, $pr.RamMB, $mio) -ForegroundColor Yellow
@@ -302,18 +476,22 @@ function Write-Resoconto($magazzino, $legami) {
       else { Write-Host ("      sessione:   {0}   (verbale non ancora scritto)" -f $f.SessionId) }
     }
     else {
-      Write-Host '      nessun file sessions\<pid>.json in nessun account con questo avvio: il legame non e'' dimostrabile.'
-      Write-Host '      cause possibili: la sessione scrive in una home fuori da questa radice (claude-incognito, un altro CLAUDE_CONFIG_DIR), oppure il suo file e'' stato tolto da un wipe forzato. I verbali qui sotto sono indizi, non prove: riconoscila dal suo terminale.'
-      if ($l.Candidati) {
-        Write-Host ("      verbali con attivita' dopo l'avvio e non rivendicati da altre sessioni ({0}), i primi tre:" -f $l.Candidati.Count)
-        foreach ($c in ($l.Candidati | Select-Object -First 3)) {
+      Write-Host '      nessun file sessions\<pid>.json con questo avvio: il suo file e'' stato tolto da un wipe mentre era aperta, oppure la sessione scrive in una home fuori da questa radice.'
+      if ($l.Ambito -eq 'processo') {
+        Write-Host ("      letti dal processo: account {0} ({1}), cartella {2}, slug {3}" -f $l.Account, $pr.Contesto.ConfigDir, $pr.Contesto.Cwd, $l.Slug)
+      }
+      else { Write-Host '      processo non leggibile: i verbali qui sotto sono indizi presi da tutti gli account, non prove; riconoscila dal suo terminale.' }
+      if ($l.Protette) {
+        $quali = if ($l.Ambito -eq 'processo') { 'tutti, dello stesso account e progetto' } else { 'i primi tre, per ipotesi' }
+        Write-Host ("      verbali con attivita' dopo l'avvio e non rivendicati da altre sessioni ({0}), {1}:" -f $l.Candidati.Count, $quali)
+        foreach ($c in $l.Protette) {
           $v = $c.Verbale
           $nuovo = if ($v.Prima -and $v.Prima -ge $pr.Avvio.AddMinutes(-1)) { 'nato dopo l''avvio' } else { 'piu'' vecchio, forse ripreso' }
           Write-Host ("        - {0} / {1} / {2}   dal {3}   ultima {4}   ({5})" -f $c.Account, $c.Slug, $v.Id.Substring(0, [math]::Min(8, $v.Id.Length)), (Format-Data $v.Prima), (Format-Data $v.Ultima), $nuovo)
           Write-Testi $v '          '
         }
       }
-      else { Write-Host '      nessun verbale ha avuto attivita'' dopo l''avvio: e'' una sessione che non ha mai ricevuto una richiesta, oppure scrive in una home fuori da questa radice.' }
+      else { Write-Host '      nessun suo verbale su disco: o non ha ancora ricevuto una richiesta, o il verbale e'' stato tolto mentre era aperta; i nuovi verbali di quel progetto restano finche'' il processo esiste.' }
     }
     if (-not $pr.Proprio) {
       Write-Host ("      per chiuderla, dopo averla riconosciuta: powershell -NoProfile -ExecutionPolicy Bypass -File `"{0}`" -Chiudi {1}" -f $PSCommandPath, $pr.Pid) -ForegroundColor DarkGray
@@ -327,7 +505,7 @@ function Write-Resoconto($magazzino, $legami) {
     if (-not $a.HaWipe) { Write-Host '   wipe non installato in questo account (hooks\session-end-wipe.ps1 assente).' -ForegroundColor DarkYellow }
     if ($d.Presente) {
       $det = switch ($d.Esito) {
-        'fatto'      { 'completato' }
+        'fatto'      { if ($d.Testo) { 'completato; ' + (Format-Breve $d.Testo $Larghezza) } else { 'completato' } }
         'rimandato'  { 'rimandato, nessuna rimozione: ' + (($d.Pid | ForEach-Object { if ($vivi.ContainsKey($_)) { "PID $_ ancora aperto" } else { "PID $_ ora chiuso" } }) -join ', ') }
         'fermato'    { 'fermato da una guardia: ' + (Format-Breve $d.Testo $Larghezza) }
         default      { 'interrotto, ultima riga: ' + (Format-Breve $d.Testo $Larghezza) }
@@ -365,6 +543,13 @@ function Write-Resoconto($magazzino, $legami) {
   }
 
   Write-Host ''
+  Write-Host ("-- Log dei server MCP   {0}" -f $McpCache) -ForegroundColor Cyan
+  if (-not $magazzino.Mcp) { Write-Host '   nessuno.' }
+  foreach ($s in ($magazzino.Mcp | Sort-Object Ultima -Descending)) {
+    Write-Host ("   {0}   {1}   ultima {2}" -f (Format-Breve $s.Slug 90), (Format-MB $s.Byte), (Format-Data $s.Ultima))
+  }
+
+  Write-Host ''
   Write-Host '-- Riepilogo: che cosa resta e perche''' -ForegroundColor Cyan
   foreach ($a in $magazzino.Account) {
     $nv = [int](($a.Progetti | ForEach-Object { $_.Verbali.Count } | Measure-Object -Sum).Sum)
@@ -392,6 +577,139 @@ function Write-Resoconto($magazzino, $legami) {
   if ($altre) {
     Write-Host ''
     Write-Host ("   Con {0} sessioni aperte il wipe si rimanda; -Forza lo esegue comunque e toglie scratchpad, piani e task anche a quelle sessioni. Prima riconoscile qui sopra, poi chiudile dal loro terminale o con -Chiudi." -f $altre.Count)
+  }
+  Write-Host ''
+}
+
+# --- stampa compatta ----------------------------------------------------------
+
+# Divide i verbali in due insiemi che non si sovrappongono: quelli di una sessione aperta,
+# cioe' legati con certezza a un processo vivo, e tutti gli altri, che sono chiusi e restano
+# solo perche' nessun wipe li ha ancora tolti. Un verbale chiuso porta in Forse i PID vivi
+# senza file di sessione di cui e' fra i primi tre candidati: non e' una prova, e' il segno
+# che potrebbe essere ancora in uso.
+function Get-Classificazione($magazzino, $legami) {
+  $aperte = @{}
+  foreach ($l in $legami) { if ($l.Certo -and $l.File.SessionId) { $aperte[$l.File.SessionId] = $l.Processo.Pid } }
+  $forse = @{}
+  foreach ($l in $legami) {
+    if ($l.Certo) { continue }
+    foreach ($c in $l.Protette) {
+      if (-not $forse.ContainsKey($c.Verbale.Id)) { $forse[$c.Verbale.Id] = @() }
+      $forse[$c.Verbale.Id] += $l.Processo.Pid
+    }
+  }
+  $chiuse = @()
+  foreach ($a in $magazzino.Account) { foreach ($p in $a.Progetti) { foreach ($v in $p.Verbali) {
+    if ($aperte.ContainsKey($v.Id)) { continue }
+    $chiuse += [pscustomobject]@{ Account = $a.Nome; Slug = $p.Slug; Verbale = $v; Forse = @($forse[$v.Id] | Where-Object { $_ }) }
+  } } }
+  return [pscustomobject]@{ Aperte = $aperte; Chiuse = $chiuse }
+}
+
+function Write-Compatto($magazzino, $legami) {
+  $cl = Get-Classificazione $magazzino $legami
+  $vivi = @{}; foreach ($l in $legami) { $vivi[$l.Processo.Pid] = $true }
+  $wa = [int][math]::Max(8, (@($magazzino.Account | ForEach-Object { $_.Nome.Length }) | Measure-Object -Maximum).Maximum)
+  $ws = 34
+  Write-Host ''
+  Write-Host ("== Magazzino di Claude Code, {0}   (sola lettura; -Dettagli per il resoconto completo)" -f (Get-Date -Format 'yyyy-MM-dd HH:mm')) -ForegroundColor Cyan
+
+  Write-Host ''
+  Write-Host ("APERTE ORA, con un processo vivo: {0}" -f $legami.Count) -ForegroundColor Green
+  foreach ($l in ($legami | Sort-Object { $_.Processo.Avvio })) {
+    $pr = $l.Processo
+    $mia = if ($pr.Proprio) { '   [questa]' } else { '' }
+    if ($l.Certo) {
+      $v = $null
+      foreach ($a in $magazzino.Account) { foreach ($p in $a.Progetti) { foreach ($x in $p.Verbali) { if ($x.Id -eq $l.File.SessionId) { $v = $x } } } }
+      $tit = if ($SenzaTesti -or -not $v) { '' } else { '  "' + (Format-Breve $v.Titolo 50) + '"' }
+      Write-Host (("  PID {0,-6} {1,-" + $wa + "} {2}{3}   dal {4}{5}") -f $pr.Pid, $l.File.Account, $l.File.Cwd, $tit, (Format-Data $pr.Avvio), $mia)
+    }
+    elseif ($l.Ambito -eq 'processo') {
+      $seguito = if ($l.Protette) { "le righe 'forse {0}' qui sotto sono sue" -f $pr.Pid } else { 'nessun suo verbale su disco' }
+      Write-Host (("  PID {0,-6} {1,-" + $wa + "} {2}   dal {3}   senza file di sessione: account e cartella letti dal processo, {4}.{5}") -f $pr.Pid, $l.Account, $pr.Contesto.Cwd, (Format-Data $pr.Avvio), $seguito, $mia) -ForegroundColor Yellow
+    }
+    else {
+      Write-Host (("  PID {0,-6} {1,-" + $wa + "} account non determinabile, dal {2}, CPU {3} s: nessun file di sessione e processo non leggibile. Le righe 'forse {0}' qui sotto sono le candidate per ipotesi.{4}") -f $pr.Pid, '?', (Format-Data $pr.Avvio), $pr.Cpu, $mia) -ForegroundColor Yellow
+    }
+  }
+
+  Write-Host ''
+  Write-Host ("CHIUSE, DA PULIRE, senza processo: {0}" -f $cl.Chiuse.Count) -ForegroundColor Yellow
+  foreach ($r in ($cl.Chiuse | Sort-Object Account, @{ Expression = { $_.Verbale.Ultima }; Descending = $true })) {
+    $v = $r.Verbale
+    $slug = Format-Breve $r.Slug $ws
+    $tit = if ($SenzaTesti) { '' } else { '  ' + (Format-Breve $(if ($v.Titolo) { $v.Titolo } else { '(senza titolo)' }) 40) }
+    $forse = if ($r.Forse) { '   forse ' + ($r.Forse -join ', ') } else { '' }
+    $col = if ($r.Forse) { 'Yellow' } else { 'Gray' }
+    Write-Host (("  {0,-" + $wa + "} {1,-" + $ws + "} {2}  ultima {3}{4}{5}") -f $r.Account, $slug, $v.Id.Substring(0, [math]::Min(8, $v.Id.Length)), (Format-Data $v.Ultima), $tit, $forse) -ForegroundColor $col
+  }
+
+  $nb = [long](($magazzino.Scratchpad | ForEach-Object { $_.Byte } | Measure-Object -Sum).Sum)
+  $mb = [long](($magazzino.Mcp | ForEach-Object { $_.Byte } | Measure-Object -Sum).Sum)
+  Write-Host ("  e inoltre, comuni a tutti gli account: scratchpad {0} cartelle {1}; log MCP {2} cartelle {3}" -f @($magazzino.Scratchpad).Count, (Format-MB $nb), @($magazzino.Mcp).Count, (Format-MB $mb))
+
+  $codex = @(Read-Codex $Radice)
+  if ($codex) {
+    Write-Host ''
+    Write-Host 'CODEX, sessioni per radice' -ForegroundColor Cyan
+    foreach ($c in $codex) {
+      $vive = @($c.Sessioni | Where-Object { $_.Viva })
+      $chiuse = @($c.Sessioni | Where-Object { -not $_.Viva })
+      $dem = if ($c.Demone) { '   demone app-server attivo' } else { '' }
+      if ($c.Nome -eq '.codex') { $dem += "   radice dell'app desktop: Pulisci-Codex la tratta solo con -IncludiDefault, ad app chiusa" }
+      Write-Host ("  {0,-16} vive {1}, chiuse da pulire {2}{3}" -f $c.Nome, $vive.Count, $chiuse.Count, $dem)
+      foreach ($v in $vive) { Write-Host ("    viva    {0}  {1}" -f $v.Id.Substring(0, 8), $v.Cwd) -ForegroundColor Green }
+      foreach ($v in ($chiuse | Sort-Object Ultima -Descending)) { Write-Host ("    chiusa  {0}  ultima {1}  {2}" -f $(if ($v.Id) { $v.Id.Substring(0, 8) } else { '?' }), (Format-Data $v.Ultima), $v.Cwd) }
+    }
+  }
+
+  Write-Host ''
+  Write-Host 'COSA FARE' -ForegroundColor Cyan
+  $altre = @($legami | Where-Object { -not $_.Processo.Proprio })
+  $niente = $true
+  foreach ($a in $magazzino.Account) {
+    $n = @($cl.Chiuse | Where-Object { $_.Account -eq $a.Nome }).Count
+    if ($n -eq 0) { continue }
+    $niente = $false
+    $d = $a.Diario
+    $perche = if (-not $a.HaWipe) { 'wipe non installato' }
+      elseif ($d.Modo -and $d.Modo -ne 'wipe') { "l'ultima corsa del wipe era una prova (modo $($d.Modo)), che non rimuove niente" }
+      elseif ($d.Esito -eq 'rimandato') {
+        $ancora = @($d.Pid | Where-Object { $vivi.ContainsKey($_) })
+        if ($ancora) { $verbo = if ($ancora.Count -gt 1) { 'ancora aperti' } else { 'ancora aperto' }; "ultimo wipe rimandato per PID $($ancora -join ', '), $verbo" } else { 'ultimo wipe rimandato, ma chi lo bloccava ora e'' chiuso' }
+      }
+      elseif ($d.Esito -eq 'fermato') { 'ultimo wipe fermato da una guardia (-Dettagli)' }
+      elseif ($d.Esito -eq 'incompleto') { 'l''ultima corsa del wipe si e'' interrotta prima di finire, senza rimuovere tutto' }
+      else { 'chiuse dopo l''ultimo wipe' }
+    Write-Host ("  {0}: {1} chiuse, {2}." -f $a.Nome, $n, $perche)
+    if ($a.HaWipe) {
+      Write-Host ("    powershell -NoProfile -ExecutionPolicy Bypass -File `"{0}`"" -f ((Join-Path $a.Base 'hooks\session-end-wipe.ps1') -replace '\\', '/')) -ForegroundColor DarkGray
+    }
+  }
+  # Il pannello delle sessioni dell'estensione di VS Code tiene la lista in memoria del
+  # processo: osservato il 2026-10-02 da un'altra sessione, mostrava quattro sessioni gia'
+  # assenti dal disco, sparite solo dopo una chiusura completa di VS Code.
+  $code = @(Get-Process -Name 'Code' -ErrorAction SilentlyContinue)
+  if ($code) {
+    $avvioCode = $code | ForEach-Object { $_.StartTime } | Sort-Object | Select-Object -First 1
+    Write-Host ("  VS Code e' aperto dal {0}: il suo pannello delle sessioni puo' mostrare sessioni gia' cancellate finche' non lo chiudi del tutto (File > Exit, non Reload Window) e lo riapri. L'estensione offre solo Archive, che nasconde senza cancellare." -f (Format-Data $avvioCode))
+  }
+  $codexChiuse = @($codex | Where-Object { $_.Nome -ne '.codex' } | ForEach-Object { $_.Sessioni } | Where-Object { -not $_.Viva }).Count
+  if ($codexChiuse) {
+    $niente = $false
+    $pc = @(@((Join-Path $PSScriptRoot '..\agenti-terminale\tools\Pulisci-Codex.ps1')) | Where-Object { Test-Path $_ } | ForEach-Object { (Resolve-Path $_).Path })
+    if (-not $pc -and $PROFILE -and (Test-Path $PROFILE)) {
+      $m = Select-String -LiteralPath $PROFILE -Pattern '([A-Za-z]:[^"'']*\\)Avvia-Codex\.ps1' -List
+      if ($m) { $pc = @(@(Join-Path $m.Matches[0].Groups[1].Value 'Pulisci-Codex.ps1') | Where-Object { Test-Path $_ }) }
+    }
+    Write-Host ("  Codex: {0} sessioni chiuse. Le toglie Pulisci-Codex.ps1 all'uscita di ogni sessione avviata con il wrapper; le vive restano sempre." -f $codexChiuse)
+    if ($pc) { Write-Host ("    powershell -NoProfile -ExecutionPolicy Bypass -File `"{0}`" -Tutto" -f ($pc[0] -replace '\\', '/')) -ForegroundColor DarkGray }
+  }
+  if ($niente) { Write-Host '  niente da pulire.' }
+  elseif ($altre) {
+    Write-Host '  Il wipe toglie le chiuse e conserva le aperte e le righe forse; una copia del wipe anteriore al 2026-10-09 invece rimanda tutto. Le aperte si puliscono quando le chiudi. Per chiudere un PID: -Chiudi <PID>.'
   }
   Write-Host ''
 }
@@ -474,6 +792,26 @@ function Invoke-Autotest {
     Atteso 'PID senza file: verbale fermo prima dell''avvio escluso' ($ids222 -notcontains 'cccccccc-3')
     Atteso 'PID senza file: verbale rivendicato da un''altra sessione escluso' ($ids222 -notcontains 'aaaaaaaa-1')
     Atteso 'PID senza file: verbale ripreso proposto dopo quelli nati dopo l''avvio' ($ids222.Count -eq 2 -and $ids222[1] -eq 'dddddddd-4')
+    $cl = Get-Classificazione $m $leg
+    $chiuseId = @($cl.Chiuse | ForEach-Object { $_.Verbale.Id })
+    $rB = $cl.Chiuse | Where-Object { $_.Verbale.Id -eq 'bbbbbbbb-2' }
+    $rC = $cl.Chiuse | Where-Object { $_.Verbale.Id -eq 'cccccccc-3' }
+    Atteso 'sessione legata a un processo vivo: fra le aperte, non fra le chiuse' ($cl.Aperte.ContainsKey('aaaaaaaa-1') -and $chiuseId -notcontains 'aaaaaaaa-1')
+    Atteso 'verbale candidato di un PID senza file: chiuso con forse 222' ($rB -and @($rB.Forse) -contains 222)
+    Atteso 'verbale fermo prima di ogni avvio: chiuso senza forse' ($rC -and -not $rC.Forse)
+    $pz = Get-Protezione $leg
+    Atteso 'protezione: sessione certa di un processo altrui protetta' ($pz.Ids.ContainsKey('aaaaaaaa-1'))
+    Atteso 'protezione: candidata di un PID senza file protetta' ($pz.Ids.ContainsKey('bbbbbbbb-2'))
+    Atteso 'protezione: verbale fermo prima di ogni avvio non protetto' (-not $pz.Ids.ContainsKey('cccccccc-3'))
+    Atteso 'protezione: la sessione che esegue lo script non conta fra le vive' (@($pz.Vive) -notcontains 333 -and @($pz.Incerti) -contains 222)
+    $lk = Join-Path $tmp '.codex-accountZ\thread-writer-locks'
+    New-Item -ItemType Directory -Force -Path $lk, (Join-Path $tmp '.codex-accountZ\sessions') | Out-Null
+    foreach ($n in 'eeeeeeee-1111-2222-3333-444444444444', 'ffffffff-1111-2222-3333-444444444444') { Set-Content -LiteralPath (Join-Path $lk "$n.lock") -Value '' -Encoding ascii }
+    $tenuto = [IO.File]::Open((Join-Path $lk 'eeeeeeee-1111-2222-3333-444444444444.lock'), 'Open', 'ReadWrite', 'ReadWrite')
+    $tenuto.Lock(0, 1)
+    try { $cv = Get-CodexVivi (Join-Path $tmp '.codex-accountZ') } finally { $tenuto.Unlock(0, 1); $tenuto.Close() }
+    Atteso 'Codex: il lock tenuto da un processo indica una sessione viva' ($cv.ContainsKey('eeeeeeee-1111-2222-3333-444444444444'))
+    Atteso 'Codex: il lock libero indica una sessione chiusa' (-not $cv.ContainsKey('ffffffff-1111-2222-3333-444444444444'))
     Atteso '-Chiudi rifiuta un PID che non e'' una sessione' ([bool](Test-Chiudibile 999 $proc))
     Atteso '-Chiudi rifiuta la sessione da cui gira lo script' ([bool](Test-Chiudibile 333 $proc))
     Atteso '-Chiudi accetta una sessione altrui' (-not (Test-Chiudibile 222 $proc))
@@ -484,6 +822,9 @@ function Invoke-Autotest {
 }
 
 # --- principale --------------------------------------------------------------
+if ($Libreria) { return }
+$ErrorActionPreference = 'Stop'
+try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch {}
 if ($Autotest) { Invoke-Autotest }
 
 $processi = @(Get-ProcessiClaude)
@@ -505,5 +846,5 @@ if ($Chiudi -gt 0) {
 
 $magazzino = Read-Magazzino $Radice $TempClaude
 $legami = @(Get-Legami $processi $magazzino)
-Write-Resoconto $magazzino $legami
+if ($Dettagli) { Write-Resoconto $magazzino $legami } else { Write-Compatto $magazzino $legami }
 exit 0
