@@ -9,9 +9,17 @@
 #
 # Uso:
 #   ./installa-instradamento.sh [--account N]... [--includi-default]
-#                               [--mod <cartella>] [--verifica] [--rimuovi] [--forza]
+#                               [--radice <percorso>]... [--mod <cartella>]
+#                               [--verifica] [--rimuovi] [--forza]
 #
 # Senza --account serve le radici 1, 2 e 3, cioe' ~/.claude-account<N>.
+# --radice sostituisce i numeri con percorsi espliciti: serve alle prove e alle
+# installazioni dove la radice non segue quella convenzione.
+#
+# --verifica chiede lo stato a merge-instradamento-settings.js in modo --stato,
+# che confronta percorsi normalizzati dopo JSON.parse. Cercare il percorso nel
+# testo grezzo del settings.json da' la risposta sbagliata appena il percorso
+# contiene una barra rovesciata, perche' il JSON la raddoppia.
 set -euo pipefail
 
 pacchetto="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -19,6 +27,7 @@ mod="$pacchetto/mod"
 riferimento="$pacchetto/instradamento-modelli.riferimento.json"
 fusione="$pacchetto/tools/merge-instradamento-settings.js"
 account=()
+radici_esplicite=()
 includi_default=0
 verifica=0
 rimuovi=0
@@ -28,6 +37,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --account) account+=("$2"); shift 2 ;;
     --includi-default) includi_default=1; shift ;;
+    --radice) radici_esplicite+=("$2"); shift 2 ;;
     --mod) mod="$2"; shift 2 ;;
     --verifica) verifica=1; shift ;;
     --rimuovi) rimuovi=1; shift ;;
@@ -44,13 +54,16 @@ esci() { echo "ERRORE: $1" >&2; exit 1; }
 [ -f "$mod/.claude-plugin/plugin.json" ] || esci "la cartella della mod non contiene .claude-plugin/plugin.json: $mod"
 [ -f "$riferimento" ] || esci "manca la copia di riferimento: $riferimento"
 [ -f "$fusione" ] || esci "manca lo script di fusione: $fusione"
-if [ "$verifica" -eq 0 ]; then
-  command -v node >/dev/null 2>&1 || esci "serve Node.js per scrivere il settings.json in sicurezza, e non e' nel PATH"
-fi
+command -v node >/dev/null 2>&1 || esci "serve Node.js: senza, ne' la scrittura del settings.json ne' la verifica sono affidabili"
+
 
 radici=()
-for n in "${account[@]}"; do radici+=("$HOME/.claude-account$n"); done
-if [ "$includi_default" -eq 1 ]; then radici+=("$HOME/.claude"); fi
+if [ ${#radici_esplicite[@]} -gt 0 ]; then
+  radici=("${radici_esplicite[@]}")
+else
+  for n in "${account[@]}"; do radici+=("$HOME/.claude-account$n"); done
+  if [ "$includi_default" -eq 1 ]; then radici+=("$HOME/.claude"); fi
+fi
 
 echo
 echo "Mod: $mod"
@@ -68,7 +81,11 @@ for radice in "${radici[@]}"; do
 
   if [ "$verifica" -eq 1 ]; then
     stato="NON registrata"
-    if [ -f "$impostazioni" ] && grep -qF -- "$mod" "$impostazioni"; then stato="registrata"; fi
+    if [ -f "$impostazioni" ]; then
+      risposta="$(node "$fusione" "$impostazioni" "$mod" --stato 2>&1)" && codice=0 || codice=$?
+      if [ "$codice" -eq 0 ]; then stato="registrata"
+      elif [ "$codice" -ne 3 ]; then esci "la verifica di $impostazioni e' fallita: $risposta"; fi
+    fi
     modo="(nessuna configurazione)"
     if [ -f "$configurazione" ]; then
       modo="$(node -e 'try{process.stdout.write(String(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).modo))}catch(e){process.stdout.write("(JSON non valido)")}' "$configurazione" 2>/dev/null || echo "(non letta)")"

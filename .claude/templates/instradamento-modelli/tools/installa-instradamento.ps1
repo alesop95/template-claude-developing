@@ -32,8 +32,19 @@
 .PARAMETER Mod
   Cartella della mod. Default: la cartella `mod` di questo pacchetto.
 
+.PARAMETER Radice
+  Percorso esplicito di una radice da servire, al posto dei numeri di -Account.
+  Serve alle prove, che non possono scrivere nella home vera, e alle
+  installazioni dove la radice non segue la convenzione .claude-account<N>.
+
 .PARAMETER Verifica
-  Sola lettura: non scrive nulla, stampa il quadro di ogni radice.
+  Sola lettura: non scrive nulla, stampa il quadro di ogni radice. La domanda
+  «questa mod e' registrata?» la risolve merge-instradamento-settings.js in modo
+  --stato, cioe' confrontando percorsi normalizzati dopo JSON.parse. Cercare il
+  percorso nel testo grezzo del settings.json e' sbagliato su Windows, dove il
+  JSON raddoppia le barre rovesciate: il percorso scritto con barre singole non
+  si trova mai e una mod regolarmente registrata risulta assente. Per questo
+  -Verifica richiede Node come il resto dello script.
 
 .PARAMETER Rimuovi
   Toglie la registrazione dal settings.json. La configurazione resta sul disco,
@@ -59,6 +70,7 @@ param(
   [int[]]$Account = @(1, 2, 3),
   [switch]$IncludiDefault,
   [string]$Mod,
+  [string[]]$Radice,
   [switch]$Verifica,
   [switch]$Rimuovi,
   [switch]$Forza
@@ -81,14 +93,19 @@ if (-not (Test-Path (Join-Path $Mod '.claude-plugin\plugin.json'))) {
 }
 if (-not (Test-Path $riferimento)) { Esci "manca la copia di riferimento: $riferimento" }
 if (-not (Test-Path $fusione)) { Esci "manca lo script di fusione: $fusione" }
-if (-not $Verifica) {
-  $node = Get-Command node -ErrorAction SilentlyContinue
-  if (-not $node) { Esci "serve Node.js per scrivere il settings.json in sicurezza, e non e' nel PATH" }
+$node = Get-Command node -ErrorAction SilentlyContinue
+if (-not $node) {
+  if ($Verifica) { Esci "serve Node.js anche per la verifica, e non e' nel PATH: senza, la risposta sarebbe un'ipotesi sul testo del file" }
+  Esci "serve Node.js per scrivere il settings.json in sicurezza, e non e' nel PATH"
 }
 
 $radici = @()
-foreach ($n in $Account) { $radici += (Join-Path $env:USERPROFILE ".claude-account$n") }
-if ($IncludiDefault) { $radici += (Join-Path $env:USERPROFILE '.claude') }
+if ($Radice) {
+  $radici += $Radice
+} else {
+  foreach ($n in $Account) { $radici += (Join-Path $env:USERPROFILE ".claude-account$n") }
+  if ($IncludiDefault) { $radici += (Join-Path $env:USERPROFILE '.claude') }
+}
 
 Write-Host ''
 Write-Host "Mod: $Mod"
@@ -108,8 +125,9 @@ foreach ($radice in $radici) {
     $registrata = $false
     $modo = '(nessuna configurazione)'
     if (Test-Path $impostazioni) {
-      $testo = Get-Content -Raw -Path $impostazioni
-      $registrata = $testo -match [regex]::Escape($Mod)
+      $risposta = & node $fusione $impostazioni $Mod --stato 2>&1
+      if ($LASTEXITCODE -eq 0) { $registrata = $true }
+      elseif ($LASTEXITCODE -ne 3) { Esci "la verifica di $impostazioni e' fallita: $risposta" }
     }
     if (Test-Path $configurazione) {
       try {

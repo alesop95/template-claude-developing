@@ -82,7 +82,7 @@ Il caso che ha insegnato la regola. Un elenco raggruppato mostrava un'intestazio
 
 La prescrizione. Prima di scrivere l'atteso di una prova che riguarda la forma di un dato, si legge chi scrive quel dato nel percorso reale, e la finzione si costruisce su quello. Non è una regola sulla fedeltà in generale, che costerebbe troppo e non servirebbe: vale per i campi su cui il difetto si gioca, e il modo di riconoscerli è chiedersi se cambiando il valore della finzione il difetto sparirebbe. Se la risposta è sì, la finzione è parte dell'oggetto misurato e non del contorno.
 
-Corollario, perché è il motivo per cui l'errore passa inosservato. Una finzione comoda viene di solito scritta da chi conosceva il dominio al tempo in cui il modello era un altro, e resta corretta rispetto a quel modello. Non è un dato sbagliato: è un dato **vecchio**, e un dato vecchio supera ogni rilettura perché non contiene niente di falso, solo qualcosa che non è più il caso.
+Corollario, perché è il motivo per cui l'errore passa inosservato. Una finzione comoda viene di solito scritta da chi conosceva il dominio al tempo in cui il modello era un altro, e resta corretta rispetto a quel modello. Quel dato è **vecchio**, e un dato vecchio supera ogni rilettura perché non contiene niente di falso, solo qualcosa che non è più il caso.
 
 ## Una prova che fallisce in modo plausibile manda a cercare nel posto sbagliato
 

@@ -5,6 +5,15 @@
  * di un account Claude Code, PRESERVANDO tutto il resto.
  *
  * Uso: node merge-instradamento-settings.js <settings.json> <cartella-mod> [--rimuovi]
+ *      node merge-instradamento-settings.js <settings.json> <cartella-mod> --stato
+ *
+ * Il modo --stato e' in sola lettura e risponde a una domanda sola: quella
+ * cartella risulta registrata in quel settings.json? Esiste perche' la stessa
+ * domanda, posta cercando il percorso nel testo grezzo del file, ottiene la
+ * risposta sbagliata su Windows: dentro il JSON le barre rovesciate sono
+ * raddoppiate, quindi il percorso scritto con barre singole non si trova e una
+ * mod regolarmente registrata viene dichiarata assente. Il confronto si fa sui
+ * percorsi normalizzati dopo JSON.parse, non sui byte del file.
  *
  * Perche' Node e non PowerShell, come per merge-claude-settings.js del
  * pacchetto agenti-terminale: ConvertFrom-Json di PowerShell 5.1 tratta le
@@ -38,6 +47,7 @@ function fallisci(messaggio) {
 const percorso = process.argv[2];
 const cartellaMod = process.argv[3];
 const rimuovi = process.argv.indexOf('--rimuovi') !== -1;
+const soloStato = process.argv.indexOf('--stato') !== -1;
 
 if (!percorso || !cartellaMod) {
   fallisci('uso: node merge-instradamento-settings.js <settings.json> <cartella-mod> [--rimuovi]');
@@ -52,6 +62,40 @@ function normalizza(p) {
 }
 
 const atteso = path.resolve(cartellaMod);
+
+function leggiCartelle(file) {
+  if (!fs.existsSync(file)) return [];
+  let grezzo;
+  try {
+    grezzo = fs.readFileSync(file, 'utf8');
+  } catch (e) {
+    fallisci('impossibile leggere ' + file + ': ' + e.message);
+  }
+  if (grezzo.trim() === '') return [];
+  let dati;
+  try {
+    dati = JSON.parse(grezzo);
+  } catch (e) {
+    fallisci(file + ' esiste ma non contiene JSON valido: ' + e.message);
+  }
+  if (dati === null || typeof dati !== 'object' || Array.isArray(dati)) {
+    fallisci(file + ' non contiene un oggetto JSON.');
+  }
+  const env = (dati.env && typeof dati.env === 'object' && !Array.isArray(dati.env)) ? dati.env : {};
+  return String(env.CLAUDE_CODE_PLUGIN_DIRS || '')
+    .split(SEPARATORE)
+    .map(function (v) { return v.trim(); })
+    .filter(function (v) { return v !== ''; });
+}
+
+if (soloStato) {
+  const registrata = leggiCartelle(percorso).some(function (v) {
+    return normalizza(v) === normalizza(atteso);
+  });
+  console.log(registrata ? 'registrata' : 'non registrata');
+  process.exit(registrata ? 0 : 3);
+}
+
 if (!rimuovi && !fs.existsSync(path.join(atteso, '.claude-plugin', 'plugin.json'))) {
   fallisci(atteso + ' non sembra una mod: manca .claude-plugin/plugin.json');
 }

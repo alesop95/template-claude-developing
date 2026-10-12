@@ -21,13 +21,23 @@ import tempfile
 
 RADICE = os.path.dirname(os.path.abspath(__file__))
 FUSIONE = os.path.join(RADICE, "merge-instradamento-settings.js")
+INSTALLATORE_PS = os.path.join(RADICE, "installa-instradamento.ps1")
+INSTALLATORE_SH = os.path.join(RADICE, "installa-instradamento.sh")
 SEPARATORE = ";" if sys.platform == "win32" else ":"
 
 esiti = []
+saltati = []
 
 
 def verifica(nome, condizione, dettaglio=""):
     esiti.append((nome, bool(condizione), dettaglio))
+
+
+# Un caso non eseguibile qui si dichiara, non si tace: un caso che sparisce in
+# silenzio dal conto sposta la copertura senza che nessuno lo decida, e la riga
+# finale direbbe comunque «0 falliti».
+def salta(nome, motivo):
+    saltati.append((nome, motivo))
 
 
 def fondi(settings, mod, *extra):
@@ -35,6 +45,29 @@ def fondi(settings, mod, *extra):
         ["node", FUSIONE, settings, mod] + list(extra),
         capture_output=True, text=True,
     )
+
+
+def stato(settings, mod):
+    return subprocess.run(
+        ["node", FUSIONE, settings, mod, "--stato"],
+        capture_output=True, text=True,
+    )
+
+
+def verifica_installatore(radice, mod):
+    """Esegue il -Verifica dell'installatore vero su una radice finta.
+
+    Passa dallo script di installazione e non da merge --stato perche' il
+    difetto che questi casi coprono stava li' dentro, nel modo in cui lo script
+    poneva la domanda, e non nella risposta: una prova sul solo merge resterebbe
+    verde anche se l'installatore tornasse a cercare il percorso nel testo.
+    """
+    if sys.platform == "win32":
+        comando = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass",
+                   "-File", INSTALLATORE_PS, "-Verifica", "-Radice", radice, "-Mod", mod]
+    else:
+        comando = ["bash", INSTALLATORE_SH, "--verifica", "--radice", radice, "--mod", mod]
+    return subprocess.run(comando, capture_output=True, text=True)
 
 
 def mod_finta(base):
@@ -119,13 +152,114 @@ def main():
         dati = leggi(nuovo)
         verifica("su un file nuovo la registrazione riesce", esito.returncode == 0, esito.stderr)
         verifica("il file nuovo contiene solo env", list(dati) == ["env"])
+
+        # 7. Il modo --stato risponde senza scrivere.
+        #
+        # Il percorso della mod contiene di proposito una barra rovesciata, che
+        # su Windows c'e' sempre e altrove quasi mai: dentro il JSON diventa
+        # doppia, quindi chi cerca il percorso nel testo grezzo del file non lo
+        # trova e dichiara assente una mod registrata. E' il difetto osservato il
+        # 2026-10-12, dove -Verifica diceva «NON registrata» su tre account su
+        # tre mentre la mod era attiva e stava gia' contando.
+        strana = os.path.join(base, "radice\\con-barra")
+        os.makedirs(strana, exist_ok=True)
+        mod_strana = mod_finta(strana)
+        settings_strano = os.path.join(strana, "settings.json")
+        with open(settings_strano, "w", encoding="utf-8") as f:
+            json.dump({"env": {"CLAUDE_CODE_PLUGIN_DIRS": mod_strana}}, f, indent=2)
+        grezzo = open(settings_strano, encoding="utf-8").read()
+        verifica("il caso e' significativo: il percorso non compare tale e quale nel file",
+                 ("\\" not in mod_strana) or (mod_strana not in grezzo))
+
+        esito = stato(settings_strano, mod_strana)
+        verifica("--stato riconosce una mod registrata", esito.returncode == 0, esito.stdout + esito.stderr)
+        verifica("--stato lo dice anche a parole", "registrata" in esito.stdout and "non registrata" not in esito.stdout)
+        verifica("--stato non scrive nulla",
+                 open(settings_strano, encoding="utf-8").read() == grezzo)
+
+        esito = stato(settings_strano, mod)
+        verifica("--stato distingue una mod non registrata", esito.returncode == 3, esito.stdout + esito.stderr)
+
+        # Lo stesso percorso scritto in un'altra forma resta lo stesso percorso:
+        # la registrazione la puo' aver scritta una versione precedente dello
+        # script, o una mano umana. Il confronto e' su percorsi risolti, e su
+        # Windows anche indifferente alle maiuscole, non su stringhe.
+        deviato = os.path.join(os.path.dirname(mod_strana), ".", os.path.basename(mod_strana)) + os.sep
+        if sys.platform == "win32":
+            deviato = deviato.upper()
+        settings_deviato = os.path.join(strana, "settings-deviato.json")
+        with open(settings_deviato, "w", encoding="utf-8") as f:
+            json.dump({"env": {"CLAUDE_CODE_PLUGIN_DIRS": deviato}}, f, indent=2)
+        verifica("il caso e' significativo: la forma registrata non e' quella cercata",
+                 deviato != mod_strana)
+        esito = stato(settings_deviato, mod_strana)
+        verifica("--stato riconosce lo stesso percorso scritto in un'altra forma",
+                 esito.returncode == 0, deviato + " -> " + esito.stdout + esito.stderr)
+
+        esito = stato(os.path.join(base, "non-esiste", "settings.json"), mod)
+        verifica("--stato su un file assente risponde non registrata", esito.returncode == 3)
+
+        esito = stato(rotto, mod)
+        verifica("--stato su un settings.json illeggibile fallisce", esito.returncode == 1)
+
+        # 8. L'installatore vero, in -Verifica, dice la verita' sulla stessa radice.
+        esito = verifica_installatore(strana, mod_strana)
+        uscita = esito.stdout + esito.stderr
+        verifica("l'installatore in verifica esce con zero", esito.returncode == 0, uscita)
+        verifica("l'installatore dichiara registrata una mod registrata",
+                 "mod registrata" in uscita, uscita.strip())
+        verifica("l'installatore in verifica non scrive il settings.json",
+                 open(settings_strano, encoding="utf-8").read() == grezzo)
+
+        # La gemella POSIX non la esercita la piattaforma, la esercita la
+        # presenza di bash: su Windows c'e' con Git Bash, e senza questo caso la
+        # sua meta' di verifica non sarebbe provata da nessuna parte.
+        # Bash su Windows mangia le barre rovesciate degli argomenti: i percorsi
+        # gli si passano con le barre in avanti, che accetta.
+        def perBash(p):
+            return p.replace(chr(92), "/") if sys.platform == "win32" else p
+
+        eseguibile = shutil.which("bash")
+        vede = False
+        if eseguibile:
+            # Su Windows il bash trovato nel PATH puo' essere quello di WSL, che
+            # vive in un altro filesystem e non vede i dischi di Windows per
+            # questa via. Lo si chiede a lui invece di dedurlo dal nome, perche'
+            # qui un caso saltato per errore sembrerebbe superato.
+            vede = subprocess.run(
+                [eseguibile, "-c", 'test -f "$1"', "_", perBash(INSTALLATORE_SH)],
+            ).returncode == 0
+        if vede:
+            esito = subprocess.run(
+                [eseguibile, perBash(INSTALLATORE_SH), "--verifica",
+                 "--radice", perBash(strana), "--mod", perBash(mod_strana)],
+                capture_output=True, text=True,
+            )
+            uscita = esito.stdout + esito.stderr
+            verifica("la gemella sh dichiara registrata una mod registrata",
+                     "mod registrata" in uscita, uscita.strip())
+        else:
+            salta("la gemella sh dichiara registrata una mod registrata",
+                  "nessun bash che veda questo repository" if eseguibile else "bash non e' nel PATH")
+
+        pulita = os.path.join(base, "radice-pulita")
+        os.makedirs(pulita, exist_ok=True)
+        with open(os.path.join(pulita, "settings.json"), "w", encoding="utf-8") as f:
+            json.dump({"theme": "dark"}, f, indent=2)
+        esito = verifica_installatore(pulita, mod_strana)
+        uscita = esito.stdout + esito.stderr
+        verifica("l'installatore dichiara NON registrata una radice pulita",
+                 "mod NON registrata" in uscita, uscita.strip())
     finally:
         shutil.rmtree(base, ignore_errors=True)
 
     falliti = [e for e in esiti if not e[1]]
     for nome, ok, dettaglio in esiti:
         print(("  ok   " if ok else "  FALLITO ") + nome + ((" - " + dettaglio.strip()) if (not ok and dettaglio) else ""))
-    print("\n%d casi, %d falliti" % (len(esiti), len(falliti)))
+    for nome, motivo in saltati:
+        print("  saltato " + nome + " - " + motivo)
+    print("")
+    print("%d casi, %d falliti, %d saltati" % (len(esiti), len(falliti), len(saltati)))
     return 1 if falliti else 0
 
 
