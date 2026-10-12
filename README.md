@@ -30,6 +30,7 @@ Questo file e il README della repository GitHub. Serve a far capire cos'e il tem
 - [Windows o Linux](#windows-o-linux)
 - [Screenshot per i passi manuali](#screenshot-per-i-passi-manuali)
 - [Comprensione del codice esistente](#comprensione-del-codice-esistente)
+- [Software di cui non si ha il sorgente (rea)](#software-di-cui-non-si-ha-il-sorgente-rea)
 - [Knowledge wiki: accumulare conoscenza nel tempo](#knowledge-wiki-accumulare-conoscenza-nel-tempo)
 - [Libri come skill (book-to-skill)](#libri-come-skill-book-to-skill)
 - [Bibliografia da libri fisici o scansionati (book-bib-extract)](#bibliografia-da-libri-fisici-o-scansionati-book-bib-extract)
@@ -166,6 +167,12 @@ Quando uno sviluppo ha parti necessariamente manuali e visive, che l'agente non 
 Per allineare un progetto che ha già codice, l'agente deve capirne la struttura. Oltre a leggere il codice, può appoggiarsi a un server MCP basato su tree-sitter, `code-context-provider-mcp`, che gira via `npx` senza dipendenze native, con licenza MIT, e restituisce l'albero delle cartelle e i simboli del codice, cioè funzioni, classi, import ed export, per JavaScript, TypeScript e Python. È già configurato in `templates/mcp.json` e viene offerto al gate MCP soprattutto nel prompt di allineamento, dove la struttura non è nota a priori; in un progetto nuovo lo stack è già noto e resta opzionale.
 
 Per una comprensione più olistica, soprattutto di un progetto grande o sconosciuto o di una collezione di documenti, c'è il pacchetto opzionale `graphify`, che costruisce un grafo di conoscenza dell'intero progetto: nodi e relazioni, community tematiche, nodi centrali e connessioni sorprendenti, con visualizzazione interattiva e report di insight. Sul piano concettuale serve a vedere le relazioni che leggendo i file singoli non emergono; sul piano operativo si installa con `uv tool install graphifyy` (oppure `pipx install graphifyy`), si registra con `graphify install` e si lancia con `/graphify .` nella cartella, ottenendo `graph.html`, `GRAPH_REPORT.md` e `graph.json`. Il codice e analizzato localmente via tree-sitter, mentre documenti e PDF passano dall'LLM e consumano token. Complementa `code-context` (simboli precisi del codice) e `knowledge-wiki` (pagine curate): graphify e la mappa delle relazioni, la wiki e la conoscenza sintetizzata.
+
+## Software di cui non si ha il sorgente (rea)
+
+I pacchetti qui sopra danno per scontato di avere il sorgente sotto mano. Il caso opposto capita spesso e finora non era coperto: si vede una funzione dentro un programma che non si possiede, si vuole sapere come è fatta, e di quel programma si ha soltanto il binario, il pacchetto distribuito o la pagina che gira nel browser. Il pacchetto opzionale `rea` copre quel caso dando all'agente degli strumenti invece che delle congetture: apre il bersaglio con un motore di analisi locale e restituisce pseudocodice, simboli, grafo delle chiamate, moduli, rotte e canali fra i processi, con l'evidenza accanto a ogni conclusione e l'elenco di ciò che resta ignoto. Non scaffolda nulla nel progetto, perché è un server MCP e una riga di comando di terzi che si registrano nel client con `npx rea-agents@latest setup --client claude_code`, e `--dry-run` dichiara il piano prima di scrivere.
+
+Tre cose vanno sapute prima di adottarlo, e stanno per esteso in `.claude/templates/rea/README.md` e nel suo `RIFERIMENTO-uso.md`. La prima è il perimetro: è il solo pacchetto del catalogo il cui uso legittimo dipende da chi possiede il bersaglio e non da come è configurato il progetto, si analizza ciò che si possiede o che si è autorizzati a esaminare, e il permesso di ispezionare un file non autorizza di per sé a eseguirlo o a intercettarne il traffico. La seconda è che su Windows la copertura è parziale: applicazioni JavaScript ed Electron, assembly .NET e metadati dei binari Go funzionano senza installare altro, mentre i binari nativi passano solo da Ghidra, in sola lettura e in forma dichiarata sperimentale, e la cattura del comportamento di un processo non è disponibile affatto. La terza è che non è una sandbox, cosa che la sua documentazione dichiara in tre punti distinti: il contenimento di un bersaglio di cui non ci si fida lo mette chi analizza, con una macchina virtuale o un contenitore. Il pacchetto non è stato installato né provato su una macchina di questo sistema: la scheda è ricavata dalla documentazione del progetto.
 
 ## Knowledge wiki: accumulare conoscenza nel tempo
 
@@ -405,6 +412,7 @@ template-claude-developing/
       memoria-di-progetto/  pacchetto opzionale: controllo delle tracce nel registro cronologico
       roadmap/         pacchetto opzionale: lista del lavoro aperto generata dallo stato corrente
       readme-sync/     pacchetto opzionale: indice navigabile, inventario dei pacchetti e controllo dei link del README
+      rea/             pacchetto opzionale: capire un software di cui non si ha il sorgente, con il perimetro d'uso in RIFERIMENTO-uso.md
       separazione-ambienti/  guida ai paradigmi di separazione fra test e produzione, registro di 37 fonti e 9 casi, esempi annotati
       anti-slop/       pacchetto opzionale: 14 segni di prosa e interfacce generate, guida, 12 fonti, lint-prosa.py e lint-ui.py
       dev-skills/       pacchetto opzionale: 4 skill di sviluppo a scelta (test-generator, mcp-tool-scaffold, code-review, security-review)
@@ -418,7 +426,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**37 pacchetti a cartella** su **87 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**38 pacchetti a cartella** su **88 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -467,6 +475,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 ### Comprensione di una codebase
 
 - `codebase-learning` - comprensione guidata di un progetto finito: [.claude/templates/codebase-learning/README.md](.claude/templates/codebase-learning/README.md)
+- `rea` - capire come funziona un software di cui non si ha il sorgente, con le prove accanto a ogni conclusione: [.claude/templates/rea/README.md](.claude/templates/rea/README.md)
 
 ### Sviluppo, qualità e revisione del codice
 
@@ -543,6 +552,7 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - `caveman` di JuliusBrussee, riduzione dei token di output a scelta dell'utente: https://github.com/juliusbrussee/caveman
 - `token-optimizer-mcp` di ooples, compressione e caching del contesto via MCP: https://github.com/ooples/token-optimizer-mcp
 - `graphify` di safishamsi, grafo di conoscenza di codice e documenti (licenza MIT): https://github.com/safishamsi/graphify
+- `rea` (Reverse Engineer Anything) di morluto, server MCP e riga di comando per capire un software di cui non si ha il sorgente (licenza MIT): https://github.com/morluto/rea - i motori di analisi che pilota non appartengono al progetto e hanno licenza propria, che REA non fornisce: Ghidra è libero, Hopper, IDA Pro con i decompilatori Hex-Rays e JEB sono commerciali
 - `humanizer` di blader, skill che rimuove i segni di scrittura AI dal testo (licenza MIT): https://github.com/blader/humanizer
 - `taste-skill` di Leonxlnx, skill di design-taste per interfacce non generiche (licenza MIT): https://github.com/Leonxlnx/taste-skill
 - `ccusage` di ryoppippi, misura baseline del consumo token per sessione e modello (MIT): https://github.com/ryoppippi/ccusage

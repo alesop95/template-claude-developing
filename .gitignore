@@ -26,3 +26,8 @@ desktop.ini
 # Artefatti di bytecode Python, generati eseguendo gli script dei pacchetti (docx-to-docs, doc-ingest)
 __pycache__/
 *.pyc
+
+# Impalcatura di tipi generata da `claude plugin` dentro la mod di instradamento-modelli:
+# la cartella .claude-plugin/types/ si ignora da se', e il tsconfig.json accanto non fa che
+# estenderla. Versionarlo darebbe a un clone un file che punta a qualcosa che li' non c'e'.
+.claude/templates/instradamento-modelli/mod/tsconfig.json
