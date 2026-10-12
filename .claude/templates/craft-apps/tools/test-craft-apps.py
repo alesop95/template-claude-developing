@@ -19,20 +19,30 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
+import tarfile
 import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import craft_apps_comune  # noqa: E402
 from craft_apps_comune import analizza_somme, nome_asset, sistema, trova_cli  # noqa: E402
 
 import importlib.util  # noqa: E402
 
-_spec = importlib.util.spec_from_file_location(
-    "craft_mcp", str(Path(__file__).resolve().parent / "craft-mcp.py"))
-craft_mcp = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(craft_mcp)
+
+def _carica(nome_modulo, nome_file):
+    spec = importlib.util.spec_from_file_location(
+        nome_modulo, str(Path(__file__).resolve().parent / nome_file))
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    return modulo
+
+
+craft_mcp = _carica("craft_mcp", "craft-mcp.py")
+craft_apps = _carica("craft_apps", "craft-apps.py")
 
 ESITI = []
 
@@ -165,6 +175,54 @@ def prove_argomenti_mcp() -> None:
 # prova dal vivo
 # --------------------------------------------------------------------------- #
 
+def prove_canale_e_tarball() -> None:
+    """Il percorso Linux, esercitato anche da una macchina che Linux non e'.
+
+    La forma del tarball e' quella reale, letta il 2026-10-12 dal rilascio di
+    GridCraft 0.5.0: una cartella di primo livello, i due binari sotto `bin/`.
+    E' la ragione per cui su Linux il canale predefinito e' il tarball e non
+    l'AppImage, che il binario CLI se lo tiene dentro.
+    """
+    prova("canale: su Linux il predefinito porta con se' il CLI",
+          craft_apps_comune.canale_predefinito("linux") == "tar",
+          "un AppImage non espone <app>-cli, quindi il collegamento MCP non si genera")
+    prova("canale: su Windows resta lo zip portabile",
+          craft_apps_comune.canale_predefinito("windows") == "portable")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        sorgente = base / "gridcraft-0.5.0-linux-x86_64"
+        (sorgente / "bin").mkdir(parents=True)
+        (sorgente / "bin" / "gridcraft-cli").write_text("#!/bin/sh\n", encoding="utf-8")
+        (sorgente / "bin" / "gridcraft").write_text("#!/bin/sh\n", encoding="utf-8")
+        (sorgente / "share").mkdir()
+        (sorgente / "share" / "README.md").write_text("x", encoding="utf-8")
+        archivio = base / "gridcraft-0.5.0-linux-x86_64.tar.gz"
+        with tarfile.open(archivio, "w:gz") as a:
+            a.add(sorgente, arcname=sorgente.name)
+
+        casa = base / "casa"
+        vecchio = os.environ.get("CRAFT_APPS_HOME")
+        os.environ["CRAFT_APPS_HOME"] = str(casa)
+        try:
+            esito = craft_apps._posa("gridcraft", "linux", "tar", archivio, "GridCraft")
+            prova("tarball: la posa riesce", esito == 0)
+            atteso = casa / "GridCraft" / "bin" / "gridcraft-cli"
+            prova("tarball: la cartella di primo livello viene appiattita", atteso.is_file(),
+                  "atteso " + str(atteso))
+            trovato = craft_apps_comune.trova_cli("gridcraft", "linux")
+            prova("tarball: il CLI viene trovato dentro bin/",
+                  trovato is not None and trovato.name == "gridcraft-cli",
+                  str(trovato))
+            prova("tarball: niente CLI per un'app non posata",
+                  craft_apps_comune.trova_cli("deckcraft", "linux") is None)
+        finally:
+            if vecchio is None:
+                os.environ.pop("CRAFT_APPS_HOME", None)
+            else:
+                os.environ["CRAFT_APPS_HOME"] = vecchio
+
+
 def prove_dal_vivo() -> None:
     sist = sistema()
     cli = trova_cli("effectcraft", sist)
@@ -234,6 +292,7 @@ def main() -> int:
     prove_sezione_mcp()
     prove_dentro()
     prove_argomenti_mcp()
+    prove_canale_e_tarball()
     if not args.senza_vivo:
         prove_dal_vivo()
 

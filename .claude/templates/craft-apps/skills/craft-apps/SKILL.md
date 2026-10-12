@@ -41,13 +41,25 @@ Si parte dal file e non dall'applicazione, perché la scelta sbagliata più comu
 
 Se nessuna riga corrisponde, lo si dice invece di forzare la più vicina: la suite non copre tutto, e per molti domini esiste uno strumento specializzato che il progetto già usa.
 
-## Passo 2 - Verificare che ci sia, senza presumerlo
+## Passo 2 - Chiedere a GitHub quella sola applicazione
+
+Non si presume che la suite sia installata, e non si pretende che lo sia: quasi sempre serve un'applicazione sola, e averle tutte costerebbe quasi seicento megabyte per niente. Lo stato di quella sola si chiede sul momento.
 
 ```
 python tools/craft-apps.py stato <app>
 ```
 
-Se l'applicazione non è installata non si installa di propria iniziativa: si dice che manca, quanto pesa e con quale comando la si prende, e si aspetta. L'installazione aggiunge un programma alla macchina dell'utente, ed è una sua decisione.
+Il comando interroga i rilasci di GitHub e risponde con quattro cose per questa macchina: la versione installata se c'è, l'ultima pubblicata, il peso del file che servirebbe per questo sistema, questa architettura e questo canale, e l'esito. Il peso viene dal rilascio e non da una tabella, perché la domanda che segue sempre a «non installata» è quanto costa averla, e una cifra ricordata invecchia a ogni versione.
+
+Se manca, non si installa di propria iniziativa. Si riporta all'utente la versione, il peso misurato e il comando per prendere quella sola applicazione, e si aspetta la sua risposta, perché installare aggiunge un programma alla sua macchina.
+
+```
+python tools/craft-apps.py installa <app>
+```
+
+Il canale predefinito non chiede privilegi di amministratore: su Windows lo zip portabile sotto `%LOCALAPPDATA%\CraftApps`, su Linux il tarball sotto `~/.local/share/craft-apps`. Su Linux il tarball è preferito all'AppImage per una ragione che riguarda proprio questa skill: l'AppImage tiene il binario `<app>-cli` dentro di sé, quindi l'agente non lo trova e il collegamento MCP non si può generare, mentre il tarball espone `bin/<app>` e `bin/<app>-cli` affiancati. Chi vuole l'installazione di sistema chiede `--canale msi`, `deb` o `rpm`, e il comando privilegiato viene stampato perché lo esegua l'utente.
+
+Se GitHub risponde che la quota delle richieste anonime è esaurita, lo strumento lo dice e indica `GITHUB_TOKEN`; non si inventa una versione né si procede alla cieca. Se la macchina è senza rete, si dice che lo stato non è verificabile adesso e si lavora con ciò che è già installato, oppure si rimanda.
 
 ## Passo 3 - Scegliere la via, che è la decisione che costa
 

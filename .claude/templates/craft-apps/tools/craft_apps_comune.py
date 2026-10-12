@@ -69,7 +69,16 @@ def architettura(sist: str) -> str:
 
 
 def canale_predefinito(sist: str) -> str:
-    return {"windows": "portable", "linux": "appimage", "macos": "dmg"}.get(sist, "portable")
+    """Il canale che non chiede privilegi e che porta con se' il binario CLI.
+
+    Su Linux il predefinito e' il tarball e non l'AppImage, benche' l'AppImage sia
+    la forma piu' comoda per un essere umano: un AppImage e' un archivio che si
+    monta all'avvio, e il binario `<app>-cli` resta dentro, quindi un agente non
+    lo trova e il collegamento MCP non si puo' generare. Il tarball contiene
+    `bin/<app>` e `bin/<app>-cli` affiancati, non chiede root e si scompatta dove
+    si vuole. Verificato il 2026-10-12 sul tarball di GridCraft 0.5.0.
+    """
+    return {"windows": "portable", "linux": "tar", "macos": "dmg"}.get(sist, "portable")
 
 
 def nome_asset(prefisso: str, versione: str, sist: str, arch: str, canale: str) -> str:
@@ -149,16 +158,25 @@ def trova_cli(app: str, sist: str):
     su_path = shutil.which(nome)
     if su_path:
         return Path(su_path)
+    # `bin/` serve per il tarball di Linux, che tiene i due binari in una
+    # sottocartella; l'installatore di sistema e lo zip portabile li tengono
+    # invece accanto alla radice dell'applicazione.
     for radice in radici_installazione(sist):
         if not radice.is_dir():
             continue
-        diretto = radice / APPS[app][2] / nome
-        if diretto.is_file():
-            return diretto
+        for cand in (radice / APPS[app][2] / nome,
+                     radice / APPS[app][2] / "bin" / nome,
+                     radice / nome,
+                     radice / "bin" / nome):
+            if cand.is_file():
+                return cand
         try:
             for voce in radice.iterdir():
-                if voce.is_dir() and (voce / nome).is_file():
-                    return voce / nome
+                if not voce.is_dir():
+                    continue
+                for cand in (voce / nome, voce / "bin" / nome):
+                    if cand.is_file():
+                        return cand
         except (PermissionError, OSError):
             continue
     return None

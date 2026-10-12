@@ -24,6 +24,7 @@ import os
 import shutil
 import ssl
 import sys
+import tarfile
 import urllib.error
 import urllib.request
 import zipfile
@@ -121,30 +122,56 @@ def elenco_app(args, tutte_se_vuoto: bool = True) -> list:
     return []
 
 
+def peso_asset(rel: dict, prefisso: str, versione: str, sist: str, arch: str,
+               canale: str) -> str:
+    """Quanto pesa, per questa macchina, il file che servirebbe scaricare.
+
+    Si chiede al rilascio invece di stimarlo, perche' la domanda che segue a
+    «non installata» e' sempre «quanto costa averla», e una risposta a memoria
+    invecchia a ogni versione.
+    """
+    try:
+        atteso = nome_asset(prefisso, versione, sist, arch, canale)
+    except ValueError:
+        return "-"
+    for a in rel.get("assets", []):
+        if a["name"] == atteso:
+            return "%.0f MB" % (a["size"] / 1048576.0)
+    return "-"
+
+
 def cmd_stato(args) -> int:
     sist = sistema()
-    print("sistema " + sist + " " + architettura(sist) +
-          ", canale predefinito " + canale_predefinito(sist))
-    print("%-12s %-12s %-12s %s" % ("app", "installata", "ultima", "esito"))
-    da_aggiornare = []
+    arch = args.arch or architettura(sist)
+    canale = args.canale or canale_predefinito(sist)
+    print("sistema " + sist + " " + arch + ", canale " + canale)
+    print("%-12s %-12s %-12s %-8s %s" % ("app", "installata", "ultima", "peso", "esito"))
+    da_aggiornare, mancanti = [], []
     for app in elenco_app(args):
         loc, dove = versione_installata(app, sist)
         try:
-            tag = rilascio(APPS[app][0]).get("tag_name", "?").lstrip("v")
+            rel = rilascio(APPS[app][0])
         except SystemExit as e:
-            print("%-12s %-12s %-12s %s" % (app, loc or "-", "?", e))
+            print("%-12s %-12s %-12s %-8s %s" % (app, loc or "-", "?", "-", e))
             continue
+        tag = rel.get("tag_name", "?").lstrip("v")
+        peso = peso_asset(rel, APPS[app][1], tag, sist, arch, canale)
         if loc is None:
             esito = "non installata"
+            mancanti.append(app)
         elif loc == tag:
             esito = "aggiornata"
         else:
             esito = "DA AGGIORNARE"
             da_aggiornare.append(app)
         coda = ("   " + str(dove)) if (dove and args.percorsi) else ""
-        print("%-12s %-12s %-12s %s%s" % (app, loc or "-", tag, esito, coda))
+        print("%-12s %-12s %-12s %-8s %s%s" % (app, loc or "-", tag, peso, esito, coda))
     if da_aggiornare:
         print("\nda aggiornare: " + " ".join(da_aggiornare))
+    if mancanti:
+        print("\nnon installate: " + " ".join(mancanti))
+        print("per prenderne una sola, che e' quasi sempre cio' che serve:")
+        print("  python tools/craft-apps.py installa " + mancanti[0])
     return 0
 
 
@@ -173,12 +200,35 @@ def _posa(app: str, sist: str, canale: str, file: Path, nome_cartella: str) -> i
         print(app + ": il CLI sta dentro l'AppImage; per averlo separato estrailo con "
               + str(destinazione) + " --appimage-extract")
         return 0
+    if canale == "tar":
+        destinazione = cartella_portatile() / nome_cartella
+        if destinazione.exists():
+            shutil.rmtree(destinazione)
+        destinazione.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(file, "r:gz") as a:
+            # `filter="data"` rifiuta percorsi assoluti, risalite con .. e voci
+            # speciali: un archivio scaricato resta un archivio scaricato anche
+            # quando l'impronta corrisponde a quella pubblicata.
+            a.extractall(destinazione, filter="data")
+        voci = list(destinazione.iterdir())
+        if len(voci) == 1 and voci[0].is_dir():
+            interna = voci[0]
+            for v in list(interna.iterdir()):
+                shutil.move(str(v), str(destinazione / v.name))
+            interna.rmdir()
+        print(app + ": posata in " + str(destinazione))
+        for binario in (destinazione / "bin" / app, destinazione / "bin" / (app + "-cli")):
+            if binario.is_file():
+                binario.chmod(0o755)
+        cli = destinazione / "bin" / (app + "-cli")
+        if cli.is_file():
+            print(app + ": CLI in " + str(cli))
+        return 0
     comandi = {
         "msi": 'msiexec /i "' + str(file) + '" /qn /norestart',
         "deb": 'sudo dpkg -i "' + str(file) + '"',
         "rpm": 'sudo rpm -Uvh "' + str(file) + '"',
         "flatpak": 'flatpak install --user "' + str(file) + '"',
-        "tar": 'tar -xzf "' + str(file) + '" -C "' + str(cartella_portatile()) + '"',
         "dmg": 'hdiutil attach "' + str(file) + '"',
     }
     print(app + ": scaricata e verificata. L'installazione con questo canale la esegui tu:")
@@ -279,6 +329,10 @@ def main(argv=None) -> int:
     ps = sub.add_parser("stato", help="versione installata contro ultimo rilascio")
     ps.add_argument("app", nargs="*", choices=sorted(APPS), default=None, metavar="APP")
     ps.add_argument("--percorsi", action="store_true", help="mostra dove sta il binario trovato")
+    ps.add_argument("--canale", choices=["portable", "msi", "appimage", "deb", "rpm",
+                                         "flatpak", "tar", "dmg"],
+                    help="il canale su cui calcolare il peso")
+    ps.add_argument("--arch")
     ps.set_defaults(func=cmd_stato)
 
     pi = sub.add_parser("installa", help="scarica, verifica l'impronta e posa")
