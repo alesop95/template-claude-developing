@@ -71,7 +71,7 @@ Gli strumenti si lanciano invece come programmi, dalla radice del progetto. Il p
 | `python tools/lint-md-commands.py .` | Comandi spezzati dentro i blocchi di codice, che non si copiano in una riga sola |
 | `python tools/lint-doc-references.py --solo-vivi` | Documenti vivi che nominano file inesistenti |
 | `python tools/check-eol.py .` | File di testo che mescolano CRLF e LF, che al primo salvataggio si riscrivono per intero |
-| `python tools/misura-istruzioni.py` | Carico degli instruction file caricati a ogni avvio, dal più pesante; fallisce oltre la soglia |
+| `python tools/misura-istruzioni.py` | Carico degli instruction file caricati a ogni avvio, dal più pesante; fallisce oltre la soglia complessiva e oltre il tetto di 15.000 caratteri per singola regola |
 | `python tools/costruisci-timeline.py` | Rigenera la linea temporale del progetto |
 | `python tools/costruisci-timeline.py --senza-ragione` | Elenca i microstep senza una ragione dichiarata |
 | `python tools/Test-Allineamento.py` | Le affermazioni che stanno invecchiando: scadenze, misure vecchie, invarianti |
