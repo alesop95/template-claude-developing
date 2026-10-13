@@ -176,7 +176,7 @@ Caso osservato, e vale per la via con cui il difetto è emerso più che per il d
 
 Due conseguenze, entrambe sul metodo.
 
-La prima: il difetto l'ha trovato **il passo di non regressione, non quello discriminante**. Il passo discriminante era costruito per confermare la correzione e la confermava; quello di ripiego, messo in lista solo per verificare che un valore sbagliato non rompesse niente, ha esercitato la via che nessuno aveva considerato. È un argomento concreto per non saltare i passi di ripiego perché "tanto passano": il loro valore non è confermare, è arrivare dove il progetto del passo discriminante non guardava.
+La prima: il difetto l'ha trovato **il passo di non regressione, non quello discriminante**. Il passo discriminante era costruito per confermare la correzione e la confermava; quello di ripiego, messo in lista solo per verificare che un valore sbagliato non rompesse niente, ha esercitato la via che nessuno aveva considerato. È un argomento concreto per non saltare i passi di ripiego perché «tanto passano»: arrivano dove il progetto del passo discriminante non guardava.
 
 La seconda, che si può applicare a tavolino senza aspettare una verifica: davanti a uno stato che si vuole rendere persistente o condiviso, si elencano **tutte le vie per cui quello stato può cambiare**, non solo quella che si sta implementando. Una prova scritta guardando il codice copre le vie che il codice conosce, e quelle sono per costruzione le vie in cui il codice è già corretto.
 
