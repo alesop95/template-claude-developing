@@ -34,6 +34,8 @@ In CivitaNext, `.husky/pre-commit` usa `lint-staged`, TypeScript e Vitest; GitHu
 
 In my-wedding-day, GitHub Actions usa la Firebase Local Emulator Suite per Firestore, Auth e Functions. Qui il runtime e i servizi differiscono: copiare l'emulatore Firebase in un'app PostgreSQL/Workers non darebbe copertura utile. La lezione comune è fornire alla CI una dipendenza di prova riproducibile e verificare che i test la usino.
 
+In un repository privato con un monte mensile di minuti, il consumo dipende dalla forma del lavoro più che dal codice. Ogni push sul ramo di una pull request aperta fa girare l'intera CI e l'eventuale anteprima, e la fatturazione arrotonda per eccesso ogni singolo lavoro: in my-wedding-day un push misurato costava circa ventuno minuti. Lì, una regola che portava a una pull request per voce ha consumato il novanta per cento del monte in quattordici giorni, perché ogni voce aveva i propri giri di verifica visiva sull'anteprima e quindi i propri push. Prima di cambiare la granularità delle pull request il consumo si ricalcola sul ritmo nuovo, non su quello del mese precedente. La verifica visiva, che è ciò che moltiplica i push, si può spostare su un deploy manuale verso l'ambiente di prova, e alla CI resta un solo push per blocco già verificato.
+
 ## Fonti da ricontrollare quando si adotta
 
 - [GitHub Actions: eventi, job e `workflow_dispatch`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax)
