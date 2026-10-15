@@ -331,7 +331,7 @@ Il pacchetto opzionale `roadmap` genera una lista del lavoro ancora aperto da un
 
 ## Il gate dei pacchetti per settore
 
-Con decine di voci in catalogo, il modo in cui si scelgono conta quanto le voci stesse. Un gate che le proponga una per una in fila è un gate che nessuno legge fino in fondo; uno che ne scelga tre a occhio nasconde le altre senza dirlo. La skill `gate-pacchetti` risolve il problema cambiando l'unità della domanda: il catalogo è diviso in undici settori, e prima di aprire una tabella la skill riconosce dai fatti del progetto a quali settori esso appartenga. Un progetto ne ha due o tre su undici, quindi la scelta passa da decine di domande a una decina, tutte pertinenti.
+Con decine di voci in catalogo, il modo in cui si scelgono conta quanto le voci stesse. Un gate che le proponga una per una in fila è un gate che nessuno legge fino in fondo; uno che ne scelga tre a occhio nasconde le altre senza dirlo. La skill `gate-pacchetti` risolve il problema cambiando l'unità della domanda: il catalogo è diviso in dodici settori, e prima di aprire una tabella la skill riconosce dai fatti del progetto a quali settori esso appartenga. Un progetto ne ha due o tre su dodici, quindi la scelta passa da decine di domande a una decina, tutte pertinenti.
 
 Il riconoscimento si dichiara e si fa correggere, perché è una ipotesi sul progetto e chi lo conosce è l'utente: si mostrano i settori riconosciuti con il fatto da cui li si è riconosciuti, e quelli esclusi con la ragione dell'esclusione. Dentro un settore riconosciuto ogni pacchetto arriva in tre frasi e mai meno, cioè che cosa fa in linguaggio di chi lo userà, perché a questo progetto potrebbe servire legando la ragione a un fatto di questo repository invece che al trigger generico, e che cosa costa, dove il costo comprende le dipendenze esterne, i token che un server MCP occupa a ogni turno anche quando non viene usato, e soprattutto le capacità che il pacchetto duplicherebbe.
 
@@ -439,7 +439,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**39 pacchetti a cartella** su **90 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**40 pacchetti a cartella** su **91 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -456,6 +456,10 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 - `timeline-progetto` - linea temporale generata, un microstep per voce con la ragione tecnologica adottata: [.claude/templates/timeline-progetto/README.md](.claude/templates/timeline-progetto/README.md)
 - `roadmap` - lista del lavoro aperto generata dallo stato corrente: [.claude/templates/roadmap/README.md](.claude/templates/roadmap/README.md)
 - `micro-passi` - un passo per volta con l'output atteso, e il dettaglio nei documenti: [.claude/templates/micro-passi/README.md](.claude/templates/micro-passi/README.md)
+
+### Macchine e continuità operativa
+
+- `veeam-linux` - backup di una macchina Linux con Veeam Agent, dalla scelta della variante alla rilettura del punto di ripristino, con dieci trappole documentate: [.claude/templates/veeam-linux/README.md](.claude/templates/veeam-linux/README.md)
 
 ### Scrittura, documentazione e tipografia
 
