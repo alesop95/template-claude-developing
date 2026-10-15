@@ -65,6 +65,17 @@ carica_valori() {
     eval "valore=\${$v:-}"
     [ -n "$valore" ] || errore "il file dei valori non definisce $v"
   done
+  TIPO_DEPOSITO="${TIPO_DEPOSITO:-local}"
+  case "$TIPO_DEPOSITO" in
+    local) : ;;
+    smb)
+      [ -n "${SMB_UTENTE:-}" ] || errore "TIPO_DEPOSITO e' smb ma SMB_UTENTE non e' definito"
+      case "$DEPOSITO" in
+        //*) : ;;
+        *) errore "TIPO_DEPOSITO e' smb ma DEPOSITO non ha la forma //server/condivisione: $DEPOSITO" ;;
+      esac ;;
+    *) errore "TIPO_DEPOSITO sconosciuto: $TIPO_DEPOSITO (local oppure smb)" ;;
+  esac
   if [ "$LIVELLO" = "fileLevel" ] && [ -z "${INCLUDI:-}" ]; then
     errore "LIVELLO e' fileLevel ma INCLUDI e' vuoto: ogni punto di innesto da salvare va nominato"
   fi
@@ -88,6 +99,26 @@ cmd_controlli() {
 
   titolo "Filesystem montati"
   df -hT -x tmpfs -x devtmpfs -x squashfs -x efivarfs
+
+  # Un file sparso dichiara una dimensione molto maggiore dei blocchi che
+  # occupa davvero: du conta i blocchi, una lettura sequenziale legge la
+  # dimensione apparente, e il totale che il lavoro dichiara e' calcolato a
+  # blocchi. Non si vede quindi da nessuna parte, e si manifesta solo come una
+  # corsa che legge molto piu' di quanto la macchina contenga e non finisce mai.
+  # Caso osservato il 2026-10-15: un disco virtuale di Docker Desktop fermo da
+  # nove mesi, 376,6 GB apparenti contro 1,7 GB occupati, che da solo moltiplicava
+  # per otto la durata di ogni corsa.
+  titolo "File sparsi (dimensione apparente molto maggiore dei blocchi occupati)"
+  local sparsi
+  sparsi=$(find / /home -xdev -type f -size +2G -printf '%s\t%b\t%p\n' 2>/dev/null \
+    | awk -F'\t' '{app=$1; occ=$2*512; if (occ > 0 && app > occ*1.5) printf "  apparente=%.1f GB  occupato=%.1f GB  %s\n", app/1073741824, occ/1073741824, $3}')
+  if [ -n "$sparsi" ]; then
+    printf '%s\n' "$sparsi"
+    msg ""
+    msg "Ognuno di questi va deciso prima di creare il lavoro: se il contenuto e' vivo si include e si accetta il tempo di lettura, se e' un residuo si mette in ESCLUDI. Deciderlo dopo non ripulisce il pieno gia' scritto, perche' una catena forever forward non crea mai pieni nuovi."
+  else
+    msg "  nessun file sparso oltre i 2 GB"
+  fi
 
   titolo "Presupposti del modulo del kernel"
   msg "header per il kernel in uso: $(dpkg -l "linux-headers-$(uname -r)" 2>/dev/null | grep -c '^ii')"
@@ -162,7 +193,12 @@ cmd_installa() {
   sudo apt update || errore "apt update fallito"
 
   titolo "Agente ($PACCHETTO)"
-  if ! sudo apt install -y "$PACCHETTO"; then
+  # cifs-utils non e' una comodita': la documentazione Veeam lo dichiara
+  # necessario perche' l'agente monta la condivisione con il client cifs del
+  # kernel, e senza quel pacchetto il deposito SMB non si crea.
+  local pacchetti="$PACCHETTO"
+  [ "$TIPO_DEPOSITO" = "smb" ] && pacchetti="$pacchetti cifs-utils"
+  if ! sudo apt install -y $pacchetti; then
     avviso "installazione fallita. Se si tratta della variante con modulo, il registro di compilazione sta in /var/lib/dkms/<modulo>/<versione>/build/make.log: la voce D della guida dice come distinguere un ambiente incompleto da un modulo scritto per un kernel precedente."
     exit 1
   fi
@@ -175,9 +211,21 @@ cmd_installa() {
   msg "Non ha redirezione, di proposito: con l'uscita rediretta la domanda finisce nel file e il terminale sembra bloccato (voce A della guida)."
   vc repository list
 
-  msg ""
-  msg "L'installazione ha aggiunto l'utente al gruppo veeam, ma un processo riceve i propri gruppi al login: questa sessione non lo porta."
-  msg "Aprirne una nuova fa sparire la necessita' di sudo per tutti i comandi successivi."
+  titolo "Gruppo veeam"
+  # Misurato il 2026-10-15 su Ubuntu 26.04 con l'agente 6.3.2.1501:
+  # l'installazione crea il gruppo e NON vi aggiunge l'utente, quindi il gruppo
+  # resta vuoto e ogni comando passa da sudo finche' non lo si aggiunge a mano.
+  # Non si da' quindi per scontato: si guarda.
+  if getent group veeam | cut -d: -f4 | tr ',' '\n' | grep -qx "$(id -un)"; then
+    msg "l'utente $(id -un) appartiene gia' al gruppo veeam"
+  else
+    msg "il gruppo veeam non contiene $(id -un): l'installazione non ve lo ha aggiunto."
+    msg "Senza quel gruppo ogni comando dell'agente passa da sudo. Per toglierlo di mezzo:"
+    msg ""
+    msg "  sudo usermod -aG veeam $(id -un)"
+    msg ""
+  fi
+  msg "In entrambi i casi serve una sessione nuova: un processo riceve i propri gruppi al login e non li rilegge mai piu', quindi questa sessione non li vedra' comunque."
 }
 
 # --- Fasi 3 e 4: configurare ------------------------------------------------
@@ -195,28 +243,67 @@ cmd_configura() {
   titolo "Fase 3, deposito"
   if printf '%s\n' "$depositi" | awk 'NR>1 {print $1}' | grep -Fxq "$NOME_DEPOSITO"; then
     msg "il deposito '$NOME_DEPOSITO' risulta gia' registrato: nessuna azione"
+  elif [ "$TIPO_DEPOSITO" = "smb" ]; then
+    msg "Il comando chiede la password di $SMB_UTENTE a terminale: --password si passa senza valore, cosi' la password non entra nella riga di comando ne' nella cronologia della shell."
+    if [ -n "${SMB_DOMINIO:-}" ]; then
+      vc repository create --name "$NOME_DEPOSITO" --type smb --location "$DEPOSITO" \
+         --username "$SMB_UTENTE" --domain "$SMB_DOMINIO" --password \
+        || errore "creazione del deposito SMB fallita"
+    else
+      vc repository create --name "$NOME_DEPOSITO" --type smb --location "$DEPOSITO" \
+         --username "$SMB_UTENTE" --password \
+        || errore "creazione del deposito SMB fallita. Se il rifiuto riguarda l'autenticazione, la prima cosa da provare e' SMB_DOMINIO con il nome del server"
+    fi
+    msg "creato."
   else
     vc repository create --name "$NOME_DEPOSITO" --location "$DEPOSITO" --type local \
       || errore "creazione del deposito fallita"
     msg "creato."
   fi
+  # La colonna Accessible e' la misura che conta: dopo un errore di
+  # autenticazione la riga del deposito puo' comparire lo stesso.
   vc repository list
 
   titolo "Fase 4, lavoro"
   if printf '%s\n' "$lavori" | awk 'NR>1 {print $1}' | grep -Fxq "$NOME_LAVORO"; then
     msg "il lavoro '$NOME_LAVORO' risulta gia' registrato: nessuna azione"
-  elif [ "$LIVELLO" = "volumeLevel" ]; then
-    vc job create volumeLevel --name "$NOME_LAVORO" --repoName "$NOME_DEPOSITO" \
-       --backupAllSystem --maxPoints "$PUNTI" \
-      || errore "creazione del lavoro fallita. Se il messaggio e' 'Item cannot be backed up without veeam snapshot kernel module', vale la voce C della guida: non c'e' nulla da correggere nella configurazione, va cambiata la variante o il livello"
-    msg "creato."
   else
-    vc job create fileLevel --name "$NOME_LAVORO" --repoName "$NOME_DEPOSITO" \
-       --includeDirs "$INCLUDI" --excludeDirs "${ESCLUDI:-}" --nosnap --maxPoints "$PUNTI" \
-      || errore "creazione del lavoro fallita"
+    # La cifratura si decide qui e non dopo: si cifra il lavoro e non
+    # l'archivio, quindi attivarla in seguito significa rifare il backup.
+    # Il comando chiede password e suggerimento a terminale.
+    local cifra=""
+    if [ "${CIFRATURA:-no}" = "si" ]; then
+      cifra="--setEncryption"
+      msg "Cifratura richiesta: il comando chiedera' una password e un suggerimento a terminale."
+      msg "Quella password va custodita fuori da questa macchina: senza di essa l'archivio non si ripristina e nessuno la puo' recuperare."
+    fi
+    if [ "$LIVELLO" = "volumeLevel" ]; then
+      vc job create volumeLevel --name "$NOME_LAVORO" --repoName "$NOME_DEPOSITO" \
+         --backupAllSystem --maxPoints "$PUNTI" $cifra \
+        || errore "creazione del lavoro fallita. Se il messaggio e' 'Item cannot be backed up without veeam snapshot kernel module', vale la voce C della guida: non c'e' nulla da correggere nella configurazione, va cambiata la variante o il livello"
+    else
+      vc job create fileLevel --name "$NOME_LAVORO" --repoName "$NOME_DEPOSITO" \
+         --includeDirs "$INCLUDI" --excludeDirs "${ESCLUDI:-}" --nosnap --maxPoints "$PUNTI" $cifra \
+        || errore "creazione del lavoro fallita"
+    fi
     msg "creato."
   fi
   vc job list
+
+  # Pianificazione. Senza ORARIO il lavoro resta manuale, che e' il difetto:
+  # una pianificazione si aggiunge in un comando, una pianificazione sbagliata
+  # si scopre quando serve il backup.
+  if [ -n "${ORARIO:-}" ]; then
+    titolo "Pianificazione"
+    vc schedule set --jobName "$NOME_LAVORO" --daily --at "$ORARIO" \
+      || errore "pianificazione fallita"
+    vc schedule show --jobName "$NOME_LAVORO"
+    msg ""
+    msg "Il pieno attivo resta deliberatamente non pianificato: e' cio' che tiene la catena forever forward, cioe' un pieno solo che assorbe il punto piu' vecchio quando la finestra si riempie. Pianificarlo con 'veeamconfig schedule activefull' produrrebbe pieni nuovi e indipendenti, che e' una scelta diversa e va presa apposta."
+  else
+    msg ""
+    msg "ORARIO non e' definito nel file dei valori: il lavoro resta manuale e nessuna corsa partira' da sola."
+  fi
 
   case ",${ESCLUDI:-}," in
     *",$DEPOSITO,"*) : ;;

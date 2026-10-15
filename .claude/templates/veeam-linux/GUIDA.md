@@ -93,7 +93,13 @@ uname -r
 dpkg -l | grep linux-headers
 ```
 
-Lo stesso esito, con la variante raccomandata e il blocco di valori proposto, si ottiene con il sottocomando `controlli`.
+Va cercato qui anche un fenomeno che non si vede in nessuno dei comandi precedenti e che si paga per intero alla prima corsa, cioè i file sparsi: la voce K del troubleshooting dice che cosa sono e come si leggono, e il comando che li trova è questo.
+
+```bash
+find / /home -xdev -type f -size +2G -printf '%s\t%b\t%p\n'
+```
+
+Lo stesso esito, con la variante raccomandata, il blocco di valori proposto e i file sparsi, si ottiene con il sottocomando `controlli`.
 
 ### Fase 1, installare
 
@@ -133,11 +139,21 @@ sudo veeamconfig repository list
 
 ### Fase 3, creare il deposito
 
-Il comando crea anche la cartella se non esiste, e la assegna a `root:veeam`.
+Il deposito può essere locale, su NFS o su una condivisione SMB, e la scelta non è di comodità: un deposito remoto fa nascere l'archivio già fuori dalla macchina che si salva, quindi la fase 7 di questa guida decade insieme al rischio che la fase 7 esiste per coprire. Dove una condivisione esista, è la forma giusta.
+
+Nella forma locale il comando crea anche la cartella se non esiste, e la assegna a `root:veeam`.
 
 ```bash
 sudo veeamconfig repository create --name "$NOME_DEPOSITO" --location "$DEPOSITO" --type local
 ```
+
+Nella forma SMB il percorso si scrive come `//server/condivisione`, eventualmente con una sottocartella, e le credenziali si passano con il solo nome utente: `--password` va passato senza valore, perché è quello che fa comparire il prompt, e così la password non entra né nella riga di comando né nella cronologia della shell. Il parametro `--domain` serve solo dove l'account appartenga a un dominio, e su un account locale di un NAS di norma si omette. Questa forma richiede `cifs-utils` installato, perché l'agente monta la condivisione con il client cifs del kernel.
+
+```bash
+sudo veeamconfig repository create --name "$NOME_DEPOSITO" --type smb --location "$DEPOSITO" --username "$SMB_UTENTE" --password
+```
+
+Un dettaglio che la documentazione non dichiara e che conviene sapere prima di provare: una sottocartella dentro la condivisione, cioè `//server/condivisione/cartella`, funziona, perché il client cifs la gestisce come prefisso del percorso. Misurato il 2026-10-15 su un NAS con l'agente `6.3.2.1501`.
 
 ```bash
 sudo veeamconfig repository list
@@ -293,7 +309,15 @@ Va saputo che l'accettazione non sopravvive a una purga dei pacchetti, quindi qu
 
 Sintomo: qualunque sottocomando, compreso `--help`, risponde con un rifiuto di permesso. Causa: `veeamconfig` e `veeam` sono collegamenti simbolici allo stesso binario `/usr/sbin/veeamworker`, che ha permessi `-rwxr-x---` e appartiene a `root:veeam`; il rifiuto arriva dal filesystem prima che il programma parta, ed è per questo che il messaggio è quello della shell.
 
-Il rimedio non è `sudo`, o non è solo quello. Il gruppo `veeam` esiste proprio per questo, l'installazione del pacchetto vi aggiunge l'utente, e da una sessione che lo porta il binario si esegue senza privilegi: misurato su una macchina reale da una sessione SSH ordinaria, l'elenco dei depositi, quello dei lavori, l'avvio del lavoro, il montaggio del punto di ripristino e la chiusura della sessione di montaggio riescono tutti con stato zero. Il gruppo viene aggiunto dall'installazione, ma un processo riceve i propri gruppi quando la sessione nasce e non li rilegge mai più: la sessione da cui si installa non li ha, e continua a non averli finché resta aperta. Non serve quindi `sudo`, serve una sessione nuova; dove non si voglia o non si possa aprirla, `sudo` resta la via che funziona subito.
+Il rimedio non è `sudo`, o non è solo quello. Il gruppo `veeam` esiste proprio per questo, e da una sessione che lo porta il binario si esegue senza privilegi: misurato su una macchina reale da una sessione SSH ordinaria, l'elenco dei depositi, quello dei lavori, l'avvio del lavoro, il montaggio del punto di ripristino e la chiusura della sessione di montaggio riescono tutti con stato zero.
+
+Sull'appartenenza al gruppo vale però un avvertimento che costa un'ora se si dà per scontato, e che una stesura precedente di questa voce dava per scontato. Non è vero che l'installazione del pacchetto aggiunga l'utente al gruppo: misurato il 2026-10-15 su Ubuntu 26.04 con l'agente `6.3.2.1501`, il gruppo viene creato e resta vuoto, e `getent group veeam` risponde `veeam:x:981:` senza alcun membro. Su altre macchine l'utente vi si trova, quindi il comportamento non è uniforme e la sola cosa sensata è guardare invece di assumere. Dove manchi, lo si aggiunge una volta sola.
+
+```bash
+sudo usermod -aG veeam "$(id -un)"
+```
+
+In entrambi i casi serve poi una sessione nuova, e questa è la parte che non dipende dalla distribuzione: un processo riceve i propri gruppi quando la sessione nasce e non li rilegge mai più, quindi la sessione da cui si installa non li avrà finché resta aperta. Dove non si voglia o non si possa aprirne una, `sudo` resta la via che funziona subito.
 
 Un modo di misurare male questo caso merita una riga, perché costa tempo. Passando l'uscita a un altro comando, per esempio `head`, lo stato restituito è quello dell'ultimo elemento della pipeline e non quello di `veeamconfig`, quindi `$?` risponde zero mentre il comando è fallito. Eseguito da solo, lo stato è `126`, che in una shell POSIX significa esattamente comando trovato ma non eseguibile.
 
@@ -346,6 +370,58 @@ Sintomo: `scp` o una copia da un'altra macchina falliscono per permesso negato s
 Sintomo: `scp` verso un percorso remoto che contiene uno spazio risponde `No such file or directory`, mentre lo stesso percorso elencato con `ls` o `find` sulla macchina remota c'è ed è leggibile. Causa: dalla versione 9.0 OpenSSH usa per `scp` il protocollo SFTP invece del vecchio trasferimento su shell remota, quindi il percorso non viene più interpretato da alcuna shell sulla macchina remota. La ricetta tradizionale, cioè proteggere lo spazio con un secondo livello di virgolette destinato alla shell remota, produce ora un nome di file che contiene davvero i caratteri di virgoletta, e quel file non esiste.
 
 Rimedio: un solo livello di virgolette, quello della shell locale, che passa il percorso come argomento unico. Se serve il comportamento vecchio, per esempio per usare un carattere jolly che qualcuno deve espandere, l'opzione `-O` forza il protocollo precedente e allora la shell remota torna a esistere e le due virgolette tornano necessarie. Il modo di accorgersene senza perdere tempo è che il messaggio nomina il percorso comprese le virgolette: leggerlo per intero, invece di fermarsi alle ultime parole, dice da solo qual è il problema.
+
+### K, la corsa legge molto più di quanto la macchina contenga e non finisce mai
+
+Sintomo: il registro della sessione dichiara `processed` molto maggiore del totale, per esempio 184 GB su un totale dichiarato di 58, e il contatore `transfer` non corrisponde alla dimensione del file che cresce sul deposito. La prima ipotesi che viene in mente è la voce F, cioè il lavoro che copia sé stesso, e di solito è sbagliata: si verifica in un comando guardando se il deposito sia montato dentro un percorso incluso.
+
+Causa: un file *sparso*, cioè un file la cui dimensione apparente supera di molto i blocchi che occupa davvero. Una lettura sequenziale legge la dimensione apparente, mentre `du` conta i blocchi e il totale che il lavoro dichiara è calcolato a blocchi: lo scarto non si vede quindi da nessuna parte prima di provare. Caso osservato il 2026-10-15: il disco virtuale di un Docker Desktop abbandonato da nove mesi, `376,6` GB apparenti contro `1,7` GB occupati, che da solo moltiplicava per otto la durata di ogni corsa. Gli zeri si comprimono quasi a nulla, quindi l'archivio non si gonfia e il sintomo resta il solo tempo.
+
+Rimedio: cercare i file sparsi prima di creare il lavoro e decidere di ciascuno, perché deciderlo dopo non ripulisce il pieno già scritto.
+
+```bash
+find / /home -xdev -type f -size +2G -printf '%s\t%b\t%p\n'
+```
+
+Il primo campo è la dimensione apparente, il secondo è il numero di blocchi da 512 byte: dove il primo supera largamente il secondo moltiplicato per 512, il file è sparso. Se il contenuto è vivo si include e si accetta il tempo di lettura; se è un residuo si mette fra le esclusioni.
+
+### L, dopo una cancellazione il lavoro fallisce con `File exists`
+
+Sintomo: subito dopo aver cancellato un backup con `backup delete --purge`, la corsa successiva fallisce con `Unable to create directory` e, come sola spiegazione, `File exists`. Il messaggio nomina l'effetto e non la causa, ed è il motivo per cui si perde tempo a cercare un residuo che non c'è.
+
+Causa: la cancellazione sul deposito remoto non è istantanea, e la cartella del lavoro continua a essere presentata come esistente per qualche decina di secondi dopo che il comando è tornato. L'agente pretende di creare quella cartella lui e tratta `EEXIST` come errore fatale. Il caso osservato il 2026-10-15 misurava ventisei secondi fra la fine della cancellazione e l'avvio fallito.
+
+Rimedio: aspettare e rilanciare. Prima di cercare un residuo conviene accertare che ci sia davvero, e la verifica va fatta dall'account con cui l'agente scrive, non da un altro: nel caso osservato un client SMB diverso continuava a elencare la cartella da una voce di directory rimasta in cache, mentre dall'account giusto non esisteva già più. Due viste che non concordano su un filesystem di rete sono quasi sempre una cache, non un permesso.
+
+### M, l'health check non si riesce ad abilitare da riga di comando
+
+Sintomo: `veeamconfig healthcheck enable --jobName <lavoro>` risponde `Argument [--jobName] requires following missing argument [--light]`, e aggiungendo `--light` risponde `Health check type 'Light' is not supported by the target repository`. Nessuna forma negata del flag viene accettata, né `--light false`, né `--light=false`, né `--light no`.
+
+Causa: i due vincoli si incastrano. Il controllo sintattico pretende il flag, e la variante leggera esiste nel prodotto per i depositi a oggetti, non per una condivisione di rete o un percorso locale. Ne discende che su un deposito ordinario l'health check non è raggiungibile affatto da riga di comando, mentre l'impostazione esiste e si legge, perché `healthcheck show` dichiara una pianificazione con `Run health check automatically: disabled`.
+
+Rimedio: l'interfaccia a caratteri `veeam`, che è l'altra via esposta dal prodotto, da una sessione che porta il gruppo `veeam`. Misurato il 2026-10-15 con l'agente `6.3.2.1501` su un deposito SMB.
+
+Vale la pena sapere che cosa si perde, perché non è poco e non si vede. L'health check è la sola rilettura periodica dell'archivio già scritto: ricalcola le impronte dei blocchi e confronta con quelle registrate alla scrittura, quindi è l'unica cosa che scopre una corruzione silenziosa prima del giorno del ripristino. Su una catena *forever forward* il peso è maggiore che altrove, perché esiste un pieno solo e tutti i punti della finestra dipendono da lui: una corruzione lì non costa un giorno, costa l'intera finestra. Finché non è attivo, la rilettura resta un gesto manuale da programmare, cioè montare un punto e confrontare, come fa lo script di verifica.
+
+## La pianificazione e la ritenzione
+
+Un lavoro creato senza pianificazione resta manuale, e un backup manuale è un backup che qualcuno deve ricordarsi di fare. La pianificazione si aggiunge in un comando, e si legge in un altro.
+
+```bash
+sudo veeamconfig schedule set --jobName "$NOME_LAVORO" --daily --at "$ORARIO"
+```
+
+```bash
+sudo veeamconfig schedule show --jobName "$NOME_LAVORO"
+```
+
+Sulla ritenzione vale una cosa che cambia il significato di tutto il resto. Senza un pieno attivo pianificato la catena è *forever forward*: esiste un pieno solo, e quando la finestra di `--maxPoints` si riempie il punto più vecchio viene fuso dentro di esso invece di accumulare pieni nuovi. Ne discendono due conseguenze pratiche. La prima è che `--maxPoints` su una macchina sempre accesa equivale a un numero di giorni, mentre sulle macchine spente di notte o nel fine settimana lo stesso numero copre un arco di calendario più lungo, ed è la ragione per cui due macchine con la stessa impostazione mostrano un numero diverso di file. La seconda è che ciò che entra nel pieno vi resta: escludere un percorso dopo non ripulisce il pieno già scritto, e per toglierlo davvero serve un pieno attivo nuovo.
+
+```bash
+sudo veeamconfig schedule activefull show --jobName "$NOME_LAVORO"
+```
+
+Quel comando va letto anche quando non si è pianificato nulla, perché dichiara `Run automatically: disabled`, ed è la riga che certifica che la catena resterà incrementale. Pianificare un pieno attivo è una scelta legittima e opposta, da prendere apposta: costa lo spazio di un pieno intero a ogni occorrenza e in cambio toglie la dipendenza dalla catena.
 
 ## Il criterio che chiude, e che quasi nessuno applica
 
