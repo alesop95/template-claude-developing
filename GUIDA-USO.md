@@ -135,6 +135,7 @@ Tutta la sequenza sta in un comando solo, da lanciare nel proprio terminale dopo
 | Ogni tornata di allineamento | Riattraversare il gate dei pacchetti | no | `/gate-pacchetti` |
 | Periodicamente | Microstep senza ragione dichiarata | no | `python tools/costruisci-timeline.py --senza-ragione` |
 | Periodicamente | Affermazioni che invecchiano | no | `python tools/Test-Allineamento.py` |
+| Periodicamente, nel solo template | Ricontrollare le fonti di scouting per nuovi strumenti | no | `docs/fonti-di-scouting.md`, dalla data dell'ultimo controllo |
 | Una volta per macchina | Igiene dell'account e profili SSH | no | i due comandi dal bundle |
 
 ## Diagnosi: dal sintomo allo strumento
@@ -167,7 +168,7 @@ Qui la risposta alla domanda "si lancia automatico?" è: quasi mai, e per una ra
 
 La domanda è legittima e la risposta onesta è: capisce i settori, non sceglie i pacchetti.
 
-Quando incolli il prompt iniziale e descrivi il progetto, la skill `gate-pacchetti` usa quella descrizione insieme ai fatti che legge sul disco, cioè quali linguaggi ci sono, se esista una cartella di documenti o di fonti, quanto è lunga la storia git, quanti server MCP sono già configurati. Da lì ricava a quali dei dieci settori il progetto appartiene, e te li dichiara con il fatto da cui li ha riconosciuti, perché tu possa correggerli. Un settore che aggiungi si attraversa, uno che togli si salta con la ragione registrata.
+Quando incolli il prompt iniziale e descrivi il progetto, la skill `gate-pacchetti` usa quella descrizione insieme ai fatti che legge sul disco, cioè quali linguaggi ci sono, se esista una cartella di documenti o di fonti, quanto è lunga la storia git, quanti server MCP sono già configurati. Da lì ricava a quali dei dodici settori il progetto appartiene, e te li dichiara con il fatto da cui li ha riconosciuti, perché tu possa correggerli. Un settore che aggiungi si attraversa, uno che togli si salta con la ragione registrata.
 
 Quello che non fa, e non deve fare, è decidere. Dentro un settore riconosciuto ogni pacchetto arriva con tre frasi, cioè che cosa fa, perché a questo progetto potrebbe servire legando la ragione a un fatto del tuo repository invece che a una categoria generica, e che cosa costa, comprese le capacità che duplicherebbe. Poi chiede, e un silenzio non è un sì.
 

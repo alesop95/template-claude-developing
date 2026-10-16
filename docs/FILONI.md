@@ -18,8 +18,12 @@ Un filone nasce con un documento in `docs/` che dichiara il mandato, la data e c
 |---|---|---|---|---|
 | Macchine e osservabilità | Pacchetto `linux-observability`: metriche, log e console locali per macchine Linux, senza abbonamenti | Specifica; pilota reale in corso nei progetti d'origine, pacchetto non rilasciato | Macchine e continuità operativa | `docs/progetto-pacchetto-linux-observability.md` |
 | Modelli locali senza GPU | Inferenza di modelli MoE molto grandi su CPU con gli esperti letti dal disco (`colibri`), e dimensionamento di una macchina domestica da 16 o 32 GB | Aperto il 2026-10-16; fonti lette, nessuna prova eseguita | Da aprire: «Modelli locali e inferenza» | `docs/filone-llm-locali-senza-gpu.md` |
-| Sicurezza informatica | Strumenti open source per l'assessment dei propri sistemi, per scopi etici: vulnerability assessment fatto in proprio come alternativa aperta a Nessus, poi log, risposta agli incidenti, hardening | Aperto il 2026-10-16; censiti dodici scanner di vulnerabilità, due raccolte di studio lette in superficie, nessuno strumento provato | Da aprire: «Sicurezza informatica e assessment» | `docs/filone-cybersecurity.md` |
+| Sicurezza informatica | Strumenti open source per l'assessment dei propri sistemi, per scopi etici: vulnerability assessment fatto in proprio come alternativa aperta a Nessus, poi log, risposta agli incidenti, hardening | Aperto il 2026-10-16; censite sei famiglie (scanner, log, risposta agli incidenti, basi di conoscenza, hardening Windows, telemetria), kit in quattro livelli, percorso di studio su roadmap.sh legato a un laboratorio locale; nessuno strumento provato | Da aprire: «Sicurezza informatica e assessment» | `docs/filone-cybersecurity.md`, tabelle in `docs/filone-cybersecurity-censimento.md` |
 | Strumenti di lavoro degli agenti | Controllo di versione pensato per flussi agentici (Scion di Anthropic) e orchestrazione su Windows (Nimbalyst) | Nimbalyst catalogato il 2026-10-16; Scion osservazione, niente da adottare | Orchestrazione, sessioni e cataloghi di agenti | `docs/filone-strumenti-agentici.md` |
+
+## Da dove arrivano i candidati
+
+Le segnalazioni arrivano dal proprietario, dai progetti istanziati e dalle fonti di scouting, cioè i siti e gli elenchi che si ricontrollano ogni tanto. Le fonti e i candidati di ogni passaggio stanno in `docs/fonti-di-scouting.md`, con la data dell'ultimo controllo; un candidato che apre una linea nuova diventa un filone qui, uno che entra in un settore esistente va direttamente alle quattro domande.
 
 ## Che cosa un filone deve dire prima di entrare nel catalogo
 
