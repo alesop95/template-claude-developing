@@ -42,4 +42,4 @@ Tutto ciò che è specifico della macchina sta nel file dei valori: i digest del
 
 ## Limiti dichiarati
 
-Lo scaffold non è ancora stato tirato su: i digest nel file dei valori sono segnaposto e vanno riempiti con quelli reali delle immagini scelte, lette dal registry al momento dell'adozione. Finché non c'è una prova su una macchina, questo pacchetto è una specifica di laboratorio, non un ambiente collaudato. Su Windows il laboratorio gira dentro Docker Desktop su WSL2; su Linux direttamente su Docker.
+Lo scaffold non è ancora stato tirato su: i digest nel file dei valori sono segnaposto e vanno riempiti con quelli reali delle immagini scelte, lette dal registry al momento dell'adozione. Finché non c'è una prova su una macchina, questo pacchetto è una specifica di laboratorio, non un ambiente collaudato. Su Windows il laboratorio gira dentro Docker Desktop su WSL2; su Linux direttamente su Docker. I limiti precisi di quell'infrastruttura, cioè la rete, i volumi e il fatto che Docker Desktop condivide la macchina virtuale WSL2, stanno in `docs/windows-docker-wsl-vs-linux.md` del template.
