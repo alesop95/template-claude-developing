@@ -439,7 +439,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**41 pacchetti a cartella** su **92 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**43 pacchetti a cartella** su **94 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -460,6 +460,10 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 ### Macchine e continuità operativa
 
 - `veeam-linux` - backup di una macchina Linux con Veeam Agent, dalla scelta della variante alla rilettura del punto di ripristino, con dieci trappole documentate: [.claude/templates/veeam-linux/README.md](.claude/templates/veeam-linux/README.md)
+
+### Sicurezza informatica e assessment
+
+- `cyber-lab` - laboratorio isolato e offline di macchine virtuali e container per studiare la valutazione difensiva dei propri sistemi, che un progetto istanziato tira su con un comando: [.claude/templates/cyber-lab/README.md](.claude/templates/cyber-lab/README.md)
 
 ### Scrittura, documentazione e tipografia
 
@@ -510,6 +514,10 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 ### Economia del contesto e misura del consumo
 
 - `instradamento-modelli` - il lavoro meccanico dei subagent su un modello più economico, impostabile per account, con la misura dei token per modello: [.claude/templates/instradamento-modelli/README.md](.claude/templates/instradamento-modelli/README.md)
+
+### Modelli locali e inferenza
+
+- `llm-local` - far girare e misurare un modello linguistico in locale su CPU con colibri, con un banco di prova portabile che limita la RAM e registra velocità, memoria e letture dal disco: [.claude/templates/llm-local/README.md](.claude/templates/llm-local/README.md)
 
 ### Orchestrazione, sessioni e cataloghi di agenti
 
@@ -593,6 +601,9 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - `multiclaude` di dlorenc, supervisore per feature branch paralleli con gate di review umana (MIT): https://github.com/dlorenc/multiclaude
 - `psmux`, tmux nativo per Windows senza WSL, con supporto agent teams Claude Code (MIT): https://github.com/psmux/psmux
 - `nimbalyst`, spazio di lavoro desktop che fa lavorare più agenti in parallelo su worktree git separati, nativo anche su Windows (MIT): https://github.com/nimbalyst/nimbalyst
+- `colibri` di JustVugg, motore di inferenza in C per modelli a esperti su CPU senza scheda grafica, con gli esperti letti dal disco, base del pacchetto `llm-local` (Apache-2.0): https://github.com/JustVugg/colibri
+- `Greenbone Community Edition` (OpenVAS), scanner di vulnerabilità di rete, alternativa aperta a Nessus, fra gli strumenti del laboratorio `cyber-lab` (GPL-2.0 e AGPL-3.0): https://github.com/greenbone/openvas-scanner
+- `Nuclei` di ProjectDiscovery, scanner a modelli per verifiche di sicurezza ripetibili, nel laboratorio `cyber-lab` (MIT): https://github.com/projectdiscovery/nuclei
 - `tmux-claude-session-manager` di craftzdog, plugin tmux con stato live di tutte le sessioni Claude Code via hook nativi (MIT): https://github.com/craftzdog/tmux-claude-session-manager
 - `claudecode.nvim` di coder, plugin Neovim con protocollo MCP WebSocket in Lua pura (MIT): https://github.com/coder/claudecode.nvim
 - `sentry-mcp`, server MCP ufficiale Sentry per stack trace e correlazione errori-release: implementazione ufficiale Sentry
