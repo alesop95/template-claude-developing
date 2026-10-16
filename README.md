@@ -439,7 +439,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**40 pacchetti a cartella** su **91 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**41 pacchetti a cartella** su **92 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -516,6 +516,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 - `agenti-terminale` - radici isolate, ricostruzione, pulizia e consumo di Claude Code e Codex: [.claude/templates/agenti-terminale/README.md](.claude/templates/agenti-terminale/README.md)
 - `lavoro-a-lotti` - registro riprendibile per lavori estesi su molti elementi: [.claude/templates/lavoro-a-lotti/README.md](.claude/templates/lavoro-a-lotti/README.md)
 - `agent-catalog` - fetch mirato di subagent community da fonti flat: [.claude/templates/agent-catalog/README.md](.claude/templates/agent-catalog/README.md)
+- `nimbalyst` - agenti in parallelo su worktree git separati in un'applicazione desktop nativa anche su Windows; se è già installata il gate chiede se usarla e ne mostra l'uso: [.claude/templates/nimbalyst/README.md](.claude/templates/nimbalyst/README.md)
 <!-- sync-readme:packages:end -->
 
 ## Cosa non finisce nei progetti
@@ -591,6 +592,7 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - `playwright-mcp`, server MCP ufficiale Microsoft per automazione browser e test E2E (MIT): https://github.com/microsoft/playwright-mcp
 - `multiclaude` di dlorenc, supervisore per feature branch paralleli con gate di review umana (MIT): https://github.com/dlorenc/multiclaude
 - `psmux`, tmux nativo per Windows senza WSL, con supporto agent teams Claude Code (MIT): https://github.com/psmux/psmux
+- `nimbalyst`, spazio di lavoro desktop che fa lavorare più agenti in parallelo su worktree git separati, nativo anche su Windows (MIT): https://github.com/nimbalyst/nimbalyst
 - `tmux-claude-session-manager` di craftzdog, plugin tmux con stato live di tutte le sessioni Claude Code via hook nativi (MIT): https://github.com/craftzdog/tmux-claude-session-manager
 - `claudecode.nvim` di coder, plugin Neovim con protocollo MCP WebSocket in Lua pura (MIT): https://github.com/coder/claudecode.nvim
 - `sentry-mcp`, server MCP ufficiale Sentry per stack trace e correlazione errori-release: implementazione ufficiale Sentry
