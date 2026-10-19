@@ -196,7 +196,7 @@ Riguardano i progetti che vogliono scaricare dal conto dei token il lavoro mecca
 
 | Pacchetto | Cosa fa | Quando offrirlo | Cosa istanzia | Note |
 |---|---|---|---|---|
-| `llm-local` | Fa girare un modello su CPU senza scheda grafica con il motore colibri, come servizio che uno script interroga per il lavoro meccanico a lotti al posto di un agente a pagamento; banco di prova che misura RAM, velocità e correttezza su un lotto reale, parametrizzato e portabile fra macchine | Il progetto ha lavoro meccanico ripetitivo e verificabile su molti elementi, o materiale che non può uscire dalla macchina | `tools/bench-colibri.sh` e `llm-local.valori.esempio.sh`; non scarica modelli né installa colibri | Scaffold scritto il 2026-10-16, non ancora eseguito: la misura di correttezza sul lotto non è ancora scritta. Specifica di prova, non risultato. Il filone sta in `docs/filone-llm-locali-senza-gpu.md` |
+| `llm-local` | Fa girare un modello su CPU senza scheda grafica con il motore colibri, come servizio che uno script interroga per il lavoro meccanico a lotti al posto di un agente a pagamento; due banchi che misurano velocità (harness ufficiale sotto tetto di RAM) e correttezza (lotto a risposta nota), parametrizzati e portabili fra macchine | Il progetto ha lavoro meccanico ripetitivo e verificabile su molti elementi, o materiale che non può uscire dalla macchina | `tools/bench-colibri.sh`, `tools/bench-correttezza.py`, i fixture e `llm-local.valori.esempio.sh`; non scarica modelli né installa colibri | Pipeline collaudata il 2026-10-19 su OLMoE (15,7 tok/s ma correttezza 16,7%: modello troppo piccolo); resta da validare un modello adeguato. Il filone sta in `docs/filone-llm-locali-senza-gpu.md` |
 
 ### Orchestrazione, sessioni e cataloghi di agenti
 
