@@ -86,6 +86,7 @@ function Esci-Guardia([string]$m) { Write-Host "GUARDIA: $m"; exit 2 }
 
 $ESITI_SCRITTI = @('NUOVO', 'VECCHIO', 'SUPERATO', 'MERGE', 'INNESCO')
 $MARCATORE = '.claude/allineamento-template.json'
+$RISOLTI = '.claude/allineamento-risolti.json'
 
 # I percorsi che la passata ha toccato, letti dal suo rapporto e non indovinati
 # dall'albero: e' questa la differenza fra un commit dell'allineamento e un
@@ -99,6 +100,10 @@ function Percorsi-Rapporto([string]$rapporto) {
     elseif ($e.esito -eq 'RIMOSSO') { [void]$p.Add($e.file) }
   }
   [void]$p.Add($MARCATORE)
+  # Il registro delle risoluzioni a mano e' parte dell'allineamento come il marcatore: senza,
+  # un conflitto risolto con --risolto restava fuori dal commit e la passata successiva lo
+  # ritrovava aperto. Osservato il 2026-10-19 su tre progetti; si mette in stage solo se e' cambiato.
+  [void]$p.Add($RISOLTI)
   return $p
 }
 
@@ -284,6 +289,14 @@ function Esegui-Autotest {
     Prova "il file nuovo dentro una cartella nuova entra nel commit" ($dentro -contains '.claude/norme/nuova.md')
     Prova "il file di un'altra sessione resta fuori dal commit" (-not ($dentro -contains 'suo.md'))
     Prova "i file lasciati fuori si contano e si dichiarano" ($rA.lasciati -eq 1 -and $rA.file -eq 2)
+
+    # 3b. il registro delle risoluzioni a mano entra nel commit dell'allineamento
+    $h = Nuovo-Repo 'risolti'
+    Scrivi $h 'mio.md' "prima`n"; Scrivi $h '.claude/allineamento-risolti.json' "{}`n"
+    & git -C $h add -A | Out-Null; & git -C $h commit -q -m 'base' | Out-Null
+    Scrivi $h '.claude/allineamento-risolti.json' "{`"tools/x.py`": `"abc`"}`n"
+    $null = Chiudi-Progetto $h $rapA $MSG $true 1 $false $true $null
+    Prova "il registro delle risoluzioni a mano entra nel commit" ((@(& git -C $h show --name-only --pretty=format: HEAD) -contains '.claude/allineamento-risolti.json'))
 
     # 4. un albero senza niente da committare non produce un commit vuoto
     $b = Nuovo-Repo 'pulito'
