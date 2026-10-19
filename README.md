@@ -517,7 +517,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 
 ### Modelli locali e inferenza
 
-- `llm-local` - far girare e misurare un modello linguistico in locale su CPU con colibri, con un banco di prova portabile che limita la RAM e registra velocità, memoria e letture dal disco: [.claude/templates/llm-local/README.md](.claude/templates/llm-local/README.md)
+- `llm-local` - offload del lavoro meccanico a un modello locale su CPU con colibri, con rilevamento dell'ambiente, runner a lotti riprendibile e banchi di velocità e correttezza: [.claude/templates/llm-local/README.md](.claude/templates/llm-local/README.md)
 
 ### Orchestrazione, sessioni e cataloghi di agenti
 

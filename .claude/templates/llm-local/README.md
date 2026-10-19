@@ -1,8 +1,8 @@
 # Pacchetto opzionale `llm-local`
 
-<!-- readme-summary: far girare e misurare un modello linguistico in locale su CPU con colibri, con un banco di prova portabile che limita la RAM e registra velocità, memoria e letture dal disco -->
+<!-- readme-summary: offload del lavoro meccanico a un modello locale su CPU con colibri, con rilevamento dell'ambiente, runner a lotti riprendibile e banchi di velocità e correttezza -->
 
-> Fa girare un modello linguistico in locale, su CPU e senza scheda grafica, con il motore colibri, come servizio che uno script interroga per il lavoro meccanico a lotti al posto di un agente a pagamento. Il banco di prova risponde a due domande: quanta RAM serve a questa macchina per un dato modello, e se il lavoro meccanico esce corretto da un modello piccolo in locale. È parametrizzato e portabile, così lo stesso studio si rifà su un'altra macchina cambiando un file di valori. Settore del catalogo: «Modelli locali e inferenza». Stato: scaffold scritto il 2026-10-16, non ancora eseguito; il filone che lo motiva è `docs/filone-llm-locali-senza-gpu.md` del template.
+> Sposta il lavoro meccanico a lotti su un modello linguistico locale, su CPU e senza scheda grafica, servito da colibri, così non costa token di un agente a pagamento. Dà tre cose: un rilevamento che dice se la macchina è pronta e, su Windows, che si passa da WSL; un runner che manda un lotto al modello locale e ne raccoglie gli esiti, riprendibile e componibile con `lavoro-a-lotti`; e due banchi che misurano velocità e correttezza. A cosa serve, in quali compiti e fasi di progetto, e quali progetti ne giovano, sta in `docs/offload-modello-locale.md` del template. Settore del catalogo: «Modelli locali e inferenza». Il filone con le misure è `docs/filone-llm-locali-senza-gpu.md`.
 
 ## A chi serve
 
@@ -10,7 +10,18 @@ A un progetto che vuole scaricare dal conto dei token il lavoro meccanico, cioè
 
 ## Che cosa istanzia
 
-Nel progetto che lo adotta scaffolda `tools/bench-colibri.sh`, il banco di prova, e `llm-local.valori.esempio.sh`, il file dei parametri da copiare in `llm-local.valori.sh` (ignorato da git) e compilare con i percorsi reali. Non scarica modelli e non installa colibri: sono passi espliciti, perché un modello pesa decine o centinaia di gigabyte e l'installazione tocca la macchina.
+Nel progetto che lo adotta scaffolda cinque strumenti e un file di parametri. Il rilevamento, `tools/rileva.sh` e su Windows l'involucro `tools/Rileva-ModelloLocale.ps1` che entra in WSL, dice in sola lettura se l'ambiente è adatto, se colibri è compilato, quali modelli sono presenti e se l'endpoint è in ascolto. Il runner di offload, `tools/offload-lotto.py`, manda un lotto di compiti al modello locale e ne scrive gli esiti su disco, saltando quelli già fatti. I due banchi, `tools/bench-colibri.sh` per la velocità e `tools/bench-correttezza.py` con `fixtures/` per la correttezza, misurano se un modello conviene. Il file `llm-local.valori.esempio.sh` si copia in `llm-local.valori.sh`, ignorato da git, e si compila con i percorsi reali. Non scarica modelli e non installa colibri: sono passi espliciti, perché un modello pesa decine o centinaia di gigabyte e l'installazione tocca la macchina.
+
+## Verificare se è pronto, e mandare un lotto
+
+Il primo gesto è il rilevamento. Su Windows, dalla radice del progetto, `powershell -File .claude/templates/llm-local/tools/Rileva-ModelloLocale.ps1`; su Linux, `bash tools/rileva.sh`. Dice che cosa manca e, se tutto c'è, che un modello è utilizzabile. Poi si avvia il servizio con `coli serve` e si manda il lotto, un JSONL con una riga per elemento, ciascuna con un `id` e un `prompt`:
+
+```bash
+python3 tools/offload-lotto.py --base-url http://127.0.0.1:8000/v1 --model <id> \
+  --ingresso lotto.jsonl --uscita esiti.jsonl --max-tokens 64
+```
+
+Gli esiti sono un JSONL che conserva l'elemento e la risposta grezza, non una decisione presa: la verifica a valle resta di chi li usa, perché nemmeno un buon modello locale è esatto sempre. Il lavoro è riprendibile, quindi una corsa interrotta riparte dove si era fermata, ed è la stessa forma del pacchetto `lavoro-a-lotti`, con cui si compone.
 
 ## Perché colibri e perché misurare
 
@@ -20,7 +31,7 @@ La scelta dei modelli con cui si misura dipende dalla domanda. Per decidere fra 
 
 ## Come si limita la RAM senza toglierla alla macchina
 
-Non si cambia la RAM fisica e non si cambia il tetto globale di WSL, che fermerebbe anche altro. Si limita il solo processo del motore con un gruppo di controllo, e il tetto deve contare anche la cache dei file, perché è lì che restano gli esperti letti dal disco: un tetto che contasse solo la memoria privata misurerebbe una macchina grande travestita da piccola. Su Linux con systemd il banco usa `systemd-run --user --scope -p MemoryMax=<tetto>`, verificato disponibile sulla macchina di sviluppo il 2026-10-16.
+Non si cambia la RAM fisica e non si cambia il tetto globale di WSL, che fermerebbe anche altro. Il limite si dà a colibri con il suo parametro `--ram`, che è ciò con cui il motore dimensiona la cache degli esperti. Una lezione misurata il 2026-10-19 ha corretto la prima versione del banco, che imponeva il limite dall'esterno con un gruppo di controllo stretto: quel limite non riduce la cache, la sopprime, perché colibri non lo legge come budget e il gruppo di controllo gli impedisce di allocarla, lasciandola vuota e falsando la prova. Il banco usa quindi `--ram` come limite vero e tiene il gruppo di controllo `systemd-run --user --scope -p MemoryMax=...` solo come muro di sicurezza qualche gigabyte sopra il budget, non come limite. Il dettaglio sta in `docs/filone-llm-locali-senza-gpu.md` del template.
 
 ## Recap d'uso
 
@@ -49,7 +60,7 @@ Il banco non reinventa la misura: tiene il server `coli serve` sotto il tetto di
 
 ## Stato del collaudo
 
-La catena è stata provata per intero il 2026-10-19 su una macchina Windows con WSL, su CPU e senza scheda grafica, con due modelli di taglia opposta. I due banchi funzionano: `bench-colibri.sh` avvia `coli serve` sotto il gruppo di controllo e lo misura con l'harness ufficiale; `bench-correttezza.py` interroga l'endpoint con un lotto di dodici classificazioni a risposta nota. Il modello piccolo, OLMoE, è veloce ma inutile: 15,7 token al secondo e correttezza del 16,7 per cento. Il modello grande, Qwen3-Coder-30B-A3B, è lento ma affidabile: circa 1,9 token al secondo e correttezza del 91,7 per cento. Il pacchetto è quindi validato, e con esso la risposta: l'offload del lavoro meccanico su un modello locale è realizzabile con un modello adeguato, per lavoro a lotti e non interattivo, con un controllo di correttezza a valle. Resta aperto l'effetto della RAM, perché a 16 e a 32 GB la velocità è risultata uguale. Il dettaglio, con la spiegazione dei termini, sta in `docs/filone-llm-locali-senza-gpu.md` del template.
+La catena è stata provata per intero il 2026-10-19 su una macchina Windows con WSL, su CPU e senza scheda grafica, con due modelli di taglia opposta. I due banchi funzionano: `bench-colibri.sh` avvia `coli serve` sotto il gruppo di controllo e lo misura con l'harness ufficiale; `bench-correttezza.py` interroga l'endpoint con un lotto di dodici classificazioni a risposta nota. Il modello piccolo, OLMoE, è veloce ma inutile: 15,7 token al secondo e correttezza del 16,7 per cento. Il modello grande, Qwen3-Coder-30B-A3B, è lento ma affidabile: circa 1,9 token al secondo e correttezza del 91,7 per cento. Qwen3.6-35B-A3B, provato come alternativa, fa meglio su entrambi: 100 per cento di correttezza e 2,81 token al secondo, ed è il modello di riferimento consigliato. Il runner `offload-lotto.py` è stato provato dal vivo sullo stesso modello: elabora un lotto e, rilanciato, salta gli elementi già fatti, cioè è riprendibile come promette. Il pacchetto è quindi validato, e con esso la risposta: l'offload del lavoro meccanico su un modello locale è realizzabile con un modello adeguato, per lavoro a lotti e non interattivo, con un controllo di correttezza a valle. Sulla RAM la misura è conclusa: a 16 e a 32 GB la velocità è uguale anche su carico vario, perché su questa CPU il collo di bottiglia è il calcolo e non il disco, quindi 16 GB bastano. Il dettaglio, con la spiegazione dei termini, sta in `docs/filone-llm-locali-senza-gpu.md` del template.
 
 ## Limiti dichiarati
 
