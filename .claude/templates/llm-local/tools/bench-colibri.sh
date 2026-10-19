@@ -23,8 +23,12 @@ done
 command -v systemd-run >/dev/null || { echo "systemd-run assente: serve systemd per limitare la RAM del solo processo" >&2; exit 2; }
 command -v python3 >/dev/null || { echo "python3 assente: serve per l'harness ufficiale" >&2; exit 2; }
 [ -x "$COLI_DIR/coli" ] || { echo "motore colibri non compilato in $COLI_DIR/coli" >&2; exit 2; }
-HARNESS="$COLI_DIR/c/tools/benchmark_http_serving.py"
-[ -f "$HARNESS" ] || { echo "harness ufficiale assente: $HARNESS" >&2; exit 2; }
+# L'harness ufficiale sta in tools/ accanto a coli (build con coli in c/) oppure in c/tools/ (coli a radice): si cerca in entrambi.
+HARNESS=""
+for cand in "$COLI_DIR/tools/benchmark_http_serving.py" "$COLI_DIR/c/tools/benchmark_http_serving.py"; do
+  [ -f "$cand" ] && { HARNESS="$cand"; break; }
+done
+[ -n "$HARNESS" ] || { echo "harness ufficiale benchmark_http_serving.py non trovato sotto $COLI_DIR" >&2; exit 2; }
 
 SRC="$MAGAZZINO/${MODELLI[$MODELLO]}"
 [ -d "$SRC" ] || { echo "modello non presente nel magazzino: $SRC" >&2; exit 2; }
@@ -57,10 +61,16 @@ svuota_cache() {
 echo "== prova: modello=$MODELLO tetto=$RAM cartella=$RUNDIR porta=$PORTA"
 svuota_cache
 
-# Il server (il processo che carica il modello) gira sotto il gruppo di controllo col tetto di RAM, che conta anche la cache dei file.
-echo "avvio coli serve sotto MemoryMax=$RAM ..."
-systemd-run --user --scope -p "MemoryMax=$RAM" -p "MemorySwapMax=0" --unit "$SCOPE" \
-  env COLI_MODEL="$RUNDIR" COLI_API_KEY=local "$COLI_DIR/coli" serve --host 127.0.0.1 --port "$PORTA" --model-id "$MODEL_ID" &
+# Il limite di memoria lo impone --ram a colibri, NON il gruppo di controllo. Misurato il 2026-10-19: un MemoryMax stretto
+# non limita la cache degli esperti, la sopprime, tenendola vuota e falsando la prova (vedi docs/filone-llm-locali-senza-gpu.md).
+# colibri dimensiona la cache sul proprio --ram; il gruppo di controllo resta solo come muro di sicurezza sopra il budget, non come limite.
+CAP_GB="$(printf '%s' "$RAM" | sed -E 's/[Gg].*$//')"
+RAM_BUDGET="$CAP_GB"
+WALL_GB=$(( CAP_GB + 6 ))
+
+echo "avvio coli serve con --ram $RAM_BUDGET (muro di sicurezza MemoryMax=${WALL_GB}G) ..."
+systemd-run --user --scope -p "MemoryMax=${WALL_GB}G" -p "MemorySwapMax=0" --unit "$SCOPE" \
+  env COLI_MODEL="$RUNDIR" COLI_API_KEY=local "$COLI_DIR/coli" serve --host 127.0.0.1 --port "$PORTA" --model-id "$MODEL_ID" --ram "$RAM_BUDGET" &
 SERVE_BG=$!
 
 # Attesa che l'endpoint risponda (massimo ~120s: un modello grande ci mette a caricare).
