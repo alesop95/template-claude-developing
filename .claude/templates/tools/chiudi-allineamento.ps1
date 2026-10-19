@@ -67,7 +67,8 @@ param(
   [int]$Tentativi = 3,
   [switch]$SoloPush,
   [switch]$SaltaPush,
-  [switch]$Autotest
+  [switch]$Autotest,
+  [string]$AutotestSsh = ''
 )
 Set-StrictMode -Version 2
 $ErrorActionPreference = 'Continue'
@@ -77,12 +78,11 @@ function Dividi([string[]]$v) { @($v | ForEach-Object { $_ -split ',' } | ForEac
 $Solo = Dividi $Solo; $Escludi = Dividi $Escludi
 
 function Esci-Guardia([string]$m) { Write-Host "GUARDIA: $m"; exit 2 }
-# Non si chiama Git: in PowerShell una funzione con quel nome copre git.exe e
-# richiamerebbe se stessa all'infinito.
-function Invoca-Git([string]$repo) {
-  $out = & git -C $repo @args 2>$null
-  return $out
-}
+# Invoca-Git ed Esiste valgono per un progetto locale e per uno ssh://<alias>/<percorso>:
+# per un progetto in una macchina via SSH commit e push girano sulla macchina, con
+# l'identita' git, il ramo, gli hook e le chiavi di quel progetto, che e' il suo
+# version control e non quello di questa postazione.
+. (Join-Path $PSScriptRoot 'trasporto-ssh.ps1')
 
 $ESITI_SCRITTI = @('NUOVO', 'VECCHIO', 'SUPERATO', 'MERGE', 'INNESCO')
 $MARCATORE = '.claude/allineamento-template.json'
@@ -126,12 +126,12 @@ function Smista([string]$prj, [string]$rapporto) {
 }
 
 function Ha-Remoto([string]$prj) {
-  & git -C $prj rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null | Out-Null
+  Invoca-Git $prj rev-parse --abbrev-ref --symbolic-full-name '@{u}' | Out-Null
   return ($LASTEXITCODE -eq 0)
 }
 
 function Avanti([string]$prj) {
-  $n = & git -C $prj rev-list --count '@{u}..HEAD' 2>$null
+  $n = Invoca-Git $prj rev-list --count '@{u}..HEAD'
   if ($LASTEXITCODE -ne 0) { return 0 }
   return [int]$n
 }
@@ -140,7 +140,7 @@ function Avanti([string]$prj) {
 # parte dello strumento, con attese crescenti. L'azione e' iniettabile per potere
 # provare la ripetizione senza una rete.
 function Spingi([string]$prj, [int]$tentativi, $azione, [int[]]$attese = @(5, 15, 30)) {
-  if (-not $azione) { $azione = { param($p) & git -C $p push 2>&1 | Out-Null; return $LASTEXITCODE } }
+  if (-not $azione) { $azione = { param($p) Invoca-Git $p push | Out-Null; return $LASTEXITCODE } }
   for ($i = 1; $i -le $tentativi; $i++) {
     $codice = & $azione $prj
     if ($codice -eq 0) { return [pscustomobject]@{ ok = $true; tentativi = $i } }
@@ -153,7 +153,7 @@ function Chiudi-Progetto([string]$prj, [string]$rapporto, [string]$messaggio,
                          [bool]$applica, [int]$tentativi, [bool]$soloPush, [bool]$saltaPush, $azionePush) {
   $r = [pscustomobject]@{ percorso = $prj; esito = ''; file = 0; lasciati = 0; commit = ''; push = ''; tentativi = 0 }
 
-  if (-not (Test-Path -LiteralPath $prj)) { $r.esito = 'cartella sparita'; return $r }
+  if (-not (Esiste $prj '' 'cartella')) { $r.esito = 'cartella sparita'; return $r }
   Invoca-Git $prj rev-parse --git-dir | Out-Null
   if ($LASTEXITCODE -ne 0) { $r.esito = 'non e un repository'; return $r }
   $branch = (Invoca-Git $prj rev-parse --abbrev-ref HEAD)
@@ -169,10 +169,10 @@ function Chiudi-Progetto([string]$prj, [string]$rapporto, [string]$messaggio,
         # portare centinaia di percorsi.
         for ($i = 0; $i -lt $s.miei.Count; $i += 60) {
           $blocco = @($s.miei[$i..([Math]::Min($i + 59, $s.miei.Count - 1))])
-          & git -C $prj add -- @blocco 2>&1 | Out-Null
+          Invoca-Git $prj add -- @blocco | Out-Null
           if ($LASTEXITCODE -ne 0) { $r.esito = 'git add fallito'; return $r }
         }
-        & git -C $prj commit -m $messaggio 2>&1 | Out-Null
+        Invoca-Git $prj commit -m $messaggio | Out-Null
         if ($LASTEXITCODE -ne 0) { $r.esito = 'commit rifiutato'; return $r }
         $r.commit = (Invoca-Git $prj rev-parse --short HEAD)
         $r.esito = 'committato'
@@ -311,7 +311,46 @@ function Messaggio-Predefinito([string]$commit) {
   return "Allineamento dal template al commit $breve"
 }
 
+# La stessa prova dello stage selettivo, ma su un progetto in una macchina via SSH:
+# le prove qui sopra non passano mai dal trasporto, e un trasporto che cita male un
+# percorso o perde un codice di uscita le lascerebbe verdi. Il repository di prova
+# vive in ~/.cache della macchina e si cancella alla fine; nessun progetto si tocca.
+function Esegui-AutotestSsh([string]$alias) {
+  $script:casi = @()
+  function Prova([string]$nome, [bool]$esito) { $script:casi += [pscustomobject]@{ nome = $nome; ok = $esito } }
+  $dir = '.cache/autotest-chiudi-allineamento-' + [guid]::NewGuid().ToString('N').Substring(0, 8)
+  $abs = @(Esegui-Ssh $alias ('d="$HOME/' + $dir + '"; mkdir -p "$d/.claude/norme" && cd "$d" && git init -q -b main && git config user.name prova && git config user.email prova@esempio.invalid && git config commit.gpgsign false && echo prima > "con spazio.md" && echo prima > suo.md && git add -A && git commit -q -m base && echo aggiornato > "con spazio.md" && echo altrui > suo.md && echo nuova > .claude/norme/nuova.md && echo "$d"'))
+  if (-not $abs -or $abs[-1] -notlike '/*') { Write-Host "  KO  repository di prova non creato su $alias"; return 1 }
+  $prj = "ssh://$alias" + $abs[-1]
+  $rap = Join-Path ([System.IO.Path]::GetTempPath()) ("autotest-ssh-" + [guid]::NewGuid().ToString('N').Substring(0, 8) + '.json')
+  try {
+    [System.IO.File]::WriteAllText($rap, (ConvertTo-Json @(
+      @{ file = 'con spazio.md'; template = 'con spazio.md'; esito = 'VECCHIO' },
+      @{ file = '.claude/norme/nuova.md'; template = '.claude/norme/nuova.md'; esito = 'NUOVO' }) -Depth 3), $utf8)
+    Prova 'il progetto remoto esiste visto dal trasporto' (Esiste $prj '' 'cartella')
+    Prova 'un percorso remoto assente non esiste' (-not (Esiste $prj 'manca.md'))
+    $r = Chiudi-Progetto $prj $rap "Allineamento dal template al commit abc1234" $true 1 $false $true $null
+    $dentro = @(Invoca-Git $prj show --name-only --pretty=format: HEAD | Where-Object { $_ })
+    Prova 'via ssh il file con uno spazio nel nome entra nel commit' ($dentro -contains 'con spazio.md')
+    Prova 'via ssh il file nuovo in una cartella nuova entra nel commit' ($dentro -contains '.claude/norme/nuova.md')
+    Prova "via ssh il file di un'altra sessione resta fuori" (-not ($dentro -contains 'suo.md'))
+    Prova 'via ssh il commit porta il messaggio intero' ((@(Invoca-Git $prj log -1 --format=%s) -join '') -eq 'Allineamento dal template al commit abc1234')
+    Prova 'via ssh esito e conteggi tornano giusti' ($r.esito -eq 'committato' -and $r.file -eq 2 -and $r.lasciati -eq 1)
+    Prova 'via ssh un progetto senza upstream non ha remoto' (-not (Ha-Remoto $prj))
+  }
+  finally {
+    Remove-Item -LiteralPath $rap -Force -ErrorAction SilentlyContinue
+    $null = Esegui-Ssh $alias ('rm -rf "$HOME/' + $dir + '"')
+  }
+  $caduti = @($casi | Where-Object { -not $_.ok })
+  foreach ($c in $casi) { $segno = 'ok'; if (-not $c.ok) { $segno = 'KO' }; Write-Host ("  {0}  {1}" -f $segno, $c.nome) }
+  Write-Host ("{0} casi su {1}, {2} falliti" -f $casi.Count, $alias, $caduti.Count)
+  if ($caduti) { return 1 }
+  return 0
+}
+
 if ($Autotest) { exit (Esegui-Autotest) }
+if ($AutotestSsh) { exit (Esegui-AutotestSsh $AutotestSsh) }
 
 # --- guardie ----------------------------------------------------------------
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) { Esci-Guardia 'git non e nel PATH' }
@@ -328,7 +367,7 @@ $voci = @()
 foreach ($k in ($registro.Keys | Sort-Object)) {
   $v = $registro[$k]
   if ($v.stato -ne 'applicato') { continue }
-  $nome = Split-Path $k -Leaf
+  $nome = Nome-Progetto $k
   if ($Solo -and -not ($Solo | Where-Object { $nome -like "*$_*" })) { continue }
   if ($Escludi | Where-Object { $nome -like "*$_*" }) { continue }
   $voci += [pscustomobject]@{ percorso = $k; nome = $nome; rapporto = $v.rapporto; commit = $v.template_commit; misurato = $v.misurato_il }
