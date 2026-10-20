@@ -199,6 +199,9 @@ $controlli = @(
     @{ n = "lint-strumenti.py";       a = @(); solobundle = $true },
     @{ n = "test-tipografia.py";      a = @(); solobundle = $true },
     @{ n = "test-documenti-personali.py"; a = @(); solobundle = $true },
+    # Dal 2026-10-20: il controllo delle fonti a monte e i segni della retrospettiva.
+    @{ n = "fonti-a-monte.py";        a = @("--autotest"); solobundle = $true },
+    @{ n = "retro-segnali.py";        a = @("--autotest"); solobundle = $true },
     @{ n = "verifica-link-progetto.py"; a = @("--prova"); solobundle = $true }
 )
 

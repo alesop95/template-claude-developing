@@ -347,6 +347,23 @@ python .claude/templates/tools/lezioni-template.py raccogli
 python .claude/templates/tools/lezioni-template.py recepisci <progetto> L-001 --dove "file"
 ```
 
+## fonti-a-monte.py
+
+Dice quando è cambiato un repository GitHub altrui il cui contenuto è descritto da una scheda di pacchetto, così che la scheda non resti falsa senza che nessuno se ne accorga. Il registro è `.claude/templates/fonti-a-monte.json`, una voce per repository con la cartella interna che la scheda descrive e l'ultimo commit di quella cartella confrontato con la scheda. `controlla` chiede all'API pubblica di GitHub i commit che hanno toccato la cartella, senza scaricare niente, tace sui repository invariati e per quelli cambiati dice quanti commit e dove leggere la differenza; esce con 0 anche quando trova cambiamenti o non raggiunge la rete, salvo `--rigoroso`. `segna` registra come verificato il commit di adesso, e si lancia dopo aver corretto la scheda. Gira all'apertura di ogni sessione del template, dopo `lezioni-template.py raccogli`: è la direttiva del proprietario del 2026-10-20, dopo che la scheda di `matt-pocock-skills` aveva consigliato per un giorno una skill tolta a monte. Si sorvegliano solo i repository di cui una scheda descrive il contenuto, non quelli soltanto citati. L'`--autotest` ha 13 casi, senza rete.
+
+```powershell
+python .claude/templates/tools/fonti-a-monte.py controlla
+python .claude/templates/tools/fonti-a-monte.py segna mattpocock/skills
+```
+
+## retro-segnali.py
+
+La parte deterministica della skill `retrospettiva`: legge la trascrizione JSONL della sessione più recente del progetto, sotto `CLAUDE_CONFIG_DIR` oppure `~/.claude`, e conta senza modello i comandi falliti, le chiamate negate, i file letti almeno tre volte, le ricerche ripetute, i risultati oltre ventimila caratteri e i messaggi dell'utente che correggono o interrompono, ciascuno con il turno e un estratto. Le chiamate dei subagent restano fuori. Con `--json` scrive i segni in un file, di norma sotto `_notes/retrospettiva/`. Su questa macchina il wipe cancella la trascrizione di una sessione chiusa, quindi lo strumento si lancia nella sessione stessa, prima di chiudere; le trascrizioni di Codex non sono ancora lette. L'`--autotest` ha 12 casi su una trascrizione costruita.
+
+```powershell
+python .claude/templates/tools/retro-segnali.py --json _notes/retrospettiva/segnali.json
+```
+
 ## lint-strumenti.py
 
 Esegue ruff, alle regole predefinite, sugli strumenti Python del template, ed è fra i controlli di chiusura del solo template. Attua la regola della sezione 16 di `PROJECT-SYSTEM.md` sui controlli di qualità adottati da un progetto: il 2026-10-19 un progetto istanziato ha trovato con ruff riscontri in quattro copie del template, e misurati qui con le stesse regole erano 42 in 17 strumenti, corretti alla fonte. Le regole sono `E4,E7,E9,F`, scritte nello strumento e non lasciate al predefinito di ruff: sono il predefinito fino alla 0.14, cioè il minimo che un progetto adotta senza configurare niente, e il predefinito cambia con la versione. Al primo commit lo stesso albero, a zero con ruff 0.14.2, dava 1.098 riscontri con la 0.17.1, tutti di regole entrate nel predefinito dopo. Le fixture di `md-unwrap` restano fuori, perché sono materiale di confronto byte per byte. Se ruff non è installato il controllo fallisce e dice come installarlo, invece di saltarsi da solo.
