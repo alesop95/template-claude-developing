@@ -73,6 +73,8 @@ ncambi="$(git status --porcelain | wc -l | tr -d ' ')"
 if [ "$ncambi" = 0 ]; then nota "albero pulito: niente da committare"
 else git --no-pager status --short; git rev-parse -q --verify HEAD >/dev/null && git --no-pager diff --stat HEAD; fi
 resume="_notes/RESUME-PROMPT.md"
+# Anche il nome storico con il trattino basso, che riprendi accetta gia'.
+[ ! -f "$resume" ] && [ -f _notes/RESUME_PROMPT.md ] && resume="_notes/RESUME_PROMPT.md"
 if [ -f "$resume" ] && [ -n "$(find "$resume" -mtime +0 2>/dev/null)" ]; then
     nota "attenzione: $resume non e' stato aggiornato nelle ultime 24 ore"
 fi

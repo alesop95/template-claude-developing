@@ -150,7 +150,10 @@ if ($cambi.Count -eq 0) {
     if (& git rev-parse -q --verify HEAD) { & git --no-pager diff --stat HEAD }
 }
 
+# Anche il nome storico con il trattino basso, che riprendi e verifica-ripresa accettano gia': un
+# progetto che lo usa lo aveva cambiato a mano in questa riga, e la propagazione lo sovrascriveva.
 $resume = "_notes\RESUME-PROMPT.md"
+if (-not (Test-Path $resume) -and (Test-Path "_notes\RESUME_PROMPT.md")) { $resume = "_notes\RESUME_PROMPT.md" }
 if (Test-Path $resume) {
     if ((Get-Item $resume).LastWriteTime.Date -lt (Get-Date).Date) {
         Write-Host "   attenzione: $resume non e' stato aggiornato oggi; l'impronta dira' che git e' noto, non dove eravamo" -ForegroundColor Yellow
