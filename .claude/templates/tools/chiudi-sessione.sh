@@ -95,7 +95,7 @@ lint-didattica.py||.claude/context/studio-didattico-master.md|0
 fix-accents.py|--check $m .||0
 fix-dashes.py|--check $m .||0
 fix-missing-accents.py|--check $m .||0
-sync-codex-skills.py|--project-root . --check|.claude/skills|0
+sync-codex-skills.py|--project-root . --check|.agents/skills|0
 verifica-link-progetto.py|--check --senza-rete|tools/verifica-link-progetto.json|0
 check-copie-modelli.py|||1
 check-catalogo.py|||1
