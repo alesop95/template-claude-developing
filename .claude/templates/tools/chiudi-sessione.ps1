@@ -202,6 +202,7 @@ $controlli = @(
     # Dal 2026-10-20: il controllo delle fonti a monte e i segni della retrospettiva.
     @{ n = "fonti-a-monte.py";        a = @("--autotest"); solobundle = $true },
     @{ n = "retro-segnali.py";        a = @("--autotest"); solobundle = $true },
+    @{ n = "lint-cultura.py";         a = @("--autotest"); solobundle = $true },
     @{ n = "verifica-link-progetto.py"; a = @("--prova"); solobundle = $true }
 )
 
@@ -265,6 +266,17 @@ if ($python -and (Test-Path $fonti)) {
     $righeF = @($uscitaF | Where-Object { "$_".Trim() -and "$_" -notmatch '^censimento: 0 nuovi, 0 tolti' })
     if ($righeF.Count -gt 0) { Titolo "Fonti a monte"; $righeF | ForEach-Object { Write-Host "   $_" } }
     if ($codiceF -ne 0) { $falliti += "fonti-a-monte.py" }
+}
+
+# Le conversioni PowerShell che dipendono dalla cultura di sistema, dal 2026-10-20 (lezione di un
+# progetto istanziato): nel template fermano il commit, nel progetto avvisano.
+$cultura = ".claude\templates\tools\lint-cultura.py"
+if ($python -and (Test-Path $cultura)) {
+    $uscitaC = & $python $cultura . 2>&1
+    $codiceC = $LASTEXITCODE
+    $righeC = @($uscitaC | Where-Object { "$_".Trim() -and "$_" -notmatch '^lint-cultura: nessuna' })
+    if ($righeC.Count -gt 0) { Titolo "Cultura nelle conversioni"; $righeC | Select-Object -Last 12 | ForEach-Object { Write-Host "   $_" } }
+    if ($codiceC -ne 0) { $falliti += "lint-cultura.py" }
 }
 
 if ($falliti.Count -gt 0) {

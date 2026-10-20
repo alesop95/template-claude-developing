@@ -117,6 +117,7 @@ Divide in categorie invece di produrre un elenco unico, e la ragione vale come c
 
 Le radici che identificano un percorso non si configurano: si leggono da git. Un elenco scritto a mano sarebbe un secondo posto dove vive lo stesso fatto, e divergerebbe in silenzio, perché il sintomo di una cartella non controllata e l'assenza di segnalazioni.
 
+Dal 2026-10-20 c'è una quinta categoria, che vale solo in un progetto ospite: propagato. Un documento che scrive l'allineamento, cioè regole, norme, `PROJECT-SYSTEM.md`, prompt e le skill che il template porta, lette dall'elenco delle skill di sistema e dall'elenco `spediti` del registro delle fonti a monte, non lo corregge il progetto, quindi un suo riferimento rotto si mostra e non ferma la chiusura; lo corregge il template, che quei documenti li controlla in modalità bundle. Nasce dalle lezioni L-002 e L-005 di un progetto istanziato: il marcatore sulla riga era un rimedio puntuale, e la skill `riprendi` del 2026-10-20 ha riaperto il difetto in quattro dei sei progetti che lanciano il controllo.
 ```
 python tools/lint-doc-references.py
 python tools/lint-doc-references.py --solo-vivi
@@ -363,6 +364,14 @@ python .claude/templates/tools/fonti-a-monte.py censisci --check
 python .claude/templates/tools/fonti-a-monte.py segna mattpocock/skills
 python .claude/templates/tools/fonti-a-monte.py cita owner/repo --motivo "soltanto citato in un elenco"
 python .claude/templates/tools/fonti-a-monte.py sorveglia owner/repo --cartella skills
+```
+
+## lint-cultura.py
+
+Segnala le conversioni PowerShell da testo a numero o a data che dipendono dalla cultura di sistema: `[double]::Parse`, `TryParse` e `[Convert]::ToDouble`, e gli stessi per `decimal`, `single`, `float` e `datetime`, chiamati senza un fornitore di formato. Nasce da una lezione di un progetto istanziato del 2026-10-20: la durata di un video letta da ffprobe come `300.012000` diventava trecento milioni in cultura italiana, senza nessun errore. Lo strumento conta gli argomenti di primo livello della chiamata e accetta la riga se oltre al testo c'è un argomento che non è un `[ref]` né uno stile, cioè la cultura, anche passata per variabile; i tipi interi, il cast `[double]"1.5"` e `-as` restano fuori perché non sbagliano in silenzio, e `# cultura-ok` marca un'eccezione voluta. Percorre i `.ps1` e `.psm1` tracciati. `chiudi` lo lancia in ogni progetto: nel template un riscontro ferma il commit, in un progetto avvisa, salvo `--rigoroso`. Alla prima corsa ha trovato nel template `[datetime]::Parse` in `chiudi-allineamento.ps1`, corretto anche se il formato letto è ISO e quindi oggi non sbagliava, e nei progetti locali tre conversioni in due progetti. L'`--autotest` ha 17 casi, e le mutazioni sul conteggio degli argomenti e sul riconoscimento degli stili ne fanno cadere almeno uno.
+
+```powershell
+python .claude/templates/tools/lint-cultura.py .
 ```
 
 ## retro-segnali.py

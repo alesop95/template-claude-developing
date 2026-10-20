@@ -106,6 +106,7 @@ test-tipografia.py|||1
 test-documenti-personali.py|||1
 fonti-a-monte.py|--autotest||1
 retro-segnali.py|--autotest||1
+lint-cultura.py|--autotest||1
 verifica-link-progetto.py|--prova||1"
 
 falliti=""
@@ -140,6 +141,15 @@ if [ -n "$python" ] && [ -f .claude/templates/tools/fonti-a-monte.py ]; then
     fon=$(printf '%s\n' "$fon" | grep -v '^[[:space:]]*$' | grep -v '^censimento: 0 nuovi, 0 tolti' || true)
     if [ -n "$fon" ]; then titolo "Fonti a monte"; printf '%s\n' "$fon" | sed 's/^/   /'; fi
     if [ "$cf" != 0 ]; then falliti="$falliti fonti-a-monte.py"; fi
+fi
+# Le conversioni PowerShell che dipendono dalla cultura di sistema, dal 2026-10-20: nel template
+# fermano il commit, nel progetto avvisano.
+if [ -n "$python" ] && [ -f .claude/templates/tools/lint-cultura.py ]; then
+    cc=0
+    cul=$("$python" .claude/templates/tools/lint-cultura.py . 2>&1) || cc=$?
+    cul=$(printf '%s\n' "$cul" | grep -v '^[[:space:]]*$' | grep -v '^lint-cultura: nessuna' | tail -n 12 || true)
+    if [ -n "$cul" ]; then titolo "Cultura nelle conversioni"; printf '%s\n' "$cul" | sed 's/^/   /'; fi
+    if [ "$cc" != 0 ]; then falliti="$falliti lint-cultura.py"; fi
 fi
 if [ -n "$falliti" ]; then printf '\nControlli falliti:%s. Mi fermo prima del commit.\n' "$falliti"; exit 1; fi
 [ $solo = 1 ] && { printf '\nControlli verdi.\n'; exit 0; }
