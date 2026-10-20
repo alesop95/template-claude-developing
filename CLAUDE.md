@@ -6,6 +6,8 @@ Una modifica committata sotto `.claude/` del template non arriva da sola ai prog
 
 Quando cambia una capacità pubblica del template, usa la skill `.claude/skills/sync-readme/` per aggiornare la prosa del README e poi esegui `python .claude/templates/readme-sync/tools/sync-readme.py --write --bundle`. Prima di consegnare comandi di version control esegui la stessa CLI con `--check --bundle`: controlla indice, inventario e link locali.
 
+All'apertura di una sessione, dopo la verifica di ripresa e prima di qualunque funzionalità nuova, si raccoglie il debito dei progetti verso il template con `python .claude/templates/tools/lezioni-template.py raccogli`, che legge il registro delle lezioni di ogni progetto istanziato, locale o in una macchina raggiungibile via SSH: le lezioni aperte si recepiscono prima, cioè si portano qui se passano le due domande della sezione 16 di `.claude/PROJECT-SYSTEM.md` e si chiudono con `recepisci` nello stesso commit della modifica. È la direttiva del proprietario del 2026-10-19, nata dal fatto che fino a quel giorno le lezioni arrivavano solo come note portate a mano da un repository all'altro.
+
 A fine sessione aggiorna `_notes/RESUME-PROMPT.md` e scrivi in `_notes/COMMIT-MSG.txt` il messaggio di commit proposto. La chiusura la esegue l'utente, dopo aver chiuso Claude, con `.claude/templates/tools/chiudi-sessione.ps1`: controlli, commit con conferma, push verificato, impronta e wipe. Lo stesso vale per ogni milestone a metà sessione: a blocco concluso scrivi `_notes/COMMIT-MSG.txt` e proponi `chiudi`, una milestone per commit, invece di consegnare comandi git sparsi.
 
 ## Norme caricate su richiesta

@@ -125,7 +125,9 @@ function Smista([string]$prj, [string]$rapporto) {
   $attesi = Percorsi-Rapporto $rapporto
   $miei = @(); $altrui = @()
   foreach ($f in (Sporchi $prj)) {
-    if ($attesi.Contains($f)) { $miei += $f } else { $altrui += $f }
+    # Gli adattatori Codex sono generati dalla passata con sync-codex-skills, non scritti dal
+    # rapporto: senza questa riga restavano fuori dal commit e la chiusura del progetto si fermava.
+    if ($attesi.Contains($f) -or $f -like '.agents/skills/*') { $miei += $f } else { $altrui += $f }
   }
   return [pscustomobject]@{ miei = $miei; altrui = $altrui }
 }
@@ -297,6 +299,14 @@ function Esegui-Autotest {
     Scrivi $h '.claude/allineamento-risolti.json' "{`"tools/x.py`": `"abc`"}`n"
     $null = Chiudi-Progetto $h $rapA $MSG $true 1 $false $true $null
     Prova "il registro delle risoluzioni a mano entra nel commit" ((@(& git -C $h show --name-only --pretty=format: HEAD) -contains '.claude/allineamento-risolti.json'))
+
+    # 3c. l'adattatore Codex generato dalla passata entra nel commit
+    $k = Nuovo-Repo 'adattatori'
+    Scrivi $k 'mio.md' "prima`n"
+    & git -C $k add -A | Out-Null; & git -C $k commit -q -m 'base' | Out-Null
+    Scrivi $k '.agents/skills/nuova/SKILL.md' "adattatore`n"
+    $null = Chiudi-Progetto $k $rapA $MSG $true 1 $false $true $null
+    Prova "l'adattatore Codex generato dalla passata entra nel commit" ((@(& git -C $k show --name-only --pretty=format: HEAD) -contains '.agents/skills/nuova/SKILL.md'))
 
     # 4. un albero senza niente da committare non produce un commit vuoto
     $b = Nuovo-Repo 'pulito'
