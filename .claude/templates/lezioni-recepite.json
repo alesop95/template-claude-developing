@@ -5,5 +5,19 @@
     "commit": "",
     "data": "2026-10-19",
     "dove": "allinea-tutti.ps1 e chiudi-allineamento.ps1: sync-codex-skills dopo la scrittura, adattatori nel commit"
+  },
+  {
+    "progetto": "my-wedding-day",
+    "id": "L-001",
+    "commit": "",
+    "data": "2026-10-20",
+    "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md, sezione Una prova dal vivo si fa dove sta il codice"
+  },
+  {
+    "progetto": "my-wedding-day",
+    "id": "L-002",
+    "commit": "",
+    "data": "2026-10-20",
+    "dove": ".claude/templates/fix-typography/README.md, esclusioni per percorso"
   }
 ]
