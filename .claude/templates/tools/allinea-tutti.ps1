@@ -534,7 +534,9 @@ try {
           # progetto che riceve una skill nuova si trovava la chiusura ferma su sync-codex-skills:
           # misurato il 2026-10-19 su un progetto istanziato con cerca-pacchetto, segnalato da quel
           # progetto. Lo strumento e' quello del template, che arriva in ogni progetto.
-          if ($codice -lt 2) {
+          # Solo dove gli adattatori esistono gia': la prima corsa del 2026-10-20 li lanciava ovunque e
+          # ha creato da zero .agents/ in ventotto progetti che non avevano mai scelto Codex.
+          if ($codice -lt 2 -and (Esiste $prj '.agents/skills' 'cartella')) {
             if (Test-Remoto $prj) {
               $r = Dividi-Remoto $prj
               $null = Esegui-Ssh $r.alias ('python3 ' + (Q "$($tplRemoti[$r.alias])/.claude/templates/tools/sync-codex-skills.py") + ' --project-root ' + (Q $r.percorso) + ' >/dev/null 2>&1')

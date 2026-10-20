@@ -715,6 +715,11 @@ def main():
         # l'innesco esiste. Le skill senza una riga nel modello restano fuori da sé
         if skill_prj.is_dir():
             nomi |= {d.name for d in skill_prj.iterdir() if d.is_dir()}
+        # Anche le skill che questa stessa passata porta come nuove: senza, la loro riga
+        # arrivava solo alla passata successiva e ogni progetto risultava incompleto. Misurato
+        # il 2026-10-20 con craft-apps diventata di sistema: 37 progetti su 37.
+        nomi |= {e["file"].split("/")[2] for e in esiti
+                 if e["esito"] == "NUOVO" and e["file"].startswith(".claude/skills/") and e["file"].count("/") >= 3}
         skill = sorted(nomi)
         dati, mancanti, dove = innesco(tpl, prj, skill)
         if dati is not None:

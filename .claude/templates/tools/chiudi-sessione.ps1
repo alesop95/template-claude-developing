@@ -192,8 +192,10 @@ if (-not $python) {
 # deve al template; nel template, il debito di tutti i progetti, prima della prossima funzionalita'.
 $lezioni = ".claude\templates\tools\lezioni-template.py"
 if ($python -and (Test-Path $lezioni)) {
-    $modo = if ($bundle) { "raccogli" } else { "controlla" }
-    $uscitaLez = & $python $lezioni $modo 2>&1
+    # Nel template solo i progetti locali: la raccolta completa, VM comprese, si fa all'apertura
+    # della sessione. Il 2026-10-20 la lettura via SSH ha tenuto ferma una chiusura.
+    $argLez = if ($bundle) { @("raccogli", "--solo-locali") } else { @("controlla") }
+    $uscitaLez = & $python $lezioni @argLez 2>&1
     $righe = @($uscitaLez | Where-Object { "$_".Trim() })
     if ($bundle) { $righe = @($righe | Select-Object -Last 3) }
     if ($righe.Count -gt 0) { Titolo "Lezioni per il template"; $righe | ForEach-Object { Write-Host "   $_" } }

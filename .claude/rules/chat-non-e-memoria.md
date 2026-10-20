@@ -28,7 +28,7 @@ Il controllo umano non sparisce, si sposta dove è efficace: sul diff e sul comm
 
 ## Le lezioni che valgono oltre il progetto
 
-In un progetto istanziato dal template, una lezione che passa le due domande della sezione 16 di `.claude/PROJECT-SYSTEM.md`, cioè che resta vera tolti i nomi propri e non è già nella testa di chi lavora bene, si registra nel giro in cui nasce con `python .claude/templates/tools/lezioni-template.py nuova "titolo" --testo "..."`, che la scrive in `.claude/memory/lezioni-template.md`; la voce del work-log di quel giro porta `**Template:** L-<numero>`, oppure `**Template:** nessuna`. Il registro non si manda a mano: il template lo legge da sé a ogni apertura di sessione, e una lezione si chiude quando il template la elenca in `.claude/templates/lezioni-recepite.json`, che arriva con l'allineamento. Il controllo dentro `chiudi` mostra le lezioni aperte e le voci senza campo, e non blocca.
+In un progetto istanziato dal template, una lezione che passa le due domande della sezione 16 di `.claude/PROJECT-SYSTEM.md`, cioè che resta vera tolti i nomi propri e non è già nella testa di chi lavora bene, si registra nel giro in cui nasce con `python .claude/templates/tools/lezioni-template.py nuova "titolo" --testo "..."`, che la scrive in `.claude/memory/lezioni-template.md`; la voce del work-log di quel giro porta `**Template:** L-<numero>`, oppure `**Template:** nessuna`. Il registro non si manda a mano: il template lo legge da sé a ogni apertura di sessione, e una lezione si chiude quando il template la elenca in `.claude/templates/lezioni-recepite.json`, che arriva con l'allineamento. Il controllo dentro `chiudi` mostra le lezioni aperte e le voci senza campo, e non blocca. <!-- ref-assente -->
 
 ## Il presidio
 

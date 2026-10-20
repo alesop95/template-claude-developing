@@ -100,7 +100,11 @@ def cmd_nuova(radice: Path, titolo: str, testo: str) -> str:
     numeri = [int(v["id"][2:]) for v in leggi_voci(attuale)]
     nuovo = "L-%03d" % (max(numeri, default=0) + 1)
     titolo = " ".join(titolo.split())
-    voce = "\n## %s - %s - %s\n\n%s\n" % (nuovo, oggi(), titolo, " ".join(testo.split()) or "Da descrivere: che cosa, misurato come, e perché vale oltre il progetto.")
+    # Il corpo si conserva com'è, paragrafi, tabelle e blocchi di codice compresi: la prima
+    # versione lo univa in una riga sola e un progetto istanziato ha visto un blocco recintato
+    # diventare testo in linea, il 2026-10-20. Si normalizzano soltanto le fini riga.
+    corpo = testo.replace("\r\n", "\n").replace("\r", "\n").strip("\n").rstrip()
+    voce = "\n## %s - %s - %s\n\n%s\n" % (nuovo, oggi(), titolo, corpo or "Da descrivere: che cosa, misurato come, e perché vale oltre il progetto.")
     with f.open("a", encoding="utf-8", newline="\n") as h:
         h.write(voce)
     return nuovo
@@ -162,18 +166,27 @@ def leggi_remoto(prj: str, rel: str) -> str | None:
     m = re.match(r"^ssh://([^/]+)(/.*)$", prj)
     if not m:
         return None
-    r = subprocess.run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8", m.group(1),
-                        "cat '" + m.group(2).rstrip("/") + "/" + rel + "' 2>/dev/null"],
-                       capture_output=True, text=True, encoding="utf-8", errors="replace")
+    # Un tempo massimo per macchina: il 2026-10-20 `chiudi` è rimasto fermo su questa lettura.
+    try:
+        # -n e stdin chiuso: lanciato da un terminale interattivo, ssh ereditava la console e
+        # restava in attesa sullo standard input, e con lui tutta la chiusura.
+        r = subprocess.run(["ssh", "-n", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8", m.group(1),
+                            "cat '" + m.group(2).rstrip("/") + "/" + rel + "' 2>/dev/null"],
+                           capture_output=True, text=True, encoding="utf-8", errors="replace",
+                           stdin=subprocess.DEVNULL, timeout=25)
+    except subprocess.TimeoutExpired:
+        return None
     return r.stdout if r.returncode == 0 else ""
 
 
-def cmd_raccogli(template: Path) -> int:
+def cmd_raccogli(template: Path, solo_locali: bool = False) -> int:
     reg = template / "_notes" / "allineamento" / "registro.json"
     if not reg.is_file():
         print("lezioni-template: registro di allinea-tutti assente, nessun elenco di progetti")
         return 0
     progetti = sorted(json.loads(reg.read_text(encoding="utf-8")).keys())
+    if solo_locali:
+        progetti = [p for p in progetti if not p.startswith("ssh://")]
     recepite = leggi_recepite(template)
     totale, con_debito, irraggiungibili = 0, 0, []
     for prj in progetti:
@@ -231,6 +244,12 @@ def autotest() -> int:
         b = cmd_nuova(prj, "un'altra", "")
         caso("le lezioni si numerano in ordine", (a, b) == ("L-001", "L-002"))
         caso("il registro nasce con la data di adozione", ADOTTATO.search((prj / REGISTRO).read_text(encoding="utf-8")) is not None)
+        strutturato = "Primo paragrafo.\n\nSecondo paragrafo.\n\n```markdown\n| A | B |\n|---|---|\n```"
+        altro = Path(d) / "struttura"
+        (altro / ".claude" / "memory").mkdir(parents=True)
+        c3 = cmd_nuova(altro, "con struttura", strutturato)
+        voce3 = [v for v in leggi_voci((altro / REGISTRO).read_text(encoding="utf-8")) if v["id"] == c3][0]
+        caso("paragrafi e blocchi di codice del corpo restano com'erano", voce3["testo"] == strutturato)
         ad = ADOTTATO.search((prj / REGISTRO).read_text(encoding="utf-8")).group(1)
         (prj / WORKLOG).write_text(
             "# Work-log\n\n## %s - passo con lezione\n\nTesto.\n\n**Template:** L-001, l'allineamento non sincronizza Codex\n\n"
@@ -275,9 +294,12 @@ def main(argv=None) -> int:
     pn = sub.add_parser("nuova", help="registra una lezione nel progetto")
     pn.add_argument("titolo")
     pn.add_argument("--testo", default="")
+    pn.add_argument("--testo-file", dest="testo_file", help="file Markdown con il corpo, per i corpi lunghi o strutturati")
     pc = sub.add_parser("controlla", help="nel progetto: lezioni aperte e work-log senza campo")
     pc.add_argument("--rigoroso", action="store_true")
-    sub.add_parser("raccogli", help="nel template: le lezioni aperte di tutti i progetti")
+    prc = sub.add_parser("raccogli", help="nel template: le lezioni aperte di tutti i progetti")
+    prc.add_argument("--solo-locali", action="store_true", dest="solo_locali",
+                     help="senza le macchine via SSH, per i controlli che devono restare veloci")
     pr = sub.add_parser("recepisci", help="nel template: chiude una lezione recepita")
     pr.add_argument("progetto")
     pr.add_argument("id")
@@ -291,12 +313,13 @@ def main(argv=None) -> int:
         return autotest()
     radice = Path(a.radice)
     if a.comando == "nuova":
-        print("registrata " + cmd_nuova(radice, a.titolo, a.testo) + " in " + str(REGISTRO))
+        testo = Path(a.testo_file).read_text(encoding="utf-8") if a.testo_file else a.testo
+        print("registrata " + cmd_nuova(radice, a.titolo, testo) + " in " + str(REGISTRO))
         return 0
     if a.comando == "controlla":
         return cmd_controlla(radice, a.rigoroso)
     if a.comando == "raccogli":
-        return cmd_raccogli(radice)
+        return cmd_raccogli(radice, a.solo_locali)
     if a.comando == "recepisci":
         cmd_recepisci(radice, a.progetto, a.id, a.commit, a.dove)
         print("recepita %s %s" % (a.progetto, a.id))
