@@ -256,6 +256,17 @@ if ($python -and (Test-Path $lezioni)) {
     if ($righe.Count -gt 0) { Titolo "Lezioni per il template"; $righe | ForEach-Object { Write-Host "   $_" } }
 }
 
+# Le fonti a monte, dal 2026-10-20: nel template un repository citato e non censito ferma il
+# commit, cosi' registro e schede entrano insieme; nel progetto il censimento avvisa e basta.
+$fonti = ".claude\templates\tools\fonti-a-monte.py"
+if ($python -and (Test-Path $fonti)) {
+    $uscitaF = & $python $fonti censisci --check 2>&1
+    $codiceF = $LASTEXITCODE
+    $righeF = @($uscitaF | Where-Object { "$_".Trim() -and "$_" -notmatch '^censimento: 0 nuovi, 0 tolti' })
+    if ($righeF.Count -gt 0) { Titolo "Fonti a monte"; $righeF | ForEach-Object { Write-Host "   $_" } }
+    if ($codiceF -ne 0) { $falliti += "fonti-a-monte.py" }
+}
+
 if ($falliti.Count -gt 0) {
     Write-Host ""
     Write-Host "Controlli falliti: $($falliti -join ', '). Mi fermo prima del commit." -ForegroundColor Red

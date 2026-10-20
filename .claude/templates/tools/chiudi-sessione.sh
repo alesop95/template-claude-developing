@@ -132,6 +132,15 @@ if [ -n "$python" ] && [ -f .claude/templates/tools/lezioni-template.py ]; then
     [ $bundle = 1 ] && lez=$(printf '%s\n' "$lez" | tail -n 3)
     if [ -n "$lez" ]; then titolo "Lezioni per il template"; printf '%s\n' "$lez" | sed 's/^/   /'; fi
 fi
+# Le fonti a monte, dal 2026-10-20: nel template un repository citato e non censito ferma il
+# commit; nel progetto il censimento avvisa e basta.
+if [ -n "$python" ] && [ -f .claude/templates/tools/fonti-a-monte.py ]; then
+    cf=0
+    fon=$("$python" .claude/templates/tools/fonti-a-monte.py censisci --check 2>&1) || cf=$?
+    fon=$(printf '%s\n' "$fon" | grep -v '^[[:space:]]*$' | grep -v '^censimento: 0 nuovi, 0 tolti' || true)
+    if [ -n "$fon" ]; then titolo "Fonti a monte"; printf '%s\n' "$fon" | sed 's/^/   /'; fi
+    if [ "$cf" != 0 ]; then falliti="$falliti fonti-a-monte.py"; fi
+fi
 if [ -n "$falliti" ]; then printf '\nControlli falliti:%s. Mi fermo prima del commit.\n' "$falliti"; exit 1; fi
 [ $solo = 1 ] && { printf '\nControlli verdi.\n'; exit 0; }
 
