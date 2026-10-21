@@ -51,7 +51,7 @@ pre{font:13px/1.5 "IBM Plex Mono",ui-monospace,monospace;background:var(--code-b
 .case{border:1px solid var(--rule);padding:10px 14px}
 .case h3{margin:0 0 4px;font-size:14px}
 .case p{font-size:14px}
-.tag{font:600 11px "IBM Plex Mono",monospace;color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+.tag{display:block;margin:-.2rem 0 .4rem;font:600 11px "IBM Plex Mono",monospace;color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
 footer{margin-top:28px;padding-top:10px;border-top:1px solid var(--rule);font:12px "IBM Plex Mono",monospace;color:var(--muted)}
 @media print{
   :root{--bg:#fff;--paper:#fff;--ink:#000;--muted:#444;--rule:#bbb;--accent:#1f6f5c;--accent-soft:#fff;--code-bg:#f2f2f2;--warn:#000;--warn-soft:#fff}
@@ -229,26 +229,26 @@ claude-account2</pre>
 
 <h2 id="casi"><span class="n">8</span>Casi d'uso</h2>
 <div class="cases">
-<div class="case"><span class="tag">quotidiano</span><h3>Salvo e continuo</h3><p>Milestone a metà: <code>chiudi</code>, <code>s</code>, e riprendi a scrivere nella stessa chat.</p></div>
-<div class="case"><span class="tag">quotidiano</span><h3>Fine giornata</h3><p>Chiudi Claude, <code>chiudi</code>, <code>s</code>. Domani: <code>claude-account2</code>, <code>/riprendi</code>.</p></div>
-<div class="case"><span class="tag">quotidiano</span><h3>Solo verificare</h3><p><code>chiudi -SoloControlli</code>: vedi se è tutto verde senza committare.</p></div>
-<div class="case"><span class="tag">errore</span><h3>Un controllo è rosso</h3><p>chiudi si ferma e mostra le ultime righe dell'errore. Incollale all'agente, che corregge; rilancia <code>chiudi</code>.</p></div>
-<div class="case"><span class="tag">errore</span><h3>Hook rifiuta il messaggio</h3><p>Troppo lungo o con attribuzione. Chiedi all'agente un messaggio nuovo, oppure <code>chiudi -Messaggio "…"</code>.</p></div>
-<div class="case"><span class="tag">errore</span><h3>Uscita 3</h3><p>Commit e push sono fatti; l'impronta no (di solito manca <code>_notes/RESUME-PROMPT.md</code>). Alla riapertura /riprendi lo segnalerà.</p></div>
-<div class="case"><span class="tag">errore</span><h3>Push fallito</h3><p>Rete o permessi. Il commit resta locale e l'impronta non si registra. Risolto il problema, rilancia <code>chiudi</code>: non ricommitta, pusha e registra.</p></div>
-<div class="case"><span class="tag">errore</span><h3>Identità mancante</h3><p>chiudi si ferma. Imposta <code>user.name</code> e <code>user.email</code> locali del repository e rilancia.</p></div>
-<div class="case"><span class="tag">rami</span><h3>Ramo nuovo</h3><p><code>git switch -c nome</code>, lavori, <code>chiudi</code>: pusha con <code>-u</code> e collega il ramo remoto. Provato.</p></div>
-<div class="case"><span class="tag">rami</span><h3>HEAD staccato</h3><p>chiudi si ferma subito: <code>git switch &lt;ramo&gt;</code> e rilancia. Provato.</p></div>
-<div class="case"><span class="tag">rami</span><h3>Repository senza origin</h3><p>Commit locale, push saltato con avviso, impronta registrata. Provato.</p></div>
-<div class="case"><span class="tag">ripresa</span><h3>La sessione è caduta</h3><p>Niente di perso su disco. <code>/riprendi</code> vede l'impronta vecchia e ti dice cosa manca; poi <code>chiudi</code>.</p></div>
-<div class="case"><span class="tag">ripresa</span><h3>Lavoro fatto altrove</h3><p><code>git pull</code>, <code>claude-account2</code>, <code>/git-sync</code>, <code>/sync-context</code>.</p></div>
-<div class="case"><span class="tag">agenti</span><h3>Uso Codex</h3><p><code>codex-account2</code>. Stesse regole da <code>AGENTS.md</code>: memoria a ogni giro, COMMIT-MSG, nessuna attribuzione. Chiusura identica: <code>chiudi</code>.</p></div>
-<div class="case"><span class="tag">git</span><h3>Commit di una parte sola</h3><p>chiudi committa tutto. Per una parte, l'agente ti dà i comandi git per esteso (<code>git add</code> dei soli file, <code>git commit -m</code>, <code>git push</code>).</p></div>
-<div class="case"><span class="tag">progetti</span><h3>Progetto senza chiudi</h3><p><code>chiudi</code> dice che non è istanziato. Allinea il progetto: <code>/riprendi</code>, <code>/gate-pacchetti</code>.</p></div>
-<div class="case"><span class="tag">wipe</span><h3>Wipe rimandato</h3><p>Altre sessioni Claude aperte. Chiudile e lancia i comandi stampati, o lascia fare alla prossima chiusura.</p></div>
-<div class="case"><span class="tag">norme</span><h3>All'avvio: instruction file oltre il limite</h3><p>Le regole sempre attive pesano troppo. <code>python tools/misura-istruzioni.py</code>, poi sposta in una skill le norme la cui applicabilità dipende da una scelta di configurazione. Sezione 4.</p></div>
-<div class="case"><span class="tag">norme</span><h3>L'agente non ha caricato la norma</h3><p>Sta lavorando su prove, fonti irraggiungibili, alberi di lavoro o separazione ambienti senza la norma. Digitane il nome: <code>/prove-che-misurano</code> e le altre tre della sezione 4.</p></div>
-<div class="case"><span class="tag">conferma</span><h3>Ho risposto N</h3><p>Niente committato. Correggi ciò che non ti convince e rilancia.</p></div>
+<div class="case"><h3>Salvo e continuo</h3><span class="tag">quotidiano</span><p>Milestone a metà: <code>chiudi</code>, <code>s</code>, e riprendi a scrivere nella stessa chat.</p></div>
+<div class="case"><h3>Fine giornata</h3><span class="tag">quotidiano</span><p>Chiudi Claude, <code>chiudi</code>, <code>s</code>. Domani: <code>claude-account2</code>, <code>/riprendi</code>.</p></div>
+<div class="case"><h3>Solo verificare</h3><span class="tag">quotidiano</span><p><code>chiudi -SoloControlli</code>: vedi se è tutto verde senza committare.</p></div>
+<div class="case"><h3>Un controllo è rosso</h3><span class="tag">errore</span><p>chiudi si ferma e mostra le ultime righe dell'errore. Incollale all'agente, che corregge; rilancia <code>chiudi</code>.</p></div>
+<div class="case"><h3>Hook rifiuta il messaggio</h3><span class="tag">errore</span><p>Troppo lungo o con attribuzione. Chiedi all'agente un messaggio nuovo, oppure <code>chiudi -Messaggio "…"</code>.</p></div>
+<div class="case"><h3>Uscita 3</h3><span class="tag">errore</span><p>Commit e push sono fatti; l'impronta no (di solito manca <code>_notes/RESUME-PROMPT.md</code>). Alla riapertura /riprendi lo segnalerà.</p></div>
+<div class="case"><h3>Push fallito</h3><span class="tag">errore</span><p>Rete o permessi. Il commit resta locale e l'impronta non si registra. Risolto il problema, rilancia <code>chiudi</code>: non ricommitta, pusha e registra.</p></div>
+<div class="case"><h3>Identità mancante</h3><span class="tag">errore</span><p>chiudi si ferma. Imposta <code>user.name</code> e <code>user.email</code> locali del repository e rilancia.</p></div>
+<div class="case"><h3>Ramo nuovo</h3><span class="tag">rami</span><p><code>git switch -c nome</code>, lavori, <code>chiudi</code>: pusha con <code>-u</code> e collega il ramo remoto. Provato.</p></div>
+<div class="case"><h3>HEAD staccato</h3><span class="tag">rami</span><p>chiudi si ferma subito: <code>git switch &lt;ramo&gt;</code> e rilancia. Provato.</p></div>
+<div class="case"><h3>Repository senza origin</h3><span class="tag">rami</span><p>Commit locale, push saltato con avviso, impronta registrata. Provato.</p></div>
+<div class="case"><h3>La sessione è caduta</h3><span class="tag">ripresa</span><p>Niente di perso su disco. <code>/riprendi</code> vede l'impronta vecchia e ti dice cosa manca; poi <code>chiudi</code>.</p></div>
+<div class="case"><h3>Lavoro fatto altrove</h3><span class="tag">ripresa</span><p><code>git pull</code>, <code>claude-account2</code>, <code>/git-sync</code>, <code>/sync-context</code>.</p></div>
+<div class="case"><h3>Uso Codex</h3><span class="tag">agenti</span><p><code>codex-account2</code>. Stesse regole da <code>AGENTS.md</code>: memoria a ogni giro, COMMIT-MSG, nessuna attribuzione. Chiusura identica: <code>chiudi</code>.</p></div>
+<div class="case"><h3>Commit di una parte sola</h3><span class="tag">git</span><p>chiudi committa tutto. Per una parte, l'agente ti dà i comandi git per esteso (<code>git add</code> dei soli file, <code>git commit -m</code>, <code>git push</code>).</p></div>
+<div class="case"><h3>Progetto senza chiudi</h3><span class="tag">progetti</span><p><code>chiudi</code> dice che non è istanziato. Allinea il progetto: <code>/riprendi</code>, <code>/gate-pacchetti</code>.</p></div>
+<div class="case"><h3>Wipe rimandato</h3><span class="tag">wipe</span><p>Altre sessioni Claude aperte. Chiudile e lancia i comandi stampati, o lascia fare alla prossima chiusura.</p></div>
+<div class="case"><h3>All'avvio: instruction file oltre il limite</h3><span class="tag">norme</span><p>Le regole sempre attive pesano troppo. <code>python tools/misura-istruzioni.py</code>, poi sposta in una skill le norme la cui applicabilità dipende da una scelta di configurazione. Sezione 4.</p></div>
+<div class="case"><h3>L'agente non ha caricato la norma</h3><span class="tag">norme</span><p>Sta lavorando su prove, fonti irraggiungibili, alberi di lavoro o separazione ambienti senza la norma. Digitane il nome: <code>/prove-che-misurano</code> e le altre tre della sezione 4.</p></div>
+<div class="case"><h3>Ho risposto N</h3><span class="tag">conferma</span><p>Niente committato. Correggi ciò che non ti convince e rilancia.</p></div>
 </div>
 
 <h2 id="garanzie"><span class="n">9</span>Garanzie e limiti</h2>

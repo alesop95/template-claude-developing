@@ -13,7 +13,7 @@ body{background:var(--ground);color:var(--text);font-family:'Segoe UI',system-ui
 .page{max-width:900px;margin:0 auto;padding:3.5rem 2rem 5rem}
 
 .hero{margin-bottom:3.5rem;padding-bottom:2.5rem;border-bottom:2px solid var(--text)}
-.hero-eye{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-family:'Cascadia Code','Consolas',monospace;margin-bottom:.5rem}
+.hero-eye{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-family:'Cascadia Code','Consolas',monospace;margin:.3rem 0 .5rem}
 .hero-title{font-family:Georgia,serif;font-size:2.75rem;line-height:1.05;letter-spacing:-.03em;margin-bottom:.75rem}
 .hero-sub{font-size:14px;color:var(--muted);max-width:640px;line-height:1.7;margin-bottom:1.5rem}
 .hero-meta{display:flex;gap:2.5rem;flex-wrap:wrap}
@@ -69,14 +69,14 @@ table.src a:hover{text-decoration:underline}
 <div class="page">
 
   <div class="hero">
-    <div class="hero-eye">template-claude-developing · guida operativa</div>
     <h1 class="hero-title">Potenzialità e fonti in un flusso reale</h1>
+    <div class="hero-eye">template-claude-developing · guida operativa</div>
     <p class="hero-sub">Cosa fa questo template, quando lo fa, e da quali strumenti e repository open source attinge. Illustrato su un progetto tipico: una REST API Node.js con PostgreSQL, test E2E e deploy su Vercel. Vedi anche: <a href="feature-map.html" style="color:var(--green);font-family:monospace;font-size:12px">feature-map.html</a></p>
     <div class="hero-meta">
       <div class="hm"><span class="hm-n">9</span><span class="hm-l">Skill</span></div>
       <div class="hm"><span class="hm-n">9</span><span class="hm-l">Regole</span></div>
       <div class="hm"><span class="hm-n">4</span><span class="hm-l">Agenti template</span></div>
-      <div class="hm"><span class="hm-n">94</span><span class="hm-l">Pacchetti opt-in</span></div>
+      <div class="hm"><span class="hm-n">93</span><span class="hm-l">Pacchetti opt-in</span></div>
       <div class="hm"><span class="hm-n">49+</span><span class="hm-l">Repo open source</span></div>
     </div>
   </div>
@@ -91,7 +91,7 @@ table.src a:hover{text-decoration:underline}
       <div class="phase-when">Giorno 0 - 30 minuti</div>
       <div class="phase-title">Inizializzazione del progetto</div>
       <div class="phase-body">
-        Si incolla <strong>PROMPT-nuovo-progetto.md</strong> in Claude Code nella radice del progetto. La skill <strong>init-project-system</strong> esegue l'anatomia minima: crea .claude/ con memory/, context/ e rules/, istanzia le schede tecniche vuote, popola CLAUDE.md con la procedura di ripresa. Poi invoca <strong>gate-pacchetti</strong>, che non scorre il catalogo riga per riga: con novantaquattro voci sarebbe un elenco che nessuno legge. Riconosce prima dai fatti del progetto, e dall'obiettivo appena dichiarato, a quali dei dodici settori questo progetto appartenga, li mostra con la ragione del riconoscimento perché si possano correggere, e solo dopo apre le tabelle dei settori riconosciuti. Qui i settori riconosciuti sono quattro: fondamenta e igiene (il progetto vivrà mesi), sviluppo e qualità del codice (si scrive TypeScript), comprensione di una codebase (in allineamento ci sarebbe già del codice: qui no, e il settore resta a margine), economia del contesto (sempre valutabile). Gli altri otto si dichiarano esclusi con la ragione, così che la tornata successiva sappia che erano stati esclusi e non dimenticati.<br><br>
+        Si incolla <strong>PROMPT-nuovo-progetto.md</strong> in Claude Code nella radice del progetto. La skill <strong>init-project-system</strong> esegue l'anatomia minima: crea .claude/ con memory/, context/ e rules/, istanzia le schede tecniche vuote, popola CLAUDE.md con la procedura di ripresa. Poi invoca <strong>gate-pacchetti</strong>, che non scorre il catalogo riga per riga: con novantatré voci sarebbe un elenco che nessuno legge. Riconosce prima dai fatti del progetto, e dall'obiettivo appena dichiarato, a quali dei dodici settori questo progetto appartenga, li mostra con la ragione del riconoscimento perché si possano correggere, e solo dopo apre le tabelle dei settori riconosciuti. Qui i settori riconosciuti sono quattro: fondamenta e igiene (il progetto vivrà mesi), sviluppo e qualità del codice (si scrive TypeScript), comprensione di una codebase (in allineamento ci sarebbe già del codice: qui no, e il settore resta a margine), economia del contesto (sempre valutabile). Gli altri otto si dichiarano esclusi con la ragione, così che la tornata successiva sappia che erano stati esclusi e non dimenticati.<br><br>
         Ogni pacchetto arriva in tre frasi: che cosa fa, perché a <em>questo</em> progetto, legandolo a un fatto del repository e non alla categoria generica, e che cosa costa, comprese le capacità che duplicherebbe. Gate accettati in questo progetto: <em>github-mcp</em> (il progetto vive su GitHub), <em>context7</em> (si usa Express e Drizzle in evoluzione rapida), <em>playwright-mcp</em> (test E2E previsti), <em>ccusage</em> (baseline misurazione token, sempre), <em>vercel-mcp</em> (deploy su Vercel), <em>stack-profiles</em> (stack TypeScript riconosciuto dal package.json: il profilo ts-mcp diventa rules/stack-profile.md), <em>claude-code-handoff</em> (riferimento delle opzioni dello strumento, con auto-update dalla guida community), <em>hooks-starter</em> (si attiva il solo hook session-context: la procedura di ripresa diventa automatica). Gate rifiutati, e registrati come rifiuti con la data: LaTeX e knowledge-wiki (non necessari ora), le skill di review di dev-skills (duplicano le native, dichiarato nella stessa frase in cui sono state proposte). Un no registrato non torna identico alla tornata successiva: torna solo se il suo presupposto cambia.
       </div>
       <div class="pills">
@@ -289,7 +289,7 @@ table.src a:hover{text-decoration:underline}
 
       <tr class="src-group"><td colspan="4">Ricerca fondata su fonti proprie (notebooklm-bridge)</td></tr>
       <tr><td>NotebookLM</td><td>Motore di recupero ancorato alle fonti; usato nel piano gratuito da browser (no API pubblica consumer, l'API ufficiale è solo Enterprise a pagamento)</td><td><a href="https://notebooklm.google.com">notebooklm.google.com</a></td><td>Prodotto Google · gratuito</td></tr>
-      <tr><td>notebooklm-mcp</td><td>Archiviato dall'autore il 2026-09, sostituto da scegliere. Modo assistito opt-in: pilota il NotebookLM gratuito nel browser via Patchright, login persistito. Community, NON ufficiale, zona grigia dei ToS</td><td><a href="https://github.com/PleasePrompto/notebooklm-mcp">github.com/PleasePrompto/notebooklm-mcp</a></td><td><span class="badge b-mit">MIT</span></td></tr>
+      <tr><td>notebooklm-mcp</td><td>Tolto il 2026-10-21: archiviato dall'autore, NotebookLM si usa solo a mano. Era il modo assistito: pilota il NotebookLM gratuito nel browser via Patchright, login persistito. Community, NON ufficiale, zona grigia dei ToS</td><td><a href="https://github.com/PleasePrompto/notebooklm-mcp">github.com/PleasePrompto/notebooklm-mcp</a></td><td><span class="badge b-mit">MIT</span></td></tr>
 
       <tr class="src-group"><td colspan="4">Documenti e conversione</td></tr>
       <tr><td>python-docx</td><td>Lettura del .docx sorgente per il pacchetto docx-to-docs</td><td><a href="https://github.com/python-openxml/python-docx">github.com/python-openxml/python-docx</a></td><td><span class="badge b-mit">MIT</span></td></tr>
