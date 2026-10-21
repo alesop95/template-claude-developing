@@ -26,6 +26,10 @@ Un filone nasce con un documento in `docs/` che dichiara il mandato, la data e c
 
 Le segnalazioni arrivano dal proprietario, dai progetti istanziati e dalle fonti di scouting, cioè i siti e gli elenchi che si ricontrollano ogni tanto. Le fonti e i candidati di ogni passaggio stanno in `docs/fonti-di-scouting.md`, con la data dell'ultimo controllo; un candidato che apre una linea nuova diventa un filone qui, uno che entra in un settore esistente va direttamente alle quattro domande.
 
+## Le fonti dei filoni si sorvegliano come le altre
+
+Ogni repository nominato nel documento di un filone o fra i candidati dello scouting sta nel registro delle fonti a monte, `.claude/templates/fonti-a-monte.json`, con il ruolo `candidati` e il nome del filone come pacchetto, e il documento generato `.claude/templates/fonti-a-monte.md` lo traccia con che cosa il template ne prende, dove è scritto e quando è stato verificato l'ultima volta. È la direttiva del proprietario del 2026-10-21: una fonte presente nel template si sorveglia sempre, anche quando è soltanto un candidato. All'apertura di una sessione `fonti-a-monte.py controlla` segnala il candidato archiviato, rinominato, sparito o con una licenza diversa, che è proprio l'informazione su cui un filone decide; la data e l'esito della verifica restano nel registro, e il documento del filone si corregge nello stesso giro.
+
 ## Che cosa un filone deve dire prima di entrare nel catalogo
 
 Una voce di catalogo si scrive quando il filone sa rispondere a quattro domande con fonti lette e non con il riassunto di qualcun altro: che cosa fa lo strumento, misurato o almeno letto alla fonte primaria; a quale progetto serve, espresso come trigger che il gate possa verificare sui fatti del progetto; che cosa costa, compresi licenza, dipendenze, dati che escono dalla macchina e caratteri aggiunti al carico di avvio; e come si toglie. Un filone che sa rispondere alle prime due e non alle altre resta qui, e lo dice nella colonna dello stato.

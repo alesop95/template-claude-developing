@@ -6,11 +6,13 @@
 
 Un passaggio di scouting parte dalla tabella delle fonti e guarda solo ciò che la fonte ha pubblicato dopo l'ultimo controllo. Per ogni progetto pertinente legge licenza, ultimo push e stato di archiviazione sul repository, sceglie il settore del catalogo o il filone che lo accoglierebbe, e lo scrive fra i candidati con l'esito. Un candidato diventa voce di catalogo solo dopo le quattro domande di `docs/FILONI.md`. A fine passaggio si aggiorna la data dell'ultimo controllo, anche quando non è emerso niente, perché una fonte senza data sembra mai guardata.
 
+Dal 2026-10-21 il feed di ogni fonte e ogni repository fra i candidati stanno anche nel registro delle fonti a monte, `.claude/templates/fonti-a-monte.json`, il primo con il ruolo `scouting` e i secondi con il ruolo `candidati`, e il documento generato `.claude/templates/fonti-a-monte.md` li traccia insieme a tutte le altre fonti del template. Il passaggio quindi non dipende più dal ricordarsene: `fonti-a-monte.py controlla`, all'apertura di ogni sessione del template, dice quante voci il feed ha pubblicato dopo l'ultima verifica e se un candidato è stato archiviato, rinominato o ha cambiato licenza. A fine passaggio, oltre alla data in tabella, si registra la verifica del feed con `fonti-a-monte.py segna feed:<url>`; una fonte nuova si aggiunge alla tabella con l'URL completo del suo feed, che il censimento riconosce da sé.
+
 ## Fonti
 
 | Fonte | Che cosa vi si cerca | Come si legge | Ultimo controllo | Affidabilità |
 |---|---|---|---|---|
-| `opensourceprojects.dev` | Repository open source segnalati a raffiche, prevalentemente strumenti per sviluppatori, self-hosting e agenti di programmazione | Il sito è un'applicazione che senza JavaScript non mostra contenuti: si legge dal feed RSS `/rss` (solo le 12 voci più recenti), dal feed Atom `/feed.xml` e dalla sitemap, che è l'unico indice completo | 2026-10-16, 240 post dal 2026-09-20 | Operatore non dichiarato, nessuna categoria, pubblicazione automatica in lotti, testi probabilmente generati, nessuna licenza sui contenuti: radar di segnalazioni, mai testo da citare o copiare |
+| `opensourceprojects.dev` | Repository open source segnalati a raffiche, prevalentemente strumenti per sviluppatori, self-hosting e agenti di programmazione | Il sito è un'applicazione che senza JavaScript non mostra contenuti: si legge dal feed RSS `/rss` (solo le 12 voci più recenti), dal feed Atom `https://www.opensourceprojects.dev/feed.xml` e dalla sitemap, che è l'unico indice completo | 2026-10-16, 240 post dal 2026-09-20 | Operatore non dichiarato, nessuna categoria, pubblicazione automatica in lotti, testi probabilmente generati, nessuna licenza sui contenuti: radar di segnalazioni, mai testo da citare o copiare |
 
 ## Candidati dal passaggio del 2026-10-16
 
