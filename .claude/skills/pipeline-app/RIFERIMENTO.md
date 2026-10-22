@@ -45,3 +45,7 @@ In un repository privato con un monte mensile di minuti, il consumo dipende dall
 - [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite)
 - [OpenNext per Cloudflare](https://opennext.js.org/cloudflare) e [CLI](https://opennext.js.org/cloudflare/cli)
 - [Cloudflare: sviluppo locale con `workerd`](https://developers.cloudflare.com/workers/local-development/), [compatibilità Node](https://developers.cloudflare.com/workers/runtime-apis/nodejs/) e [limiti Workers](https://developers.cloudflare.com/workers/platform/limits/)
+
+## La costruibilità di un ramo dipende anche dai dati
+
+Un sistema che genera pagine leggendo una banca dati al momento della costruzione può avere un ramo non costruibile pur essendo internamente coerente. In un progetto istanziato la prima costruzione di produzione è fallita sul ramo di rilascio perché il contenuto condiviso, più recente del codice, riferiva un elemento che solo il ramo di lavoro conosceva (lezione L-009, 2026-10-21): il ramo più esposto è proprio quello di rilascio, che per costruzione è il più indietro rispetto ai dati, e l'errore si presenta come un difetto del codice. Una pipeline che costruisce da un riferimento di rilascio dichiara contro quali dati costruisce, e se sono dati vivi la costruzione si prova anche quando cambia il contenuto; un elenco chiuso di nomi che il contenuto può riferire si deriva dalla fonte invece di essere riscritto a mano.
