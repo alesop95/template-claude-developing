@@ -1,0 +1,28 @@
+# Fine riga, perche' il template deve funzionare su Windows e su Linux.
+#
+# Senza queste righe un clone su Windows con core.autocrlf=true converte in CRLF
+# anche gli script di shell, e su Linux uno script con CRLF non parte: l'interprete
+# legge "/usr/bin/env bash\r" e dichiara che il file non esiste, con un messaggio
+# che non nomina la causa. E' il difetto peggiore della famiglia, perche' rompe
+# soltanto sulla macchina dell'altro.
+#
+# Le fixture di md-unwrap hanno un proprio .gitattributes con `* -text`, perche'
+# sono confrontate byte per byte: questo file non le riguarda.
+
+# Script di shell: sempre LF, in archivio e nell'albero di lavoro.
+*.sh text eol=lf
+
+# Python: LF. Un sorgente con CRLF non rompe l'interprete ma rompe lo shebang
+# quando lo script viene eseguito direttamente, ed e' incoerente con il resto.
+*.py text eol=lf
+
+# PowerShell: CRLF nell'albero di lavoro, perche' e' cio' che il suo ecosistema
+# e i suoi editori si aspettano; in archivio resta normalizzato.
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+*.psd1 text eol=crlf
+
+# File di comandi di Windows: CRLF, altrimenti l'interprete storico sbaglia a
+# leggere le etichette di salto.
+*.bat text eol=crlf
+*.cmd text eol=crlf
