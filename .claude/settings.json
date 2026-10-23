@@ -8,6 +8,14 @@
           {
             "type": "command",
             "command": "if python3 -c '' >/dev/null 2>&1; then PY=python3; else PY=python; fi; \"$PY\" \"$CLAUDE_PROJECT_DIR/.claude/templates/tools/lezioni-template.py\" raccogli --hook"
+          },
+          {
+            "type": "command",
+            "command": "if python3 -c '' >/dev/null 2>&1; then PY=python3; else PY=python; fi; \"$PY\" \"$CLAUDE_PROJECT_DIR/.claude/templates/tools/passata-in-sospeso.py\" || true"
+          },
+          {
+            "type": "command",
+            "command": "if python3 -c '' >/dev/null 2>&1; then PY=python3; else PY=python; fi; \"$PY\" \"$CLAUDE_PROJECT_DIR/.claude/templates/tools/verifica-portabilita.py\" --hook"
           }
         ]
       }

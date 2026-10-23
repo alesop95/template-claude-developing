@@ -188,7 +188,7 @@ def leggi_remoto(prj: str, rel: str) -> str | None:
     return None     # non raggiunto: debito ignoto
 
 
-def cmd_raccogli(template: Path, solo_locali: bool = False) -> int:
+def cmd_raccogli(template: Path, solo_locali: bool = False, compatto: bool = False) -> int:
     reg = template / "_notes" / "allineamento" / "registro.json"
     if not reg.is_file():
         print("lezioni-template: registro di allinea-tutti assente, nessun elenco di progetti")
@@ -197,7 +197,7 @@ def cmd_raccogli(template: Path, solo_locali: bool = False) -> int:
     if solo_locali:
         progetti = [p for p in progetti if not p.startswith("ssh://")]
     recepite = leggi_recepite(template)
-    totale, con_debito, irraggiungibili = 0, 0, []
+    totale, con_debito, irraggiungibili, prima_voce = 0, 0, [], []
     for prj in progetti:
         if prj.startswith("ssh://"):
             testo = leggi_remoto(prj, REGISTRO.as_posix())
@@ -218,9 +218,11 @@ def cmd_raccogli(template: Path, solo_locali: bool = False) -> int:
         aperte = [v for v in leggi_voci(testo) if v["id"] not in chiuse]
         if aperte:
             con_debito += 1
-            print("%s  (%s)" % (nome, prj))
-            for v in aperte:
-                print("  %s del %s: %s" % (v["id"], v["data"], v["titolo"]))
+            prima_voce.append((min(v["data"] for v in aperte), nome, aperte[0]))
+            if not compatto:
+                print("%s  (%s)" % (nome, prj))
+                for v in aperte:
+                    print("  %s del %s: %s" % (v["id"], v["data"], v["titolo"]))
             totale += len(aperte)
     letti = len(progetti) - len(irraggiungibili)
     print("\nlezioni aperte verso il template: %d in %d progetti su %d letti" % (totale, con_debito, letti))
@@ -233,9 +235,25 @@ def cmd_raccogli(template: Path, solo_locali: bool = False) -> int:
             print("  %s" % prj)
         print("Si rilancia quando tornano raggiungibili: finche' non lo sono, il totale qui")
         print("sopra e' un minimo e non una misura.")
+    # Un elenco non e' un'istruzione. All'apertura di sessione serve sapere che cosa fare
+    # adesso, con il comando scritto per esteso: senza, il debito resta visibile e fermo.
     if totale:
-        print("Prima di una funzionalità nuova si recepiscono: si legge la voce nel registro del progetto,")
-        print("la si porta nel template se passa le due domande della sezione 16, e la si chiude con `recepisci`.")
+        data, prog, voce = sorted(prima_voce)[0]
+        print("\nPROSSIMO PASSO, prima di qualunque funzionalita' nuova:")
+        print("  1. leggere la voce piu' vecchia, %s del %s nel progetto %s," % (voce["id"], data, prog))
+        print("     cioe' \"%s\"," % voce["titolo"])
+        print("     dentro il file %s di quel progetto;" % REGISTRO.as_posix())
+        print("  2. decidere se passa le due domande della sezione 16 di .claude/PROJECT-SYSTEM.md,")
+        print("     cioe' se resta vera tolti i nomi propri e se non e' gia' nella testa di chi lavora bene;")
+        print("  3. se passa, attuarla qui nel template, dove la lezione diventa codice o norma;")
+        print("  4. chiuderla con:")
+        print("     python .claude/templates/tools/lezioni-template.py recepisci %s %s --dove \"<file toccato>\""
+              % (prog, voce["id"]))
+        print("  5. propagarla ai progetti con la passata di allineamento.")
+        print("  Se non passa le due domande si chiude lo stesso, dichiarando nel campo `dove` perche' no:")
+        print("  una lezione scartata senza motivo scritto torna identica fra un mese.")
+    else:
+        print("\nNessuna lezione da recepire: niente da fare su questo fronte.")
     return 1 if irraggiungibili else 0
 
 
@@ -345,7 +363,7 @@ def main(argv=None) -> int:
     if a.comando == "controlla":
         return cmd_controlla(radice, a.rigoroso)
     if a.comando == "raccogli":
-        esito = cmd_raccogli(radice, a.solo_locali)
+        esito = cmd_raccogli(radice, a.solo_locali, compatto=a.hook)
         # All'apertura di sessione il debito va mostrato, mai imposto: un controllo che
         # blocca l'avvio viene disattivato alla seconda volta che da' fastidio, e da quel
         # momento non protegge piu' niente. Rumoroso e non bloccante, come gli altri.
