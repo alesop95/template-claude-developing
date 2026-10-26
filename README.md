@@ -446,7 +446,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**43 pacchetti a cartella** su **93 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**44 pacchetti a cartella** su **94 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -467,6 +467,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 ### Macchine e continuità operativa
 
 - `veeam-linux` - backup di una macchina Linux con Veeam Agent, dalla scelta della variante alla rilettura del punto di ripristino, con dieci trappole documentate: [.claude/templates/veeam-linux/README.md](.claude/templates/veeam-linux/README.md)
+- `vps-baseline` - baseline di una macchina noleggiata da un fornitore cloud, verificata prima che applicata, con il presupposto dell'immagine del fornitore e le tre cose che si chiamano backup: [.claude/templates/vps-baseline/README.md](.claude/templates/vps-baseline/README.md)
 
 ### Sicurezza informatica e assessment
 
