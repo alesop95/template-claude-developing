@@ -51,7 +51,7 @@ La verifica non è leggere la configurazione, è vedere il gancio rifiutare. In 
 
 ```sh
 git init prova && cd prova
-git config --local user.email "qualcuno@esempio.invalid"
+git config --local user.email "prova@esempio.invalid"
 git config --local user.name "Prova"
 printf 'contenuto che il controllo deve respingere\n' > x.txt
 git add x.txt
