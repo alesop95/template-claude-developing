@@ -64,6 +64,8 @@ python <percorso di>/git_filter_repo.py --replace-text <file delle sostituzioni>
 
 I **messaggi di commit** si riscrivono con `--message-callback`, l'**autore** con `--mailmap`.
 
+Se la bonifica finirà con una richiesta all'assistenza, la riscrittura va fatta con il flag `--sensitive-data-removal`, disponibile da `git-filter-repo` 2.47: è quello che produce il rapporto `NOTE: First Changed Commit(s)` e l'elenco degli oggetti LFS resi orfani, cioè esattamente i dati che la richiesta deve contenere. Senza quel flag vanno ricostruiti dopo, e se il clone usato per la riscrittura non esiste più non si ricostruiscono affatto.
+
 Tre cose che sorprendono ogni volta:
 
 - `filter-repo` **rimuove il remoto** `origin`, e lo dice in una riga che si legge dopo. Va riaggiunto prima di spingere.
@@ -96,6 +98,8 @@ git log --all --format='%an <%ae>' | sort -u
 ## 5. Il biglietto all'assistenza, il passo che quasi tutti saltano
 
 **Una riscrittura spinta non cancella niente dal lato della piattaforma.** I vecchi oggetti restano raggiungibili per SHA e nelle viste in cache, e i riferimenti delle pull request, `refs/pull/*`, sono un namespace **in sola lettura dal lato git**: quelli non li tocca nessuna riscrittura, per costruzione. Senza questa richiesta la bonifica è apparente.
+
+**Il criterio con cui l'assistenza decide non è la gravità apparente.** La documentazione lo dichiara: interviene solo quando il rischio **non può essere mitigato ruotando le credenziali esposte**, e il canale alternativo, la politica di rimozione delle informazioni private, si descrive come servizio eccezionale per contenuti ad alto rischio. Ne discende una cosa da sapere prima di scrivere: per una credenziale la richiesta ha buone probabilità, per un indirizzo di posta o un percorso interno può essere respinta nel merito, e su un piano senza assistenza inclusa viene chiusa da un assistente automatico prima ancora di essere letta. Si risponde nel thread dicendo che non è assistenza tecnica ma il passo finale della procedura documentata dalla piattaforma, e si chiede l'instradamento giusto. Se la risposta resta no, lo stato raggiunto dalla sola riscrittura non è poco: i vecchi commit non sono più raggiungibili da alcun ramo, tag o pull request, e restano accessibili solo a chi conosca già lo SHA esatto.
 
 Il percorso nel modulo di contatto, che non è ovvio:
 
