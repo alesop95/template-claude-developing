@@ -617,6 +617,17 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:ehosca/hosca-plugins",
+      "pacchetto": "scouting",
+      "scheda": "docs/fonti-di-scouting.md",
+      "ruolo": "candidati",
+      "motivo": "Marketplace di plugin per Claude Code segnalato nel thread del subreddit ClaudeAI del 2026-10-27, maturità da verificare.",
+      "controllo": "commit",
+      "verificato": "d2930a8d3435aa854dbdc97a3ec1a117b7222599",
+      "licenza": "MIT",
+      "data": "2026-10-27"
+    },
+    {
       "id": "github:executablebooks/markdown-it-py",
       "motivo": "Porting Python di markdown-it, dipendenza di sviluppo di md-unwrap per l'oracolo di rendering.",
       "pacchetto": "sistema",
@@ -774,6 +785,16 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:integralist/agent-skills",
+      "pacchetto": "scouting",
+      "scheda": "docs/fonti-di-scouting.md",
+      "ruolo": "candidati",
+      "motivo": "Raccolta personale di skill senza licenza, segnalata nel thread del subreddit ClaudeAI del 2026-10-27: solo studio.",
+      "controllo": "commit",
+      "verificato": "e7e0cccb9138910023547b05978cff445f6e6271",
+      "data": "2026-10-27"
+    },
+    {
       "id": "github:InternScience/Awesome-Scientific-Skills",
       "motivo": "Raccolta curata di skill scientifiche elencata nel documento di ricerca del 2026-07-01 come fonte di candidati.",
       "pacchetto": "academic-researcher",
@@ -873,6 +894,17 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:k45sle/Claude-auto-pause",
+      "pacchetto": "scouting",
+      "scheda": "docs/fonti-di-scouting.md",
+      "ruolo": "candidati",
+      "motivo": "Plugin che ferma Claude prima del limite d'uso con nota di passaggio, candidato dal thread del subreddit ClaudeAI del 2026-10-27.",
+      "controllo": "commit",
+      "verificato": "273dcf70e157e7f2601ec3c3b39fcaaa889f5ba3",
+      "licenza": "MIT",
+      "data": "2026-10-27"
+    },
+    {
       "id": "github:kaliaboi/mcp-zotero",
       "motivo": "Connettore Zotero elencato fra le varianti nel documento di ricerca del 2026-07-01; il catalogo non lo adotta.",
       "pacchetto": "academic-researcher",
@@ -916,6 +948,17 @@
       "verificato": "9d521ef71dfda5fa8e8f5a5e63159dccbfdc7549",
       "licenza": "MIT",
       "data": "2026-10-21"
+    },
+    {
+      "id": "github:kunchenguid/no-mistakes",
+      "pacchetto": "scouting",
+      "scheda": "docs/fonti-di-scouting.md",
+      "ruolo": "candidati",
+      "motivo": "Controllo che si interpone al push, candidato dal thread del subreddit ClaudeAI del 2026-10-27 come seconda barriera accanto a chiudi.",
+      "controllo": "commit",
+      "verificato": "9982755297e65c81722b4e96572ea8b5e9e40d6f",
+      "licenza": "MIT",
+      "data": "2026-10-27"
     },
     {
       "id": "github:langfuse/langfuse",
@@ -995,6 +1038,16 @@
       "verificato": "v13.3.2",
       "licenza": "MIT",
       "data": "2026-10-21"
+    },
+    {
+      "id": "github:manish-uxai/design-review",
+      "pacchetto": "scouting",
+      "scheda": "docs/fonti-di-scouting.md",
+      "ruolo": "candidati",
+      "motivo": "Skill di revisione del design segnalata nel thread del subreddit ClaudeAI del 2026-10-27, da confrontare con anti-slop.",
+      "controllo": "commit",
+      "verificato": "3ce7ff253e7dd3ad7009171dab56188c6565c7d0",
+      "data": "2026-10-27"
     },
     {
       "id": "github:matplotlib/matplotlib",
@@ -1953,10 +2006,6 @@
     {
       "id": "github:loganzechella/mcp-deepwiki-server",
       "motivo": "citato nel documento di handoff datato di codebase-learning come server DeepWiki self-hosted, ma a monte risponde 404; l'alternativa nominata accanto, regenrek/deepwiki-mcp, è sorvegliata"
-    },
-    {
-      "id": "github:r/ClaudeAI",
-      "motivo": "percorso di un subreddit di Reddit nel registro dello scouting, non un repository GitHub"
     },
     {
       "id": "npm:diretto",

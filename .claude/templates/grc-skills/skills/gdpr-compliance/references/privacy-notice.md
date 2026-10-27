@@ -11,7 +11,7 @@ Art. 13 applies when data collected directly from subject; Art. 14 when collecte
 ### 1. Identity and Contact Details of the Controller (Art. 13(1)(a))
 > **[ORGANISATION NAME]** ("we", "us", "our")
 > Registered address: [ADDRESS]
-> Email: [PRIVACY@EMAIL.COM]
+> Email: [PRIVACY@example.com]
 
 ### 2. DPO Contact Details (Art. 13(1)(b)) — if applicable
 > Our Data Protection Officer can be contacted at: [DPO EMAIL / ADDRESS]
