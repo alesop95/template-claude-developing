@@ -13,6 +13,7 @@ Dal 2026-10-21 il feed di ogni fonte e ogni repository fra i candidati stanno an
 | Fonte | Che cosa vi si cerca | Come si legge | Ultimo controllo | Affidabilità |
 |---|---|---|---|---|
 | `opensourceprojects.dev` | Repository open source segnalati a raffiche, prevalentemente strumenti per sviluppatori, self-hosting e agenti di programmazione | Il sito è un'applicazione che senza JavaScript non mostra contenuti: si legge dal feed RSS `/rss` (solo le 12 voci più recenti), dal feed Atom `https://www.opensourceprojects.dev/feed.xml` e dalla sitemap, che è l'unico indice completo | 2026-10-16, 240 post dal 2026-09-20 | Operatore non dichiarato, nessuna categoria, pubblicazione automatica in lotti, testi probabilmente generati, nessuna licenza sui contenuti: radar di segnalazioni, mai testo da citare o copiare |
+| Un post di `r/ClaudeAI`, link di condivisione `https://www.reddit.com/r/ClaudeAI/s/lAdNtBH7nE` | Segnalato dal proprietario il 2026-10-27 come fonte da controllare per aggiornare le skill del template | Non letta: il recupero automatico è rifiutato da Reddit con 403 e l'aggiramento non è ammesso. Si legge quando il proprietario ne salva il testo o l'URL completo del post in `_notes/fonti/`, secondo la skill `fonti-non-recuperabili`; il feed del subreddit non entra nel registro delle fonti a monte finché non risulta interrogabile | Mai controllata | Non valutata: un post di forum è una segnalazione, e ciò che il template ne scrive si legge sempre sul repository o sulla pagina che il post indica |
 
 ## Candidati dal passaggio del 2026-10-16
 

@@ -37,7 +37,7 @@ Vale identica per un progetto che usa husky, dove il file è `.husky/pre-commit`
 
 **Gira su ogni commit di ogni repository della macchina**, compresi quelli usa e getta e quelli di altri. Deve quindi essere veloce, non avere stato, non scrivere nulla e non aprire connessioni; e deve essere *difensivo*, cioè lasciar passare quando non può lavorare invece di bloccare. Il modello qui accanto esce con 0 se non trova git o l'interprete: la scelta opposta renderebbe impossibile committare su una macchina mal configurata, che è un modo sicuro di far disattivare il presidio a chi lo subisce.
 
-**Il controllo che il gancio invoca va cercato in un posto solo.** Se ogni progetto ne ha una copia, il gancio ne eseguirà una diversa a ogni repository, e la più vecchia guarderà meno cose di quante creda chi la lancia. Il modello cerca prima la copia del template, il cui percorso legge da `~/.config/template-claude-path.txt` — un file della macchina, creato da chi installa, contenente una riga sola — e solo come ripiego quella del progetto.
+**Il controllo che il gancio invoca va cercato in un posto solo.** Se ogni progetto ne ha una copia, il gancio ne eseguirà una diversa a ogni repository, e la più vecchia guarderà meno cose di quante creda chi la lancia. Il modello cerca prima la copia del template, il cui percorso legge da `~/.config/template-claude-path.txt` - un file della macchina, creato da chi installa, contenente una riga sola - e solo come ripiego quella del progetto.
 
 ## Che cosa ci si attacca
 

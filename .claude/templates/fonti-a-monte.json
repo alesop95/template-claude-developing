@@ -1420,6 +1420,17 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:Sushegaad/Claude-Skills-Governance-Risk-and-Compliance",
+      "pacchetto": "grc-skills",
+      "scheda": ".claude/templates/grc-skills/README.md",
+      "ruolo": "skill-e-agenti",
+      "motivo": "Raccolta di trentasei skill di conformità (ISO 27001, NIS2, GDPR e altre) di cui il pacchetto grc-skills tiene nove in copia bloccata a una release, ricopiata ogni mese con lo strumento del pacchetto.",
+      "controllo": "release",
+      "verificato": "v2.1.0",
+      "licenza": "MIT",
+      "data": "2026-10-27"
+    },
+    {
       "id": "github:swairshah/zotero-mcp-server",
       "motivo": "Elencato come candidato o alternativa nel documento di ricerca datato di academic-researcher; il catalogo non lo adotta",
       "pacchetto": "academic-researcher",
@@ -1944,6 +1955,10 @@
       "motivo": "citato nel documento di handoff datato di codebase-learning come server DeepWiki self-hosted, ma a monte risponde 404; l'alternativa nominata accanto, regenrek/deepwiki-mcp, è sorvegliata"
     },
     {
+      "id": "github:r/ClaudeAI",
+      "motivo": "percorso di un subreddit di Reddit nel registro dello scouting, non un repository GitHub"
+    },
+    {
       "id": "npm:diretto",
       "motivo": "parola della frase «code-context via npx diretto» in `.claude/templates/README.md`, non un pacchetto: su npm risponde 404"
     }
@@ -1956,22 +1971,30 @@
       "book-digest",
       "build-roadmap",
       "cerca-pacchetto",
+      "cis-controls",
       "citation-tracker",
       "code-review",
       "corpus-analysis",
       "craft-apps",
       "deep-paper-reading",
+      "eu-ai-act",
       "fonti-non-recuperabili",
       "gap-analysis",
       "gate-pacchetti",
+      "gdpr-compliance",
       "git-sync",
       "identita-git",
       "init-project-system",
+      "iso27001",
+      "iso27701",
+      "iso42001",
       "latex-build",
       "learn-repo",
       "learn-topic",
       "literature-search",
       "mcp-tool-scaffold",
+      "nis2",
+      "nist-csf",
       "notebooklm-bridge",
       "onboard",
       "pipeline-app",
@@ -1991,6 +2014,7 @@
       "sync-context",
       "sync-readme",
       "test-generator",
+      "tprm",
       "wiki-digest"
     ],
     "agents": [

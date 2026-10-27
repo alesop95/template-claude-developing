@@ -12,7 +12,7 @@ Le fonti stanno qui per ruolo, cioè per ciò che il template ne fa, e la colonn
 
 | Ruolo | Fonti | Per release o versione | Per commit | A mano |
 |---|---|---|---|---|
-| Skill, agenti, comandi e plugin | 15 | 7 | 8 | 0 |
+| Skill, agenti, comandi e plugin | 16 | 8 | 8 | 0 |
 | Server MCP | 22 | 17 | 5 | 0 |
 | Strumenti, programmi e servizi | 46 | 42 | 1 | 3 |
 | Librerie | 18 | 13 | 5 | 0 |
@@ -21,7 +21,7 @@ Le fonti stanno qui per ruolo, cioè per ciò che il template ne fa, e la colonn
 | Ispirazioni e crediti | 6 | 6 | 0 | 0 |
 | Candidati e alternative | 53 | 32 | 21 | 0 |
 | Fonti di scouting | 1 | 1 | 0 | 0 |
-| Totale | 176 | | | |
+| Totale | 177 | | | |
 
 ## Skill, agenti, comandi e plugin
 
@@ -41,6 +41,7 @@ Skill, agenti, comandi e plugin per Claude Code o Codex che il template installa
 | [github:mattpocock/skills](https://github.com/mattpocock/skills) | Raccolta di skill di ingegneria di cui il pacchetto matt-pocock-skills mappa le utili; retro è alla base della skill retrospettiva. | matt-pocock-skills | `.claude/templates/matt-pocock-skills/README.md` | release su `skills` | v1.3.1, 2026-10-21 |
 | [github:multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | Skill con principi anti-over-engineering consigliata dal catalogo; si clona in .claude/skills. | catalogo | `.claude/templates/PACKAGES.md` | commit | 2c606141936f, 2026-10-21 |
 | [github:natsu1211/deepwiki-skill](https://github.com/natsu1211/deepwiki-skill) | Skill esterna per generare documentazione di codice con citazioni a riga, base del pacchetto codebase-learning | catalogo | `.claude/templates/PACKAGES.md` | commit su `README.md` | 09f35d6ce418, 2026-10-21 |
+| [github:Sushegaad/Claude-Skills-Governance-Risk-and-Compliance](https://github.com/Sushegaad/Claude-Skills-Governance-Risk-and-Compliance) | Raccolta di trentasei skill di conformità (ISO 27001, NIS2, GDPR e altre) di cui il pacchetto grc-skills tiene nove in copia bloccata a una release, ricopiata ogni mese con lo strumento del pacchetto. | grc-skills | `.claude/templates/grc-skills/README.md` | release | v2.1.0, 2026-10-27 |
 | [github:VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) | Marketplace di plugin con subagent per categoria, consigliato dal catalogo come riga separata invece del fetch dell'agent-catalog. | agent-catalog | `.claude/templates/agent-catalog/README.md` | commit su `categories` | 408d3c9eee2d, 2026-10-21 |
 | [github:wshobson/agents](https://github.com/wshobson/agents) | Marketplace di plugin Claude Code con agenti e skill, che il catalogo indica di installare con /plugin marketplace add invece del fetch di agent-catalog. | agent-catalog | `.claude/templates/agent-catalog/README.md` | commit su `plugins` | 0874a27b17a2, 2026-10-21 |
 | [npm:skills](https://www.npmjs.com/package/skills) | CLI «skills» di Vercel che installa skill da repository; rilevata nel riferimento di academic-researcher. | academic-researcher | `.claude/templates/academic-researcher/references/claude-ricercatore-universitario-completo.md` | versione | 1.7.4, 2026-10-21 |
@@ -269,4 +270,5 @@ Stringhe che il censimento scambia per una fonte e non lo sono. Lo strumento ne 
 | Stringa | Perché non è una fonte |
 |---|---|
 | `github:loganzechella/mcp-deepwiki-server` | citato nel documento di handoff datato di codebase-learning come server DeepWiki self-hosted, ma a monte risponde 404; l'alternativa nominata accanto, regenrek/deepwiki-mcp, è sorvegliata |
+| `github:r/ClaudeAI` | percorso di un subreddit di Reddit nel registro dello scouting, non un repository GitHub |
 | `npm:diretto` | parola della frase «code-context via npx diretto» in `.claude/templates/README.md`, non un pacchetto: su npm risponde 404 |

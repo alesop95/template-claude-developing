@@ -27,3 +27,4 @@
 .claude/rules/interaction-style.md # contiene cuggi', che e' una virgoletta di chiusura dentro una frase detta da una persona e NON un accento mancante: e' il falso positivo dichiarato nella regola stessa, ed e' l'unico file dei tre che lo strumento modificherebbe davvero
 .claude/context/refactor-24-vetrina-pubblica-da-dati-privati.md # stessa frase detta dallo stakeholder, "la chiamo 'cuggi'": convertirla riscriverebbe le parole di una persona, che e' il genere di contenuto che non si tocca
 .claude/memory/progress.md # riporta la stessa frase in tre punti, nelle voci datate che la registrarono: una voce di work-log era vera quel giorno e non si riscrive
+.claude/templates/grc-skills/skills/ # pacchetto grc-skills: copia verbatim delle skill inglesi di Sushegaad, riscritta a ogni release mensile; le forme con l'apostrofo sono inglesi e una correzione qui sparirebbe alla copia successiva

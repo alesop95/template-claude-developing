@@ -280,6 +280,8 @@ Esistono raccolte di skill pubblicate da terzi troppo grandi o troppo curate per
 
 `matt-pocock-skills` fa lo stesso lavoro su una raccolta più piccola e di natura diversa, le trentasette skill di ingegneria di `mattpocock/skills`. Qui la mappa è fra quelle skill e ciò che questo sistema già ha, ed è divisa in tre gruppi: quelle che coprono un buco reale, prima fra tutte la sessione di interrogazione che fa emergere ciò che non è stato deciso, di cui il sistema non ha alcun equivalente perché ha molte regole su come scrivere le decisioni prese e nessuna su come farle emergere; quelle che duplicano una capacità esistente e vanno prese solo scegliendo quale delle due resti in uso; e quelle che vanno adattate, perché scrivono in file che qui hanno un altro nome e un altro ruolo, e installarle senza toccarle produce due memorie parallele che divergono in silenzio.
 
+Una terza raccolta fa eccezione alla regola, e la ragione è la frequenza con cui cambia. `grc-skills` porta le skill di conformità di `Sushegaad/Claude-Skills-Governance-Risk-and-Compliance`, che si aggiornano ogni mese per seguire le norme: rimandare a monte lascerebbe a ogni progetto il compito di accorgersi della release, quindi il template ne tiene nove in copia bloccata, la ricopia quando `fonti-a-monte.py` segnala la release nuova, e l'allineamento la porta nei progetti che le hanno istanziate.
+
 ## Ripresa di una sessione dopo una caduta
 
 La procedura di ripresa del sistema parte da `_notes/RESUME-PROMPT.md` e presuppone una cosa che non sempre è vera: che la sessione precedente sia arrivata alla fine. Una sessione che cade a metà, per un crash o perché la finestra è stata chiusa, lascia il progetto in uno stato che quel file non descrive. Il danno non è la perdita del lavoro, che sta su disco e in git: è che la sessione nuova prenda quella fotografia vecchia per il presente e vi costruisca sopra, e nessuno se ne accorga, perché un file di ripresa non aggiornato ha esattamente lo stesso aspetto di uno aggiornato.
@@ -446,7 +448,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**45 pacchetti a cartella** su **95 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**46 pacchetti a cartella** su **96 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -472,6 +474,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 
 ### Sicurezza informatica e assessment
 
+- `grc-skills` - le skill di conformità di Sushegaad per ISO 27001, NIS2, GDPR e altre sei norme, in copia bloccata a una release che il template ricopia ogni mese e l'allineamento porta nei progetti: [.claude/templates/grc-skills/README.md](.claude/templates/grc-skills/README.md)
 - `cyber-lab` - laboratorio isolato e offline di macchine virtuali e container per studiare la valutazione difensiva dei propri sistemi, che un progetto istanziato tira su con un comando: [.claude/templates/cyber-lab/README.md](.claude/templates/cyber-lab/README.md)
 
 ### Scrittura, documentazione e tipografia
@@ -575,6 +578,7 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 - `VoiceStudio` di debpalash, riconoscimento e sintesi vocale interamente in locale in 646 lingue, con una API HTTP compatibile con l'interfaccia OpenAI e un server MCP: è il servizio su cui poggia il pacchetto `voicestudio`, resta esterno al repository e i modelli hanno licenze proprie distinte da quella dell'applicazione (licenza AGPL-3.0): https://github.com/debpalash/VoiceStudio
 - `scientific-agent-skills` di K-Dense, libreria di 166 skill scientifiche per lo standard aperto Agent Skills con oltre cento basi di dati, descritta in arXiv:2609.00065; il pacchetto `scientific-skills` non la vendora e non la installa, ne genera la mappa per la scelta (licenza del repository MIT, con alcune skill sotto licenze diverse fra cui cinque proprietarie): https://github.com/K-Dense-AI/scientific-agent-skills
 - `skills` di Matt Pocock, trentasette skill di ingegneria distribuite come plugin di Claude Code e come collezione installabile file per file; il pacchetto `matt-pocock-skills` ne è la mappa rispetto alle capacità già presenti in questo sistema (licenza MIT): https://github.com/mattpocock/skills
+- `Claude-Skills-Governance-Risk-and-Compliance` di Sushegaad, trentasei skill di conformità (ISO 27001, NIS2, GDPR, NIST CSF e altre) aggiornate ogni mese con una release; il pacchetto `grc-skills` ne tiene nove in copia bloccata e le ricopia a ogni release (licenza MIT): https://github.com/Sushegaad/Claude-Skills-Governance-Risk-and-Compliance
 - `book-to-skill` di virgiliojr94, per pre-digerire un PDF tecnico in skill: https://github.com/virgiliojr94/book-to-skill
 - `python-docx`, libreria per leggere e scrivere documenti Word, base del pacchetto `docx-to-docs` (licenza MIT): https://github.com/python-openxml/python-docx
 - `markitdown` di Microsoft, motore di default del pacchetto `doc-ingest` per l'estrazione multi-formato (`.pdf`, `.docx`, `.pptx`, `.xlsx`, `.html`) in Markdown (licenza MIT): https://github.com/microsoft/markitdown
