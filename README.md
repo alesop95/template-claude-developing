@@ -446,12 +446,13 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**44 pacchetti a cartella** su **94 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**45 pacchetti a cartella** su **95 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
 - `separazione-ambienti` - paradigmi di separazione fra test e produzione, spiegati e con le fonti: [.claude/templates/separazione-ambienti/README.md](.claude/templates/separazione-ambienti/README.md)
 - `operations-log` - registro cronologico degli interventi operativi, con a che cosa servono e come sono stati verificati: [.claude/templates/operations-log/README.md](.claude/templates/operations-log/README.md)
+- `gancio-globale` - un presidio pre-commit valido per ogni repository della macchina, compresi quelli che non esistono ancora, con core.hooksPath globale invece di un'installazione per progetto: [.claude/templates/gancio-globale/README.md](.claude/templates/gancio-globale/README.md)
 - `readme-sync` - indice, pacchetti e link del README aggiornati da fonti verificabili: [.claude/templates/readme-sync/README.md](.claude/templates/readme-sync/README.md)
 - `memoria-di-progetto` - controllo delle tracce nel registro cronologico: [.claude/templates/memoria-di-progetto/README.md](.claude/templates/memoria-di-progetto/README.md)
 - `alignment` - controllo eseguibile delle affermazioni che invecchiano: scadenze, freschezza delle misure, domande aperte e invarianti: [.claude/templates/alignment/README.md](.claude/templates/alignment/README.md)
