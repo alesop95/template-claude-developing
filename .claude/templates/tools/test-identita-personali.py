@@ -29,6 +29,7 @@ una macchina senza elenco non blocca ogni commit, ma lo dice a ogni commit.
 
     python .claude/templates/tools/test-identita-personali.py
     python .claude/templates/tools/test-identita-personali.py --stage
+    python .claude/templates/tools/test-identita-personali.py --tracciati
     python .claude/templates/tools/test-identita-personali.py --impronta "testo"
     python .claude/templates/tools/test-identita-personali.py --autotest
 """
@@ -47,6 +48,7 @@ PERIMETRO = [".claude"]
 FUORI = {"_notes", "__pycache__", ".git", "node_modules"}
 ELENCHI = [Path("_notes") / "allineamento" / "identita-personali.txt", Path.home() / ".config" / "identita-personali.txt"]
 QUESTO = "test-identita-personali.py"
+LIMITE_BYTE = 2 * 1024 * 1024
 EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 PAROLA = re.compile(r"[A-Za-z0-9][A-Za-z0-9._+-]*")
 
@@ -73,6 +75,14 @@ def ambiti(voci: list) -> list:
     return [v.split(":", 1)[1].strip().lower() for v in voci if v.lower().startswith("ambito:") and v.split(":", 1)[1].strip()]
 
 
+def voci_di_lavoro(voci: list) -> list:
+    """Le righe `lavoro: x` dell'elenco: gli identificativi del profilo di lavoro. Si cercano nel
+    verso opposto a quelli personali, cioe' nei repository FUORI dall'ambito aziendale, perche' in
+    un progetto personale e' l'identita' di lavoro a non doverci stare. Senza queste righe il
+    controllo resta quello di prima, a senso unico."""
+    return [v.split(":", 1)[1].strip() for v in voci if v.lower().startswith("lavoro:") and v.split(":", 1)[1].strip()]
+
+
 def nell_ambito(radice: Path, frammenti: list) -> bool:
     if not frammenti:
         return True
@@ -84,7 +94,7 @@ def nell_ambito(radice: Path, frammenti: list) -> bool:
 
 class Cercatore:
     def __init__(self, voci: list):
-        voci = [v for v in voci if not v.lower().startswith("ambito:")]
+        voci = [v for v in voci if not v.lower().startswith(("ambito:", "lavoro:"))]
         self.chiare = [v.lower() for v in voci if not v.startswith("sha256:")]
         self.impronte = {v.lower() for v in voci if v.startswith("sha256:")}
 
@@ -145,8 +155,39 @@ def cerca_stage(radice: Path, cercatore: Cercatore) -> list:
     return trovate
 
 
-def controlla(radice: Path, esplicito: str = "", stage: bool = False) -> int:
-    f, voci = leggi_elenco(radice, esplicito, stage)
+def file_tracciati(radice: Path) -> list:
+    """Tutti i file tracciati del repository, non il solo perimetro del template: serve a
+    ritrovare cio' che e' entrato prima che il controllo esistesse, e che ne' `--stage` ne' il
+    controllo del template rileggono mai piu'."""
+    r = git(radice, "ls-files", "-z")
+    if r.returncode != 0:
+        return []
+    return [radice / p for p in r.stdout.decode("utf-8", errors="replace").split("\0") if p]
+
+
+def cerca_tracciati(radice: Path, cercatore: Cercatore) -> list:
+    """Come il controllo del template ma su tutti i file tracciati, saltando i binari e i file
+    molto grandi, che non contengono identita' scritte a mano e costerebbero l'intera scansione."""
+    trovate = []
+    for f in file_tracciati(radice):
+        rel = f.relative_to(radice)
+        if not f.is_file() or FUORI.intersection(rel.parts) or f.name == QUESTO:
+            continue
+        try:
+            if f.stat().st_size > LIMITE_BYTE:
+                continue
+            grezzo = f.read_bytes()
+        except OSError:
+            continue
+        if b"\0" in grezzo[:8192]:
+            continue
+        testo = grezzo.decode("utf-8", errors="ignore")
+        trovate += [(rel.as_posix(), n) for n, riga in enumerate(testo.splitlines(), 1) if cercatore.trova(riga)]
+    return trovate
+
+
+def controlla(radice: Path, esplicito: str = "", stage: bool = False, tracciati: bool = False) -> int:
+    f, voci = leggi_elenco(radice, esplicito, stage or tracciati)
     if not voci:
         dove = "%s oppure %s" % (ELENCHI[0].as_posix(), ELENCHI[1].as_posix())
         if stage:
@@ -154,19 +195,37 @@ def controlla(radice: Path, esplicito: str = "", stage: bool = False) -> int:
             return 0
         print("identita personali: manca l'elenco (%s): senza elenco il controllo non vede niente" % dove)
         return 1
-    if stage and not nell_ambito(radice, ambiti(voci)):
-        print("identita personali: repository fuori dall'ambito aziendale dichiarato nell'elenco, non controllato")
-        return 0
-    cercatore = Cercatore(voci)
-    trovate = cerca_stage(radice, cercatore) if stage else cerca_template(radice, cercatore)
+    lavoro = voci_di_lavoro(voci)
+    dentro = nell_ambito(radice, ambiti(voci))
+    verso = ""
+    if stage or tracciati:
+        # In un repository aziendale non deve comparire l'identita' personale; in uno personale
+        # non deve comparire quella di lavoro. Il verso lo decide l'ambito, non chi lancia.
+        if dentro:
+            cercatore = Cercatore(voci)
+        elif lavoro:
+            cercatore = Cercatore(lavoro)
+            verso = " di lavoro"
+        else:
+            print("identita personali: repository fuori dall'ambito aziendale e nessuna voce `lavoro:` nell'elenco, non controllato")
+            return 0
+    else:
+        # Cio' che il template propaga finisce in entrambi i tipi di repository: nessuna delle due.
+        cercatore = Cercatore(voci + lavoro)
+    if tracciati:
+        trovate = cerca_tracciati(radice, cercatore)
+    elif stage:
+        trovate = cerca_stage(radice, cercatore)
+    else:
+        trovate = cerca_template(radice, cercatore)
     for rel, n in trovate:
         # L'identificativo non si stampa: questa uscita finisce in log e trascrizioni.
-        print("   %s%s contiene un identificativo personale" % (rel, ":%d" % n if n else ""))
+        print("   %s%s contiene un identificativo%s" % (rel, ":%d" % n if n else "", verso or " personale"))
     if trovate:
-        dove = "nel commit in preparazione" if stage else "nei file che il template propaga"
+        dove = "fra i file tracciati" if tracciati else ("nel commit in preparazione" if stage else "nei file che il template propaga")
         print("identita personali: %d occorrenze %s; toglierle prima di committare" % (len(trovate), dove))
         return 1
-    print("identita personali: nessuna delle %d voci %s" % (len(voci), "nel commit" if stage else "nei file che il template propaga"))
+    print("identita personali: nessuna delle %d voci %s" % (len(voci), "fra i file tracciati" if tracciati else ("nel commit" if stage else "nei file che il template propaga")))
     return 0
 
 
@@ -249,6 +308,40 @@ def autotest() -> int:
         subprocess.run(["git", "-C", str(r), "remote", "add", "origin", "git@alias:Azienda.example-org/x.git"], check=True)
         caso("--stage con un remoto aziendale controlla anche con l'email personale", esegui(str(elenco), stage=True)[0] == 1)
         subprocess.run(["git", "-C", str(r), "config", "user.email", "lavoro@azienda.example"], check=True)
+        elenco.write_text("%s\n" % impronta("persona.privata@posta.example"), encoding="utf-8")
+        (r / "doc.md").write_text("nessun dato\n", encoding="utf-8")
+        (r / "vecchio.md").write_text("scritto prima del controllo: persona.privata@posta.example\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(r), "add", "doc.md", "vecchio.md"], check=True)
+        subprocess.run(["git", "-C", str(r), "commit", "-q", "-m", "x", "--no-verify"], check=True)
+        caso("--stage non vede un file gia' committato: non c'e' niente in stage", esegui(str(elenco), stage=True)[0] == 0)
+        caso("il controllo del template non lo vede: e' fuori dal perimetro .claude", esegui(str(elenco))[0] == 0)
+        rc, out = esegui(str(elenco), tracciati=True)
+        caso("--tracciati lo trova, ed e' l'unico modo di ritrovarlo", rc == 1 and "vecchio.md:1" in out)
+        caso("--tracciati non stampa l'identificativo", "persona.privata" not in out.lower())
+        (r / "vecchio.md").write_text("ripulito\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(r), "add", "vecchio.md"], check=True)
+        subprocess.run(["git", "-C", str(r), "commit", "-q", "-m", "y", "--no-verify"], check=True)
+        caso("--tracciati passa quando il file e' stato ripulito", esegui(str(elenco), tracciati=True)[0] == 0)
+        # verso opposto: in un repository personale non deve comparire l'identita' di lavoro
+        subprocess.run(["git", "-C", str(r), "remote", "set-url", "origin", "git@alias:utentepriv/x.git"], check=True)
+        subprocess.run(["git", "-C", str(r), "config", "user.email", "io@privato.example"], check=True)
+        elenco.write_text("ambito: azienda.example\n%s\nlavoro: %s\n" % (impronta("persona.privata@posta.example"), impronta("lavoro@azienda.example")), encoding="utf-8")
+        (r / "vecchio.md").write_text("configurato con lavoro@azienda.example\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(r), "add", "vecchio.md"], check=True)
+        subprocess.run(["git", "-C", str(r), "commit", "-q", "-m", "z", "--no-verify"], check=True)
+        rc, out = esegui(str(elenco), tracciati=True)
+        caso("fuori ambito, --tracciati trova l'identita' di lavoro", rc == 1 and "vecchio.md:1" in out and "di lavoro" in out)
+        (r / "vecchio.md").write_text("persona.privata@posta.example, che qui e' legittima\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(r), "add", "vecchio.md"], check=True)
+        subprocess.run(["git", "-C", str(r), "commit", "-q", "-m", "w", "--no-verify"], check=True)
+        caso("fuori ambito, l'identita' personale non e' un reperto", esegui(str(elenco), tracciati=True)[0] == 0)
+        (r / ".claude" / "rules" / "identita.md").write_text("lavoro@azienda.example\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(r), "add", ".claude/rules/identita.md"], check=True)
+        caso("il template rifiuta entrambe le identita', non una sola", esegui(str(elenco))[0] == 1)
+        (r / ".claude" / "rules" / "identita.md").write_text("pulito\n", encoding="utf-8")
+        elenco.write_text("ambito: azienda.example\n%s\n" % impronta("persona.privata@posta.example"), encoding="utf-8")
+        rc, out = esegui(str(elenco), tracciati=True)
+        caso("fuori ambito e senza voci di lavoro, non controlla e lo dice", rc == 0 and "nessuna voce" in out)
         elenco.unlink()
         rc, out = esegui(str(r / "manca.txt"), stage=True)
         caso("--stage senza elenco avvisa e non ferma", rc == 0 and "AVVISO" in out)
@@ -266,6 +359,7 @@ def main(argv=None) -> int:
     p.add_argument("--radice", default=".")
     p.add_argument("--elenco", default="")
     p.add_argument("--stage", action="store_true", help="controlla i file in stage e l'identità del commit")
+    p.add_argument("--tracciati", action="store_true", help="controlla tutti i file tracciati del repository, non solo il perimetro del template")
     p.add_argument("--impronta", default="", help="stampa la riga sha256 da aggiungere all'elenco")
     p.add_argument("--autotest", action="store_true")
     a = p.parse_args(argv)
@@ -274,7 +368,7 @@ def main(argv=None) -> int:
     if a.impronta:
         print(impronta(a.impronta))
         return 0
-    return controlla(Path(a.radice), a.elenco, a.stage)
+    return controlla(Path(a.radice), a.elenco, a.stage, a.tracciati)
 
 
 if __name__ == "__main__":
