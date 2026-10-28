@@ -111,6 +111,11 @@ SKILL_SISTEMA = [
 IGNORA = {"__pycache__", ".pytest_cache"}
 CODICE = {".py", ".ps1", ".sh", ".js", ".mjs"}
 
+# Registri che il template genera e che i progetti leggono soltanto: la copia nel progetto
+# si riscrive sempre dalla testa invece di essere fusa, perche' una fusione su un file
+# generato produce un conflitto nuovo a ogni scrittura e nessuna informazione locale va persa.
+GENERATI = {".claude/templates/lezioni-recepite.json"}
+
 
 def git(repo: Path, *args: str, binario: bool = False):
     r = subprocess.run(["git", "-C", str(repo), *args], capture_output=True)
@@ -537,6 +542,17 @@ def main():
             esiti.append(voce)
             return
         t = lf(leggi_blob(tpl, testa[tpl_rel]))
+        # Un registro che il template genera e che i progetti leggono soltanto non si fonde mai:
+        # diverge a ogni scrittura nel template, e una fusione a tre vie su un JSON lungo produce
+        # un conflitto che ricompare identico ogni volta, cioe' un avviso che smette di dire.
+        # Misurato il 2026-10-28: la copia di un progetto portava 210 righe in meno e la chiave di
+        # progetto anteriore a una rinomina di cartella, e il merge la dichiarava conflitto mentre
+        # l'azione giusta era prendere la testa. Qui la testa vince sempre.
+        if tpl_rel in GENERATI and dest.exists() and lf(dest.read_bytes()) != t:
+            voce["esito"], voce["_dati"] = "VECCHIO", t
+            voce["nota"] = "registro generato dal template: si riscrive dalla testa, non si fonde"
+            esiti.append(voce)
+            return
         if not dest.exists():
             voce["esito"], voce["_dati"] = "NUOVO", t
         else:
@@ -623,7 +639,15 @@ def main():
     per_nome: dict[str, list[str]] = {}
     for p in testa:
         parti = p.split("/")
-        if set(parti) & IGNORA or not p.startswith(".claude/templates/"):
+        if set(parti) & IGNORA:
+            continue
+        # Uno strumento del template puo' vivere sotto un pacchetto oppure sotto la skill che lo
+        # usa: la copia istanziata in tools/ del progetto e' la stessa cosa nei due casi e va
+        # aggiornata allo stesso modo. Senza il secondo prefisso quella copia usciva come
+        # scollegata, con una nota che diceva il falso perche' il nome e' identico; era uno solo
+        # nel template, ma il buco era della stessa famiglia (misurato il 2026-10-28).
+        sotto_skill = len(parti) > 4 and parti[1] == "skills" and parti[-2] == "tools"
+        if not p.startswith(".claude/templates/") and not sotto_skill:
             continue
         if len(parti) >= 2 and parti[-2] == "tools":
             per_nome.setdefault(parti[-1], []).append(p)
@@ -659,12 +683,18 @@ def main():
             else:
                 esiti.append({"file": f"tools/{f.name}", "template": None, "esito": "CONFLITTO",
                               "nota": "origine ambigua: " + ", ".join(cand)})
-        elif f.is_file() and f.name not in esempi_pacchetto and blob_id(lf(f.read_bytes())) in tutti_storici:
+        elif (f.is_file() and f.suffix in CODICE and f.name not in esempi_pacchetto
+              and blob_id(lf(f.read_bytes())) in tutti_storici):
             # Nessun file in testa al template porta questo nome, ma il contenuto e' un'impronta
             # che il template ha avuto: la copia viene da qui e ha perso il collegamento, quindi
             # nessun aggiornamento la raggiungera' mai e niente lo direbbe. Gli strumenti del
             # progetto, che sono la maggioranza dei file in tools/, non hanno quell'impronta e
             # restano fuori dal rapporto, perche' elencarli sarebbe rumore.
+            # Il filtro sul codice e' lo stesso del ramo qui sopra e per la stessa ragione: un
+            # elenco di esclusioni o un README istanziati divergono per costruzione, e un progetto
+            # che non li ha ancora toccati li ha ancora identici al template. Senza questo filtro
+            # la prima passata del 2026-10-28 li segnalava in sei progetti, cioe' produceva
+            # l'avviso su quasi ogni progetto che e' la forma in cui un avviso smette di dire.
             esiti.append({"file": f"tools/{f.name}", "template": None, "esito": "SCOLLEGATO",
                           "nota": "copia di un file del template sotto un altro nome: non si aggiorna"})
 

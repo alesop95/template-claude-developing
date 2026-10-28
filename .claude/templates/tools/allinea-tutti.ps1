@@ -657,7 +657,16 @@ try {
             $global:LASTEXITCODE = if ($u) { [int]$u.Substring(7) } else { 0 }
           }
           else { $mis = & python $misura --root $prj 2>&1 }
-          if ($LASTEXITCODE -ne 0) { $tot = ($mis | Select-String 'progetto [0-9.]+ caratteri' | Select-Object -First 1); $o.avvisi += 'carico istruzioni oltre soglia' + $(if ($tot) { " ($($tot.Line.Trim()))" } else { '' }) }
+          # La causa si prende dalla riga che lo strumento scrive per dirla, non dal totale:
+          # misura-istruzioni fallisce anche per il tetto del singolo file, e in quel caso il
+          # totale e' sotto la soglia che l'avviso cita, cosi' l'avviso contraddice il proprio
+          # numero e manda a guardare nel posto sbagliato. Misurato il 2026-10-28 su un progetto
+          # del parco: totale 72.939 su 100.000, e la causa era una regola da 20.431 caratteri.
+          if ($LASTEXITCODE -ne 0) {
+            $causa = ($mis | Select-String '^ERRORE:' | Select-Object -First 1)
+            if (-not $causa) { $causa = ($mis | Select-String 'progetto [0-9.]+ caratteri' | Select-Object -First 1) }
+            $o.avvisi += 'carico istruzioni' + $(if ($causa) { ": $($causa.Line.Trim())" } else { ' oltre soglia' })
+          }
         }
       }
     }
