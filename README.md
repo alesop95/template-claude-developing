@@ -470,7 +470,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 ### Macchine e continuità operativa
 
 - `veeam-linux` - backup di una macchina Linux con Veeam Agent, dalla scelta della variante alla rilettura del punto di ripristino, con dieci trappole documentate: [.claude/templates/veeam-linux/README.md](.claude/templates/veeam-linux/README.md)
-- `vps-baseline` - baseline di una macchina noleggiata da un fornitore cloud, verificata prima che applicata, con il presupposto dell'immagine del fornitore e le tre cose che si chiamano backup: [.claude/templates/vps-baseline/README.md](.claude/templates/vps-baseline/README.md)
+- `vps-baseline` - baseline di una macchina noleggiata da un fornitore cloud, verificata prima che applicata, con il presupposto dell'immagine del fornitore e le tre cose che si chiamano backup, più il seguito del ciclo di vita: la versione che si adotta, l'immagine fissata per impronta, la disdetta che tocca ogni nome: [.claude/templates/vps-baseline/README.md](.claude/templates/vps-baseline/README.md)
 
 ### Sicurezza informatica e assessment
 
