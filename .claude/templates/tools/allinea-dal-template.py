@@ -49,6 +49,9 @@ Esiti per file:
               con --rimuovi, si toglie l'origine
   RIMOSSO     il template lo ha tolto e la copia locale era intatta
   LOCALE      nel percorso gestito, mai esistito nel template: non si tocca
+  SCOLLEGATO  copia di un file del template sotto un nome che il template non ha
+              (tipicamente rinominata in fase di istanziazione): nessun
+              aggiornamento la raggiunge, e va ricollegata o accettata a mano
   INNESCO     solo con --innesco: righe di innesco delle skill con RIFERIMENTO.md
               che il CLAUDE.md non nomina ancora; con --applica si aggiungono
 
@@ -620,8 +623,27 @@ def main():
     per_nome: dict[str, list[str]] = {}
     for p in testa:
         parti = p.split("/")
-        if len(parti) >= 2 and parti[-2] == "tools" and p.startswith(".claude/templates/") and not set(parti) & IGNORA:
+        if set(parti) & IGNORA or not p.startswith(".claude/templates/"):
+            continue
+        if len(parti) >= 2 and parti[-2] == "tools":
             per_nome.setdefault(parti[-1], []).append(p)
+        # Non tutti gli strumenti di un pacchetto stanno sotto tools/: alcuni vivono nella
+        # radice del pacchetto, e le loro copie istanziate non si aggiornavano mai, senza
+        # che l'esito dell'allineamento le nominasse. Tre script in questo template erano
+        # in quel caso, e due copie di uno di essi erano rimaste senza l'opzione che attua
+        # la regola sui documenti personali, entrata nel template il 2026-10-07: cioe' la
+        # regola restava senza attuazione proprio nello strumento che deve attuarla
+        # (L-007 di un progetto istanziato, 2026-10-26). I file di valori d'esempio restano
+        # fuori: sono materiale da copiare e adattare, non codice da tenere allineato.
+        elif len(parti) == 4 and Path(parti[-1]).suffix in CODICE and ".esempio." not in parti[-1]:
+            per_nome.setdefault(parti[-1], []).append(p)
+    # I valori d'esempio di un pacchetto si copiano e si adattano per definizione: una copia
+    # diversa dall'originale e' il loro uso normale, non una copia scollegata da segnalare.
+    esempi_pacchetto = {p.split("/")[-1] for p in testa if ".esempio." in p.split("/")[-1]}
+    # Unione delle impronte mai viste nel template: serve a distinguere, fra le copie in
+    # tools/ che nessuna origine rivendica, quelle che vengono comunque dal template e
+    # vanno guardate da quelle del progetto, che sono la maggioranza e non sono notizia.
+    tutti_storici: set[str] = set().union(*blob.values()) if blob else set()
     for f in sorted((prj / "tools").glob("*")) if (prj / "tools").is_dir() else []:
         # solo codice: i file di dati istanziati (elenchi di esclusioni, voci di roadmap)
         # sono del progetto per costruzione, e fonderli con quelli del template li guasterebbe
@@ -637,6 +659,14 @@ def main():
             else:
                 esiti.append({"file": f"tools/{f.name}", "template": None, "esito": "CONFLITTO",
                               "nota": "origine ambigua: " + ", ".join(cand)})
+        elif f.is_file() and f.name not in esempi_pacchetto and blob_id(lf(f.read_bytes())) in tutti_storici:
+            # Nessun file in testa al template porta questo nome, ma il contenuto e' un'impronta
+            # che il template ha avuto: la copia viene da qui e ha perso il collegamento, quindi
+            # nessun aggiornamento la raggiungera' mai e niente lo direbbe. Gli strumenti del
+            # progetto, che sono la maggioranza dei file in tools/, non hanno quell'impronta e
+            # restano fuori dal rapporto, perche' elencarli sarebbe rumore.
+            esiti.append({"file": f"tools/{f.name}", "template": None, "esito": "SCOLLEGATO",
+                          "nota": "copia di un file del template sotto un altro nome: non si aggiorna"})
 
     # 4. skill opzionali istanziate sotto .claude/skills/ del progetto
     #
@@ -761,7 +791,7 @@ def main():
                 e["nota"] = f"{e['nota']}; {dove}" if e.get("nota") else dove
 
     # rapporto
-    ordine = ["CONFLITTO", "SUPERATO", "MERGE", "SPOSTATO", "RIMOSSO", "VECCHIO", "NUOVO", "INNESCO", "ADATTATO", "LOCALE", "UGUALE"]
+    ordine = ["CONFLITTO", "SUPERATO", "MERGE", "SPOSTATO", "RIMOSSO", "SCOLLEGATO", "VECCHIO", "NUOVO", "INNESCO", "ADATTATO", "LOCALE", "UGUALE"]
     conta = {k: sum(1 for e in esiti if e["esito"] == k) for k in ordine}
     for k in ordine:
         if k in ("UGUALE", "ADATTATO", "LOCALE"):
