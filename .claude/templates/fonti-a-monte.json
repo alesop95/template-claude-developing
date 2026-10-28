@@ -107,8 +107,8 @@
       "ruolo": "scouting",
       "motivo": "Feed Atom di opensourceprojects.dev, l'unica fonte di scouting registrata: dice quali repository la fonte ha segnalato dopo l'ultimo passaggio.",
       "controllo": "versione",
-      "verificato": "2026-10-27T01:54:40Z",
-      "data": "2026-10-27"
+      "verificato": "2026-10-28T01:53:08Z",
+      "data": "2026-10-28"
     },
     {
       "id": "gist:karpathy/442a6bf555914893e9891c11519de94f",
@@ -226,9 +226,9 @@
       "motivo": "Banco di lavoro locale per la ricerca scientifica, candidato del passaggio di scouting del 2026-10-16, destinato al settore «Domini scientifici»: maturità da verificare su un caso reale; non adottato, esito in `docs/fonti-di-scouting.md`.",
       "ruolo": "candidati",
       "controllo": "release",
-      "verificato": "v1.0.4",
+      "verificato": "v1.0.5",
       "licenza": "Apache-2.0",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "github:akapet00/semantic-scholar-mcp",
@@ -357,9 +357,9 @@
       "motivo": "Annotazione visiva di piani e diff degli agenti, candidato del passaggio di scouting del 2026-10-16, destinato al settore «Sviluppo, qualità e revisione»: da provare su un progetto reale; non adottato, esito in `docs/fonti-di-scouting.md`.",
       "ruolo": "candidati",
       "controllo": "release",
-      "verificato": "v0.28.33",
+      "verificato": "v0.28.35",
       "licenza": "Apache-2.0",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "github:BehiSecc/awesome-claude-skills",
@@ -621,9 +621,9 @@
       "scheda": ".claude/templates/doc-ingest/README.md",
       "ruolo": "librerie",
       "controllo": "release",
-      "verificato": "v2.143.0",
+      "verificato": "v2.143.1",
       "licenza": "MIT",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "github:dougwyu/claude-zotero-skills",
@@ -711,9 +711,9 @@
       "motivo": "Strumento esterno che trasforma codice e documenti in un grafo di conoscenza, consigliato dal catalogo con installazione via uv o pipx.",
       "ruolo": "strumenti",
       "controllo": "release",
-      "verificato": "v0.9.96",
+      "verificato": "v0.9.97",
       "licenza": "Apache-2.0",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "github:greenbone/openvas-scanner",
@@ -756,9 +756,9 @@
       "motivo": "Elenco curato di plugin e skill per Codex, candidato del passaggio di scouting del 2026-10-16, destinato al settore «Orchestrazione di agenti»: possibile seconda fonte di scouting; non adottato, esito in `docs/fonti-di-scouting.md`.",
       "ruolo": "candidati",
       "controllo": "commit",
-      "verificato": "2aa572830da26ce12fa242893c5415db0024cca2",
+      "verificato": "2129dc6f3371afd9e6dcd64b8cfd56ad971450f7",
       "licenza": "Apache-2.0",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "github:headroomlabs-ai/headroom",
@@ -789,9 +789,9 @@
       "scheda": ".claude/templates/agent-catalog/commands/list-community-agents.md",
       "ruolo": "cataloghi",
       "controllo": "commit",
-      "verificato": "2968763c42a0d51f224269dd52d2a7dc9eeb0474",
+      "verificato": "e0351d1a1fa569ffe57ac1859ba5c100c848496f",
       "licenza": "NOASSERTION",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "github:Imbad0202/academic-research-skills",
@@ -811,8 +811,8 @@
       "ruolo": "candidati",
       "motivo": "Raccolta personale di skill senza licenza, segnalata nel thread del subreddit ClaudeAI del 2026-10-27: solo studio.",
       "controllo": "commit",
-      "verificato": "9f914bc5930fe7f411e363e76b51ee143491c88a",
-      "data": "2026-10-27"
+      "verificato": "8869589d3ca304988101e1115500646f18f236a4",
+      "data": "2026-10-28"
     },
     {
       "id": "github:InternScience/Awesome-Scientific-Skills",
@@ -976,9 +976,9 @@
       "ruolo": "candidati",
       "motivo": "Controllo che si interpone al push, candidato dal thread del subreddit ClaudeAI del 2026-10-27 come seconda barriera accanto a chiudi.",
       "controllo": "commit",
-      "verificato": "9982755297e65c81722b4e96572ea8b5e9e40d6f",
+      "verificato": "e758a76f58e2f36a902c119c8220625622ee0936",
       "licenza": "MIT",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "github:langfuse/langfuse",
@@ -1344,9 +1344,9 @@
       "scheda": ".claude/templates/scientific-skills/MAPPA-SKILL-SCIENTIFICHE.md",
       "ruolo": "librerie",
       "controllo": "commit",
-      "verificato": "eaf07152056f023295e84586c8074e3c8e3b7c52",
+      "verificato": "528ba79ed4268ebf6fc4f3b8f9dff33749cdb11f",
       "licenza": "MIT",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "github:prettier/prettier",
@@ -1521,9 +1521,9 @@
       "scheda": ".claude/templates/scientific-skills/MAPPA-SKILL-SCIENTIFICHE.md",
       "ruolo": "librerie",
       "controllo": "commit",
-      "verificato": "f8ea58b03ec08777ed7832bf85606c1fae9f935a",
+      "verificato": "5b861e4c4a06d56bac4b3f1398985416ae6ec6c7",
       "licenza": "NOASSERTION",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "github:systemd/systemd",
@@ -1543,9 +1543,9 @@
       "scheda": ".claude/templates/PACKAGES.md",
       "ruolo": "strumenti",
       "controllo": "release",
-      "verificato": "v15.3.0",
+      "verificato": "v15.4.0",
       "licenza": "Apache-2.0",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "github:travisvn/awesome-claude-skills",
@@ -1732,9 +1732,9 @@
       "motivo": "CLI di Claude Code installata in globale dai workflow di automation-starter e claude-code-handoff.",
       "ruolo": "strumenti",
       "controllo": "versione",
-      "verificato": "2.1.311",
+      "verificato": "2.1.312",
       "licenza": "SEE LICENSE IN README.md",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "npm:@colbymchenry/codegraph",
@@ -1776,9 +1776,9 @@
       "motivo": "CLI di Codex installata globalmente con npm dal pacchetto agenti-terminale tramite gli script Installa-Codex e Avvia-Codex",
       "ruolo": "strumenti",
       "controllo": "versione",
-      "verificato": "0.164.0",
+      "verificato": "0.165.0",
       "licenza": "Apache-2.0",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "npm:@upstash/context7-mcp",
@@ -1809,9 +1809,9 @@
       "motivo": "Memoria semantica persistente cross-sessione elencata dal catalogo come strumento esterno.",
       "ruolo": "strumenti",
       "controllo": "versione",
-      "verificato": "15.3.0",
+      "verificato": "15.4.0",
       "licenza": "Apache-2.0",
-      "data": "2026-10-27"
+      "data": "2026-10-28"
     },
     {
       "id": "npm:code-context-provider-mcp",
@@ -1884,8 +1884,8 @@
       "motivo": "Motore di conversione opzionale di doc-ingest con il flag --engine docling.",
       "ruolo": "librerie",
       "controllo": "versione",
-      "verificato": "2.143.0",
-      "data": "2026-10-27"
+      "verificato": "2.143.1",
+      "data": "2026-10-28"
     },
     {
       "id": "pypi:graphifyy",
@@ -1894,8 +1894,8 @@
       "motivo": "Pacchetto PyPI con cui si installa graphify (uv tool install graphifyy), consigliato dal catalogo.",
       "ruolo": "strumenti",
       "controllo": "versione",
-      "verificato": "0.9.96",
-      "data": "2026-10-27"
+      "verificato": "0.9.97",
+      "data": "2026-10-28"
     },
     {
       "id": "pypi:headroom-ai",
