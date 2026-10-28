@@ -2008,6 +2008,16 @@
       "data": "2026-10-27"
     },
     {
+      "id": "web:https://platform.claude.com/docs/en/about-claude/api-credits-for-subscribers",
+      "pacchetto": "filone-crediti-inclusi-abbonamento",
+      "scheda": "docs/filone-crediti-inclusi-abbonamento.md",
+      "ruolo": "candidati",
+      "motivo": "Meccanismo dei crediti API inclusi in un abbonamento: riscatto, saldo comune, scadenza sul ciclo e prodotti coperti, da cui il filone trae le sei conseguenze e la lista di controllo",
+      "controllo": "versione",
+      "verificato": "27bb5dbc6351",
+      "data": "2026-10-28"
+    },
+    {
       "id": "web:https://snitchplugin.com/",
       "pacchetto": "scouting",
       "scheda": "docs/fonti-di-scouting.md",
@@ -2016,6 +2026,16 @@
       "controllo": "versione",
       "verificato": "ab5259031586",
       "data": "2026-10-27"
+    },
+    {
+      "id": "web:https://www.anthropic.com/legal/credit-terms",
+      "pacchetto": "filone-crediti-inclusi-abbonamento",
+      "scheda": "docs/filone-crediti-inclusi-abbonamento.md",
+      "ruolo": "fonti-di-norme",
+      "motivo": "Termini supplementari sui crediti: natura promozionale, scadenza, non trasferibilita e assenza di valore monetario, che reggono il punto su provvista e non sconto",
+      "controllo": "versione",
+      "verificato": "aa1cc7e26f32",
+      "data": "2026-10-28"
     },
     {
       "id": "winget:Nimbalyst.Nimbalyst",

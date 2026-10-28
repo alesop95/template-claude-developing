@@ -16,12 +16,12 @@ Le fonti stanno qui per ruolo, cioè per ciò che il template ne fa, e la colonn
 | Server MCP | 22 | 17 | 5 | 0 |
 | Strumenti, programmi e servizi | 46 | 42 | 1 | 3 |
 | Librerie | 18 | 13 | 5 | 0 |
-| Fonti di norme e guide | 8 | 3 | 5 | 0 |
+| Fonti di norme e guide | 9 | 4 | 5 | 0 |
 | Cataloghi e indici | 7 | 1 | 6 | 0 |
 | Ispirazioni e crediti | 7 | 7 | 0 | 0 |
-| Candidati e alternative | 60 | 34 | 26 | 0 |
+| Candidati e alternative | 61 | 35 | 26 | 0 |
 | Fonti di scouting | 2 | 2 | 0 | 0 |
-| Totale | 186 | | | |
+| Totale | 188 | | | |
 
 ## Skill, agenti, comandi e plugin
 
@@ -167,6 +167,7 @@ Repository da cui una regola, una norma, una guida o un registro delle fonti del
 | [github:lint-staged/lint-staged](https://github.com/lint-staged/lint-staged) | Fonte della norma di pipeline-app per backup e staging dei file in pre-commit. | skill pipeline-app | `.claude/skills/pipeline-app/RIFERIMENTO.md` | release | v17.6.0, 2026-10-21 |
 | [github:s4ntrx/Cybersecurity-Threats-Guide](https://github.com/s4ntrx/Cybersecurity-Threats-Guide) | Guida in sei categorie che il filone cybersecurity usa come indice di studio; gli script che toccano il sistema non sono stati eseguiti. | filone cybersecurity | `docs/filone-cybersecurity.md` | commit | 96322f0c5c98, 2026-10-27 |
 | [github:systemd/systemd](https://github.com/systemd/systemd) | Fonte del comportamento di journald e delle unità su cui la specifica del pacchetto linux-observability fonda le verifiche di rotazione e capienza. | docs | `docs/progetto-pacchetto-linux-observability.md` | release | v262.1, 2026-10-21 |
+| [web:https://www.anthropic.com/legal/credit-terms](https://www.anthropic.com/legal/credit-terms) | Termini supplementari sui crediti: natura promozionale, scadenza, non trasferibilita e assenza di valore monetario, che reggono il punto su provvista e non sconto | filone-crediti-inclusi-abbonamento | `docs/filone-crediti-inclusi-abbonamento.md` | versione | aa1cc7e26f32, 2026-10-28 |
 
 ## Cataloghi e indici
 
@@ -261,6 +262,7 @@ Repository valutati e non adottati: candidati segnalati da una fonte di scouting
 | [github:Zettlr/Zettlr](https://github.com/Zettlr/Zettlr) | Editor Markdown con Pandoc e citazioni Zotero, candidato del passaggio di scouting del 2026-10-16, destinato al settore «Scrittura e tipografia»: applicazione desktop, non pacchetto; non adottato, esito in `docs/fonti-di-scouting.md`. | scouting | `docs/fonti-di-scouting.md` | release | v4.9.0, 2026-10-27 |
 | [github:zongmin-yu/semantic-scholar-fastmcp-mcp-server](https://github.com/zongmin-yu/semantic-scholar-fastmcp-mcp-server) | Elencato come candidato o alternativa nel documento di ricerca datato di academic-researcher; il catalogo non lo adotta | academic-researcher | `.claude/templates/academic-researcher/references/claude-ricercatore-universitario-completo.md` | commit | 68e7b0656262, 2026-10-21 |
 | [github:zvec-ai/zvec-grep](https://github.com/zvec-ai/zvec-grep) | Ricerca locale ibrida testuale e vettoriale, candidato del passaggio di scouting del 2026-10-16, destinato al settore «Fonti e corpus documentali»: da affiancare a doc-ingest; non adottato, esito in `docs/fonti-di-scouting.md`. | scouting | `docs/fonti-di-scouting.md` | release | v0.2.0, 2026-10-21 |
+| [web:https://platform.claude.com/docs/en/about-claude/api-credits-for-subscribers](https://platform.claude.com/docs/en/about-claude/api-credits-for-subscribers) | Meccanismo dei crediti API inclusi in un abbonamento: riscatto, saldo comune, scadenza sul ciclo e prodotti coperti, da cui il filone trae le sei conseguenze e la lista di controllo | filone-crediti-inclusi-abbonamento | `docs/filone-crediti-inclusi-abbonamento.md` | versione | 27bb5dbc6351, 2026-10-28 |
 | [web:https://snitchplugin.com/](https://snitchplugin.com/) | Sito di una raccolta di skill segnalata nel thread del subreddit ClaudeAI del 2026-10-27; sorvegliato per contenuto finché non viene letto e valutato. | scouting | `docs/fonti-di-scouting.md` | versione | ab5259031586, 2026-10-27 |
 
 ## Fonti di scouting
