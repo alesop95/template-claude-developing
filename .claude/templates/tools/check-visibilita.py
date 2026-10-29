@@ -159,9 +159,14 @@ def autotest() -> int:
                                      encoding="utf-8")
         caso("una data non in forma ISO non si accetta", dichiarata(p) is None)
 
+    # Gli indirizzi di prova sono inventati e nessuno di essi e' di una persona vera: questo
+    # file e' tracciato e il template lo propaga in ogni progetto, quindi un identificativo
+    # reale scritto qui si moltiplica per il numero dei repository che ne discendono. E' la
+    # stessa ragione per cui l'autotest dell'anonimizzazione non porta mai un valore reale,
+    # e il 2026-10-28 la guardia test-identita-personali ha fermato la passata proprio qui.
     for url, atteso in [
-        ("git@github-corp-ale:asopranzi-intrawelt/intralino.git", "asopranzi-intrawelt/intralino"),
-        ("git@github.com:alesop95/my-cv.git", "alesop95/my-cv"),
+        ("git@alias-di-macchina:organizzazione-finta/progetto.git", "organizzazione-finta/progetto"),
+        ("git@servizio.example:utente-finto/altro-progetto.git", "utente-finto/altro-progetto"),
         ("https://github.com/pola-rs/polars", "pola-rs/polars"),
     ]:
         m = re.search(r"[:/]([^/:]+)/([^/]+?)(?:\.git)?$", url)
