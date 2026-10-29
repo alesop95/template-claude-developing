@@ -1,5 +1,7 @@
 # template-claude-developing
 
+<!-- visibilita: public, verificata il 2026-10-28 -->
+
 > Istruzioni di team di questo repository, che è il template stesso del sistema di progetto e non un progetto che lo adotta. Lo standard completo sta in `.claude/PROJECT-SYSTEM.md`, le regole sempre attive in `.claude/rules/`, le norme caricate su richiesta nelle skill che l'indice qui sotto elenca, il catalogo dei pacchetti opzionali in `.claude/templates/PACKAGES.md`, e il percorso per estendere il sistema nella sezione "Come estendere il sistema" del `README.md` di radice.
 
 Una modifica committata sotto `.claude/` del template non arriva da sola ai progetti istanziati: la porta `.claude/templates/tools/allinea-tutti.ps1 -Applica`, che l'utente lancia dopo il commit, seguita da `.claude/templates/tools/chiudi-allineamento.ps1 -Applica`, che committa e spinge in ogni progetto applicato i soli file che la passata ha scritto, leggendoli dal suo rapporto invece di dedurli dall'albero. `chiudi` lo ricorda da sé dopo il push con `passata-in-sospeso.py`, e l'agente lo ripropone comunque a ogni milestone che tocca `.claude/`. I progetti che la passata lascia in `conflitti` si chiudono a mano e si registrano con `allinea-dal-template.py --risolto <percorso>`.
