@@ -39,7 +39,7 @@ def history(tmp_path):
     template.mkdir()
     git(template, "init", "-q", "-b", "main")
     git(template, "config", "user.name", "Fixture")
-    git(template, "config", "user.email", "fixture@example.invalid")
+    git(template, "config", "user.email", "prova@example.invalid")
     p = template / ".claude/PROJECT-SYSTEM.md"
     p.parent.mkdir()
     p.write_text("# Sistema\n", encoding="utf-8")
@@ -286,8 +286,11 @@ def test_profile_installs_all_three_launchers_and_preserves_external_bytes(tmp_p
 @pytest.mark.skipif(os.name != "nt", reason="launcher PowerShell Windows")
 @pytest.mark.parametrize("agent", ["claude", "codex"])
 def test_both_launchers_offer_same_writable_mailbox_to_backend(tmp_path, agent):
-    tools = tmp_path / "tools"
-    tools.mkdir()
+    tools = tmp_path / "template/.claude/templates/agenti-terminale/tools"
+    tools.mkdir(parents=True)
+    helpers = tools.parent.parent / "tools"
+    helpers.mkdir()
+    (helpers / "stato-template.py").write_text("print('AVVISO-TEST')\n", encoding="utf-8")
     for name in [
         "Avvia-Codex.ps1",
         "Avvia-Claude.ps1",
@@ -329,6 +332,7 @@ def test_both_launchers_offer_same_writable_mailbox_to_backend(tmp_path, agent):
         text=True,
     )
     assert result.returncode == 0, result.stdout + result.stderr
+    assert "AVVISO-TEST" in result.stdout
     data = json.loads(capture.read_text(encoding="utf-8-sig"))
     assert (
         "--add-dir" in data["args"]
@@ -339,3 +343,17 @@ def test_both_launchers_offer_same_writable_mailbox_to_backend(tmp_path, agent):
         (mailbox / data["id"] / "partecipante.json").read_text(encoding="utf-8")
     )
     assert registered["agente"] == agent
+
+
+def test_identity_guard_checks_new_files_and_respects_gitignore(tmp_path):
+    git(tmp_path, "init", "-q")
+    rules = tmp_path / ".claude"
+    rules.mkdir()
+    text = "nonammessa" + "@" + "esempio.invalid"
+    (rules / "nuova.md").write_text(text, encoding="utf-8")
+    (rules / "esclusa.md").write_text(text, encoding="utf-8")
+    (tmp_path / ".gitignore").write_text(".claude/esclusa.md\n", encoding="utf-8")
+    guard = module("identity_guard", TOOLS / "test-identita-personali.py")
+    results = guard.cerca_forme(tmp_path)
+    assert len(results) == 1
+    assert results[0][0] == ".claude/nuova.md"

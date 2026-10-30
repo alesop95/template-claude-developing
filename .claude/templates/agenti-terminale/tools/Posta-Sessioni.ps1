@@ -11,6 +11,15 @@ function Prepara-PostaSessioni([string]$Agente, [int]$Account, [string]$Progetto
   $env:PROJECT_AGENT_MAILBOX_ID = $nome
   $env:PROJECT_AGENT_MAILBOX_TOOL = $tool
   $env:PROJECT_TEMPLATE_ROOT = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..\..\..'))
+  # Stato in ingresso e lezioni in uscita, visibili a ogni avvio dei due agenti.
+  $statoTemplate = Join-Path $env:PROJECT_TEMPLATE_ROOT '.claude/templates/tools/stato-template.py'
+  if (Test-Path -LiteralPath $statoTemplate) {
+    & python $statoTemplate --progetto $Progetto --template $env:PROJECT_TEMPLATE_ROOT | ForEach-Object { Write-Host $_ }
+  }
+  $lezioniTemplate = Join-Path $env:PROJECT_TEMPLATE_ROOT '.claude/templates/tools/lezioni-template.py'
+  if (Test-Path -LiteralPath $lezioniTemplate) {
+    & python $lezioniTemplate --radice $Progetto controlla | ForEach-Object { Write-Host $_ }
+  }
   Write-Host "Posta comune = $Posta; partecipante $nome" -ForegroundColor Cyan
   Write-Host 'Gli agenti leggono la cassetta a inizio sessione e a ogni giro; nessuna notifica push.' -ForegroundColor DarkGray
   return $Posta

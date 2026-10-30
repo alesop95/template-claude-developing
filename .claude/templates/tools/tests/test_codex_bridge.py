@@ -100,7 +100,7 @@ def setup_alignment(tmp_path, codex=True):
     model.write_text(BRIDGE, encoding="utf-8")
     git(template, "init", "-q", "-b", "main")
     git(template, "config", "user.name", "Fixture")
-    git(template, "config", "user.email", "fixture@example.invalid")
+    git(template, "config", "user.email", "prova@example.invalid")
     git(template, "add", ".claude")
     git(template, "commit", "-q", "-m", "Fixture con ponte canonico")
     root = tmp_path / "prj"
