@@ -22,6 +22,9 @@ Un filone nasce con un documento in `docs/` che dichiara il mandato, la data e c
 | Strumenti di lavoro degli agenti | Controllo di versione pensato per flussi agentici (Scion di Anthropic) e orchestrazione su Windows (Nimbalyst) | Nimbalyst catalogato; Scion osservazione; tracciamento astratto del terminale proposto il 2026-10-27, da sviluppare | Orchestrazione, sessioni e cataloghi di agenti | `docs/filone-strumenti-agentici.md` |
 | Stack full-stack collaudati | Astrarre dai progetti già allineati le soluzioni di stack e di gestione del version control che funzionano davvero, così il template le proponga con un benchmark tecnico reale alle spalle | Aperto il 2026-10-16; da impostare lo studio sui progetti allineati, nessuna lezione ancora estratta | Economia e fondamenta, più `stack-profiles` | `docs/filone-stack-benchmark.md` |
 | Economia dei fornitori di modelli | Crediti dell API di un fornitore inclusi in un abbonamento: meccanismo, conseguenze sul registro dei costi e lista di controllo per adottarli | Aperto il 2026-10-28; meccanismo letto alla fonte primaria e un collegamento reale eseguito, lista di controllo applicata a un solo progetto; osservazione, fuori dal catalogo | Economia e fondamenta | `docs/filone-crediti-inclusi-abbonamento.md` |
+| Firmware e microserver | Strumenti didattici browser, prototipo MCU e host Linux a basso consumo | Aperto29/10/2026 da home-lab; quattro fonti primarie lette, simulazioni e consumo non collaudati, licenze/condizioni da chiarire | Macchine e continuità operativa; IoT/firmware da definire prima del catalogo | `docs/filone-microcontrollori-e-microserver.md` |
+
+Sviluppo trasversale del30/10: [allineamento visibile e posta comune](allineamento-e-posta-sessioni.md), con scadenze delle esclusioni, ricevuta nel progetto e cassetta Claude/Codex.
 
 ## Da dove arrivano i candidati
 

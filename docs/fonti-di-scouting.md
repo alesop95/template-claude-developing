@@ -55,3 +55,7 @@ Thread letto per intero dall'archivio Arctic Shift il 2026-10-27; licenza, ultim
 | Gist `falsifier` di xificurC, https://gist.github.com/xificurC/8377d51a0c080ad81bb92a55911a0fd0 | Skill che cerca contraddizioni, regole nascoste e presupposti sbagliati in una specifica o in un codice, e restituisce un elenco ordinato | Sviluppo, qualità e revisione | Da leggere: un gist non dichiara licenza di per sé | Vicina alla skill `prove-che-misurano`; da leggere prima di proporla |
 | Sito `web:https://snitchplugin.com/` | Raccolta di skill di un utente del thread: sicurezza, documentazione, SEO, marketing | Da decidere dopo la lettura | Da leggere sul sito | Non letto: registrato perché il proprietario chiede che ogni fonte indicata sia sorvegliata, anche un sito senza repository |
 | `manish-uxai/design-review` | Skill installata con `npx skills add` che cerca valori di colore scritti a mano e componenti duplicati | Artefatti visivi | Nessuna dichiarata, ultimo push del 2026-07-02 | Si studia e non si riusa; da confrontare con il controllo di interfaccia di `anti-slop` |
+
+## Segnalazione home-lab del29/10/2026
+
+Learn ESP32 e Learn Arduino sono siti didattici indicati dal proprietario; confronto primario con Wokwi e CircuitJS nel [filone firmware e microserver](filone-microcontrollori-e-microserver.md). Pagine lette, interattività non provata e licenze/condizioni da chiarire. Le quattro URL canoniche sono sorvegliate nel registro a monte. Non sono promosse al catalogo o installate nei progetti.

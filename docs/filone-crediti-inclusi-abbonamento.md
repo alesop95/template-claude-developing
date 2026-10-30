@@ -45,5 +45,5 @@ Si riapre quando un secondo progetto istanziato adotta la stessa dotazione, perc
 
 ## Fonti
 
-- web:https://platform.claude.com/docs/en/about-claude/api-credits-for-subscribers — documentazione del fornitore sui crediti inclusi nei piani ad abbonamento; letta il 2026-10-27.
-- web:https://www.anthropic.com/legal/credit-terms — termini supplementari sui crediti: natura promozionale, scadenza, non trasferibilità, assenza di valore monetario; letti il 2026-10-27.
+- web:https://platform.claude.com/docs/en/about-claude/api-credits-for-subscribers - documentazione del fornitore sui crediti inclusi nei piani ad abbonamento; letta il 2026-10-27.
+- web:https://www.anthropic.com/legal/credit-terms - termini supplementari sui crediti: natura promozionale, scadenza, non trasferibilità, assenza di valore monetario; letti il 2026-10-27.

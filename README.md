@@ -70,6 +70,8 @@ Questo file e il README della repository GitHub. Serve a far capire cos'e il tem
 - [Come estendere il sistema](#come-estendere-il-sistema)
 - [Riferimenti e strumenti open source](#riferimenti-e-strumenti-open-source)
 - [Versionamento del repository](#versionamento-del-repository)
+- [Studio firmware e piccoli server](#studio-firmware-e-piccoli-server)
+- [Allineamento visibile e posta fra agenti](#allineamento-visibile-e-posta-fra-agenti)
 
 </details>
 <!-- sync-readme:toc:end -->
@@ -100,7 +102,7 @@ L'hook versionato in `.githooks/pre-commit` copre anche i commit manuali dopo l'
 
 ## Cosa viene installato in un progetto
 
-La cartella `.claude/` e il centro di controllo del progetto, tenuto all'essenziale. La struttura canonica, da adottare nella forma minima e da estendere solo quando serve, e descritta per intero in `.claude/PROJECT-SYSTEM.md`. In sintesi un progetto inizializzato ottiene un `CLAUDE.md` di radice che indicizza i file satellite tracciati, un `AGENTS.md` che rende quelle istruzioni native anche per Codex senza duplicarle, un `CLAUDE.local.md` ignorato per gli override personali, e sotto `.claude/` le cartelle `rules`, `skills`, `agents`, `commands`, l'eventuale `hooks`, una cartella `memory` con `index.md`, `progress.md` e `decisions.md`, e una cartella `context` con le schede tecniche `STACK.md`, `design-and-security.md`, `deployment.md`, `dev-testing.md`, `current-work.md`, `roadmap.md` e i diagrammi. Le skill canoniche sotto `.claude/skills/` vengono esposte a Codex tramite wrapper generati sotto `.agents/skills/`; lo strumento `sync-codex-skills.py` impedisce che le due superfici divergano. Il livello privato e verboso vive in `_notes/`, ignorato da git.
+La cartella `.claude/` e il centro di controllo del progetto, tenuto all'essenziale. La struttura canonica, da adottare nella forma minima e da estendere solo quando serve, e descritta per intero in `.claude/PROJECT-SYSTEM.md`. In sintesi un progetto inizializzato ottiene un `CLAUDE.md` di radice che indicizza i file satellite tracciati, un `AGENTS.md` che rende quelle istruzioni native anche per Codex senza duplicarle, un `CLAUDE.local.md` ignorato per gli override personali, e sotto `.claude/` le cartelle `rules`, `skills`, `agents`, `commands`, l'eventuale `hooks`, una cartella `memory` con `index.md`, `progress.md` e `decisions.md`, e una cartella `context` con le schede tecniche `STACK.md`, `design-and-security.md`, `deployment.md`, `dev-testing.md`, `current-work.md`, `roadmap.md` e i diagrammi. Le skill canoniche sotto `.claude/skills/` vengono esposte a Codex tramite wrapper generati sotto `.agents/skills/`; lo strumento `sync-codex-skills.py` impedisce che le due superfici divergano. Il livello privato e verboso vive in `_notes/`, ignorato da git. Dal29/10/2026 il controllo degli adattatori verifica anche AGENTS.md e ripristina il ponte mancante dal modello; la normale passata lo gestisce nei progetti già Codex, conservando le personalizzazioni. Il difetto riprodotto, le regressioni e la distribuzione sono nella [scheda del ponte Codex](docs/correzione-ponte-codex.md).
 
 ## I due livelli documentali
 
@@ -647,3 +649,11 @@ Il sistema integra o adatta alcuni strumenti e pattern open source:
 ## Versionamento del repository
 
 L'identità git e il remoto si configurano localmente secondo la skill `identita-git`, usando i valori rilevati sulla macchina che ospita il clone. `git add`, commit e push restano operazioni manuali dell'utente.
+
+## Studio firmware e piccoli server
+
+Il [filone firmware e microserver](docs/filone-microcontrollori-e-microserver.md), indicizzato nei [filoni](docs/FILONI.md), raccoglie strumenti browser candidati, costi da verificare e distinzione MCU/Linux. Nessun nuovo pacchetto o server MCP è installato.
+
+## Allineamento visibile e posta fra agenti
+
+La [consegna del30/10](docs/allineamento-e-posta-sessioni.md) rende visibili ritardo e pacchetti nuovi del template all’apertura, conserva una ricevuta della passata nel progetto e mostra scadenze delle esclusioni. I launcher Claude e Codex degli account numerati espongono la stessa cassetta su file, limitata a un perimetro aggiuntivo esplicito; la lettura ai giri di lavoro non è una notifica push. Le procedure e la memoria rimangono canoniche nel progetto, con pulizia di fine processo per ciascun account Codex e hook per Claude. Nessun commit o comando ricevuto è automatico.
