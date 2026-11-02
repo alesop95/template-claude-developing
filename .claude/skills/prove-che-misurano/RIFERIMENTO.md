@@ -435,3 +435,21 @@ Salita il 2026-10-28 da un progetto istanziato (L-023), ed è la forma generale 
 Caso osservato il30/10/2026 in un progetto istanziato: l’autotest di anonimizzazione si interrompeva con PermissionError mentre scriveva prova.md nella directory temporanea della sandbox Windows. Non era ancora arrivato al confronto che misura l’anonimizzazione. Eseguito fuori da quel vincolo, con autorizzazione del runtime, concludeva22 casi e0 errori. Lo stesso tipo di impedimento aveva colpito copie temporanee di prove sull’allineamento.
 
 Si registra quindi l’esito come esecuzione impedita dall’ambiente, senza dichiarare verde la prova e senza dedurre un difetto funzionale da quel solo errore. Si conserva il comando e il punto di arresto, poi si ripete nell’ambiente consentito e si legge il risultato. Una directory temporanea esplicitamente ammessa può essere una soluzione se verificata; non si allargano permessi o esclusioni del controllo a caso. Un esito fuori dalla sandbox non dimostra che quella sandbox sia stata riparata. Le due misure rimangono distinte nel rapporto.
+
+## Una prova sul tempo misura l'orologio della macchina che la fa girare
+
+Salita il 2026-11-02 da un progetto istanziato (lezione L-041). Le date di un evento si costruivano con il costruttore locale, cioè con l'orologio di chi apre la pagina, e le prove facevano lo stesso, leggendo il giorno con i metodi locali. Sul computer di sviluppo, nel fuso del progetto, tutto era verde; sui runner della CI, che girano in UTC, la mezzanotte dell'evento cadeva due ore dopo, e una suite verde in locale non lo poteva mostrare. Spostati gli istanti nel fuso dichiarato, sono cadute in UTC sette prove che leggevano le date *mostrate*: l'errore si era spostato da chi costruisce le date a chi le formatta.
+
+Due prescrizioni. Prima di dichiarare verde un cambio che tocca date o orari, la suite si lancia anche nel fuso dei runner, di norma con `TZ=UTC`; misurato su Windows, Node rispetta `TZ=UTC` e ignora un nome come `America/New_York`, quindi in locale il controllo affidabile è UTC. E le attese delle prove si scrivono come istanti in UTC, o lette nel fuso dichiarato, mai con i metodi che leggono l'orologio della macchina.
+
+## Un lavoro programmato che non parte non lascia errori
+
+Salita il 2026-11-02 da un progetto istanziato (lezione L-037). Una funzione a orario fisso, chiamata da uno schedulatore gestito, per difetto non ritenta: se la piattaforma respinge la chiamata prima di avviare il codice, per esempio per mancanza di un'istanza all'avvio a freddo, quell'esecuzione è persa e nel registro del codice non c'è niente, perché il codice non è partito. Nel caso osservato è successo sei notti su trenta, sempre all'ora tonda, e lo ha mostrato solo una lettura del registro della piattaforma durante una verifica dal vivo.
+
+Ogni lavoro programmato dichiara i tentativi ripetuti con un'attesa fra l'uno e l'altro, e il suo lavoro è idempotente perché un tentativo ripetuto sia sicuro; spostare l'orario fuori dall'ora tonda aiuta, ma non sostituisce i tentativi. Per sapere se ha girato non si cerca l'errore, che può avere forme diverse o mancare: si cerca la riga che il lavoro normale scrive ogni volta, e si contano i giorni in cui manca.
+
+## Una prova senza estensioni si fa da un profilo vuoto, e misura il codice
+
+Salita il 2026-11-02 da un progetto istanziato (lezione L-038). Quando una verifica dal vivo dipende da una richiesta verso un servizio di terze parti, come la raccolta degli errori, e il browser la blocca con `ERR_BLOCKED_BY_CLIENT`, ripetere in incognito non basta: l'incognito spegne le estensioni salvo quelle con il permesso di girarci, e un blocco pubblicitario di solito ce l'ha. Il segnale che lo dice in anticipo è un iniziatore in console che il sito non ha. La prova si fa da un profilo ospite o da un profilo nuovo, senza estensioni.
+
+L'esito si scrive con il suo perimetro: dimostra che il codice manda la richiesta giusta, non che la richiesta arrivi dal browser di ogni utente. Quella è una domanda di copertura, che si apre come voce a sé con il suo rimedio, per la raccolta degli errori l'inoltro attraverso il proprio dominio.

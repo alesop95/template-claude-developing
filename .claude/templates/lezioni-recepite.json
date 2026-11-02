@@ -624,6 +624,20 @@
   },
   {
     "progetto": "9546cca6109b",
+    "id": "L-037",
+    "commit": "",
+    "data": "2026-11-02",
+    "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md"
+  },
+  {
+    "progetto": "9546cca6109b",
+    "id": "L-038",
+    "commit": "",
+    "data": "2026-11-02",
+    "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md"
+  },
+  {
+    "progetto": "9546cca6109b",
     "id": "L-039",
     "commit": "",
     "data": "2026-10-30",
@@ -635,6 +649,13 @@
     "commit": "",
     "data": "2026-10-30",
     "dove": ".claude/templates/tools/stato-template.py; .claude/templates/tools/tests/test_session_alignment.py; docs/allineamento-e-posta-sessioni.md"
+  },
+  {
+    "progetto": "9546cca6109b",
+    "id": "L-041",
+    "commit": "",
+    "data": "2026-11-02",
+    "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md"
   },
   {
     "progetto": "9781581909d7",
