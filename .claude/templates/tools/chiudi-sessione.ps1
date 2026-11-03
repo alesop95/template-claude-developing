@@ -180,6 +180,13 @@ $controlli = @(
     @{ n = "check-eol.py";            a = @(".") },
     @{ n = "misura-istruzioni.py";    a = @() },
     @{ n = "verifica-schede.py";      a = @(); serve = ".claude\context" },
+    # C-185 di un progetto istanziato (2026-11-03): la memoria e le tabelle, che nessuno lanciava.
+    # lint-memoria dove c'e' il work-log; lint-md-tables solo dove il progetto ha scritto
+    # tools\tables-exclude.txt, l'elenco delle copie di terzi, perche' in un progetto con tabelle
+    # storiche fermerebbe ogni commit: creare il file e' la scelta di renderlo automatico.
+    @{ n = "lint-memoria.py";         a = @(); serve = ".claude\memory\progress.md" },
+    @{ n = "lint-md-tables.py";       a = @("."); serve = "tools\tables-exclude.txt" },
+    @{ n = "lint-md-tables.py";       a = @("--self-test"); solobundle = $true },
     @{ n = "lint-didattica.py";       a = @(); serve = ".claude\context\studio-didattico-master.md" },
     @{ n = "fix-accents.py";          a = @("--check") + $m + @(".") },
     @{ n = "fix-dashes.py";           a = @("--check") + $m + @(".") },

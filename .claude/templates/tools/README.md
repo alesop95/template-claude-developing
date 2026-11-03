@@ -38,7 +38,7 @@ Verifica la struttura delle tabelle Markdown, che `md-unwrap` per contratto non 
 python tools/lint-md-tables.py .
 ```
 
-È in sola lettura: esce 0 se non trova niente, 1 altrimenti, e si usa come gate accanto a `md-unwrap --check` e a `lint-md-commands.py`.
+È in sola lettura: esce 0 se non trova niente, 1 altrimenti, e si usa come gate accanto a `md-unwrap --check` e a `lint-md-commands.py`. Le copie verbatim di terzi, come le skill di un pacchetto riscritte a ogni versione, si dichiarano in `tools/tables-exclude.txt`, un percorso per riga con il motivo dopo il cancelletto e una cartella con la barra finale; una riga senza motivo ferma la corsa con uscita 2. `chiudi` lo lancia solo dove quel file esiste (dal 2026-11-03), e lancia `lint-memoria.py` dove esiste `.claude/memory/progress.md`.
 
 ## detect-ssh-profiles.py
 
