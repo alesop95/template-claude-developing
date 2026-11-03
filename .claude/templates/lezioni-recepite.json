@@ -700,6 +700,13 @@
     "dove": "templates/tools/lint-cultura.py, lanciato da chiudi-sessione: blocca nel template, avvisa nei progetti"
   },
   {
+    "progetto": "bae518523f0d",
+    "id": "L-001",
+    "commit": "",
+    "data": "2026-11-03",
+    "dove": "tre interventi: .claude/templates/agenti-terminale/tools/posta-sessioni.py, nuova azione congeda per nome o per eta', elenca mostra per difetto i soli vivi, invia rifiuta un congedato, undici prove di autotest; .claude/templates/agenti-terminale/tools/Posta-Sessioni.ps1, funzione Congeda-PostaSessioni e scopa delle registrazioni oltre 24 ore all'avvio; Avvia-Claude.ps1 e Avvia-Codex.ps1, congedo nel blocco finally prima della rimozione delle variabili. Resta scoperta la meta' che non dipende dallo strumento: una sessione avviata fuori dai launcher non si registra e nessun elenco la vede"
+  },
+  {
     "progetto": "f00655740f68",
     "id": "L-001",
     "commit": "",
