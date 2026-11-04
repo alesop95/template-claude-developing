@@ -21,11 +21,11 @@ lavoro@azienda.example
 privacy@example.com
 git@servizio.example
 
-# Aggiunte il 2026-11-03: fixture dei test di gh-progetto e della parita' di ripresa. Tutte e tre
-# usano domini riservati agli esempi dalla RFC 2606, cioe' .test e .invalid, che per costruzione non
-# possono esistere. Le ha fermate la guardia della passata di gruppo, che si e' rifiutata di
-# allineare otto progetti finche' non fossero dichiarate: e' il comportamento voluto, perche' il
-# template e' il moltiplicatore e un indirizzo vero scritto qui arriverebbe in ogni progetto.
+# Aggiunte il 2026-11-03: fixture dei test di gh-progetto e della parità di ripresa. Tutte e tre
+# usano domini riservati agli esempi dalla RFC 2606, cioè .test e .invalid, che per costruzione non
+# possono esistere. Le ha fermate la guardia della passata di gruppo, che si è rifiutata di
+# allineare otto progetti finché non fossero dichiarate: è il comportamento voluto, perché il
+# template è il moltiplicatore e un indirizzo vero scritto qui arriverebbe in ogni progetto.
 alpha@example.test
 other@example.test
 fixture@example.invalid

@@ -1,6 +1,10 @@
 # Istruzioni per Codex
 
+All'avvio elenca ricorsivamente i file Markdown sotto `.claude/rules/` e leggi tutte le regole senza una condizione `paths` nel frontmatter, incluse quelle dei pacchetti adottati. Per le regole con `paths`, leggi il frontmatter e applicale quando il lavoro interessa i percorsi dichiarati. I quattro file nominati più sotto non esauriscono le regole attive. Questo inventario riguarda le regole istanziate, non le copie sotto `.claude/templates/`.
+
 Questo repository è il template del sistema di progetto condiviso da Claude Code e Codex. `CLAUDE.md` è la fonte canonica delle istruzioni di questo repository: leggilo per intero prima di operare. Lo standard completo vive in `.claude/PROJECT-SYSTEM.md`.
+
+All'apertura leggi e segui `.claude/skills/riprendi/SKILL.md`, anche quando l'utente non ha scritto un comando slash: esegui prima `python .claude/templates/tools/verifica-ripresa.py`, poi i controlli di apertura prescritti da `CLAUDE.md`. In questo repository gli strumenti condivisi si trovano sotto `.claude/templates/tools/`, non in `tools/`. La procedura resta canonica e non dipende dagli hook del client. In Codex CLI la richiesta esplicita è `$riprendi` o la selezione da `/skills`; il testo «segui la skill riprendi» permette comunque di leggere il file direttamente.
 
 Esegui `python .claude/templates/tools/sync-codex-skills.py --project-root . --check` all'inizio della sessione. Le skill canoniche vivono in `.claude/skills/`; gli omonimi file sotto `.agents/skills/` sono wrapper generati di discovery per Codex e rimandano alla fonte canonica. Se il controllo segnala drift, rigenerali con lo stesso comando senza `--check` e riesegui la verifica.
 

@@ -18,6 +18,8 @@ A fine sessione aggiorna `_notes/RESUME-PROMPT.md` e scrivi in `_notes/COMMIT-MS
 
 ## Norme caricate su richiesta
 
+All'apertura di una sessione leggere e seguire `.claude/skills/riprendi/SKILL.md`, anche senza un comando slash. Nel template gli strumenti citati dalla procedura sotto `tools/` si eseguono da `.claude/templates/tools/`; la prima verifica è `python .claude/templates/tools/verifica-ripresa.py`. Claude Code e Codex applicano la stessa procedura e leggono gli stessi documenti, con gli strumenti disponibili nel rispettivo client.
+
 Quattro norme del sistema non stanno in `.claude/rules/` e non entrano quindi in contesto a ogni sessione: vivono come `RIFERIMENTO.md` dentro la skill che le governa e si caricano quando la loro situazione si presenta. La ragione, con il budget che la impone, sta nella sezione 24 di `.claude/PROJECT-SYSTEM.md`. L'indice che segue è ciò che rende affidabile quel caricamento, perché nomina la situazione con le parole con cui si presenta invece del nome del file: riconosciuta una di queste situazioni, si invoca la skill prima di procedere.
 
 - Si scrive o si valuta una prova automatica, si chiude un difetto, una verifica manuale smentisce una suite verde, si aggiunge una guardia o un'esclusione, si sta per dichiarare completo un intervento il cui scopo era un effetto misurabile, si progetta il controllo in esercizio di un servizio, si indaga un guasto e si deve stabilire che cosa dicono davvero le prove raccolte: skill `prove-che-misurano`.

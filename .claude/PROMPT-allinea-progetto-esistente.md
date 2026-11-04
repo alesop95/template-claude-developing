@@ -1,5 +1,9 @@
 # Prompt riusabile - ALLINEAMENTO di un progetto ESISTENTE allo standard
 
+Quando una direttiva cambia una regola, la diagnosi comprende anche i file posseduti dal progetto che possono ripeterne la versione vecchia, in particolare `CLAUDE.md` e `AGENTS.md`. Il fatto che l'allineamento li conservi non dimostra che le loro istruzioni siano ancora compatibili. Elenca le ripetizioni e le contraddizioni con i file e i passaggi interessati; prepara correzioni mirate che rimandino alla regola canonica, preservando le decisioni locali ancora valide. La direttiva registra insieme la modifica e le copie da migrare: il solo aggiornamento del modello non conclude la migrazione.
+
+Quando una direttiva cambia una regola, la diagnosi comprende anche i file posseduti dal progetto che possono ripeterne la versione vecchia, in particolare `CLAUDE.md` e `AGENTS.md`. Il fatto che l'allineamento li conservi non dimostra che le loro istruzioni siano ancora compatibili. Elenca le ripetizioni e le contraddizioni con i file e i passaggi interessati; prepara correzioni mirate che rimandino alla regola canonica, preservando le decisioni locali ancora valide. La direttiva registra insieme la modifica e le copie da migrare: il solo aggiornamento del modello non conclude la migrazione.
+
 > Da incollare in Claude Code dentro la radice di un progetto che ha già codice e storia git. È un prompt fisso: si usa sempre identico. La fonte di verità dello standard vive nel bundle di riferimento in E: e non va modificata da qui; questo prompt la importa e ci si confronta.
 
 ---

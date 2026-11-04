@@ -192,7 +192,8 @@ def autotest():
             prova("congedare un nome mai registrato fallisce", True)
         # Il difetto del 2026-11-03 viveva fra argparse e la funzione, non dentro la funzione:
         # si riproduce solo chiamando la riga di comando con la variabile d'ambiente valorizzata.
-        import subprocess, sys as _sys
+        import subprocess
+        import sys as _sys
         registra(d, "ambiente", "claude", d)
         amb = dict(os.environ, PROJECT_AGENT_MAILBOX_ID="ambiente")
         subprocess.run([_sys.executable, __file__, "--root", d, "congeda", "--inattivi-da", "99"],

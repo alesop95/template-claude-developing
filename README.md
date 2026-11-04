@@ -130,6 +130,8 @@ Prima di considerare sano un repository si verifica che non siano rimasti file i
 
 La convenzione degli alias SSH, ad esempio `github-personal` per l'identità personale e `github-corp` per quella di lavoro, e uno schema riusabile su qualsiasi macchina: si possono adottare gli stessi nomi ovunque. I valori concreti dietro ogni alias, ovvero il percorso della chiave, lo `user.name` e lo `user.email`, sono invece specifici della macchina e si rileggono dal relativo `~/.ssh/config` senza inventarli.
 
+GitHub CLI segue il profilo dichiarato dal progetto tramite [gh-progetto.py](.claude/templates/tools/gh-progetto.py). Il registro privato di macchina associa identità Git locale e alias SSH a un account API verificato; il comando seleziona le credenziali per il solo processo, senza switch globali. Un profilo assente o incoerente ferma l'operazione. Regola e strumento arrivano per allineamento; token e valori concreti restano fuori dal template.
+
 ## Sicurezza e permessi
 
 Il file `settings.json` del bundle porta una baseline esplicita di permessi: le operazioni git irreversibili (commit, push, reset, rebase, modifica della config globale), la lettura di file sensibili (`.env`, chiavi SSH, credenziali AWS) e la cancellazione ricorsiva sono negate per default; le operazioni di publish (`npm publish`, `docker push`) richiedono conferma esplicita. La regola `.claude/rules/security-permissions.md` documenta le sei modalità di esecuzione disponibili in Claude Code (default, acceptEdits, plan, dontAsk, auto, bypassPermissions), con i casi d'uso e i rischi di ciascuna, le limitazioni del sandboxing su Windows nativo e WSL2, e le linee guida per `--dangerously-skip-permissions` negli ambienti CI/CD automatizzati.
@@ -285,6 +287,10 @@ Esistono raccolte di skill pubblicate da terzi troppo grandi o troppo curate per
 Una terza raccolta fa eccezione alla regola, e la ragione è la frequenza con cui cambia. `grc-skills` porta le skill di conformità di `Sushegaad/Claude-Skills-Governance-Risk-and-Compliance`, che si aggiornano ogni mese per seguire le norme: rimandare a monte lascerebbe a ogni progetto il compito di accorgersi della release, quindi il template ne tiene nove in copia bloccata, la ricopia quando `fonti-a-monte.py` segnala la release nuova, e l'allineamento la porta nei progetti che le hanno istanziate.
 
 ## Ripresa di una sessione dopo una caduta
+
+Claude Code e Codex seguono la stessa skill canonica di ripresa; in Codex CLI il richiamo esplicito è `$riprendi` o `/skills`, mentre `AGENTS.md` ne prescrive la lettura anche senza un comando del client. Il ponte richiede tutte le regole istanziate applicabili, comprese quelle dei pacchetti. Le ancore delle schede devono essere antenate di `HEAD`: l'esistenza di un oggetto Git dopo una riscrittura della storia non basta, e i controlli riconoscono anche il campo storico `last-verified`.
+
+La propagazione dei modelli e l'istanziazione dei pacchetti hanno riscontri separati: [il contratto e i limiti](docs/parita-e-istanze-pacchetti.md) descrivono il registro delle scelte, il ripristino dei file adottati mancanti e il controllo della configurazione. Ricevere `.claude/templates/anonymization/` non equivale ad avere un controllo attivo nel progetto. La chiusura verifica inoltre il perimetro preparato e uno snapshot dei file, preserva uno stage preesistente e richiede una conferma aggiuntiva per più aree o molti file.
 
 La procedura di ripresa del sistema parte da `_notes/RESUME-PROMPT.md` e presuppone una cosa che non sempre è vera: che la sessione precedente sia arrivata alla fine. Una sessione che cade a metà, per un crash o perché la finestra è stata chiusa, lascia il progetto in uno stato che quel file non descrive. Il danno non è la perdita del lavoro, che sta su disco e in git: è che la sessione nuova prenda quella fotografia vecchia per il presente e vi costruisca sopra, e nessuno se ne accorga, perché un file di ripresa non aggiornato ha esattamente lo stesso aspetto di uno aggiornato.
 
@@ -450,10 +456,11 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**46 pacchetti a cartella** su **96 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**47 pacchetti a cartella** su **97 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
+- `guardia-pubblicazione` - Controlla prima del commit cartelle private, uscite di compilazione e artefatti da non pubblicare.: [.claude/templates/guardia-pubblicazione/README.md](.claude/templates/guardia-pubblicazione/README.md)
 - `separazione-ambienti` - paradigmi di separazione fra test e produzione, spiegati e con le fonti: [.claude/templates/separazione-ambienti/README.md](.claude/templates/separazione-ambienti/README.md)
 - `operations-log` - registro cronologico degli interventi operativi, con a che cosa servono e come sono stati verificati: [.claude/templates/operations-log/README.md](.claude/templates/operations-log/README.md)
 - `gancio-globale` - un presidio pre-commit valido per ogni repository della macchina, compresi quelli che non esistono ancora, con core.hooksPath globale invece di un'installazione per progetto: [.claude/templates/gancio-globale/README.md](.claude/templates/gancio-globale/README.md)

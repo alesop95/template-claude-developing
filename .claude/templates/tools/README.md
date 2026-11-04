@@ -171,6 +171,8 @@ python tools/verifica-ripresa.py --self-test
 
 ## verifica-schede.py
 
+Dal 2026-11-02 l'ancora deve essere un commit antenato di `HEAD`, verificato con `git merge-base --is-ancestor`; un oggetto ancora esistente fuori dalla storia del ramo è un difetto. Sono riconosciuti sia `last-verified-commit` sia il nome storico `last-verified`. `--radice` permette di controllare un progetto esplicito; senza, si usa il repository corrente, anche quando lo strumento viene eseguito dalla copia del template. Il controllo di apertura `verifica-ripresa.py` applica la stessa verifica prima del confronto di drift.
+
 Misura le schede di `.claude/context/` rispetto al codice che dichiarano di coprire. È il confronto della skill `sync-context` reso meccanico, con tre cecità di quel confronto trasformate in difetti che fanno fallire: una scheda con `covers-paths` ma senza `last-verified-commit`, che nessun confronto guarda; un'ancora che non è un commit del repository, come il segnaposto `PENDING-FIRST-COMMIT` dimenticato dopo il primo commit; un percorso coperto che non corrisponde a nessun file, che segna sempre verde. Le schede superate, cioè con file coperti cambiati dopo l'ancora, sono informazione; con `--rigoroso` fanno fallire anch'esse, ed è la forma da usare quando si dichiara di aver allineato tutto.
 
 Nato in un progetto istanziato, dove la prima corsa ha trovato tre schede mai ancorate dopo che il confronto per commit le aveva date per allineate per tre mesi. Non vede la quarta cecità della skill, cioè una scheda ancorata mentre già divergeva: quella si trova soltanto confrontando per contenuto.
@@ -428,8 +430,20 @@ Esegue ruff, alle regole predefinite, sugli strumenti Python del template, ed è
 python .claude/templates/tools/lint-strumenti.py
 ```
 
+## Istanze dei pacchetti e perimetro di una milestone
+
+`verifica-pacchetti.py --progetto . --template .` legge `.claude/pacchetti.json` e le ricette in `.claude/templates/pacchetti-istanza.json`. Le scelte adottate hanno un elenco di origini e destinazioni pubbliche; l'allineatore le ripristina anche quando una destinazione manca. Le decisioni assenti restano non censite, i modelli non contano come istanze e la configurazione privata non viene inventata. Il rapporto `PACCHETTI` è informativo rispetto al confronto dei file e resta distinto dalle azioni da committare. Un pacchetto adottato incompleto fa fallire il controllo diretto. Dettaglio nel [contratto di istanziazione](../../../docs/parita-e-istanze-pacchetti.md).
+
+`verifica-milestone.py` raccoglie nomi, stato Git e impronte dei contenuti scelti prima della conferma di `chiudi`, poi rifiuta cambiamenti successivi. Lo stage già presente viene preservato e fa fermare la chiusura. Il perimetro facoltativo `_notes/COMMIT-SCOPE.json` contiene `head` e `paths`, una lista di percorsi esatti: i file fuori elenco vengono mostrati e conservati, quelli attesi ma assenti fermano prima di `git add`. Il messaggio rimane una sola riga in `_notes/COMMIT-MSG.txt`. L'avviso su molti file o più aree richiede una conferma esplicita anche con l'opzione di conferma automatica. Quando due sessioni scrivono gli stessi file si preferisce un albero isolato e si riconcilia soltanto il lavoro verificato.
+
 ## Ponte Codex e adattatori delle skill
 
 `sync-codex-skills.py --check` controlla i wrapper e, nei progetti del sistema, anche AGENTS.md alla radice. Un ponte mancante non può più dare verde quando i wrapper sono già corretti. Senza --check viene creato dal modello; un ponte personalizzato esistente resta intatto. La passata gestisce AGENTS con il rapporto e la storia ordinari nei soli progetti già Codex. Dettaglio e limiti nella [scheda della correzione](../../../docs/correzione-ponte-codex.md).
 
 Le prove funzionali si eseguono con `python -m pytest .claude/templates/tools/tests/test_codex_bridge.py .claude/templates/tools/tests/test_allinea_dal_template.py -q`; includono repository temporanei per misurare il report reale di allineamento, senza commit nei progetti di lavoro.
+
+## gh-progetto.py e testo delle pull request
+
+`gh-progetto.py` seleziona le credenziali API dal profilo Git/SSH dichiarato, senza cambiare l'account globale. Le descrizioni si passano da un file UTF-8 con `--body-file`; prima di usare le credenziali lo strumento rifiuta le forme di codifica danneggiata riconoscibili nel testo e nel titolo esplicito. Non ricostruisce caratteri perduti e non sostituisce la rilettura della descrizione pubblicata. Regola e limiti nella skill `identita-git`, sezione sulla codifica delle pull request. Nessuna modifica a remoto, chiavi SSH o disciplina del merge.
+
+Le prove sintetiche sono `tests/test_gh_progetto.py` per i profili e `tests/test_pr_text.py` per il testo: i rispettivi controlli inversi verificano che la rimozione delle guardie venga rilevata. Non usano account o repository reali.

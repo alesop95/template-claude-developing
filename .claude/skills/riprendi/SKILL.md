@@ -22,6 +22,8 @@ Il danno non è la perdita del lavoro, che sta su disco e in git. È più sottil
 
 ## Passo 1 - Verificare prima di leggere
 
+La procedura vale per entrambi gli agenti. In Codex CLI si richiede con `$riprendi` o da `/skills`; se il client non espone il selettore, si legge questo file su richiesta esplicita o per istruzione di `AGENTS.md`. Il nome slash di Claude non è un requisito della procedura. Nel repository del template gli strumenti citati come `tools/` si eseguono da `.claude/templates/tools/`, nella radice del progetto.
+
 Il primo comando non legge il file di ripresa: verifica che si possa credergli.
 
 ```
@@ -73,6 +75,8 @@ Il modo ordinario di farlo è `chiudi`, che l'utente lancia dopo aver chiuso la 
 Una sessione che finisce senza registrare non produce un danno: produce esattamente la situazione che questa skill sa riconoscere, cioè un file di ripresa che non descrive il presente. È il comportamento voluto, ed è la ragione per cui l'impronta si registra e non si deduce.
 
 ## Automatizzarlo, se il progetto lo vuole
+
+Nella diagnosi confronta anche la data dell'ultima voce del work-log con l'attività di Git successiva: un lungo scarto richiede di verificare che la persistenza non sia stata disattivata da un'istruzione locale superata. Il confronto è un sintomo, non prova di perdita del lavoro né autorizzazione a riscrivere la storia del registro. Controlla le istruzioni ripetute in `CLAUDE.md` e `AGENTS.md` rispetto alle regole canoniche correnti; ricostruisci soltanto gli aggiornamenti sostenuti da evidenze e dichiara gli intervalli non ricostruibili.
 
 Il pacchetto `hooks-starter` copre la famiglia degli hook di apertura sessione. Dove sia attivo, la forma breve dello strumento sta in una riga e stampa un solo esito, così che la divergenza si veda senza che nessuno debba invocare niente.
 

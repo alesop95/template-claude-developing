@@ -1,5 +1,7 @@
 # guardia-pubblicazione
 
+<!-- readme-summary: Controlla prima del commit cartelle private, uscite di compilazione e artefatti da non pubblicare. -->
+
 > Pacchetto opzionale. Impedisce che un documento riservato o un'uscita di compilazione entri in un commit, controllandolo prima di ogni consegna invece di affidarlo a una regola scritta. Nasce il 2026-11-04 in un progetto istanziato, su richiesta del proprietario, dopo che i due vincoli che questo strumento verifica erano stati enunciati in prosa e lui ha osservato che una regola in prosa non ferma un comando.
 
 ## Il problema

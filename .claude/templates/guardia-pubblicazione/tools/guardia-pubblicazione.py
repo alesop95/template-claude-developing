@@ -45,7 +45,6 @@ Codici di uscita: 0 nessun riscontro, 1 riscontro bloccante, 2 non calcolabile.
 
 import argparse
 import json
-import os
 import re
 import shutil
 import subprocess
@@ -198,7 +197,7 @@ def autotest():
             if git(r, "init", "-q")[0] != 0:
                 print("autotest non calcolabile: git non disponibile")
                 return 2
-            git(r, "config", "user.email", "prova@esempio.invalido")
+            git(r, "config", "user.email", "prova@esempio.invalid")
             git(r, "config", "user.name", "Prova")
             (r / "_notes" / "pagina.html").write_text("x" * 300_000, encoding="utf-8")
             (r / "docs" / "guida.md").write_text("# guida\n", encoding="utf-8")

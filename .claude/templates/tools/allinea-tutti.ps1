@@ -197,7 +197,7 @@ $fileComuni = Join-Path $dirCorsa 'righe-comuni.json'
 
 function Log([string]$riga) { Write-Host $riga; [System.IO.File]::AppendAllText($fileLog, $riga + "`r`n", $utf8) }
 
-$AZIONABILI = 'CONFLITTO', 'SUPERATO', 'MERGE', 'VECCHIO', 'NUOVO', 'SPOSTATO', 'RIMOSSO', 'INNESCO'
+$AZIONABILI = 'CONFLITTO', 'SUPERATO', 'MERGE', 'RISOLTO', 'VECCHIO', 'NUOVO', 'SPOSTATO', 'RIMOSSO', 'INNESCO'
 function Leggi-Json([string]$f) { Get-Content -LiteralPath $f -Raw -Encoding UTF8 | ConvertFrom-Json }
 function Conta($esiti) {
   $c = @{}; foreach ($k in $AZIONABILI + 'ADATTATO', 'LOCALE', 'UGUALE') { $c[$k] = 0 }
@@ -579,6 +579,9 @@ try {
         # Il rapporto si legge una volta sola e si conserva: la passata di scrittura riscrive
         # lo stesso file, quindi dopo non si saprebbe piu' quali strumenti sono stati toccati.
         $esitiPrima = Leggi-Json $json
+        foreach ($statoPac in @($esitiPrima | Where-Object { $_.esito -eq 'PACCHETTI' })) {
+          $o.avvisi += 'istanze dei pacchetti: ' + $statoPac.nota
+        }
         $o.c = Conta $esitiPrima
         $o.stato = if ($o.c.azionabili -eq 0) { 'allineato' } elseif ($o.c.CONFLITTO -gt 0) { 'conflitti' } else { 'da-allineare' }
         $collisi = @()
@@ -681,11 +684,13 @@ try {
       }
     }
     $sintesi = if ($o.c) { ($AZIONABILI + 'ADATTATO' | Where-Object { $o.c[$_] } | ForEach-Object { "$_=$($o.c[$_])" }) -join ' ' } else { '' }
-    Log ('{0,-44} {1,-20} {2}' -f $o.nome, $o.stato, $sintesi)
+    $statoVisibile = switch ($o.stato) { 'allineato' { 'file-allineati' } 'applicato' { 'file-applicati' } default { $o.stato } }
+    Log ('{0,-44} {1,-20} {2}' -f $o.nome, $statoVisibile, $sintesi)
     foreach ($a in $o.avvisi) { Log ('{0,-44} {1}' -f '', "avviso: $a") }
     $registro[$prj] = [ordered]@{
       stato = $o.stato; misurato_il = (Get-Date -Format 's'); template_commit = $tplHead; template_albero_claude = $tplAlbero
       conteggi = $o.c; avvisi = $o.avvisi; rapporto = (Join-Path $dirCorsa "$($o.slug).json")
+      perimetro_stato = 'file gestiti dal template; istanze, configurazione e collaudo sono verifiche distinte'
     }
   }
 
