@@ -14,6 +14,27 @@
     "dove": ".claude/templates/grc-skills/skills/soc2/.md-unwrap-ignore, autotest grc-skills.py e COMMIT-SCOPE: gia corretto nel lotto in preparazione; il marcatore deve entrare nella pubblicazione con le pagine, la presenza nel working tree non prova la consegna. Nessun allineamento dichiarato prima del commit."
   },
   {
+    "progetto": "51462580c4f1",
+    "id": "L-003",
+    "commit": "",
+    "data": "2026-11-05",
+    "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md: copertura per identificatori e classi equivalenti, attribuzione verificata e denominatore dichiarato"
+  },
+  {
+    "progetto": "51462580c4f1",
+    "id": "L-004",
+    "commit": "",
+    "data": "2026-11-05",
+    "dove": "Gia coperta in .claude/norme/git-commands-format.md: la quotatura della shell non protegge dall interprete successivo; file o strumento di modifica, controllo dei byte. Nessuna duplicazione normativa"
+  },
+  {
+    "progetto": "51462580c4f1",
+    "id": "L-005",
+    "commit": "",
+    "data": "2026-11-05",
+    "dove": ".claude/norme/token-economy.md: ripresa dello stesso contesto dopo la quota se supportata, altrimenti mandato sul residuo; nessuna autorizzazione implicita a delegare"
+  },
+  {
     "progetto": "71947b5a11ed",
     "id": "L-001",
     "commit": "",
@@ -1020,6 +1041,20 @@
     "commit": "",
     "data": "2026-11-04",
     "dove": ".claude/PROMPT-allinea-progetto-esistente.md: diagnosi e migrazione delle direttive ripetute nei file locali; .claude/skills/riprendi/SKILL.md: confronto work-log e attivita Git come sintomo e verifica delle istruzioni locali superate. Nessuna soglia cronologica arbitraria e nessuna riscrittura automatica dei registri."
+  },
+  {
+    "progetto": "bae518523f0d",
+    "id": "L-013",
+    "commit": "",
+    "data": "2026-11-05",
+    "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md: processo non visibile, due misure dell effetto e incertezza prima di rilanciare"
+  },
+  {
+    "progetto": "bae518523f0d",
+    "id": "L-014",
+    "commit": "",
+    "data": "2026-11-05",
+    "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md: enumerazioni per caso, copia profonda e prove di indipendenza dello schema"
   },
   {
     "progetto": "f00655740f68",

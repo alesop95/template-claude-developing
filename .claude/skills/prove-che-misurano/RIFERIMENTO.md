@@ -513,3 +513,15 @@ Per arrestare un'attività si preferisce il comando previsto dal sistema che la 
 Salita il 2026-11-02 da un progetto istanziato (lezione L-038). Quando una verifica dal vivo dipende da una richiesta verso un servizio di terze parti, come la raccolta degli errori, e il browser la blocca con `ERR_BLOCKED_BY_CLIENT`, ripetere in incognito non basta: l'incognito spegne le estensioni salvo quelle con il permesso di girarci, e un blocco pubblicitario di solito ce l'ha. Il segnale che lo dice in anticipo è un iniziatore in console che il sito non ha. La prova si fa da un profilo ospite o da un profilo nuovo, senza estensioni.
 
 L'esito si scrive con il suo perimetro: dimostra che il codice manda la richiesta giusta, non che la richiesta arrivi dal browser di ogni utente. Quella è una domanda di copertura, che si apre come voce a sé con il suo rimedio, per la raccolta degli errori l'inoltro attraverso il proprio dominio.
+
+## Un processo non visibile non è un lavoro fermo
+
+Un elenco di processi filtrato sulla riga di comando può nascondere processi che la sessione non ha il permesso di leggere: il campo vuoto viene scartato dal filtro e un risultato vuoto diventa una falsa assenza. Si contano e dichiarano anche i campi illeggibili. Prima di raccomandare un rilancio si confronta due volte a breve distanza l'effetto persistente del lavoro, come un contatore, un checkpoint o la data dell'ultimo risultato. Se anche quell'effetto non è accessibile, l'avanzamento resta non verificato; non si avvia un duplicato sulla sola base dell'elenco vuoto.
+
+## Identificatori ammessi nello schema del singolo caso
+
+Quando un modello deve citare una chiave o un'ancora presente nell'input, lo schema dichiara un'enumerazione dei valori effettivamente ammessi in quel caso. Lunghezza massima e istruzioni in prosa ammettono comunque identificatori inesistenti. Lo schema si costruisce per chiamata con una copia profonda della base; se l'insieme è vuoto si tratta esplicitamente quel caso, senza trasformarlo in una stringa libera. La prova usa due input con insiemi diversi e verifica rifiuto degli identificatori estranei, indipendenza fra le chiamate e immutabilità dello schema globale. Se il motore non supporta quel vincolo, si valida anche l'output e si dichiara il limite.
+
+## La copertura distingue gli identificatori dalle voci equivalenti
+
+Un catalogo può contenere voci con identificatori diversi e dati indistinguibili per il verificatore. La copertura dichiara se conta identificatori o classi di equivalenza e conserva la relazione fra le voci gemelle; non elimina duplicati dal denominatore senza dirlo. Prima di produrre ancora una voce apparentemente mancante si confronta il contenuto e l'attribuzione effettiva dello stesso verificatore: una risposta attribuita alla gemella già coperta segnala un'ambiguità da registrare, non una nuova mancanza. La prova comprende due voci indistinguibili e una distinta, verificando sia i conteggi sia le attribuzioni.

@@ -447,3 +447,16 @@ Le prove funzionali si eseguono con `python -m pytest .claude/templates/tools/te
 `gh-progetto.py` seleziona le credenziali API dal profilo Git/SSH dichiarato, senza cambiare l'account globale. Le descrizioni si passano da un file UTF-8 con `--body-file`; prima di usare le credenziali lo strumento rifiuta le forme di codifica danneggiata riconoscibili nel testo e nel titolo esplicito. Non ricostruisce caratteri perduti e non sostituisce la rilettura della descrizione pubblicata. Regola e limiti nella skill `identita-git`, sezione sulla codifica delle pull request. Nessuna modifica a remoto, chiavi SSH o disciplina del merge.
 
 Le prove sintetiche sono `tests/test_gh_progetto.py` per i profili e `tests/test_pr_text.py` per il testo: i rispettivi controlli inversi verificano che la rimozione delle guardie venga rilevata. Non usano account o repository reali.
+
+## stato-vulnerabilita.py
+
+Qualifica il rapporto privato `_notes/sicurezza/ultimo-controllo.json` rispetto a data, branch, commit, manifest ed evidenze. Distingue rapporto assente, cambiato, scaduto, incompleto e con rilievi aperti; un rilievo mitigato resta aperto. Non esegue scansioni, connessioni remote o aggiornamenti. La procedura e lo schema sono nella skill `riprendi`, sezione `vulnerabilita-runtime`.
+
+```
+python .claude/templates/tools/stato-vulnerabilita.py --radice .
+python .claude/templates/tools/stato-vulnerabilita.py --radice . --json
+python .claude/templates/tools/stato-vulnerabilita.py --radice . --hook
+python .claude/templates/tools/test_stato_vulnerabilita.py
+```
+
+La CLI restituisce 1 se conserva rilievi aperti, 2 se il controllo non è qualificabile e 0 per un rapporto corrente senza rilievi nel perimetro dichiarato. `--hook` conserva il problema nel testo e restituisce zero. Le 26 prove comprendono schema e copertura incompleti, prove cambiate, manifest nuovi o rimossi, riferimento Git diverso e rilievi ancora visibili in un rapporto scaduto.

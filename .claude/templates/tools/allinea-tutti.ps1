@@ -694,6 +694,33 @@ try {
     }
   }
 
+  # La conformita del sistema di progetto non qualifica runtime e dipendenze.
+  # Si legge solo un rapporto locale: nessun audit di rete o patch nella passata.
+  $guardiaSicurezza = Join-Path $PSScriptRoot 'stato-vulnerabilita.py'
+  Log ''
+  Log 'Sicurezza dei progetti: stato distinto dall allineamento del template'
+  foreach ($o in $progetti) {
+    $sicurezza = [ordered]@{ stato = 'non_verificato'; motivi = @('rapporto_non_letto'); rilievi_aperti = @() }
+    if (Test-Remoto $o.percorso) {
+      $sicurezza.motivi = @('eseguire_il_controllo_sull_host_approvato')
+    } elseif ($o.stato -in @('clone-del-template', 'albero-secondario', 'escluso')) {
+      $sicurezza.motivi = @('fuori_perimetro_di_questa_passata')
+    } elseif (Test-Path -LiteralPath $guardiaSicurezza) {
+      try {
+        $rawSicurezza = & python $guardiaSicurezza --radice $o.percorso --json 2>$null
+        $lettaSicurezza = $rawSicurezza | ConvertFrom-Json -ErrorAction Stop
+        if (-not $lettaSicurezza.stato) { throw 'verdetto assente' }
+        $sicurezza = $lettaSicurezza
+      } catch {
+        $sicurezza.stato = 'non_verificabile'
+        $sicurezza.motivi = @('errore_lettura_del_rapporto')
+      }
+    }
+    $registro[$o.percorso]['sicurezza'] = $sicurezza
+    Log ('  {0}: {1}; rilievi aperti={2}' -f $o.percorso, $sicurezza.stato, @($sicurezza.rilievi_aperti).Count)
+  }
+  Log 'Il codice di uscita della passata riguarda l allineamento; i verdetti di sicurezza sono separati nel registro.'
+
   # --- sintesi ----------------------------------------------------------------
   [System.IO.File]::WriteAllText($fileRegistro, ($registro | ConvertTo-Json -Depth 5), $utf8)
   Log ''
