@@ -442,6 +442,27 @@ function Esegui-Autotest {
     & git -C $ripetuto diff --cached --quiet
     Prova "l'anteprima della CLI non mette file in stage" ($LASTEXITCODE -eq 0)
 
+    # 3g. Una tornata remota successiva non deve nascondere le consegne locali
+    # ancora non committate. Il caso 3f aveva un solo allineato nella coorte piu
+    # recente e lasciava verde proprio il filtro che perdeva le altre coorti.
+    $coorte = Nuovo-Repo 'ultima-coorte'
+    Scrivi $coorte 'secondo.md' "prima`n"
+    & git -C $coorte add -A | Out-Null; & git -C $coorte commit -q -m 'base' | Out-Null
+    Scrivi $coorte 'secondo.md' "dopo`n"
+    $terzaDir = Join-Path $tplProva '_notes/allineamento/corse/20200103-000000'
+    New-Item -ItemType Directory -Force -Path $terzaDir | Out-Null
+    $null = Rapporto (Join-Path $terzaDir 'seconda.json') @(@{file='secondo.md';esito='VECCHIO'})
+    $regProva[$coorte] = @{stato='allineato';rapporto=(Join-Path $terzaDir 'seconda.json');template_commit='abc1234';misurato_il=(Get-Date).ToString('s')}
+    $esclusoPolicy = Nuovo-Repo 'escluso-dalla-policy'
+    Scrivi $esclusoPolicy 'secondo.md' "locale`n"
+    $regProva[$esclusoPolicy] = @{stato='allineato';rapporto=(Join-Path $terzaDir 'seconda.json');template_commit='abc1234';misurato_il=(Get-Date).ToString('s')}
+    [IO.File]::WriteAllText((Join-Path $tplProva '_notes/allineamento/esclusi.txt'),($esclusoPolicy + " # scelta del proprietario`n"),$utf8)
+    [IO.File]::WriteAllText((Join-Path $tplProva '_notes/allineamento/registro.json'),(ConvertTo-Json $regProva -Depth 6),$utf8)
+    $cliCoorti = (& powershell -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Template $tplProva -SaltaPush 2>&1 | Out-String)
+    Prova "la CLI include la consegna pendente di una coorte precedente" ($cliCoorti -match '(?m)^riallineato\s+da committare[^\r\n]*file 1, lasciati 1')
+    Prova "la CLI include anche la coorte piu recente" ($cliCoorti -match '(?m)^ultima-coorte\s+da committare[^\r\n]*file 1, lasciati 0')
+    Prova "la CLI rispetta esclusi.txt anche con una consegna pendente" ($cliCoorti -notmatch '(?m)^escluso-dalla-policy\s+')
+
     # 4. un albero senza niente da committare non produce un commit vuoto
     $b = Nuovo-Repo 'pulito'
     Scrivi $b 'mio.md' "prima`n"
@@ -583,6 +604,7 @@ if (-not (Test-Path -LiteralPath $fileRegistro)) { Esci-Guardia "registro assent
 $registro = @{}
 try { (Get-Content -LiteralPath $fileRegistro -Raw -Encoding UTF8 | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $registro[$_.Name] = $_.Value } }
 catch { Esci-Guardia 'registro illeggibile' }
+$esclusioni = Leggi-Elenco (Join-Path $Template '_notes/allineamento/esclusi.txt')
 
 # I vecchi allineato del registro possono riferirsi a copie non piu presenti.
 $ultimaCorsa = @($registro.Values | Where-Object { $_.stato -in @('applicato', 'allineato') -and $_.rapporto } | ForEach-Object { Split-Path $_.rapporto -Parent } | Sort-Object | Select-Object -Last 1)
@@ -590,7 +612,12 @@ $voci = @()
 foreach ($k in ($registro.Keys | Sort-Object)) {
   $v = $registro[$k]
   if ($v.stato -notin @('applicato', 'allineato')) { continue }
-  if ($v.stato -eq 'allineato' -and (Split-Path $v.rapporto -Parent) -ne $ultimaCorsa[0]) { continue }
+  if (In-Elenco $esclusioni $k) { continue }
+  if ($v.stato -eq 'allineato' -and (Split-Path $v.rapporto -Parent) -ne $ultimaCorsa[0]) {
+    if (-not (Esiste $k '' 'cartella') -or -not (Test-Path -LiteralPath $v.rapporto)) { continue }
+    $daChiudere = Smista $k $v.rapporto
+    if ($daChiudere.miei.Count -eq 0) { continue }
+  }
   $nome = Nome-Progetto $k
   if ($Solo -and -not ($Solo | Where-Object { $nome -like "*$_*" })) { continue }
   if ($Escludi | Where-Object { $nome -like "*$_*" }) { continue }

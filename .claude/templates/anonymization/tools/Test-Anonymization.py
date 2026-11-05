@@ -319,6 +319,7 @@ def analizza(pat, files):
     mac_ok = tuple(m.upper() for m in pat["mac_ammessi_prefissi"])
     mail_ok = set(m.lower() for m in pat["email_ammesse"])
     nomi = pat["nomi_propri"]
+    nomi_pattern = [(n, re.compile(r"(?<!\w)" + re.escape(n) + r"(?!\w)", re.I)) for n in nomi if n]
     nomi_ctx = pat.get("nomi_ammessi_in_contesto", [])
     segreti = pat.get("segreti_letterali", [])
     servizi_cloud = pat.get("servizi_cloud_personali", [])
@@ -386,8 +387,8 @@ def analizza(pat, files):
                     aggiungi("SEGRETO LETTERALE", f, ln, riga, "<valore oscurato>", origine)
 
             bassa = riga.lower()
-            for n in nomi:
-                if n.lower() not in bassa:
+            for n, nome_pattern in nomi_pattern:
+                if not nome_pattern.search(riga):
                     continue
                 # un nome dentro la ragione sociale legale è ammesso per decisione
                 if any(c.lower() in bassa for c in nomi_ctx):

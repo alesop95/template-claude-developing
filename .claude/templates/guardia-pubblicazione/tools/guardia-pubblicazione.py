@@ -39,7 +39,7 @@ difetto dichiarati sotto.
 Codici di uscita: 0 nessun riscontro, 1 riscontro bloccante, 2 non calcolabile.
 
     python tools/guardia-pubblicazione.py
-    python tools/guardia-pubblicazione.py --radice "D:/scenia"
+    python tools/guardia-pubblicazione.py --radice "D:/progetto"
     python tools/guardia-pubblicazione.py --autotest
 """
 
