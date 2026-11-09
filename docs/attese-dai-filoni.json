@@ -5,6 +5,8 @@
     "attesa": "la specifica dell'idempotenza del motore di lettura ancorata, cioè su quale chiave riconosce il lavoro già fatto, con la prova che il rilancio non duplichi",
     "documento": "docs/proposta-motore-lettura-ancorata.md",
     "aperta": "2026-11-09",
-    "stato": "aperta"
+    "stato": "chiusa",
+    "chiusa": "2026-11-09",
+    "consegna": "specifica consegnata dal progetto nel proprio docs/idempotenza-del-motore-di-lettura"
   }
 ]
