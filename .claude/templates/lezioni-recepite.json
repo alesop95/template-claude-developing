@@ -1085,6 +1085,13 @@
     "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md; nessuno strumento del template stampa un tempo istantaneo per elemento, offload-lotto.py stampa gia la media corrente"
   },
   {
+    "progetto": "bae518523f0d",
+    "id": "L-018",
+    "commit": "",
+    "data": "2026-11-09",
+    "dove": ".claude/templates/tools/stato-template.py e allinea-dal-template.py: la ricevuta porta le attese dei filoni; .claude/templates/tools/cerca-pacchetto.py: cerca anche nell indice dei filoni; docs/attese-dai-filoni.json nuovo; .claude/skills/cerca-pacchetto/SKILL.md e docs/FILONI.md"
+  },
+  {
     "progetto": "f00655740f68",
     "id": "L-001",
     "commit": "",

@@ -1,0 +1,10 @@
+[
+  {
+    "progetto": "compilatore-documenti",
+    "filone": "Lettura ancorata dei documenti",
+    "attesa": "la specifica dell'idempotenza del motore di lettura ancorata, cioe' su quale chiave riconosce il lavoro gia' fatto, con la prova che il rilancio non duplichi",
+    "documento": "docs/proposta-motore-lettura-ancorata.md",
+    "aperta": "2026-11-09",
+    "stato": "aperta"
+  }
+]

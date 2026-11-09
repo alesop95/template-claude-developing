@@ -174,14 +174,57 @@ def rimuovi(elenco, progetto):
     }
 
 
-def ricevuta(esiti, commit):
+def cella(valore):
+    """Una cella di tabella sta su una riga sola e non contiene barre verticali."""
+    testo = "" if valore is None else str(valore)
+    return testo.replace("|", "/").replace("\r", " ").replace("\n", " ").strip()
+
+
+ATTESE = "docs/attese-dai-filoni.json"
+
+
+def attese(template, progetto):
+    """Cio' che un filone del template aspetta da questo progetto.
+
+    Il registro dei filoni vive nel template e non viene consegnato ai progetti,
+    quindi una decisione gia' presa a monte resta invisibile da valle e il
+    progetto la ripropone come propria: e' la lezione L-018 di un progetto
+    istanziato, del 2026-11-09. La ricevuta e' il posto che il progetto legge da
+    se', e questa funzione sceglie le sole voci che riguardano lui.
+    """
+    if not template:
+        return []
+    percorso = Path(template) / ATTESE
+    if not percorso.is_file():
+        return []
+    try:
+        voci = json.loads(percorso.read_text(encoding="utf-8-sig"))
+    except ValueError:
+        return []
+    if not isinstance(voci, list):
+        return []
+    nome = Path(progetto).name.strip().lower()
+    scelte = []
+    for voce in voci:
+        if not isinstance(voce, dict):
+            continue
+        if str(voce.get("progetto", "")).strip().lower() != nome:
+            continue
+        if str(voce.get("stato", "aperta")).strip().lower() != "aperta":
+            continue
+        scelte.append(voce)
+    return scelte
+
+
+def ricevuta(esiti, commit, attesi=None):
     written = [
         e
         for e in esiti
         if e["esito"]
         in ("NUOVO", "VECCHIO", "SUPERATO", "MERGE", "RISOLTO", "INNESCO", "SPOSTATO", "RIMOSSO")
     ]
-    if not written:
+    attesi = list(attesi or [])
+    if not written and not attesi:
         return None
     conflicts = [e["file"] for e in esiti if e["esito"] == "CONFLITTO"]
     text = (
@@ -193,6 +236,21 @@ def ricevuta(esiti, commit):
     text += "\nConflitti ancora da risolvere: %d.\n" % len(conflicts)
     if conflicts:
         text += "\n" + "\n".join("`%s`" % p for p in conflicts) + "\n"
+    if attesi:
+        text += "\n## Il template aspetta da questo progetto\n\n"
+        text += (
+            "Voci aperte nell'indice dei filoni del template, che resta a monte e non arriva qui. "
+            "Finche' una voce e' aperta, la capacita' che descrive e' gia' decisa: non si ripropone "
+            "come nuova e non si costruisce a mano una seconda volta.\n\n"
+        )
+        text += "| Filone | Che cosa aspetta da qui | Documento a monte | Aperta il |\n|---|---|---|---|\n"
+        for voce in attesi:
+            text += "| %s | %s | `%s` | %s |\n" % (
+                cella(voce.get("filone")),
+                cella(voce.get("attesa")),
+                cella(voce.get("documento")),
+                cella(voce.get("aperta")),
+            )
     return text
 
 

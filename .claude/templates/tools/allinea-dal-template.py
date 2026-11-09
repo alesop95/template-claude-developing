@@ -854,7 +854,10 @@ def main():
     stato_template = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(stato_template)
     effettivi = [e for e in esiti if e["esito"] != "RIMOSSO" or a.rimuovi]
-    consegna = stato_template.ricevuta(effettivi, stato_template.git(tpl, "rev-parse", "HEAD"))
+    # Le attese dei filoni viaggiano nella ricevuta perche' il registro resta a monte:
+    # un progetto che non le legge ripropone una decisione gia' presa (L-018, 2026-11-09).
+    attesi = stato_template.attese(tpl, prj)
+    consegna = stato_template.ricevuta(effettivi, stato_template.git(tpl, "rev-parse", "HEAD"), attesi)
     if consegna:
         relativo = ".claude/ultimo-allineamento.md"
         dest = prj / relativo
