@@ -212,8 +212,59 @@ def attese(template, progetto):
             continue
         if str(voce.get("stato", "aperta")).strip().lower() != "aperta":
             continue
+        # Il documento sta nel template e non nel progetto: si cita con il nome della
+        # cartella del template davanti, altrimenti il controllo dei link del progetto
+        # lo legge come un percorso locale inesistente e lo riscrive, facendo divergere
+        # la ricevuta dal generatore a ogni passata (misurato il 2026-11-09).
+        voce = dict(voce)
+        documento = str(voce.get("documento", "")).strip().lstrip("/")
+        if documento and not documento.startswith(Path(template).name + "/"):
+            voce["documento"] = Path(template).resolve().name + "/" + documento
         scelte.append(voce)
     return scelte
+
+
+TITOLO_ATTESE = "## Il template aspetta da questo progetto"
+
+
+def sezione_attese(attesi):
+    """La sezione che porta al progetto cio' che un filone aspetta da lui."""
+    attesi = list(attesi or [])
+    if not attesi:
+        return ""
+    testo = "\n" + TITOLO_ATTESE + "\n\n"
+    testo += (
+        # Accenti veri e non apostrofi: la ricevuta e' un documento generato, e il
+        # correttore degli accenti di un progetto lo riscriverebbe a ogni chiusura,
+        # facendo divergere per sempre la copia dal generatore (misurato il 2026-11-09).
+        "Voci aperte nell'indice dei filoni del template, che resta a monte e non arriva qui. "
+        "Finché una voce è aperta, la capacità che descrive è già decisa: non si ripropone "
+        "come nuova e non si costruisce a mano una seconda volta.\n\n"
+    )
+    testo += "| Filone | Che cosa aspetta da qui | Documento a monte | Aperta il |\n|---|---|---|---|\n"
+    for voce in attesi:
+        testo += "| %s | %s | `%s` | %s |\n" % (
+            cella(voce.get("filone")),
+            cella(voce.get("attesa")),
+            cella(voce.get("documento")),
+            cella(voce.get("aperta")),
+        )
+    return testo
+
+
+def innesta_attese(testo, attesi):
+    """Aggiorna la sola sezione delle attese dentro una ricevuta gia' scritta.
+
+    Serve quando la passata non consegna nessun file: rigenerare la ricevuta
+    cancellerebbe il verbale dell'ultima consegna, e riscriverla identica a ogni
+    corsa lascerebbe il progetto "incompleto" per sempre, come misurato il
+    2026-11-09 sul primo progetto con un'attesa aperta.
+    """
+    corpo = testo.split(TITOLO_ATTESE)[0].rstrip("\n")
+    sezione = sezione_attese(attesi)
+    if not sezione:
+        return corpo + "\n"
+    return corpo + "\n" + sezione
 
 
 def ricevuta(esiti, commit, attesi=None):
@@ -236,21 +287,7 @@ def ricevuta(esiti, commit, attesi=None):
     text += "\nConflitti ancora da risolvere: %d.\n" % len(conflicts)
     if conflicts:
         text += "\n" + "\n".join("`%s`" % p for p in conflicts) + "\n"
-    if attesi:
-        text += "\n## Il template aspetta da questo progetto\n\n"
-        text += (
-            "Voci aperte nell'indice dei filoni del template, che resta a monte e non arriva qui. "
-            "Finche' una voce e' aperta, la capacita' che descrive e' gia' decisa: non si ripropone "
-            "come nuova e non si costruisce a mano una seconda volta.\n\n"
-        )
-        text += "| Filone | Che cosa aspetta da qui | Documento a monte | Aperta il |\n|---|---|---|---|\n"
-        for voce in attesi:
-            text += "| %s | %s | `%s` | %s |\n" % (
-                cella(voce.get("filone")),
-                cella(voce.get("attesa")),
-                cella(voce.get("documento")),
-                cella(voce.get("aperta")),
-            )
+    text += sezione_attese(attesi)
     return text
 
 
