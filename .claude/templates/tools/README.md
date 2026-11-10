@@ -159,6 +159,8 @@ Dice, alla riapertura di una sessione, se fra l'ultima e questa si e perso qualc
 
 Il danno che intercetta non è la perdita del lavoro, che sta su disco e in git, ma il fatto che una sessione nuova prenda un file di ripresa vecchio per lo stato corrente: un file di ripresa non aggiornato ha esattamente lo stesso aspetto di uno aggiornato. La skill `riprendi` e la procedura che ne interpreta l'esito.
 
+Dal 2026-11-10 guarda anche se un documento di stato è rimasto lo scheletro da cui nasce, cioè il file di ripresa, lo snapshot di memoria e la scheda della feature attiva. Un segnaposto conta solo se è lo stesso che il modello di quel documento porta in `.claude/templates/`, e non conta dentro un blocco recintato o fra apici inversi: cercare tutte le parentesi angolari segnalerebbe i valori generici che un appunto scrive di proposito, cioè il rosso permanente che si impara a ignorare. Viene dalla lezione L-003 di un progetto istanziato, dove snapshot, feature attiva e file di ripresa sono rimasti con `<branch>`, `<hash>` e `<YYYY-MM-DD>` per una giornata intera di lavoro con ogni altro controllo verde.
+
 Da riga di comando e in CI esce con un codice diverso da zero quando trova una divergenza. Un hook invece lo chiama con `--hook`, che stampa la stessa riga di `--breve` ed esce sempre con zero, oppure attraverso i wrapper di `hooks-starter`, che fanno lo stesso: Claude Code tratta come errore un'uscita diversa da zero, scarta lo standard output e mostra una riga di fallimento vuota, quindi l'avviso sparirebbe proprio quando c'è. È la lezione L-002 di un progetto istanziato, recepita il 2026-10-21 con il codice che quel progetto aveva scritto.
 
 ```
