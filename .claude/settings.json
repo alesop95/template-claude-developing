@@ -11,7 +11,7 @@
           },
           {
             "type": "command",
-            "command": "if python3 -c '' >/dev/null 2>&1; then PY=python3; else PY=python; fi; \"$PY\" \"$CLAUDE_PROJECT_DIR/.claude/templates/tools/passata-in-sospeso.py\" || true"
+            "command": "if python3 -c '' >/dev/null 2>&1; then PY=python3; else PY=python; fi; \"$PY\" \"$CLAUDE_PROJECT_DIR/.claude/templates/tools/passata-in-sospeso.py\" --misura || true"
           },
           {
             "type": "command",

@@ -21,6 +21,7 @@ Ne segue la distinzione che governa tutta questa guida, e che va tenuta a mente 
 | Apertura sessione | Lo stato viene stampato in contesto: branch, commit, file modificati, testa della memoria | hook `session-context`, evento `SessionStart` | registrarlo una volta |
 | Apertura sessione | L'impronta registrata alla chiusura viene confrontata con lo stato reale, e le divergenze entrano in contesto | hook `apertura-sessione`, evento `SessionStart` | registrarlo una volta, più `tools/verifica-ripresa.py` istanziato |
 | Apertura sessione | L'agente riceve l'istruzione di invocare `sync-context` come secondo atto | lo stesso hook, che la stampa in contesto | come sopra |
+| Apertura sessione, solo sul template | Se il template è avanti rispetto all'ultima passata, parte in sottofondo la sola misura dell'allineamento, che non scrive niente nei progetti; al giro dopo il verdetto dice quanti hanno file da ricevere | hook `SessionStart`, `passata-in-sospeso.py --misura` | niente, è già registrato; non parte se una passata è in corso |
 | Ogni scrittura di un `.md` | I paragrafi tornano su riga sorgente unica | hook `md-unwrap-auto`, evento `PostToolUse` su `Write` ed `Edit` | registrarlo una volta, più `tools/md-unwrap.py` istanziato |
 | Ogni `git commit` dell'agente | Girano i quattro controlli di convenzione, e il commit si ferma se uno fallisce | hook `pre-commit-checks`, evento `PreToolUse` su `Bash` | registrarlo una volta |
 | Ogni `git commit` dell'agente | Il diff in stage viene scansionato alla ricerca di segreti | hook `secret-scan`, evento `PreToolUse` su `Bash` | registrarlo una volta |
@@ -133,10 +134,13 @@ Tutta la sequenza sta in un comando solo, da lanciare nel proprio terminale dopo
 | Ogni chiusura di sessione | Registrare l'impronta | sì, con l'hook `chiusura-sessione` | `python tools/verifica-ripresa.py --registra` |
 | Ogni chiusura di sessione | Ripulire il magazzino nascosto dell'account | sì, con il wipe registrato nell'account | vedi la sezione sulla memoria |
 | Ogni tornata di allineamento | Riattraversare il gate dei pacchetti | no | `/gate-pacchetti` |
+| Una volta per giornata di lavoro, nel solo template | Propagare ai progetti ciò che il template ha committato, e non dopo ogni commit | la misura sì, in sottofondo all'apertura; l'applicazione no | `allinea-tutti.ps1 -Applica`, poi `chiudi-allineamento.ps1 -Applica` |
 | Periodicamente | Microstep senza ragione dichiarata | no | `python tools/costruisci-timeline.py --senza-ragione` |
 | Periodicamente | Affermazioni che invecchiano | no | `python tools/Test-Allineamento.py` |
 | Periodicamente, nel solo template | Ricontrollare le fonti di scouting per nuovi strumenti | no | `docs/fonti-di-scouting.md`, dalla data dell'ultimo controllo |
 | Una volta per macchina | Igiene dell'account e profili SSH | no | i due comandi dal bundle |
+
+Sulla riga della propagazione vale un chiarimento che costa caro impararlo sul campo. Una passata copre tutti i commit accumulati, perché consegna la differenza fra l'albero `.claude` del template e quello misurato nei progetti, non il singolo commit: farne una per commit è lavoro moltiplicato per niente. Il 9 novembre 2026 undici commit hanno prodotto cinque passate, cioè oltre due ore di attesa, mentre una sola corsa quello stesso giorno ne ha portati tre insieme senza alcuna differenza d'esito. I progetti ricevono file e non dipendenze, quindi restare un giorno indietro non rompe niente; e dal 2026-11-09 la misura parte da sola in sottofondo, così la passata si applica quando il verdetto dice che conviene invece che per scrupolo.
 
 ## Diagnosi: dal sintomo allo strumento
 

@@ -29,6 +29,8 @@ Un filone che aspetta qualcosa da un progetto istanziato lo dichiara anche in `d
 
 Sviluppo trasversale del30/10: [allineamento visibile e posta comune](allineamento-e-posta-sessioni.md), con scadenze delle esclusioni, ricevuta nel progetto e cassetta Claude/Codex.
 
+Due documenti di questa cartella non appartengono a nessun filone e vanno comunque raggiungibili, perché un documento che nessun indice cita è un documento che nessuno rilegge: `docs/proposta-tracciamento-esecuzioni.md`, la proposta del 2026-10-27 su un tracciamento riproducibile del lavoro da terminale, che resta da sviluppare, e `docs/windows-docker-wsl-vs-linux.md`, il confronto fra Windows con Docker e WSL e una macchina Linux, che è materiale di decisione per le macchine e non una linea di lavoro.
+
 ## Da dove arrivano i candidati
 
 Le segnalazioni arrivano dal proprietario, dai progetti istanziati e dalle fonti di scouting, cioè i siti e gli elenchi che si ricontrollano ogni tanto. Le fonti e i candidati di ogni passaggio stanno in `docs/fonti-di-scouting.md`, con la data dell'ultimo controllo; un candidato che apre una linea nuova diventa un filone qui, uno che entra in un settore esistente va direttamente alle quattro domande.
