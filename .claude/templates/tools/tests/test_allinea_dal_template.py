@@ -4,8 +4,8 @@
 Ogni prova costruisce un repository git finto come template, con la storia che
 riproduce un meccanismo osservato nella propagazione del 2026-09-28, e una
 cartella come progetto. Le storie non sono inventate: le due forme del difetto
-sono state misurate sui file veri di holiday-template a 50fa52b e di
-un terzo progetto a f656c53, e da li vengono le proporzioni fra i blocchi,
+sono state misurate sui file veri di un progetto a 50fa52b e di
+un altro a f656c53, e da li vengono le proporzioni fra i blocchi,
 che sono cio che decide quale base la somiglianza sceglie.
 """
 
