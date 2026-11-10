@@ -586,6 +586,10 @@ Ne discende che a una prova di giro chiuso si affianca sempre una prova di coper
 
 Ne discende anche un corollario sul momento in cui si accende un controllo nuovo, che vale oltre questo caso. Un controllo che nasce rosso su tutti i casi esistenti non entra subito fra quelli che bloccano una consegna, perché un rosso permanente si impara a ignorare e da quel momento non protegge più niente; si accende prima come elenco da leggere, si porta l'arretrato a zero, e solo allora diventa bloccante.
 
+## Una dipendenza importata solo dal punto d'ingresso si prova con la build
+
+Salita il 2026-11-10 da un progetto istanziato (lezione L-050). Aggiunti dei pacchetti di caratteri importati soltanto dal punto d'ingresso dell'app, con la forma che la loro documentazione indica, la suite era tutta verde: la prova strutturale leggeva il punto d'ingresso come testo, e nessuna prova lo importa. La build di produzione falliva invece con un modulo non trovato, perché gli `exports` del pacchetto avevano due modelli che si sovrapponevano e il bundler ne applicava quello sbagliato. La regola che ne discende: quando una modifica tocca il punto d'ingresso, o aggiunge una dipendenza importata soltanto lì, la build di produzione fa parte della verifica tanto quanto la suite, e la si lancia prima di dichiarare la modifica finita.
+
 ## Valido nel contesto d'origine non vuol dire che passa il confine
 
 Salita il 2026-11-09 da un progetto istanziato (lezione L-008). Un verificatore che giudica un oggetto nel contesto in cui nasce dice che l'oggetto è valido lì, e non dice niente sul passaggio verso la destinazione, che ha regole proprie e di solito più strette. La differenza non si nota finché i due contesti coincidono quasi sempre, ed è esattamente per questo che la misura arriva tardi: nel caso osservato 695 esemplari erano stati scritti in una copia per un trasferimento, tutti conformi nel sistema di partenza, e sei non sono passati, perché il sistema di arrivo non lascia entrare quella forma. La regola che li avrebbe fermati era già scritta in un documento del progetto, e nessun controllo della scrittura la leggeva.
