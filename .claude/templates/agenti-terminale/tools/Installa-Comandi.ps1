@@ -76,8 +76,15 @@ $FINE = '# <<< comandi agenti <<<'
 # riconosce con una espressione regolare invece che per confronto letterale, e il
 # testo letto si normalizza subito, cosi' tutto il resto dello script continua a
 # ragionare su un marcatore solo.
-$RX_MARCATORE_INIZIO = '^#\s*>>>\s*comandi agenti(\s*\([^)]*\))?\s*>>>\s*$'
-$RX_MARCATORE_FINE = '^#\s*<<<\s*comandi agenti(\s*\([^)]*\))?\s*<<<\s*$'
+#
+# Gli spazi si scrivono [ \t] e non \s, e la riga finisce con un lookahead invece
+# che con l'ancora $, perche' \s comprende il fine riga: in modo Multiline la coda
+# greedy se lo mangiava e la sostituzione non lo rimetteva, cosi' il profilo
+# perdeva due byte a ogni giro e l'installazione non era piu' idempotente. Il
+# lookahead riconosce la fine della riga senza consumarla, quindi il terminatore
+# resta quello che era, CRLF o LF che sia.
+$RX_MARCATORE_INIZIO = '^#[ \t]*>>>[ \t]*comandi agenti([ \t]*\([^)]*\))?[ \t]*>>>[ \t]*(?=\r?\n|$)'
+$RX_MARCATORE_FINE = '^#[ \t]*<<<[ \t]*comandi agenti([ \t]*\([^)]*\))?[ \t]*<<<[ \t]*(?=\r?\n|$)'
 function Normalizza-Marcatore($testo) {
   if (-not $testo) { return $testo }
   $t = [regex]::Replace($testo, $RX_MARCATORE_INIZIO, $INIZIO, 'Multiline')
