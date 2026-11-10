@@ -1169,6 +1169,20 @@
     "dove": ".claude/templates/lavoro-a-lotti/rules/lavoro-a-lotti.md e README.md del pacchetto"
   },
   {
+    "progetto": "bae518523f0d",
+    "id": "L-024",
+    "commit": "",
+    "data": "2026-11-10",
+    "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md: guasto latente piantato da un aggiornamento automatico, colpa attribuita all'innesco, riparazione ancorata a una versione che scade."
+  },
+  {
+    "progetto": "bae518523f0d",
+    "id": "L-025",
+    "commit": "",
+    "data": "2026-11-10",
+    "dove": ".claude/PROJECT-SYSTEM.md sezione 24: misurare il margine dei progetti prima di far crescere una regola sempre attiva; .claude/rules/security-permissions.md alleggerita di 1667 caratteri spostando due sezioni in .claude/norme/security-permissions.md."
+  },
+  {
     "progetto": "f00655740f68",
     "id": "L-001",
     "commit": "",
