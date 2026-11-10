@@ -15,7 +15,7 @@ Un elenco di strumenti dice che cosa si può fare, non in quale ordine né perch
 | Protect | La macchina è configurata bene | Hardening misurato prima e dopo, e gestione delle identità | HardeningKitty con le baseline del Security Compliance Toolkit su Windows, Lynis e OpenSCAP su Linux, Windows LAPS per le password locali |
 | Detect | Mi accorgo se succede qualcosa | Una memoria degli eventi e un occhio sui log | Sysmon con sysmon-modular, le regole Sigma, Wazuh come vista centrale, Suricata o Zeek dove si osserva il traffico |
 | Respond | So che cosa fare quando succede | Lettura rapida dei log eventi e raccolta di prove | Hayabusa e Chainsaw sui log di Windows, Velociraptor per raccogliere artefatti, YARA per riconoscere i file |
-| Recover | So rimettere in piedi | Backup verificati e ricostruzione | Appoggiati ai pacchetti `veeam-linux` e al filone `linux-observability`, e su Windows a `windows-status` |
+| Recover | So rimettere in piedi | Backup verificati e ricostruzione | Appoggiati ai pacchetti `veeam-linux` e al filone `linux-observability`, e su Windows al progetto dedicato |
 
 La priorità dei risultati, cioè da che cosa cominciare a correggere, non è una funzione a sé ma attraversa Identify e Protect, e si fa con i tre elenchi pubblici KEV, EPSS e CVSS descritti nel primo allegato. Recover non introduce strumenti nuovi perché il template ha già la continuità operativa come settore proprio: il filone cybersecurity la richiama invece di duplicarla.
 
@@ -33,4 +33,4 @@ Il corpus di studio è forte su fondamenti, reti, sistemi operativi, crittografi
 
 ## Rapporto con gli altri filoni e pacchetti
 
-Questo percorso non vive da solo. La funzione Detect si appoggia al monitoraggio già progettato in `windows-status` scheda 17 e nel filone `linux-observability`, che raccoglie metriche e log tecnici: il filone cybersecurity vi aggiunge la lettura di sicurezza, non un secondo sistema di raccolta. La funzione Recover si appoggia ai pacchetti di continuità operativa. Il laboratorio è lo stesso ambiente di macchine virtuali del filone `linux-observability`, perché una macchina Linux amministrata serve a entrambi gli studi. Tenerli collegati è ciò che impedisce al template di avere tre sistemi che fanno la stessa raccolta per tre ragioni diverse.
+Questo percorso non vive da solo. La funzione Detect si appoggia al monitoraggio già progettato in un progetto dedicato, scheda 17 e nel filone `linux-observability`, che raccoglie metriche e log tecnici: il filone cybersecurity vi aggiunge la lettura di sicurezza, non un secondo sistema di raccolta. La funzione Recover si appoggia ai pacchetti di continuità operativa. Il laboratorio è lo stesso ambiente di macchine virtuali del filone `linux-observability`, perché una macchina Linux amministrata serve a entrambi gli studi. Tenerli collegati è ciò che impedisce al template di avere tre sistemi che fanno la stessa raccolta per tre ragioni diverse.

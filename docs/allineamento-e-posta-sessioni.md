@@ -1,6 +1,6 @@
 # Allineamento visibile e posta comune fra Claude e Codex
 
-Sviluppo del30/10/2026, su richiesta del proprietario e nota del progetto my-wedding-day. L-039 e L-040 sono attuate con controlli di stato, ricevuta e manutenzione dell’elenco che preserva i byte delle righe estranee. La distribuzione agli altri progetti richiede il commit manuale e la passata ufficiale.
+Sviluppo del30/10/2026, su richiesta del proprietario e nota di un progetto. L-039 e L-040 sono attuate con controlli di stato, ricevuta e manutenzione dell’elenco che preserva i byte delle righe estranee. La distribuzione agli altri progetti richiede il commit manuale e la passata ufficiale.
 
 ## Esclusioni che restano visibili
 

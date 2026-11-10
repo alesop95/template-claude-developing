@@ -4,7 +4,7 @@
 
 ## Il mandato
 
-Il proprietario sviluppa stack reali e li fa funzionare, per esempio Neon con l'adattatore di base dati in `civitanext`, e vuole che il template impari da ciò che è già collaudato. La regola che governa il filone è netta: un progetto diventa benchmark tecnico solo se una cosa è collaudata e funziona per risolvere un problema simile. Non basta che un progetto usi una tecnologia; deve averla fatta funzionare per un problema che un progetto nuovo riconoscerebbe come il proprio. Da quei progetti si astraggono due cose distinte: la soluzione di stack, cioè quali componenti open source e tecnologicamente adatti risolvono un certo scopo, e la gestione del version control di quello stack, cioè come si tengono separati ambienti, segreti, migrazioni e rilasci.
+Il proprietario sviluppa stack reali e li fa funzionare, per esempio Neon con l'adattatore di base dati in un progetto reale, e vuole che il template impari da ciò che è già collaudato. La regola che governa il filone è netta: un progetto diventa benchmark tecnico solo se una cosa è collaudata e funziona per risolvere un problema simile. Non basta che un progetto usi una tecnologia; deve averla fatta funzionare per un problema che un progetto nuovo riconoscerebbe come il proprio. Da quei progetti si astraggono due cose distinte: la soluzione di stack, cioè quali componenti open source e tecnologicamente adatti risolvono un certo scopo, e la gestione del version control di quello stack, cioè come si tengono separati ambienti, segreti, migrazioni e rilasci.
 
 ## Dove sta il corpus, e come lo si guarda
 
@@ -16,7 +16,7 @@ Il filtro del benchmark si applica dopo la raccolta, non durante: si raccoglie c
 
 Due uscite. La prima è un arricchimento del pacchetto `stack-profiles`, che già descrive stack ricorrenti: ogni profilo guadagna un benchmark, cioè il progetto reale in cui quello stack è stato fatto funzionare, con la forma del suo version control. Quando il gate propone un profilo a un progetto nuovo, non propone più una preferenza ma una soluzione con una prova alle spalle. La seconda è una raccolta di lezioni di gestione del version control per stack, per esempio come si gestiscono le migrazioni di una base di dati serverless come Neon fra ambiente di test e produzione, che vive accanto alla skill `separazione-ambienti` e la rende concreta su tecnologie precise invece che in astratto.
 
-Il primo caso da studiare, indicato dal proprietario, è Neon con l'adattatore di base dati in `civitanext`, quando sarà collaudato. Finché non lo è, resta un candidato e non un benchmark, ed è la prova che la regola del filone funziona: si aspetta il collaudo prima di astrarre.
+Il primo caso da studiare, indicato dal proprietario, è Neon con l'adattatore di base dati in un progetto reale, quando sarà collaudato. Finché non lo è, resta un candidato e non un benchmark, ed è la prova che la regola del filone funziona: si aspetta il collaudo prima di astrarre.
 
 ## Perché è un filone e non subito un pacchetto
 

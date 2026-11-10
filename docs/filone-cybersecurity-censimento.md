@@ -34,7 +34,7 @@ Greenbone presenta i propri container come strumento di prova, con un minimo di 
 | Elasticsearch | Motore di ricerca alla base di molti SIEM | A scelta AGPL-3.0, SSPL o Elastic License 2.0; x-pack solo ELv2 | 9.5.5, 2026-10-06 | Sì | Telemetria da verificare |
 | Velociraptor | Visibilità e monitoraggio continuo degli endpoint con query VQL | AGPL-3.0 | 0.77.3, 2026-10-05 | Sì (da verificare) | Locale in modalità autonoma (da verificare) |
 
-Per poche macchine Windows si parte dalla telemetria locale, Sysmon con Hayabusa, e si aggiunge Wazuh come SIEM autogestito quando serve una vista centrale: ha l'agente per Windows e una licenza chiara. Suricata e Zeek servono solo dove esiste un punto da cui osservare il traffico. Il monitoraggio delle metriche e dei log tecnici già progettato in `windows-status` (scheda 17) e nel filone `linux-observability` è la base su cui questa famiglia si appoggia, non un doppione.
+Per poche macchine Windows si parte dalla telemetria locale, Sysmon con Hayabusa, e si aggiunge Wazuh come SIEM autogestito quando serve una vista centrale: ha l'agente per Windows e una licenza chiara. Suricata e Zeek servono solo dove esiste un punto da cui osservare il traffico. Il monitoraggio delle metriche e dei log tecnici già progettato in un progetto dedicato (scheda 17) e nel filone `linux-observability` è la base su cui questa famiglia si appoggia, non un doppione.
 
 ## 3. Risposta agli incidenti e analisi forense di una macchina propria
 
@@ -80,7 +80,7 @@ La sequenza minima per ordinare i risultati di una scansione è KEV, poi EPSS, p
 | Purple Knight | Valutazione di AD, Entra ID e Okta | Gratuito, non open source | Non applicabile | Da verificare |
 | CIS-CAT Lite | Verifica contro i CIS Benchmark | Gratuito dietro registrazione, non open source | Non applicabile | La registrazione raccoglie nome ed email |
 
-Per una macchina sola si parte da HardeningKitty in modalità di sola verifica, confrontata con le baseline del Security Compliance Toolkit, e da Sysmon con `sysmon-modular` per la telemetria. Su una macchina aziendale vale prima di tutto il paletto 4 di `windows-status`: nessuna modifica a Defender, Windows Update o telemetria senza ordine esplicito, quindi l'hardening si misura prima di applicarlo e si applica una categoria alla volta.
+Per una macchina sola si parte da HardeningKitty in modalità di sola verifica, confrontata con le baseline del Security Compliance Toolkit, e da Sysmon con `sysmon-modular` per la telemetria. Su una macchina aziendale vale prima di tutto il paletto 4 di quel progetto: nessuna modifica a Defender, Windows Update o telemetria senza ordine esplicito, quindi l'hardening si misura prima di applicarlo e si applica una categoria alla volta.
 
 ## 6. Telemetria e modalità offline di cinque scanner
 

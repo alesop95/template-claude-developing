@@ -10,7 +10,7 @@ I vault restano due e separati, uno privato e uno aziendale, e questo è il punt
 
 ## I tre progetti e che cosa porta ciascuno
 
-Il progetto privato dove la lettura ancorata è nata la ha già collaudata, ed è quindi la base di partenza del pacchetto. Il progetto aziendale che la usa su documenti di lavoro vi ha aggiunto due miglioramenti che il template conosce già come lezioni salite da lì: il vincolo a elenco chiuso sul campo con cui il modello cita la propria fonte, che elimina per costruzione i riferimenti inesistenti, e il taglio dell'unità di citazione sui confini del senso invece che a lunghezza fissa, che è la prescrizione nata dalla misura del 58,9 per cento di riferimenti confinanti. Il terzo progetto, privato, aggiunge il lato vault, cioè grafo e collegamenti fra le note.
+Il progetto dove la lettura ancorata è nata la ha già collaudata, ed è quindi la base di partenza del pacchetto. Il progetto aziendale che la usa su documenti di lavoro vi ha aggiunto due miglioramenti che il template conosce già come lezioni salite da lì: il vincolo a elenco chiuso sul campo con cui il modello cita la propria fonte, che elimina per costruzione i riferimenti inesistenti, e il taglio dell'unità di citazione sui confini del senso invece che a lunghezza fissa, che è la prescrizione nata dalla misura del 58,9 per cento di riferimenti confinanti. Il terzo progetto, privato, aggiunge il lato vault, cioè grafo e collegamenti fra le note.
 
 Ne segue il perimetro minimo del pacchetto: il motore con i due miglioramenti già misurati, l'idempotenza, e l'installazione nei tre progetti con i loro vault distinti. Resta da decidere, quando arriva la specifica, dove finisca il confine fra il motore e il vault, perché è quel confine a tenere separati i dati.
 

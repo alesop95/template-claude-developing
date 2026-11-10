@@ -11,7 +11,7 @@ Quando una direttiva cambia una regola, la diagnosi comprende anche i file posse
 Questo progetto ha già codice e una storia git. Voglio allinearlo retroattivamente al sistema portabile di contesto, documentazione e version control, senza riscrivere la storia git e senza inventare contenuto. La fonte di verità dello standard è il bundle di riferimento qui:
 
 ```
-E:\template-claude-developing\.claude
+<percorso-del-template>\.claude
 ```
 
 L'adozione è iterativa e va proposta, non imposta: nulla va sovrascritto in silenzio, ogni passo che tocca git chiede la mia conferma, le schede si allineano poche alla volta. Non eseguire mai `git add`, `commit` o `push`: prepari i file e lascio a me le operazioni git.

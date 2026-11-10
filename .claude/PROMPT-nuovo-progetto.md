@@ -7,7 +7,7 @@
 Voglio inizializzare in questo progetto il sistema portabile di contesto, documentazione e version control. La fonte di verità dello standard è il bundle di riferimento qui:
 
 ```
-E:\template-claude-developing\.claude
+<percorso-del-template>\.claude
 ```
 
 Procedi così, fermandoti a chiedere conferma prima di ogni azione difficilmente reversibile o che tocca il version control. Non eseguire mai `git add`, `commit` o `push`: prepari i file e lascio a me le operazioni git.

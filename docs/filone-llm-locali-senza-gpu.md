@@ -119,4 +119,4 @@ Uno scaffold onesto diventa collaudato solo correndo davvero. Il collaudo reale 
 
 Il limite proiettato da uno strumento non è il tetto reale. Il pianificatore di colibri proiettava il disco come collo di bottiglia a 16 GB; la misura ha mostrato che su questa CPU il tetto lo pone il calcolo, e la RAM non cambia la velocità. Prima di consigliare un acquisto di hardware si misura, perché la proiezione e il collo di bottiglia reale non coincidono.
 
-Il beneficio viene dalla forma del lavoro, non dal dominio. legal-consultant tratta materiale delicato ma non guadagna dall'offload, perché il suo lavoro è ricerca e ragionamento, non il lotto meccanico; proporglielo sarebbe un falso positivo del gate.
+Il beneficio viene dalla forma del lavoro, non dal dominio. Un progetto di consulenza documentale tratta materiale delicato ma non guadagna dall'offload, perché il suo lavoro è ricerca e ragionamento, non il lotto meccanico; proporglielo sarebbe un falso positivo del gate.
