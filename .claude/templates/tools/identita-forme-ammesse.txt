@@ -31,10 +31,10 @@ other@example.test
 fixture@example.invalid
 
 # Aggiunte il 2026-11-10: i segnaposto del disco privato. Da oggi un percorso che comincia
-# per E: si ferma per la sua forma, come un indirizzo, perche' dice che esiste un progetto
-# privato anche quando quel nome non sta in nessun elenco: e' cosi' che un progetto creato
+# per E: si ferma per la sua forma, come un indirizzo, perché dice che esiste un progetto
+# privato anche quando quel nome non sta in nessun elenco: è così che un progetto creato
 # domani resta coperto senza che nessuno aggiorni niente. Questi sono i segnaposto generici
-# gia' usati negli esempi del template, che non nominano niente di reale.
+# già usati negli esempi del template, che non nominano niente di reale.
 e:/x
 e:\x
 e:/p

@@ -66,6 +66,25 @@ function Argomenti-Lezioni([bool]$bundle) {
     return , @("controlla")
 }
 
+# I controlli propri del progetto, dal 2026-11-11 (L-011 di un progetto istanziato): l'elenco
+# sopra e' fisso, e i controlli di allineamento dei generatori che un progetto aggiunge non
+# avevano dove stare, quindi restavano affidati a chi chiudeva; un file generato e' rimasto
+# disallineato con i controlli verdi. tools\controlli-progetto.txt ne elenca uno per riga, nome
+# dello strumento in tools\ seguito dagli argomenti separati da spazi; righe vuote e righe che
+# cominciano con il cancelletto si saltano. Uno strumento dichiarato e assente ferma il commit.
+function Leggi-ControlliProgetto([string]$percorso) {
+    $esito = @()
+    if (-not (Test-Path $percorso)) { return , $esito }
+    foreach ($riga in Get-Content $percorso -Encoding UTF8) {
+        $r = "$riga".Trim()
+        if (-not $r -or $r.StartsWith("#")) { continue }
+        $parti = @($r -split '\s+')
+        $argomenti = if ($parti.Count -gt 1) { @($parti[1..($parti.Count - 1)]) } else { @() }
+        $esito += , @{ n = $parti[0]; a = $argomenti; riga = $r }
+    }
+    return , $esito
+}
+
 if ($Autotest) {
     $rossi = 0
     function Caso([string]$nome, [bool]$ok) { if ($ok) { Write-Host "ok   $nome" } else { $script:rossi++; Write-Host "ROSSO $nome" } }
@@ -83,6 +102,13 @@ if ($Autotest) {
     Caso "il controllo Codex gira solo dove esiste .agents\skills" ($src -match 'sync-codex-skills\.py";[^\r\n]*serve = "\.agents\\skills"')
     $tutti = Join-Path $PSScriptRoot "allinea-tutti.ps1"
     if (Test-Path $tutti) { Caso "la passata usa la stessa condizione" ((Get-Content $tutti -Raw) -match "Esiste \`$prj '\.agents/skills'") }
+    $prova = Join-Path ([System.IO.Path]::GetTempPath()) ("controlli-progetto-" + [guid]::NewGuid() + ".txt")
+    Set-Content -Path $prova -Encoding UTF8 -Value @("# commento", "", "build-bibliography.py --check", "  indice-fonti-unico.py   --check --breve  ")
+    $cp = Leggi-ControlliProgetto $prova
+    Remove-Item $prova
+    Caso "i controlli del progetto saltano commenti e righe vuote" ($cp.Count -eq 2)
+    Caso "il nome e gli argomenti si separano sugli spazi" ($cp[0].n -eq "build-bibliography.py" -and $cp[0].a.Count -eq 1 -and $cp[1].a.Count -eq 2 -and $cp[1].a[1] -eq "--breve")
+    Caso "senza il file l'elenco e' vuoto" ((Leggi-ControlliProgetto (Join-Path $prova "assente")).Count -eq 0)
     Write-Host ""; Write-Host "$(if ($rossi) { 'ROSSO' } else { 'verde' }): $rossi casi falliti"
     exit $(if ($rossi) { 1 } else { 0 })
 }
@@ -237,6 +263,18 @@ if (-not $python) {
             Ok $c.n
         } else {
             Ko "$($c.n) (uscita $LASTEXITCODE)"
+            $uscita | Select-Object -Last 15 | ForEach-Object { Write-Host "       $_" }
+            $falliti += $c.n
+        }
+    }
+    $propri = Leggi-ControlliProgetto "tools\controlli-progetto.txt"
+    if ($propri.Count -gt 0) { Titolo "Controlli propri del progetto (tools\controlli-progetto.txt)" }
+    foreach ($c in $propri) {
+        $p = Join-Path "tools" $c.n
+        if (-not (Test-Path $p)) { Ko "$($c.n) dichiarato in tools\controlli-progetto.txt e assente"; $falliti += $c.n; continue }
+        $uscita = & $python $p @($c.a) 2>&1
+        if ($LASTEXITCODE -eq 0) { Ok $c.riga } else {
+            Ko "$($c.riga) (uscita $LASTEXITCODE)"
             $uscita | Select-Object -Last 15 | ForEach-Object { Write-Host "       $_" }
             $falliti += $c.n
         }

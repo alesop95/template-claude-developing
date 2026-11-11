@@ -63,6 +63,20 @@
     "dove": ".claude/rules/git-commands-format.md e .claude/norme/git-commands-format.md"
   },
   {
+    "progetto": "51462580c4f1",
+    "id": "L-010",
+    "commit": "",
+    "data": "2026-11-11",
+    "dove": ".claude/templates/tools/rigenera_sicuro.py (nuovo), readme-sync/tools/sync-readme.py (fermo sui titoli tolti, con prova), .claude/rules/chat-non-e-memoria.md (presidio)"
+  },
+  {
+    "progetto": "51462580c4f1",
+    "id": "L-011",
+    "commit": "",
+    "data": "2026-11-11",
+    "dove": ".claude/templates/tools/chiudi-sessione.ps1 e chiudi-sessione.sh (tools/controlli-progetto.txt, con prova -Autotest), .claude/rules/chat-non-e-memoria.md"
+  },
+  {
     "progetto": "71947b5a11ed",
     "id": "L-001",
     "commit": "",

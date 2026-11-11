@@ -130,6 +130,20 @@ else
     done <<EOF
 $controlli
 EOF
+    # I controlli propri del progetto, dal 2026-11-11 (L-011 di un progetto istanziato): uno per
+    # riga in tools/controlli-progetto.txt, nome dello strumento in tools/ e argomenti; righe vuote
+    # e commenti si saltano, uno strumento dichiarato e assente ferma il commit.
+    if [ -f tools/controlli-progetto.txt ]; then
+        titolo "Controlli propri del progetto (tools/controlli-progetto.txt)"
+        while read -r nome argomenti; do
+            case "$nome" in ''|'#'*) continue ;; esac
+            if [ ! -f "tools/$nome" ]; then ko "$nome dichiarato in tools/controlli-progetto.txt e assente"; falliti="$falliti $nome"; continue; fi
+            # shellcheck disable=SC2086
+            uscita="$("$python" "tools/$nome" $argomenti 2>&1)"; rc=$?
+            if [ $rc = 0 ]; then ok "$nome${argomenti:+ $argomenti}"
+            else ko "$nome${argomenti:+ $argomenti} (uscita $rc)"; printf '%s\n' "$uscita" | tail -15 | sed 's/^/       /'; falliti="$falliti $nome"; fi
+        done < <(tr -d '\r' < tools/controlli-progetto.txt)
+    fi
 fi
 # Le lezioni verso il template, dal 2026-10-19: avvisano e non fermano il commit. Nel progetto
 # si vede che cosa il progetto deve al template; nel template, il debito di tutti i progetti.
