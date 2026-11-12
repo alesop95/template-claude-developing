@@ -1107,6 +1107,13 @@
   },
   {
     "progetto": "9781581909d7",
+    "id": "L-009",
+    "commit": "",
+    "data": "2026-11-12",
+    "dove": "nome del template tolto dai file propagati: trasporto-ssh.ps1 e Installa-Agenti.ps1 lo leggono a runtime dalla cartella, stato-template.py da ~/.config/template-claude-path.txt, installa-chiudi.sh riconosce il marcatore per forma; 19 occorrenze diventate 0 con l'elenco di macchina"
+  },
+  {
+    "progetto": "9781581909d7",
     "id": "L-010",
     "commit": "",
     "data": "2026-11-12",
