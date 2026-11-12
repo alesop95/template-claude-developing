@@ -497,6 +497,13 @@
     "dove": "templates/tools/chiudi-sessione.ps1: @( ) attorno all'if degli argomenti delle lezioni, lo splat di un solo argomento non perde l'array"
   },
   {
+    "progetto": "86a83b3800c7",
+    "id": "L-002",
+    "commit": "",
+    "data": "2026-11-12",
+    "dove": ".claude/templates/agenti-terminale/README.md: preflight nello stesso interprete e hash atteso/rilevato"
+  },
+  {
     "progetto": "90c4372dac0a",
     "id": "L-001",
     "commit": "",
@@ -1216,5 +1223,19 @@
     "commit": "",
     "data": "2026-11-04",
     "dove": ".claude/norme/git-commands-format.md"
+  },
+  {
+    "progetto": "f00655740f68",
+    "id": "L-004",
+    "commit": "",
+    "data": "2026-11-12",
+    "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md: esclusione relativa alla radice distinta da quella a ogni profondità, inventario della copia confrontato con l'albero sorgente"
+  },
+  {
+    "progetto": "f00655740f68",
+    "id": "L-005",
+    "commit": "",
+    "data": "2026-11-12",
+    "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md: su Windows un discendente che trattiene la pipe tiene il chiamante oltre il timeout, la prova misura il ritorno effettivo"
   }
 ]
