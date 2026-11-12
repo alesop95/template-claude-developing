@@ -442,6 +442,13 @@
   },
   {
     "progetto": "7bdce874415c",
+    "id": "L-050",
+    "commit": "",
+    "data": "2026-11-12",
+    "dove": ".claude/templates/tools/misura-istruzioni.py: crescita di ogni regola sempre attiva su una finestra di giorni, letta da git"
+  },
+  {
+    "progetto": "7bdce874415c",
     "id": "L-051",
     "commit": "",
     "data": "2026-11-12",
@@ -1079,10 +1086,31 @@
   },
   {
     "progetto": "9781581909d7",
+    "id": "L-006",
+    "commit": "",
+    "data": "2026-11-12",
+    "dove": ".claude/templates/tools/verifica-ripresa.py, chiudi-sessione.ps1 e chiudi-sessione.sh: le note _notes/PENDENTE-* si segnalano; convenzione in .claude/norme/git-commands-format.md"
+  },
+  {
+    "progetto": "9781581909d7",
+    "id": "L-007",
+    "commit": "",
+    "data": "2026-11-12",
+    "dove": ".claude/templates/tools/lint-doc-references.py: un percorso assoluto di radice diversa rende esterni i riferimenti relativi della stessa frase"
+  },
+  {
+    "progetto": "9781581909d7",
     "id": "L-008",
     "commit": "",
     "data": "2026-11-12",
     "dove": ".claude/skills/craft-apps/SKILL.md: una consegna fuori dal repository dichiara la fonte e sostituisce la precedente"
+  },
+  {
+    "progetto": "9781581909d7",
+    "id": "L-010",
+    "commit": "",
+    "data": "2026-11-12",
+    "dove": ".claude/templates/tools/chiudi-sessione.ps1 e chiudi-sessione.sh: messaggio validato prima dello stage e nei controlli, stage tolto dopo un commit rifiutato"
   },
   {
     "progetto": "ae8dd2775ccf",
