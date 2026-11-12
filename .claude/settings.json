@@ -20,6 +20,19 @@
           {
             "type": "command",
             "command": "if python3 -c '' >/dev/null 2>&1; then PY=python3; else PY=python; fi; \"$PY\" \"$CLAUDE_PROJECT_DIR/.claude/templates/tools/fonti-a-monte.py\" --radice \"$CLAUDE_PROJECT_DIR\" avvio || true"
+          },
+          {
+            "type": "command",
+            "command": "if python3 -c '' >/dev/null 2>&1; then PY=python3; else PY=python; fi; \"$PY\" \"$CLAUDE_PROJECT_DIR/.claude/templates/llm-local/tools/rileva-endpoint.py\" --hook --attesa 2 || true"
+          }
+        ]
+      },
+      {
+        "matcher": "clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if python3 -c '' >/dev/null 2>&1; then PY=python3; else PY=python; fi; \"$PY\" \"$CLAUDE_PROJECT_DIR/.claude/templates/tools/verifica-ripresa.py\" --radice \"$CLAUDE_PROJECT_DIR\" --dopo-azzeramento || true"
           }
         ]
       }
