@@ -165,6 +165,17 @@
       "data": "2026-11-07"
     },
     {
+      "id": "github:aayushch/laya",
+      "pacchetto": "filone orchestrazione-agenti",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Centro di notifiche locale che aggrega posta, chat e ticket con un modello locale; il mandato ne dava solo il nome. Apache-2.0.",
+      "controllo": "release",
+      "verificato": "v2.5.0",
+      "licenza": "Apache-2.0",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:AB498/code-context-provider-mcp",
       "motivo": "Server MCP tree-sitter in WebAssembly consigliato da templates/mcp.json; il README di radice lo accredita con nome, link e licenza MIT.",
       "pacchetto": "sistema",
@@ -207,6 +218,50 @@
       "verificato": "671f5728b3d2f26881fc7ac89cb1c3547448ca64",
       "licenza": "MIT",
       "data": "2026-10-21"
+    },
+    {
+      "id": "github:AdguardTeam/Adguardhome",
+      "pacchetto": "filone laboratorio-di-casa",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Server DNS che blocca pubblicità e tracciamento per tutta la rete; alternativa a Pi-hole per il laboratorio. GPL-3.0.",
+      "controllo": "release",
+      "verificato": "v0.107.80",
+      "licenza": "GPL-3.0",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:affaan-m/ECC",
+      "pacchetto": "filone orchestrazione-agenti",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Raccolta molto ampia di skill, memoria e pratiche di sicurezza per più client; il proprietario chiede di esplorarla e prenderne ciò che al template manca. MIT.",
+      "controllo": "release",
+      "verificato": "v2.2.3",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:agents365-ai/drawio-skill",
+      "pacchetto": "filone diagrammi-e-reti",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Skill che produce e sincronizza modelli draw.io da testo, codice e descrizioni di infrastruttura; indicata per le topologie di rete complesse. MIT.",
+      "controllo": "release",
+      "verificato": "v3.4.4",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:ai-job-search-dev/ai-job-search",
+      "pacchetto": "filone curriculum",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Impianto su Claude Code per valutare annunci e adattare il curriculum; da proporre al solo progetto del curriculum. MIT.",
+      "controllo": "release",
+      "verificato": "v1.7.5",
+      "licenza": "MIT",
+      "data": "2026-11-12"
     },
     {
       "id": "github:AiAgentKarl/crossref-academic-mcp-server",
@@ -253,6 +308,17 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:anomalyco/opencode",
+      "pacchetto": "filone orchestrazione-agenti",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Agente di codice open source, indicato per il lavoro senza rete con un modello locale; da capire come integrarlo. MIT.",
+      "controllo": "release",
+      "verificato": "v1.19.5",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:anthropics/claude-code-action",
       "motivo": "Documentazione ufficiale da cui automation-starter ricava il meccanismo del token di abbonamento (claude setup-token) per GitHub Actions.",
       "pacchetto": "automation-starter",
@@ -274,6 +340,17 @@
       "data": "2026-10-21",
       "ruolo": "skill-e-agenti",
       "licenza": "Apache-2.0"
+    },
+    {
+      "id": "github:anthropics/oss-scanner",
+      "pacchetto": "filone cybersecurity",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Servizio a cui un progetto open source si iscrive per farsi analizzare, non uno scanner locale; serve solo a un progetto pubblico che voglia iscriversi. Apache-2.0.",
+      "controllo": "commit",
+      "verificato": "0657a235155212be65d690f5275fc88c2ba8f90c",
+      "licenza": "Apache-2.0",
+      "data": "2026-11-12"
     },
     {
       "id": "github:anthropics/skills",
@@ -340,6 +417,17 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:ayghri/i-have-adhd",
+      "pacchetto": "filone comandi-di-ragionamento",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Skill sullo stile della risposta, che mette la risposta prima del contorno; va con i comandi di stile. MIT.",
+      "controllo": "release",
+      "verificato": "v0.4.1",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:b4rtaz/distributed-llama",
       "pacchetto": "filone llm-locali-senza-gpu",
       "scheda": "docs/filone-llm-locali-senza-gpu.md",
@@ -370,6 +458,17 @@
       "controllo": "commit",
       "verificato": "c368a0ae3c61e226af761fe975cf869c0f3a087d",
       "data": "2026-10-21"
+    },
+    {
+      "id": "github:bendlang/bend",
+      "pacchetto": "filone sviluppo-full-stack",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Linguaggio parallelo che nella versione 2 si presenta come verifica con prove di ciò che un agente ha scritto; osservazione. Apache-2.0.",
+      "controllo": "release",
+      "verificato": "v2.0.40",
+      "licenza": "Apache-2.0",
+      "data": "2026-11-12"
     },
     {
       "id": "github:blader/humanizer",
@@ -416,6 +515,17 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:cbrock84/headcount",
+      "pacchetto": "filone orchestrazione-agenti",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Agenti organizzati come reparti installabili, dalla schermata del proprietario; il 2026-11-12 repository e utente rispondono 404, si ricontrolla a mano ogni trenta giorni perché ricompaia.",
+      "controllo": "manuale",
+      "scadenza": 30,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:ccusage/ccusage",
       "pacchetto": "sistema",
       "scheda": "README.md",
@@ -436,6 +546,28 @@
       "verificato": "b71b898632759b30c6c309aa663f0b8f53bbe13a",
       "licenza": "NOASSERTION",
       "data": "2026-11-07"
+    },
+    {
+      "id": "github:cheaper-inference/OmniRoute",
+      "pacchetto": "filone orchestrazione-agenti",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Gateway unico verso molti fornitori con ripiego per quota; candidato per demandare lavoro a serbatoi gratuiti, da valutare per i dati che escono dalla macchina. MIT.",
+      "controllo": "release",
+      "verificato": "v3.8.53",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:citrolabs/ego-lite",
+      "pacchetto": "filone orchestrazione-agenti",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Browser per agenti che lavora in spazi isolati con la sessione già autenticata; strumento degli agenti, da valutare per ciò che espone. MIT.",
+      "controllo": "release",
+      "verificato": "v2.2.0",
+      "licenza": "MIT",
+      "data": "2026-11-12"
     },
     {
       "id": "github:cocoindex-io/cocoindex-code",
@@ -505,6 +637,17 @@
       "ruolo": "cataloghi"
     },
     {
+      "id": "github:Contrastive-LM/CLM",
+      "pacchetto": "filone orchestrazione-agenti",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Modelli che scelgono un'azione per distanza fra stato e azioni invece di generare; osservazione sul filone dei modelli che decidono. Apache-2.0.",
+      "controllo": "commit",
+      "verificato": "d5f9ef0fd9bde185df0ceaad4f4ecc6cfe8c34f6",
+      "licenza": "Apache-2.0",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:cookjohn/zotero-mcp",
       "motivo": "Plugin Zotero con server MCP elencato come alternativa nel documento di ricerca accademica del 2026-07-01; non adottato.",
       "pacchetto": "academic-researcher",
@@ -536,6 +679,17 @@
       "verificato": "7e355fac26c94fb4efdde161de43da646773f1f9",
       "data": "2026-10-21",
       "ruolo": "fonti-di-norme"
+    },
+    {
+      "id": "github:crow-hq/llm-wiki-v2",
+      "pacchetto": "filone memoria-e-vault",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Wiki Markdown dai documenti con risposte citate, metodo CROW; le cifre di rendimento sono dichiarate dalla fonte. AGPL-3.0, da confrontare con knowledge-wiki.",
+      "controllo": "release",
+      "verificato": "v1.0.0",
+      "licenza": "AGPL-3.0",
+      "data": "2026-11-12"
     },
     {
       "id": "github:CyberSaiyanIT/rhc2026-resources",
@@ -637,6 +791,28 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:earthtojake/text-to-cad",
+      "pacchetto": "filone modellazione-3d",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Progettazione di oggetti fisici da testo con skill e un server MCP di CAD; da confrontare con il programma CAD della suite Craft. MIT.",
+      "controllo": "release",
+      "verificato": "v0.11.9",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:Egonex-AI/Understand-Anything",
+      "pacchetto": "filone memoria-e-vault",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Grafo di conoscenza interattivo da codice e documenti; da confrontare con graphify e codebase-learning nel flusso con rea. MIT.",
+      "controllo": "release",
+      "verificato": "v2.9.0",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:ehosca/hosca-plugins",
       "pacchetto": "scouting",
       "scheda": "docs/fonti-di-scouting.md",
@@ -646,6 +822,39 @@
       "verificato": "d2930a8d3435aa854dbdc97a3ec1a117b7222599",
       "licenza": "MIT",
       "data": "2026-10-27"
+    },
+    {
+      "id": "github:el4cteo/blender-skills",
+      "pacchetto": "filone modellazione-3d",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Ventotto skill per i flussi di Blender, dalla modellazione all'esportazione; indicate per modellare casse acustiche. MIT.",
+      "controllo": "release",
+      "verificato": "v1.2.0",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:elder-plinius/cl4r1t4s",
+      "pacchetto": "filone prompt-efficaci",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Raccolta di prompt di sistema estratti da prodotti altrui; materiale di sola lettura per studiare come sono scritti, nessun testo copiato nel template. AGPL-3.0.",
+      "controllo": "commit",
+      "verificato": "93a584765460c2fb0ad58380bba476f2149df138",
+      "licenza": "AGPL-3.0",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:every-app/open-seo",
+      "pacchetto": "filone seo",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Strumento SEO aperto con skill per agenti, alternativa a Semrush e Ahrefs a consumo. MIT.",
+      "controllo": "release",
+      "verificato": "v0.1.27",
+      "licenza": "MIT",
+      "data": "2026-11-12"
     },
     {
       "id": "github:executablebooks/markdown-it-py",
@@ -761,6 +970,17 @@
       "data": "2026-10-28"
     },
     {
+      "id": "github:hassan-algo/open-sesame",
+      "pacchetto": "filone cybersecurity",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Skill di penetration test su applicazioni web e reti, secondo la guida OWASP, solo su bersagli autorizzati; licenza da leggere nel file.",
+      "controllo": "release",
+      "verificato": "website",
+      "licenza": "NOASSERTION",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:headroomlabs-ai/headroom",
       "pacchetto": "sistema",
       "scheda": "README.md",
@@ -792,6 +1012,17 @@
       "verificato": "c6b5bc1a49ad59e99d78a55448b1d8fcc3c5b71a",
       "licenza": "NOASSERTION",
       "data": "2026-11-09"
+    },
+    {
+      "id": "github:HQarroum/docker-android",
+      "pacchetto": "filone android",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Immagine Docker con l'emulatore Android come servizio, utile solo con accelerazione KVM, quindi su Linux; ultima modifica di maggio 2026. MIT.",
+      "controllo": "commit",
+      "verificato": "f569246983ee994aed06517bf8e06a3f10547b6d",
+      "licenza": "MIT",
+      "data": "2026-11-12"
     },
     {
       "id": "github:Imbad0202/academic-research-skills",
@@ -826,6 +1057,17 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:ionic-team/capacitor",
+      "pacchetto": "filone android",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Esecuzione nativa di un'app web su Android e iOS da una base sola. MIT.",
+      "controllo": "release",
+      "verificato": "7.6.10",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:jacob-bd/gemini-notebook-mcp-cli",
       "pacchetto": "notebooklm-bridge",
       "scheda": ".claude/templates/notebooklm-bridge/README.md",
@@ -837,6 +1079,17 @@
       "data": "2026-10-27"
     },
     {
+      "id": "github:Jakeschincariol/day-trader-skill",
+      "pacchetto": "filone trading",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Undici skill per il day trading citate nel post incollato dal proprietario; filone di osservazione. MIT.",
+      "controllo": "commit",
+      "verificato": "3d0f4ef6986f4984b7c6bd46f7ff4f87744c3abd",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:jeremylongshore/tons-of-skills-marketplace",
       "pacchetto": "agent-catalog",
       "scheda": ".claude/templates/agent-catalog/README.md",
@@ -846,6 +1099,17 @@
       "verificato": "0500b275e963c027f6b410e8c49c0446945c574e",
       "licenza": "MIT",
       "data": "2026-11-09"
+    },
+    {
+      "id": "github:jesseduffield/lazygit",
+      "pacchetto": "filone orchestrazione-agenti",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Interfaccia da terminale per git; da capire se e come affiancarla al flusso di chiudi. MIT.",
+      "controllo": "release",
+      "verificato": "v0.66.3",
+      "licenza": "MIT",
+      "data": "2026-11-12"
     },
     {
       "id": "github:JonasBaath/mcp-refchecker",
@@ -981,6 +1245,28 @@
       "data": "2026-10-28"
     },
     {
+      "id": "github:kyutai-labs/pocket-tts",
+      "pacchetto": "filone voce",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Sintesi vocale che gira su CPU con un pacchetto Python; da confrontare con voicestudio. MIT.",
+      "controllo": "release",
+      "verificato": "v4.0.1",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:langflow-ai/langflow",
+      "pacchetto": "filone orchestrazione-agenti",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Costruzione visuale di agenti e flussi, ogni flusso esposto come API o server MCP; voce della tabella «quale strumento per quale lavoro». MIT.",
+      "controllo": "release",
+      "verificato": "v1.13.2",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:langfuse/langfuse",
       "pacchetto": "scouting",
       "scheda": "docs/fonti-di-scouting.md",
@@ -1025,6 +1311,17 @@
       "data": "2026-10-21",
       "ruolo": "skill-e-agenti",
       "licenza": "MIT"
+    },
+    {
+      "id": "github:lfnovo/open-notebook",
+      "pacchetto": "filone ricerca",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Alternativa aperta a NotebookLM da ospitare in proprio; da confrontare con notebooklm-bridge. MIT.",
+      "controllo": "release",
+      "verificato": "v1.15.1",
+      "licenza": "MIT",
+      "data": "2026-11-12"
     },
     {
       "id": "github:lint-staged/lint-staged",
@@ -1190,6 +1487,17 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:nashsu/llm_wiki",
+      "pacchetto": "filone memoria-e-vault",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Applicazione che costruisce e mantiene un wiki persistente dai documenti invece di recuperare ogni volta; da confrontare con knowledge-wiki. Licenza da leggere nel file.",
+      "controllo": "release",
+      "verificato": "v0.6.13",
+      "licenza": "NOASSERTION",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:natsu1211/deepwiki-skill",
       "motivo": "Skill esterna per generare documentazione di codice con citazioni a riga, base del pacchetto codebase-learning",
       "pacchetto": "catalogo",
@@ -1233,6 +1541,28 @@
       "verificato": "v1.1.1",
       "licenza": "MIT",
       "data": "2026-10-27"
+    },
+    {
+      "id": "github:NousResearch/hermes-agent",
+      "pacchetto": "filone memoria-e-vault",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Agente personale sempre acceso con ciclo di apprendimento proprio; il proprietario lo vuole sotto il secondo cervello, con il documento di consegna già nel progetto del laboratorio. MIT.",
+      "controllo": "release",
+      "verificato": "v0.23.1",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:obra/superpowers",
+      "pacchetto": "filone memoria-e-vault",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Metodo di sviluppo a skill componibili che il proprietario vuole al centro, prima del prompt zero; da confrontare con init-project-system, micro-passi e matt-pocock-skills. MIT.",
+      "controllo": "release",
+      "verificato": "v7.0.2",
+      "licenza": "MIT",
+      "data": "2026-11-12"
     },
     {
       "id": "github:olafgeibig/knowledge-mcp",
@@ -1303,6 +1633,28 @@
       "licenza": "MIT"
     },
     {
+      "id": "github:paperless-ngx/paperless-ngx",
+      "pacchetto": "filone documenti-e-fiscale",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Archivio documentale ricercabile da ospitare in proprio, per il filone fiscale; vale la regola sui documenti personali. GPL-3.0.",
+      "controllo": "release",
+      "verificato": "v3.4.2",
+      "licenza": "GPL-3.0",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:pbakaus/impeccable",
+      "pacchetto": "filone web-design",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Vocabolario di design per l'agente, con comandi di rifinitura, critica e audit, anche per Codex. Apache-2.0.",
+      "controllo": "release",
+      "verificato": "loop-v0.1.1",
+      "licenza": "Apache-2.0",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:pdavis68/RepoMapper",
       "motivo": "Mappa del codice basata su Aider elencata nel documento di handoff di codebase-learning come candidato non adottato.",
       "pacchetto": "codebase-learning",
@@ -1323,6 +1675,28 @@
       "verificato": "v8.1.2",
       "licenza": "MIT",
       "data": "2026-11-09"
+    },
+    {
+      "id": "github:petergyang/no-ai-slop",
+      "pacchetto": "filone scrittura",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Skill che toglie una ventina di schemi del testo generato; da confrontare con anti-slop e humanizer. MIT.",
+      "controllo": "release",
+      "verificato": "v1.0.6",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:pi-hole/pi-hole",
+      "pacchetto": "filone laboratorio-di-casa",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Filtro DNS su una macchina Linux propria, quello degli appunti del proprietario; licenza da leggere nel file.",
+      "controllo": "release",
+      "verificato": "v6.6",
+      "licenza": "NOASSERTION",
+      "data": "2026-11-12"
     },
     {
       "id": "github:PleasePrompto/notebooklm-mcp",
@@ -1426,6 +1800,17 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:remotion-dev/remotion",
+      "pacchetto": "filone web-design",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Video e animazioni come codice React, con un plugin per Claude Code; licenza propria, da leggere prima dell'uso in un'organizzazione.",
+      "controllo": "release",
+      "verificato": "v4.0.543",
+      "licenza": "NOASSERTION",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:rohitg00/awesome-claude-code-toolkit",
       "motivo": "Raccolta ampia di agenti, skill e comandi, candidata da rivalutare citata da agent-catalog e dal handoff di codebase-learning.",
       "pacchetto": "agent-catalog",
@@ -1448,6 +1833,17 @@
       "data": "2026-11-09"
     },
     {
+      "id": "github:ruvnet/ruflo",
+      "pacchetto": "filone orchestrazione-agenti",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Meta-harness per Claude Code e Codex con sciami, memoria e server MCP, installato con un comando che scrive agenti e hook nel progetto; da valutare contro agenti-terminale e la posta fra sessioni. MIT.",
+      "controllo": "release",
+      "verificato": "v3.76.0",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:s4ntrx/Cybersecurity-Threats-Guide",
       "pacchetto": "filone cybersecurity",
       "scheda": "docs/filone-cybersecurity.md",
@@ -1457,6 +1853,28 @@
       "verificato": "96322f0c5c989d3a7598cd72817b5116cfa55edd",
       "licenza": "MIT",
       "data": "2026-10-27"
+    },
+    {
+      "id": "github:s60sc/ESP32_AdBlocker",
+      "pacchetto": "filone laboratorio-di-casa",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Filtro DNS su ESP32 che risponde 0.0.0.0 ai domini in lista; da propagare al progetto del laboratorio. AGPL-3.0.",
+      "controllo": "release",
+      "verificato": "v3.7",
+      "licenza": "AGPL-3.0",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:shiyu-coder/Kronos",
+      "pacchetto": "filone trading",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Modello di base per le serie di candele finanziarie; filone di osservazione, qualunque prova resta su un conto simulato. MIT.",
+      "controllo": "commit",
+      "verificato": "67b630e67f6a18c9e9be918d9b4337c960db1e9a",
+      "licenza": "MIT",
+      "data": "2026-11-12"
     },
     {
       "id": "github:sourcebot-dev/sourcebot",
@@ -1479,6 +1897,28 @@
       "verificato": "v1.1.0",
       "licenza": "MIT",
       "data": "2026-10-21"
+    },
+    {
+      "id": "github:Stirling-Tools/stirling-pdf",
+      "pacchetto": "filone documenti-e-fiscale",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Piattaforma PDF che gira in locale o su un proprio server; da confrontare con ciò che la suite Craft fa già. Licenza da leggere nel file.",
+      "controllo": "release",
+      "verificato": "v3.3.0",
+      "licenza": "NOASSERTION",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "github:storytold/craft-anything",
+      "pacchetto": "filone memoria-e-vault",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Motore della suite Craft che studia un software e ne fa costruire una versione propria; il proprietario lo indica come già insito nella suite, si lega al pacchetto rea. Apache-2.0.",
+      "controllo": "release",
+      "verificato": "v0.6.1",
+      "licenza": "Apache-2.0",
+      "data": "2026-11-12"
     },
     {
       "id": "github:storytold/craft-launcher",
@@ -1548,6 +1988,17 @@
       "data": "2026-11-09"
     },
     {
+      "id": "github:tirth8205/code-review-graph",
+      "pacchetto": "filone memoria-e-vault",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Grafo locale del codice servito via MCP e CLI per ridurre il contesto letto in revisione; candidato al risparmio di token, da confrontare con graphify. MIT.",
+      "controllo": "release",
+      "verificato": "v2.4.0",
+      "licenza": "MIT",
+      "data": "2026-11-12"
+    },
+    {
       "id": "github:travisvn/awesome-claude-skills",
       "motivo": "Lista curata di skill per Claude elencata nel documento di ricerca del 2026-07-01 come fonte di candidati.",
       "pacchetto": "academic-researcher",
@@ -1556,6 +2007,17 @@
       "controllo": "commit",
       "verificato": "1da55aa810f206d3fe2005e7e3989b15a275d942",
       "data": "2026-10-21"
+    },
+    {
+      "id": "github:tt-a1i/archify",
+      "pacchetto": "filone didattico",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Skill che trasforma un'idea, un piano o una codebase in un diagramma HTML interattivo; indicata per il filone didattico e per fissare un'idea prima del codice. Apache-2.0.",
+      "controllo": "release",
+      "verificato": "v3.2.0",
+      "licenza": "Apache-2.0",
+      "data": "2026-11-12"
     },
     {
       "id": "github:Tyrrrz/DiscordChatExporter",
@@ -1579,6 +2041,17 @@
       "verificato": "@upstash/context7-mcp@4.6.0",
       "licenza": "MIT",
       "data": "2026-11-09"
+    },
+    {
+      "id": "github:usestrix/strix",
+      "pacchetto": "filone cybersecurity",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Strumento di penetration test con agenti, integrabile in CI; indicato per il progetto del laboratorio, solo sui propri sistemi. Apache-2.0.",
+      "controllo": "release",
+      "verificato": "v1.7.1",
+      "licenza": "Apache-2.0",
+      "data": "2026-11-12"
     },
     {
       "id": "github:virgiliojr94/book-to-skill",
@@ -1613,6 +2086,17 @@
       "verificato": "v1.7.14",
       "licenza": "MIT",
       "data": "2026-10-27"
+    },
+    {
+      "id": "github:wheresryan22/anatomy",
+      "pacchetto": "filone modellazione-3d",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Skill per illustrazioni isometriche interattive di macchine e sistemi in SVG, WebGL e 3D. MIT.",
+      "controllo": "release",
+      "verificato": "v1.1.0",
+      "licenza": "MIT",
+      "data": "2026-11-12"
     },
     {
       "id": "github:wshobson/agents",
@@ -2018,6 +2502,61 @@
       "data": "2026-10-27"
     },
     {
+      "id": "web:https://arxiv.org/abs/2603.21852v2",
+      "pacchetto": "filone ricerca",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Articolo su un'ottimizzazione che il proprietario chiede di capire se si può sfruttare; non ancora letto.",
+      "controllo": "manuale",
+      "scadenza": 365,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "web:https://code.claude.com/docs/en/debug-your-config",
+      "pacchetto": "filone setup-del-client",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Pagina ufficiale per diagnosticare la configurazione di Claude Code; base del filone sul setup del client in Windows e Linux e della guida d'uso.",
+      "controllo": "manuale",
+      "scadenza": 90,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "web:https://contrastive-lm.notion.site",
+      "pacchetto": "filone orchestrazione-agenti",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Pagina di presentazione dei modelli CLM, citata dal post che il proprietario ha incollato.",
+      "controllo": "manuale",
+      "scadenza": 180,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "web:https://core.ac.uk/",
+      "pacchetto": "filone ricerca",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Aggregatore di articoli ad accesso aperto; candidato per academic-researcher.",
+      "controllo": "manuale",
+      "scadenza": 365,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "web:https://doaj.org/",
+      "pacchetto": "filone ricerca",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Indice delle riviste ad accesso aperto; candidato per academic-researcher.",
+      "controllo": "manuale",
+      "scadenza": 365,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
       "id": "web:https://docs.wokwi.com/",
       "pacchetto": "firmware-e-microserver",
       "scheda": "docs/filone-microcontrollori-e-microserver.md",
@@ -2026,6 +2565,39 @@
       "controllo": "versione",
       "verificato": "f07732ab2c07",
       "data": "2026-10-29"
+    },
+    {
+      "id": "web:https://doi.org/10.5281/zenodo.22898752",
+      "pacchetto": "filone memoria-e-vault",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Paper CROW, che descrive il metodo di llm-wiki-v2.",
+      "controllo": "manuale",
+      "scadenza": 180,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "web:https://ei.futuranet.it/2026/11/07/blocco-dns-su-esp32-c3-addio-pubblicita-senza-psram/",
+      "pacchetto": "filone laboratorio-di-casa",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Articolo che presenta il filtro DNS su ESP32-C3, da cui il proprietario è arrivato al repository.",
+      "controllo": "manuale",
+      "scadenza": 365,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "web:https://firebog.net/",
+      "pacchetto": "filone laboratorio-di-casa",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Raccolta di liste di blocco per un filtro DNS.",
+      "controllo": "manuale",
+      "scadenza": 180,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
     },
     {
       "id": "web:https://learn-arduino-red.vercel.app/",
@@ -2058,6 +2630,17 @@
       "data": "2026-10-28"
     },
     {
+      "id": "web:https://scispace.com/it",
+      "pacchetto": "filone ricerca",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Strumento di lettura e ricerca di articoli scientifici; candidato per academic-researcher.",
+      "controllo": "manuale",
+      "scadenza": 365,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
       "id": "web:https://snitchplugin.com/",
       "pacchetto": "scouting",
       "scheda": "docs/fonti-di-scouting.md",
@@ -2066,6 +2649,17 @@
       "controllo": "versione",
       "verificato": "ab5259031586",
       "data": "2026-10-27"
+    },
+    {
+      "id": "web:https://www.aihero.dev/skills-wayfinder",
+      "pacchetto": "matt-pocock-skills",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Pagina della skill wayfinder, che il proprietario chiede di includere.",
+      "controllo": "manuale",
+      "scadenza": 90,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
     },
     {
       "id": "web:https://www.anthropic.com/legal/credit-terms",
@@ -2078,6 +2672,17 @@
       "data": "2026-11-09"
     },
     {
+      "id": "web:https://www.connectedpapers.com/",
+      "pacchetto": "filone ricerca",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Mappa visuale degli articoli collegati a un articolo; candidato per academic-researcher.",
+      "controllo": "manuale",
+      "scadenza": 365,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
       "id": "web:https://www.falstad.com/circuit/",
       "pacchetto": "firmware-e-microserver",
       "scheda": "docs/filone-microcontrollori-e-microserver.md",
@@ -2086,6 +2691,50 @@
       "controllo": "versione",
       "verificato": "f94ec170ff87",
       "data": "2026-10-29"
+    },
+    {
+      "id": "web:https://www.ilsoftware.it/focus/tailcat-collega-due-pc-ovunque-senza-vpn-account-porte-aperte/",
+      "pacchetto": "filone laboratorio-di-casa",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Articolo su Tailcat, collegamento fra due PC senza VPN né porte aperte; da leggere prima di dire se serve.",
+      "controllo": "manuale",
+      "scadenza": 365,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "web:https://www.remotion.dev/docs/ai/claude-code-plugin",
+      "pacchetto": "filone web-design",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Documentazione del plugin di Remotion per Claude Code, indicata dal proprietario per le animazioni.",
+      "controllo": "manuale",
+      "scadenza": 90,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "web:https://www.youtube.com/watch?v=EP9zPS1jNwA",
+      "pacchetto": "filone memoria-e-vault",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Secondo video indicato dal proprietario sul metodo Karpathy con Obsidian e Jev; da trascrivere in locale prima di leggerlo.",
+      "controllo": "manuale",
+      "scadenza": 180,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
+    },
+    {
+      "id": "web:https://www.youtube.com/watch?v=t7IXUaRyUAY",
+      "pacchetto": "filone memoria-e-vault",
+      "scheda": "docs/piano-potenziamento-2026-11.md",
+      "ruolo": "candidati",
+      "motivo": "Video indicato dal proprietario sul metodo Karpathy con Obsidian e Jev; da trascrivere in locale prima di leggerlo.",
+      "controllo": "manuale",
+      "scadenza": 180,
+      "verificato": "2026-11-12",
+      "data": "2026-11-12"
     },
     {
       "id": "winget:Nimbalyst.Nimbalyst",
