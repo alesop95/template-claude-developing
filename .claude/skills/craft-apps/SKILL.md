@@ -99,6 +99,8 @@ Prima di puntare una di queste applicazioni a una cartella, si guarda che cosa c
 
 Si dichiara che cosa è stato prodotto, con quale applicazione e quale versione, e se si è passati dalla riga di comando o dal server. La fonte Markdown e il file di stile restano nel progetto, così l'artefatto si rigenera invece di ritoccarsi a mano, **finché l'artefatto non viene modificato da una persona**; quando l'artefatto ha un formato nativo, per esempio un `.deckcraft`, si conserva anche l'esportazione in un formato che si legge altrove.
 
+Una consegna fuori dal repository, per esempio una pagina sul Desktop del proprietario, è una vista e non una fonte: dichiara in fondo da quale documento del progetto è generata, e la versione precedente si elimina nello stesso giro in cui nasce la nuova, dichiarandolo, invece di archiviarla accanto. In un progetto istanziato tre pagine nate in giorni diversi sullo stesso tema erano diventate copie parallele della memoria del progetto e ne divergevano (lezione L-008, direttiva d'uso del 2026-11-10).
+
 ## Quando l'artefatto smette di essere generato
 
 Salita il 2026-10-26 da un progetto istanziato (L-014), e corregge il paragrafo precedente nel solo caso in cui vale. La regola «si rigenera invece di ritoccarsi a mano» presuppone un autore solo. Nel momento in cui il proprietario apre l'artefatto e lo modifica, quel file ha due autori e resta uno solo, e rigenerarlo cancella le sue revisioni in silenzio: il file esiste, ha la data giusta, e nessun errore segnala la perdita. È una corsa che la persona perde sempre, perché il generatore riscrive l'intero file mentre lei ne cambia tre frasi.
