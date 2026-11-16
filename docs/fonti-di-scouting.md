@@ -48,8 +48,8 @@ Thread letto per intero dall'archivio Arctic Shift il 2026-10-27; licenza, ultim
 | Progetto | Che cosa fa | Destinazione | Licenza | Esito |
 |---|---|---|---|---|
 | `Sushegaad/Claude-Skills-Governance-Risk-and-Compliance` | Trentasei skill di conformità, aggiornate ogni mese | Sicurezza informatica e assessment | MIT | Catalogato il 2026-10-27 come pacchetto `grc-skills` |
-| `kunchenguid/no-mistakes` | Controllo che si interpone al push, 8.986 stelle | Fondamenta e igiene | MIT | Da confrontare con i controlli di `chiudi` e con il gancio pre-commit di `gancio-globale`, come seconda barriera prima del push |
-| `k45sle/Claude-auto-pause` | Plugin che ferma Claude prima del limite d'uso e lascia una nota di passaggio verificata | Economia del contesto | MIT | Pertinente a `token-economy` e alla nota di passaggio; da leggere, 9 stelle, push del 2026-10-22 |
+| `kunchenguid/no-mistakes` | Controllo che si interpone al push, 9.229 stelle il 2026-11-16 | Fondamenta e igiene | MIT | Da confrontare con i controlli di `chiudi` e con il gancio pre-commit di `gancio-globale`, come seconda barriera prima del push |
+| `k45sle/Claude-auto-pause` | Plugin che ferma Claude prima del limite d'uso e lascia una nota di passaggio verificata | Economia del contesto | MIT | Pertinente a `token-economy` e alla nota di passaggio; da leggere, 16 stelle e versione 0.1.14 il 2026-11-16 |
 | `integralist/agent-skills` | Raccolta personale di skill d'uso quotidiano | Orchestrazione, sessioni e cataloghi di agenti | Nessuna dichiarata | Si studia e non si riusa |
 | `ehosca/hosca-plugins` | Marketplace di plugin per Claude Code | Orchestrazione, sessioni e cataloghi di agenti | MIT | Nessuna stella, ultimo push del 2026-07-05: maturità da verificare prima di qualunque proposta |
 | Gist `falsifier` di xificurC, https://gist.github.com/xificurC/8377d51a0c080ad81bb92a55911a0fd0 | Skill che cerca contraddizioni, regole nascoste e presupposti sbagliati in una specifica o in un codice, e restituisce un elenco ordinato | Sviluppo, qualità e revisione | Da leggere: un gist non dichiara licenza di per sé | Vicina alla skill `prove-che-misurano`; da leggere prima di proporla |
