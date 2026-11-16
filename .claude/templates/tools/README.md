@@ -179,6 +179,8 @@ Misura le schede di `.claude/context/` rispetto al codice che dichiarano di copr
 
 Nato in un progetto istanziato, dove la prima corsa ha trovato tre schede mai ancorate dopo che il confronto per commit le aveva date per allineate per tre mesi. Non vede la quarta cecità della skill, cioè una scheda ancorata mentre già divergeva: quella si trova soltanto confrontando per contenuto.
 
+Dal 2026-11-16 elenca anche le schede da popolare, cioè quelle che portano ancora la riga di istruzione del modello, quella che comincia con «Popolare leggendo». Una ricognizione su trentotto progetti locali ne ha trovati nove con almeno una scheda in quello stato, e una scheda vuota con l'ancora a posto passava ogni confronto. È un'informazione e non un difetto, perché fermerebbe la chiusura di progetti che non hanno ancora niente da descrivere; con `--rigoroso` fa uscire con codice 1. Due prove interne in più, quindici in tutto.
+
 ```
 python tools/verifica-schede.py
 python tools/verifica-schede.py --rigoroso
