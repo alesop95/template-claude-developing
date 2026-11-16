@@ -364,6 +364,17 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:Apoo711/obsidian-3d-graph",
+      "pacchetto": "vault-di-progetto",
+      "scheda": ".claude/templates/vault-di-progetto/README.md",
+      "ruolo": "strumenti",
+      "motivo": "Plugin di Obsidian per il grafo dei documenti in tre dimensioni, con filtri; uno dei tre plugin di base di vault-di-progetto. MIT.",
+      "controllo": "release",
+      "verificato": "2.8.3",
+      "licenza": "MIT",
+      "data": "2026-11-13"
+    },
+    {
       "id": "github:ArthurHeitmann/arctic_shift",
       "motivo": "Archivio di dati Reddit citato nei crediti del README come esempio di fonte di archivio con latenza rispetto alla fonte viva.",
       "pacchetto": "sistema",
@@ -1444,6 +1455,17 @@
       "data": "2026-11-09"
     },
     {
+      "id": "github:mnaoumov/obsidian-embed-html",
+      "pacchetto": "vault-di-progetto",
+      "scheda": ".claude/templates/vault-di-progetto/README.md",
+      "ruolo": "strumenti",
+      "motivo": "Plugin di Obsidian che incorpora un file HTML in una nota; uno dei tre plugin di base di vault-di-progetto. Licenza non letta.",
+      "controllo": "release",
+      "verificato": "2.7.0",
+      "licenza": "MIT",
+      "data": "2026-11-13"
+    },
+    {
       "id": "github:morluto/rea",
       "motivo": "Server MCP e CLI per l'analisi di software senza sorgente; il pacchetto rea ne fissa il perimetro d'uso senza vendorarlo.",
       "pacchetto": "rea",
@@ -1888,6 +1910,17 @@
       "data": "2026-10-27"
     },
     {
+      "id": "github:Spobi/clibert",
+      "pacchetto": "scouting",
+      "scheda": "docs/fonti-di-scouting.md",
+      "ruolo": "candidati",
+      "motivo": "Comando che controlla che cosa resta in contesto dopo una compattazione, citato due volte nel thread di scouting; il 2026-11-13 il repository risponde 404, si ricontrolla a mano ogni trenta giorni.",
+      "controllo": "manuale",
+      "scadenza": 30,
+      "verificato": "2026-11-13",
+      "data": "2026-11-13"
+    },
+    {
       "id": "github:stanford-oval/storm",
       "motivo": "Sistema di generazione di report con citazioni elencato nel documento di ricerca del 2026-07-01.",
       "pacchetto": "academic-researcher",
@@ -1977,6 +2010,17 @@
       "data": "2026-11-09"
     },
     {
+      "id": "github:TfTHacker/obsidian42-brat",
+      "pacchetto": "vault-di-progetto",
+      "scheda": ".claude/templates/vault-di-progetto/README.md",
+      "ruolo": "strumenti",
+      "motivo": "Plugin di Obsidian che installa e aggiorna plugin fuori dal catalogo ufficiale; uno dei tre plugin di base che vault-di-progetto copia da un vault di riferimento. MIT.",
+      "controllo": "release",
+      "verificato": "2.2.0",
+      "licenza": "MIT",
+      "data": "2026-11-13"
+    },
+    {
       "id": "github:thedotmack/claude-mem",
       "motivo": "Memoria persistente cross-sessione consigliata dal catalogo come tool esterno installato con npx claude-mem install.",
       "pacchetto": "catalogo",
@@ -1997,6 +2041,17 @@
       "verificato": "v2.4.0",
       "licenza": "MIT",
       "data": "2026-11-12"
+    },
+    {
+      "id": "github:to-infinity-labs/plugins",
+      "pacchetto": "scouting",
+      "scheda": "docs/fonti-di-scouting.md",
+      "ruolo": "candidati",
+      "motivo": "Due skill per Claude Code, una nota di decisione con una raccomandazione e un riassunto in parole semplici, citate nel thread di scouting; stesso terreno di comandi-ragionamento, osservazione. MIT.",
+      "controllo": "commit",
+      "verificato": "c696a814a4002e8849d6ea2c294effe4e905419c",
+      "licenza": "MIT",
+      "data": "2026-11-13"
     },
     {
       "id": "github:travisvn/awesome-claude-skills",
@@ -2153,6 +2208,17 @@
       "verificato": "0238c264073993697366b4c3c062298bc61b7d35",
       "licenza": "MIT",
       "data": "2026-10-21"
+    },
+    {
+      "id": "github:yt-dlp/yt-dlp",
+      "pacchetto": "sistema",
+      "scheda": ".claude/skills/fonti-non-recuperabili/RIFERIMENTO.md",
+      "ruolo": "strumenti",
+      "motivo": "Scaricatore di audio e video da riga di comando che la norma sulle fonti non recuperabili indica per ottenere l'audio di un video da trascrivere; invecchia in settimane, e una versione vecchia risponde 403. Licenza Unlicense.",
+      "controllo": "release",
+      "verificato": "2026.10.26",
+      "licenza": "Unlicense",
+      "data": "2026-11-13"
     },
     {
       "id": "github:zabbonat/References-Validation",
@@ -2498,8 +2564,8 @@
       "ruolo": "scouting",
       "motivo": "Thread del subreddit ClaudeAI in cui gli utenti segnalano le skill che usano, indicato dal proprietario il 2026-10-27: da qui è arrivata la raccolta GRC. Si sorveglia il numero di commenti dall'archivio Arctic Shift.",
       "controllo": "versione",
-      "verificato": "65 commenti",
-      "data": "2026-10-27"
+      "verificato": "81 commenti",
+      "data": "2026-11-13"
     },
     {
       "id": "web:https://arxiv.org/abs/2603.21852v2",

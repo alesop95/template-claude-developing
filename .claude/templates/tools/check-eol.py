@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Segnala i file di testo con fini riga miste, cioe' CRLF e LF nello stesso file.
+"""Segnala i file di testo con fini riga miste, ossia CRLF e LF nello stesso file.
 
 Perche' serve. La convenzione Markdown di questo progetto prescrive di conservare la
 fine riga di ciascun file, CRLF o LF, e lo strumento md-unwrap la rispetta per

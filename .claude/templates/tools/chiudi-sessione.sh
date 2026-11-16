@@ -116,6 +116,7 @@ verifica-link-progetto.py|--check --senza-rete|tools/verifica-link-progetto.json
 check-copie-modelli.py|||1
 check-catalogo.py|||1
 check-raggiungibilita.py|||1
+riferimento.py|--check||1
 test-tipografia.py|||1
 test-documenti-personali.py|||1
 test-identita-personali.py|||1

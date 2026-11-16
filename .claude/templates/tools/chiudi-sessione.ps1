@@ -246,6 +246,9 @@ $controlli = @(
     @{ n = "check-copie-modelli.py";  a = @(); solobundle = $true },
     @{ n = "check-catalogo.py";       a = @(); solobundle = $true },
     @{ n = "check-raggiungibilita.py"; a = @(); solobundle = $true },
+    # Dal 2026-11-12: il riferimento completo si genera dal disco, e una skill o un pacchetto senza
+    # come, perche' e quando no ferma il commit, come un documento generato rimasto indietro.
+    @{ n = "riferimento.py";           a = @("--check"); solobundle = $true },
     # Dal 2026-10-19: i controlli di qualita' che un progetto adotta valgono anche sulle copie del
     # template, quindi il template li tiene a zero sui propri strumenti (PROJECT-SYSTEM.md, sez. 16).
     @{ n = "lint-strumenti.py";       a = @(); solobundle = $true },

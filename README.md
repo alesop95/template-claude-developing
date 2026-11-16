@@ -161,6 +161,8 @@ Il pacchetto opzionale `agenti-terminale` tiene isolate più radici dei due agen
 
 La pulizia usa meccanismi diversi. Claude Code esegue uno script distribuito in ciascuna radice tramite l'hook `SessionEnd`. Codex si avvia con un wrapper che imposta e verifica `CODEX_HOME`, poi pulisce dopo l'uscita del processo: il suo hook `SessionEnd` esiste, ma non copre `codex exec` e non riesce a rimuovere la sessione ancora aperta che lo invoca. La regola `chiusura-delle-sessioni.md` completa il wipe chiedendo di rimuovere le sessioni davvero concluse. Il dettaglio, incluse le guardie e il ripristino, è nel [README del pacchetto](.claude/templates/agenti-terminale/README.md).
 
+Il registro privato dei progetti MCP della macchina permette anche a una radice nuova di ritrovare le connessioni condivise: gli installatori verificano le definizioni locali e aggiungono a Codex la fiducia per i soli percorsi autorizzati. Nessun token o login viene copiato fra account; dettagli e prove nel README del pacchetto.
+
 ## Windows o Linux
 
 Diverse parti del sistema cambiano a seconda del sistema operativo: il forzare o meno `core.sshCommand` all'OpenSSH di sistema, gli script di setup e build dell'ambiente, gli script di wipe e di verifica dell'account, e la sintassi degli hook. Per questo i due prompt chiedono al punto giusto, in fase di inizializzazione o allineamento, se si sviluppa su Windows o su Linux, e da quel momento usano la variante corretta degli strumenti. Cambia però anche cio che non dipende dal sistema operativo ma dalla singola installazione, cioè gli alias SSH verso GitHub, le chiavi dietro ciascuno e le identità git da abbinarvi: sono scelte di chi ha configurato quella macchina, e il sistema li rileva con `detect-ssh-profiles.py` e poi li chiede, invece di riusare quelli di un'altra installazione. Lo stesso vale per le radici di sviluppo da preservare nel wipe. Gli strumenti che hanno una doppia forma, come il pacchetto LaTeX, gli strumenti di igiene dell'account e `chiudi`, sono forniti sia in PowerShell sia in shell per Linux. Il pacchetto opzionale `agenti-terminale` conserva per ora soltanto gli installatori e launcher PowerShell: la gestione multi-account su Linux resta da portare e provare.
@@ -463,7 +465,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**48 pacchetti a cartella** su **98 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**49 pacchetti a cartella** su **99 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -503,6 +505,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 - `latex` - ambiente di build LaTeX: [.claude/templates/latex/README.md](.claude/templates/latex/README.md)
 - `docx-to-docs` - `.docx` in albero `docs/` versionato: [.claude/templates/docx-to-docs/README.md](.claude/templates/docx-to-docs/README.md)
 - `knowledge-wiki` - LLM Wiki accumulatoria: [.claude/templates/knowledge-wiki/README.md](.claude/templates/knowledge-wiki/README.md)
+- `vault-di-progetto` - Un vault Obsidian sopra la memoria e la documentazione del progetto, fatto di soli collegamenti, con i tre plugin di base copiati da un vault già presente sulla macchina.: [.claude/templates/vault-di-progetto/README.md](.claude/templates/vault-di-progetto/README.md)
 
 ### Fonti, ricerca e corpus documentali
 
