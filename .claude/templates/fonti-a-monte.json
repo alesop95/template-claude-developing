@@ -526,6 +526,17 @@
       "data": "2026-10-21"
     },
     {
+      "id": "github:cathrynlavery/diagram-design",
+      "pacchetto": "catalogo",
+      "scheda": ".claude/templates/PACKAGES.md",
+      "ruolo": "skill-e-agenti",
+      "motivo": "Skill che disegna diagrammi in HTML e SVG con il marchio del progetto, consigliata dal catalogo; senza release, si segue per commit. MIT.",
+      "controllo": "commit",
+      "verificato": "f6db0decea96de66b901331a0f79a8d4b147ebae",
+      "licenza": "MIT",
+      "data": "2026-11-16"
+    },
+    {
       "id": "github:cbrock84/headcount",
       "pacchetto": "filone orchestrazione-agenti",
       "scheda": "docs/piano-potenziamento-2026-11.md",
@@ -579,6 +590,17 @@
       "verificato": "v2.2.0",
       "licenza": "MIT",
       "data": "2026-11-12"
+    },
+    {
+      "id": "github:cloudflare/security-audit-skill",
+      "pacchetto": "catalogo",
+      "scheda": ".claude/templates/PACKAGES.md",
+      "ruolo": "skill-e-agenti",
+      "motivo": "Skill di audit di sicurezza in sei fasi con cacciatori e verificatori separati, consigliata dal catalogo per il codice proprio; senza release, si segue per commit. MIT.",
+      "controllo": "commit",
+      "verificato": "c1c8a8c1471069fb0e188eeaff69b8e8db6564a8",
+      "licenza": "MIT",
+      "data": "2026-11-16"
     },
     {
       "id": "github:cocoindex-io/cocoindex-code",
@@ -1576,15 +1598,37 @@
       "data": "2026-11-12"
     },
     {
+      "id": "github:nutlope/hallmark",
+      "pacchetto": "catalogo",
+      "scheda": ".claude/templates/PACKAGES.md",
+      "ruolo": "skill-e-agenti",
+      "motivo": "Skill che costruisce o rifà pagine web con temi dichiarati e controlli in browser, consigliata dal catalogo in alternativa a taste-skill e impeccable; senza release, si segue per commit. MIT.",
+      "controllo": "commit",
+      "verificato": "04977e15f3dfd6ee4b74c887dac3eb52665d6c92",
+      "licenza": "MIT",
+      "data": "2026-11-16"
+    },
+    {
       "id": "github:obra/superpowers",
-      "pacchetto": "filone memoria-e-vault",
-      "scheda": "docs/piano-potenziamento-2026-11.md",
-      "ruolo": "candidati",
-      "motivo": "Metodo di sviluppo a skill componibili che il proprietario vuole al centro, prima del prompt zero; da confrontare con init-project-system, micro-passi e matt-pocock-skills. MIT.",
+      "pacchetto": "superpowers",
+      "scheda": ".claude/templates/superpowers/README.md",
+      "ruolo": "skill-e-agenti",
+      "motivo": "Metodo di sviluppo in quindici skill, installato come plugin per account; il pacchetto superpowers ne tiene la mappa con ciò che il sistema ha già e i punti in cui prevale la regola del progetto. MIT.",
       "controllo": "release",
       "verificato": "v7.0.2",
       "licenza": "MIT",
-      "data": "2026-11-12"
+      "data": "2026-11-16"
+    },
+    {
+      "id": "github:obra/superpowers-marketplace",
+      "pacchetto": "superpowers",
+      "scheda": ".claude/templates/superpowers/README.md",
+      "ruolo": "cataloghi",
+      "motivo": "Marketplace dell'autore da cui si installa il plugin superpowers in alternativa a quello ufficiale; il pacchetto superpowers ne riporta i due comandi.",
+      "controllo": "commit",
+      "verificato": "5c9072877417873fee42be1805aa776a453ec394",
+      "licenza": "MIT",
+      "data": "2026-11-16"
     },
     {
       "id": "github:olafgeibig/knowledge-mcp",
@@ -1667,14 +1711,14 @@
     },
     {
       "id": "github:pbakaus/impeccable",
-      "pacchetto": "filone web-design",
-      "scheda": "docs/piano-potenziamento-2026-11.md",
-      "ruolo": "candidati",
-      "motivo": "Vocabolario di design per l'agente, con comandi di rifinitura, critica e audit, anche per Codex. Apache-2.0.",
+      "pacchetto": "catalogo",
+      "scheda": ".claude/templates/PACKAGES.md",
+      "ruolo": "skill-e-agenti",
+      "motivo": "Skill di design con comandi di rifinitura, critica e audit e un rilevatore deterministico, consigliata dal catalogo per interfacce web esistenti; installa hook, da leggere prima. Apache-2.0.",
       "controllo": "release",
-      "verificato": "loop-v0.1.1",
+      "verificato": "cli-v4.9.2",
       "licenza": "Apache-2.0",
-      "data": "2026-11-12"
+      "data": "2026-11-16"
     },
     {
       "id": "github:pdavis68/RepoMapper",
@@ -2144,14 +2188,14 @@
     },
     {
       "id": "github:wheresryan22/anatomy",
-      "pacchetto": "filone modellazione-3d",
-      "scheda": "docs/piano-potenziamento-2026-11.md",
-      "ruolo": "candidati",
-      "motivo": "Skill per illustrazioni isometriche interattive di macchine e sistemi in SVG, WebGL e 3D. MIT.",
+      "pacchetto": "catalogo",
+      "scheda": ".claude/templates/PACKAGES.md",
+      "ruolo": "skill-e-agenti",
+      "motivo": "Skill per figure isometriche interattive che spiegano un meccanismo, consigliata dal catalogo per guide e presentazioni. MIT.",
       "controllo": "release",
       "verificato": "v1.1.0",
       "licenza": "MIT",
-      "data": "2026-11-12"
+      "data": "2026-11-16"
     },
     {
       "id": "github:wshobson/agents",
@@ -2373,6 +2417,17 @@
       "verificato": "1.0.11",
       "licenza": "MIT",
       "data": "2026-10-21"
+    },
+    {
+      "id": "npm:impeccable",
+      "pacchetto": "catalogo",
+      "scheda": ".claude/templates/PACKAGES.md",
+      "ruolo": "strumenti",
+      "motivo": "CLI che installa e aggiorna la skill impeccable nel progetto, indicata dalla riga di catalogo; nessun file nel template.",
+      "controllo": "versione",
+      "verificato": "4.9.2",
+      "licenza": "Apache-2.0",
+      "data": "2026-11-16"
     },
     {
       "id": "npm:rea-agents",
@@ -2853,6 +2908,7 @@
       "code-review",
       "corpus-analysis",
       "craft-apps",
+      "crea-agente",
       "deep-paper-reading",
       "devil",
       "eu-ai-act",

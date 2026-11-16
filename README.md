@@ -465,7 +465,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**49 pacchetti a cartella** su **99 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**50 pacchetti a cartella** su **105 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -538,6 +538,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 
 - `dev-skills` - skill di sviluppo (test, scaffolding MCP, review): [.claude/templates/dev-skills/README.md](.claude/templates/dev-skills/README.md)
 - `matt-pocock-skills` - la mappa fra le 37 skill di ingegneria di mattpocock e ciò che questo sistema già ha: [.claude/templates/matt-pocock-skills/README.md](.claude/templates/matt-pocock-skills/README.md)
+- `superpowers` - mappa fra le skill di superpowers e il sistema, con i punti in cui prevale la regola del progetto e il peso all'avvio: [.claude/templates/superpowers/README.md](.claude/templates/superpowers/README.md)
 
 ### Apprendimento guidato
 

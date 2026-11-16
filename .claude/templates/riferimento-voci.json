@@ -24,6 +24,11 @@
     "perche": "Fa emergere le affermazioni che invecchiano in silenzio, cioè scadenze scritte in prosa, misure vecchie rispetto alla cadenza dichiarata e incoerenze fra documenti e repository, che nessun `git diff` contraddice mai.",
     "quando_no": "Non si offre a un progetto di solo codice dove ogni affermazione è verificabile eseguendo i test, perché là il posto giusto per un invariante è la suite; senza il registro esce con codice 2 e non dichiara alcun verde."
   },
+  "pacchetto:anatomy": {
+    "come": "`npx skills add wheresryan22/anatomy -g -a claude-code`, poi `/anatomy <idea da spiegare>`; la skill costruisce la figura e la controlla con Chrome.",
+    "perche": "Rende visibile un meccanismo come oggetto fatto di parti, che è la forma che una guida d'uso grafica chiede quando deve mostrare come gli strumenti si intrecciano.",
+    "quando_no": "Per grafici di dati, persone o mappe; quando serve una figura in pochi minuti; dove Chrome non è disponibile ai controlli."
+  },
   "pacchetto:andrej-karpathy-skills": {
     "come": "Si installa come plugin con `/plugin marketplace add multica-ai/andrej-karpathy-skills` seguito da `/plugin install andrej-karpathy-skills@karpathy-skills`, oppure si adotta il solo `CLAUDE.md` del repository.",
     "perche": "Impone quattro principi comportamentali contro l'over-engineering: niente assunzioni silenziose, niente 500 righe dove ne bastano 50, niente modifiche ortogonali, niente scope creep.",
@@ -159,6 +164,11 @@
     "perche": "Dà procedure di sviluppo versionate col repository, che ogni membro riceve da un clone indipendentemente dalla versione della sua CLI: generazione di test sui pattern esistenti, scaffold di tool MCP e due varianti di revisione.",
     "quando_no": "Le due skill di review code-review e security-review duplicano le native /code-review e /security-review (più evolute) e gli agenti di subagent-template, e con lo stesso nome le mettono in ombra nel progetto, quindi si istanziano solo se serve una review personalizzata e versionata, una CLI senza le native, o la revisione nel contesto principale."
   },
+  "pacchetto:diagram-design": {
+    "come": "`/plugin marketplace add cathrynlavery/diagram-design` e `/plugin install diagram-design@diagram-design`; si chiede il diagramma e si ottiene un file HTML, che `/export-diagram` porta in SVG e PNG.",
+    "perche": "Produce un diagramma con l'aspetto del progetto e non con quello predefinito di uno strumento, in un file che si apre ovunque.",
+    "quando_no": "Per diagrammi versionati che cambiano a ogni sprint, per elenchi e confronti che stanno meglio in una tabella, e quando un paragrafo scritto bene insegna lo stesso."
+  },
   "pacchetto:diagrams": {
     "come": "Si copia tools/render-diagrams.mjs in tools/ e lo si esegue con Node per rendere in .svg i diagrammi Mermaid .mmd sotto .claude/context/diagrams/.",
     "perche": "Trasforma i diagrammi Mermaid in SVG riusando il browser già installato, senza aggiungere un motore di rendering dedicato.",
@@ -229,6 +239,11 @@
     "perche": "Una cartella privata che decade dall'ignorato o un sito compilato non ignorato finiscono in un commit senza che niente lo segnali, e la storia di git non si ripara dopo, quindi il controllo va fatto prima del commit invece di affidarlo a una regola in prosa.",
     "quando_no": "Non è un controllo di contenuto, perché guarda solo collocazione, estensione e dimensione e non cerca termini riservati (per quelli serve il pacchetto anonymization), non corregge nulla, e senza l'aggancio alla chiusura il file esiste ma non gira e non protegge niente."
   },
+  "pacchetto:hallmark": {
+    "come": "`npx skills add nutlope/hallmark -g --agent claude-code`, poi `/hallmark <richiesta>`, `/hallmark redesign <percorso>` oppure `/hallmark audit <percorso>` per il solo rapporto.",
+    "perche": "Fa scegliere un tema dichiarato e ne verifica il risultato in un browser a otto larghezze, con un livello di controlli che blocca la consegna.",
+    "quando_no": "Su un design esistente che l'utente non ha chiesto di rifare con questa skill; per i progetti dell'organizzazione, dove il design è quello della skill di account."
+  },
   "pacchetto:headroom": {
     "come": "Si installa con `pip install headroom-ai[all]` e si avvia Claude con `headroom wrap claude`.",
     "perche": "Comprime tramite proxy locale tutto ciò che arriva all'LLM, cioè output dei tool, log, file e storia, con un risparmio dichiarato dal repository del 20% per gli agenti di codice e del 60-95% sui JSON.",
@@ -248,6 +263,11 @@
     "come": "Si clona la skill in .claude/skills/humanizer/ (locale al progetto, globale solo su conferma) e si invoca con /humanizer seguito dal testo da ripulire.",
     "perche": "Rimuove dal testo i segni di scrittura generata dall'AI, come frasi riempitive, regola del tre, trattini lunghi, grassetto in eccesso, hedging e tono promozionale, con 33 pattern e un audit finale.",
     "quando_no": "Non usarlo su testi tecnici dove la precisione conta più dello stile, né come sostituto della verifica: il README dichiara che riscrive solo la prosa e lascia intatti codice, dati e link, ma una riscrittura può alterare il significato e va sempre riletta, e per il solo controllo senza riscrittura basta il pacchetto `anti-slop`."
+  },
+  "pacchetto:impeccable": {
+    "come": "`npx impeccable install` nel progetto, poi `/impeccable init`, che scrive `PRODUCT.md`; da lì i comandi di rifinitura e di critica, e `npx impeccable detect <cartella>` per il rilevatore.",
+    "perche": "Dà all'agente un vocabolario di design e controlli deterministici su un'interfaccia che esiste, dove `anti-slop` del sistema si ferma a otto segni.",
+    "quando_no": "Su un'applicazione nativa, dove rilevatore e modalità dal vivo non funzionano; dove non si accettano hook che girano fuori dall'approvazione del modello; insieme a `taste-skill` o `hallmark` sullo stesso lavoro."
   },
   "pacchetto:instradamento-modelli": {
     "come": "Si installa la mod per account e si imposta `instradamento-modelli.json` nel modo `osserva` per misurare la linea di partenza, poi in `instrada` perché i subagent il cui tipo è in tabella partano su un modello più economico, leggendo i conteggi con `/instradamento`.",
@@ -399,6 +419,11 @@
     "perche": "Dà la vista che manca per scegliere fra le oltre cento skill scientifiche della raccolta, con autore, licenza, presenza di programmi eseguibili e sovrapposizioni con altri pacchetti, e impone la procedura in quattro mosse invece dell'installazione in blocco.",
     "quando_no": "Non si propone a un progetto di sviluppo software, perché le skill di libreria valgono per l'analisi di dati scientifici, non si installano tutte (la maggioranza porta codice eseguibile, alcune hanno licenza proprietaria o non commerciale e quelle di terzi hanno avuto meno revisione), e ogni skill va letta per intero e bloccata a una versione prima dell'uso."
   },
+  "pacchetto:security-audit": {
+    "come": "`npx skills add https://github.com/cloudflare/security-audit-skill --skill security-audit`, poi si chiede esplicitamente l'audit completo indicando la cartella di uscita; il rapporto arriva in tre file con i verdetti.",
+    "perche": "Separa chi cerca da chi valida e tiene un registro di copertura per classe di attacco, che è ciò che manca a una revisione di sicurezza fatta in un solo passaggio.",
+    "quando_no": "Per la revisione ordinaria di una modifica, dove bastano gli strumenti nativi; su sistemi non propri; senza una sandbox di sistema quando si vuole eseguire il codice del bersaglio; con la riserva dei subagent già raggiunta."
+  },
   "pacchetto:semantic-scholar-mcp": {
     "come": "Si aggiunge al .mcp.json in radice la configurazione di semantic-scholar-mcp e si usano i suoi strumenti, per esempio export_bibtex e list_tracked_papers.",
     "perche": "Permette di cercare fra oltre 225 milioni di paper ed esportare BibTeX direttamente, con il tracciamento dei paper visti nella sessione.",
@@ -428,6 +453,11 @@
     "come": "Si sceglie uno per uno tra `code-reviewer`, `security-auditor`, `debugger` ed `explorer` e si copia il file da `templates/agents/<agente>.md` in `.claude/agents/` del progetto.",
     "perche": "Evita di scrivere da zero i ruoli agente più comuni, già forniti con frontmatter YAML e system prompt strutturato, per review automatizzata, audit di sicurezza e investigazione dei bug.",
     "quando_no": "Non conviene prendere `explorer` senza valutarne la sovrapposizione con l'agente nativo Explore di Claude Code, che va dichiarata al gate, e in generale non serve a progetti che non hanno bisogno di subagent riusabili."
+  },
+  "pacchetto:superpowers": {
+    "come": "Si installa per account con `/plugin install superpowers@claude-plugins-official`; da lì l'agente invoca da sé la skill adatta al momento, a partire da `brainstorming` prima di costruire. Nel `CLAUDE.md` del progetto si scrivono i tre punti in cui prevale la regola del progetto.",
+    "perche": "Il sistema ha i pezzi, cioè passi brevi, prove che misurano, alberi di lavoro, ma non un metodo che li metta in fila dalla domanda iniziale al ramo chiuso e che l'agente segua senza che glielo si ricordi.",
+    "quando_no": "Quando il progetto non è sviluppo di codice, quando il carico di avvio è già vicino alla soglia, o quando non si è disposti a scrivere nel `CLAUDE.md` che commit e unione restano manuali."
   },
   "pacchetto:taste-skill": {
     "come": "Si installa con `npx skills add https://github.com/Leonxlnx/taste-skill --skill \"design-taste-frontend\"` oppure in Claude Code con `/plugin marketplace add Leonxlnx/taste-skill` e `/plugin install taste-skill@taste-skill`.",
@@ -508,6 +538,11 @@
     "come": "L'agente la invoca prima di produrre o convertire un documento, una presentazione, un PDF, un'immagine, un audio o un disegno, e verifica con `python tools/craft-apps.py` quali applicazioni della suite sono installate.",
     "perche": "Le applicazioni Craft lavorano in locale, senza account, senza rete e senza token, quindi un artefatto si produce con uno strumento già presente invece di scrivere uno script o installare una libreria.",
     "quando_no": "Non si usa dove la suite non è installata, perché la skill non installa niente da sé, né per un lavoro a passo unico attraverso il server MCP, che ha un costo di contesto: lì vale la riga di comando."
+  },
+  "skill:crea-agente": {
+    "come": "`/crea-agente <il lavoro da affidare>`: legge il progetto, scrive in cinque righe che cosa ha capito, chiede al massimo cinque cose con la risposta proposta, scrive `.claude/agents/<nome>.md` e lo prova una volta.",
+    "perche": "Un agente scritto senza guardare il progetto ha strumenti di troppo, nessun tetto di turni e una descrizione che non lo fa mai scegliere; e un questionario fisso chiede ciò che il repository dice già.",
+    "quando_no": "Quando un agente del catalogo o nativo fa già quel lavoro, o quando il lavoro capita una volta sola e si delega con un prompt."
   },
   "skill:fonti-non-recuperabili": {
     "come": "Si carica quando un recupero web fallisce con 403, con un rinvio al login o con una pagina di verifica, e si seguono le vie di recupero di `RIFERIMENTO.md` in ordine di costo.",
