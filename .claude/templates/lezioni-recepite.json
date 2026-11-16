@@ -1141,6 +1141,27 @@
     "dove": ".claude/templates/tools/verifica-ripresa.py"
   },
   {
+    "progetto": "ae8dd2775ccf",
+    "id": "L-004",
+    "commit": "",
+    "data": "2026-11-13",
+    "dove": "test-identita-personali.py --tracciati conta a parte le occorrenze nei file consegnati dal template, e allinea-tutti.ps1 -Applica lo ripassa in ogni progetto locale e lo scrive fra gli avvisi; la prima metà esisteva già: il template tiene a zero le forme e le voci nel proprio perimetro propagato e la passata non parte se non lo è, quindi le occorrenze nei file consegnati spariscono ricevendo le copie correnti (misurato sul progetto d'origine: 36 con il suo elenco di esempi, 9 con quello di oggi, tutte in copie vecchie)"
+  },
+  {
+    "progetto": "ae8dd2775ccf",
+    "id": "L-005",
+    "commit": "",
+    "data": "2026-11-13",
+    "dove": "esisteva già dal 2026-11-11 (L-011 di un altro progetto): chiudi legge tools/controlli-progetto.txt, un controllo per riga, e ne è fermato come dai propri; la lezione è stata registrata prima che il progetto ricevesse quella passata. Le prove proprie e la lettura di un file YAML del progetto si aggiungono lì. Non attuata la parte su lint-didattica, che resta legato a un nome di file fisso"
+  },
+  {
+    "progetto": "ae8dd2775ccf",
+    "id": "L-006",
+    "commit": "",
+    "data": "2026-11-13",
+    "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md, sezione «Un file di configurazione si verifica con il lettore che lo userà»: quattro prescrizioni, senza uno strumento nuovo"
+  },
+  {
     "progetto": "b3f9f458b450",
     "id": "L-001",
     "commit": "",
