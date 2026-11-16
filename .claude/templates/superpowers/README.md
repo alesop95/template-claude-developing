@@ -6,7 +6,7 @@
 
 ## Che cosa è, letto alla fonte
 
-Il repository è github:obra/superpowers , licenza MIT, versione v7.0.2 del 2026-11-03. Il 2026-11-16 un subagent ne ha letto README, albero dei file e hook attraverso l'API di GitHub; chi scrive non ha riletto i file e non ha installato il plugin. Contiene quindici skill, nessun comando e nessun agente proprio, e un solo hook, all'apertura della sessione.
+Il repository è github:obra/superpowers , licenza MIT, versione v7.0.2 del 2026-11-03. Il 2026-11-16 un subagent ne ha letto README, albero dei file e hook attraverso l'API di GitHub; chi scrive non ha riletto i file. Contiene quindici skill, nessun comando e nessun agente proprio, e un solo hook, all'apertura della sessione.
 
 Il proprietario lo indica come molto utile e lo vuole al centro del modo di lavorare. La ragione si vede dall'elenco: è un metodo intero, che va dalla domanda iniziale al ramo chiuso, e ogni passo è una skill che l'agente invoca da sé.
 
@@ -25,7 +25,7 @@ Oppure dal marketplace dell'autore, due comandi in ordine:
 /plugin install superpowers@superpowers-marketplace
 ```
 
-In Codex CLI il README indica `/plugins`, la ricerca di `superpowers` e «Install Plugin». L'installazione è per account e non per progetto: nel progetto entra soltanto la riga che dichiara che il plugin è in uso, in `.claude/pacchetti-istanza.json` e nel `CLAUDE.md`.
+In Codex CLI il README indica `/plugins`, la ricerca di `superpowers` e «Install Plugin»; da riga di comando, provato il 2026-11-16 con codex-cli 0.166.0, è `codex plugin add superpowers@openai-curated-remote`. Su una macchina con più radici di account lo porta in tutte `Installa-Plugin.ps1` del pacchetto `agenti-terminale`. L'installazione è per account e non per progetto: nel progetto entra soltanto la riga che dichiara che il plugin è in uso, in `.claude/pacchetti-istanza.json` e nel `CLAUDE.md`.
 
 ## Quanto pesa all'avvio
 
@@ -67,4 +67,4 @@ Il repository è nel registro delle fonti a monte del template, che lo interroga
 
 ## Che cosa non è stato fatto
 
-Il plugin non è stato installato né provato su nessun account di questa macchina. La mappa confronta le descrizioni lette a monte con i pacchetti del sistema, non due corse sullo stesso compito: la prova che manca è un compito vero svolto una volta con `micro-passi` e una con il ciclo di superpowers, misurando consumo ed esito.
+Il plugin è stato installato il 2026-11-16 sulle radici di account della macchina di sviluppo, nella versione 7.0.2 per Claude Code e 7.0.1 per Codex, e non è ancora stato usato su un compito. La mappa confronta le descrizioni lette a monte con i pacchetti del sistema, non due corse sullo stesso compito: la prova che manca è un compito vero svolto una volta con `micro-passi` e una con il ciclo di superpowers, misurando consumo ed esito.
