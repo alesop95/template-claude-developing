@@ -118,6 +118,8 @@ check-catalogo.py|||1
 check-raggiungibilita.py|||1
 riferimento.py|--check||1
 guida-grafica.py|--check||1
+come-si-usa.py|--check||1
+come-si-usa.py|--autotest||1
 test-tipografia.py|||1
 test-documenti-personali.py|||1
 test-agenti-terminale.py|||1

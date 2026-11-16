@@ -250,6 +250,9 @@ $controlli = @(
     # come, perche' e quando no ferma il commit, come un documento generato rimasto indietro.
     @{ n = "riferimento.py";           a = @("--check"); solobundle = $true },
     @{ n = "guida-grafica.py";         a = @("--check"); solobundle = $true },
+    # Dal 2026-11-16: la pagina d'ingresso, vista corta del riferimento, generata dagli stessi dati.
+    @{ n = "come-si-usa.py";           a = @("--check"); solobundle = $true },
+    @{ n = "come-si-usa.py";           a = @("--autotest"); solobundle = $true },
     # Dal 2026-10-19: i controlli di qualita' che un progetto adotta valgono anche sulle copie del
     # template, quindi il template li tiene a zero sui propri strumenti (PROJECT-SYSTEM.md, sez. 16).
     @{ n = "lint-strumenti.py";       a = @(); solobundle = $true },

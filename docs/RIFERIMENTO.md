@@ -4,7 +4,7 @@
 
 ## Come si legge
 
-Il template offre le proprie capacità in quattro forme, e questo documento le elenca tutte: 19 skill di sistema, che ogni progetto istanziato riceve; 107 voci di catalogo in 14 settori, che il gate propone e l'utente sceglie; 51 strumenti, che le skill e `chiudi` eseguono; e 273 fonti a monte, sorvegliate a ogni apertura di sessione. Per ogni skill e per ogni pacchetto ci sono cinque risposte: che cosa fa, come si usa, perché adottarlo, quando conviene e quando no. Il dettaglio di un pacchetto sta nel suo `README.md` sotto `.claude/templates/<nome>/`; quello di ogni fonte, con ciò che il template ne prende e la data dell'ultima verifica, in `.claude/templates/fonti-a-monte.md`.
+Il template offre le proprie capacità in quattro forme, e questo documento le elenca tutte: 19 skill di sistema, che ogni progetto istanziato riceve; 107 voci di catalogo in 14 settori, che il gate propone e l'utente sceglie; 52 strumenti, che le skill e `chiudi` eseguono; e 273 fonti a monte, sorvegliate a ogni apertura di sessione. Per ogni skill e per ogni pacchetto ci sono cinque risposte: che cosa fa, come si usa, perché adottarlo, quando conviene e quando no. Il dettaglio di un pacchetto sta nel suo `README.md` sotto `.claude/templates/<nome>/`; quello di ogni fonte, con ciò che il template ne prende e la data dell'ultima verifica, in `.claude/templates/fonti-a-monte.md`.
 
 ## Skill di sistema
 
@@ -234,6 +234,7 @@ Stanno in `.claude/templates/tools/` e in un progetto istanziato in `tools/`. La
 | `chiudi-sessione.sh` | chiudi-sessione.sh - Chiusura di sessione in un comando solo (Bash su Linux/macOS). |
 | `claude-incognito.ps1` | ============================================================================ |
 | `claude-incognito.sh` | ============================================================================ |
+| `come-si-usa.py` | Genera docs/COME-SI-USA.md, la pagina d'ingresso: che cosa si usa, quando e come, in una riga per cosa. |
 | `controllo-rilascio.py` | Lista di controllo prima del rilascio: per ogni voce dice presente, assente, non applicabile o da dichiarare. |
 | `detect-ssh-profiles.py` | Rileva i profili SSH verso GitHub configurati su QUESTA macchina, in sola lettura. |
 | `fonti-a-monte.py` | Tutto ciò che il sistema prende da altri, e quando cambia. |

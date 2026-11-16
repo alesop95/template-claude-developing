@@ -79,7 +79,7 @@ Questo file e il README della repository GitHub. Serve a far capire cos'e il tem
 
 ## Da dove si comincia
 
-Questo file è il riferimento di che cosa esiste. Chi cerca invece da dove cominciare, con quale cadenza si fa che cosa, e quale leva tirare davanti a un sintomo, legga prima [GUIDA-USO.md](GUIDA-USO.md): è la guida pratica, organizzata per obiettivo invece che per inventario, e contiene il calendario delle attività, la tabella che va dal sintomo allo strumento, e le ricette per archetipo di progetto.
+Si comincia da [docs/COME-SI-USA.md](docs/COME-SI-USA.md): una pagina generata che dà, in una riga per cosa, quando serve e come si usa ogni skill, pacchetto e strumento, con i comandi che restano a chi lavora e le regole per spendere pochi token. Questo file è il riferimento di che cosa esiste. Chi cerca invece con quale cadenza si fa che cosa, e quale leva tirare davanti a un sintomo, legga prima [GUIDA-USO.md](GUIDA-USO.md): è la guida pratica, organizzata per obiettivo invece che per inventario, e contiene il calendario delle attività, la tabella che va dal sintomo allo strumento, e le ricette per archetipo di progetto.
 
 ## A cosa serve
 
