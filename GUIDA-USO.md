@@ -1,6 +1,6 @@
 # Guida d'uso: come sfruttare davvero questo template
 
-> Il `README.md` dice che cosa c'è, `docs/RIFERIMENTO.md` elenca ogni skill, pacchetto, strumento e fonte con come si usa, perché, quando e quando no, `docs/feature-map.html` lo inventaria, `.claude/PROJECT-SYSTEM.md` è la norma. Questo documento risponde a una domanda diversa e più pratica: davanti a un obiettivo concreto, che cosa parte da solo, che cosa devi digitare, e che cosa devi aver registrato una volta perché parta da solo. È scritto per essere letto una volta per intero e poi consultato per sezione, e vive nel repository del template: non si copia nei progetti, perché parla del template e non di ciò che il template installa.
+> Il `README.md` dice che cosa c'è, `docs/RIFERIMENTO.md` elenca ogni skill, pacchetto, strumento e fonte con come si usa, perché, quando e quando no, `docs/feature-map.html` lo inventaria, `docs/guida-grafica.html` lo mostra in una pagina, cioè le fasi d'uso, l'intreccio degli strumenti e i pacchetti per settore con i filoni aperti, `.claude/PROJECT-SYSTEM.md` è la norma. Questo documento risponde a una domanda diversa e più pratica: davanti a un obiettivo concreto, che cosa parte da solo, che cosa devi digitare, e che cosa devi aver registrato una volta perché parta da solo. È scritto per essere letto una volta per intero e poi consultato per sezione, e vive nel repository del template: non si copia nei progetti, perché parla del template e non di ciò che il template installa.
 
 ## Il malinteso da togliere subito
 
