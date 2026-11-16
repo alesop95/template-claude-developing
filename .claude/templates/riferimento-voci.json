@@ -59,6 +59,11 @@
     "perche": "Colma il vuoto di non avere un modo generico per eseguire un prompt o una skill fuori da una sessione interattiva e metterla su una cadenza ricorrente, restando dentro l'abbonamento Team o Max senza fatturazione a consumo dell'API.",
     "quando_no": "Non va usato con una `ANTHROPIC_API_KEY` (lo script locale si rifiuta di girare), il vincolo sull'abbonamento nel workflow GitHub è solo documentale, `-PermissionMode plan` può bloccarsi senza eseguire nulla per compiti che producono effetti, e i limiti di quota delle routine cloud native non sono verificati."
   },
+  "pacchetto:blender-skills": {
+    "come": "Con Blender 5.2 o successivo installato, `/plugin marketplace add EL4CTEO/blender-skills` e `/plugin install blender-agent-skills@blender-agent-skills`; poi si descrive il modello o il render e l'agente lancia Blender in sottofondo.",
+    "perche": "Blender ha un'interfaccia di script ampia e poco perdonante; skill che codificano i flussi corretti evitano che l'agente la reinventi a ogni modello.",
+    "quando_no": "Quando il programma CAD della suite Craft basta per il pezzo; per un'illustrazione che spiega un meccanismo, dove serve `anatomy`; dove Blender non è installato."
+  },
   "pacchetto:book-bib-extract": {
     "come": "Dopo aver ingerito il libro con doc-ingest, si invoca la skill book-bib-extract a mano, che propone i campi e la citekey e attende la conferma contro il colophon, poi si rilancia python tools/render-bib-registry.py per rigenerare la tabella.",
     "perche": "Colma il vuoto fra doc-ingest, che estrae struttura e non anagrafica, e academic-researcher, pensato per paper con DOI, ricavando l'anagrafica bibliografica dei libri fisici o scansionati dal frontespizio e dal colophon.",
@@ -193,6 +198,11 @@
     "come": "Si esegue `python tools/docx-to-md.py \"sorgente.docx\" --out docs --clean`, comando ri-eseguibile e idempotente che richiede `python-docx` e scrive un file per sezione con `README.md` indice per cartella.",
     "perche": "Trasforma una volta per tutte un `.docx` voluminoso in un albero `docs/` Markdown versionato e navigabile, con annotazioni e redazioni curate che sopravvivono alla rigenerazione.",
     "quando_no": "Non si propone dove il progetto non ha un documento sorgente di questo tipo o dove basta caricare a fette un documento in contesto senza versionare nulla, e senza `--clean` la conversione resta strettamente verbatim."
+  },
+  "pacchetto:drawio-skill": {
+    "come": "Installata l'applicazione desktop di draw.io, `npx skills add Agents365-ai/drawio-skill -g`; poi si chiede il diagramma indicando la sorgente, per esempio un file Terraform o una descrizione della rete, e si apre il `.drawio` prodotto per i ritocchi.",
+    "perche": "Un diagramma disegnato a mano si stacca dal sistema che descrive al primo cambiamento; generarlo dalle sorgenti e conservarne il layout lo tiene vero e insieme modificabile.",
+    "quando_no": "Per un diagramma piccolo che sta bene in Mermaid dentro un file Markdown; quando serve una mappa di rete che si aggiorna da una scansione; dove draw.io desktop non si può installare."
   },
   "pacchetto:feynman": {
     "come": "Si installa separatamente la CLI ufficiale, si configura il provider con `feynman setup` e si usano `lit`, `deepresearch` e `audit`, invocabili da `senior-researcher`.",

@@ -243,14 +243,14 @@
     },
     {
       "id": "github:agents365-ai/drawio-skill",
-      "pacchetto": "filone diagrammi-e-reti",
+      "pacchetto": "drawio-skill",
       "scheda": "docs/piano-potenziamento-2026-11.md",
-      "ruolo": "candidati",
-      "motivo": "Skill che produce e sincronizza modelli draw.io da testo, codice e descrizioni di infrastruttura; indicata per le topologie di rete complesse. MIT.",
+      "ruolo": "skill-e-agenti",
+      "motivo": "Voce di catalogo `drawio-skill`: diagrammi draw.io generati da sorgenti e modificabili; installata a monte, il template ne tiene la riga",
       "controllo": "release",
       "verificato": "v3.4.4",
       "licenza": "MIT",
-      "data": "2026-11-12"
+      "data": "2026-11-16"
     },
     {
       "id": "github:ai-job-search-dev/ai-job-search",
@@ -735,6 +735,17 @@
       "data": "2026-11-16"
     },
     {
+      "id": "github:d2lang/d2",
+      "pacchetto": "docs",
+      "scheda": "docs/filoni-verticali.md",
+      "ruolo": "candidati",
+      "motivo": "Osservazione del filone diagrammi: diagrammi come testo, alternativa a Mermaid; niente adottato",
+      "controllo": "release",
+      "verificato": "v0.9.0",
+      "licenza": "MPL-2.0",
+      "data": "2026-11-16"
+    },
+    {
       "id": "github:danielostrow/zotero-mcp-server",
       "motivo": "Variante di server MCP per Zotero elencata nel documento di ricerca del 2026-07-01 di academic-researcher; il catalogo non la adotta.",
       "pacchetto": "academic-researcher",
@@ -858,10 +869,10 @@
     },
     {
       "id": "github:el4cteo/blender-skills",
-      "pacchetto": "filone modellazione-3d",
+      "pacchetto": "blender-skills",
       "scheda": "docs/piano-potenziamento-2026-11.md",
-      "ruolo": "candidati",
-      "motivo": "Ventotto skill per i flussi di Blender, dalla modellazione all'esportazione; indicate per modellare casse acustiche. MIT.",
+      "ruolo": "skill-e-agenti",
+      "motivo": "Voce di catalogo `blender-skills`: skill per i flussi di Blender; installata a monte, il template ne tiene la riga",
       "controllo": "release",
       "verificato": "v1.3.1",
       "licenza": "MIT",
@@ -1145,6 +1156,17 @@
       "data": "2026-11-12"
     },
     {
+      "id": "github:jgraph/drawio-mcp",
+      "pacchetto": "docs",
+      "scheda": "docs/filoni-verticali.md",
+      "ruolo": "candidati",
+      "motivo": "Osservazione del filone diagrammi: server MCP ufficiale di draw.io, dopo la skill per il costo di contesto di un server",
+      "controllo": "commit",
+      "verificato": "1202e16d96afe98f8d8b24e7356370f0b127d754",
+      "licenza": "Apache-2.0",
+      "data": "2026-11-16"
+    },
+    {
       "id": "github:JonasBaath/mcp-refchecker",
       "motivo": "Server MCP di verifica anti-hallucination delle citazioni, indicato dal catalogo per academic-researcher con citation-tracker.",
       "pacchetto": "academic-researcher",
@@ -1422,6 +1444,17 @@
       "data": "2026-11-09"
     },
     {
+      "id": "github:mermaid-js/mermaid",
+      "pacchetto": "docs",
+      "scheda": "docs/filoni-verticali.md",
+      "ruolo": "strumenti",
+      "motivo": "Forma predefinita dei diagrammi che vivono nel repository; il template la usa nella documentazione e la cita come prima scelta per i diagrammi piccoli",
+      "controllo": "release",
+      "verificato": "@mermaid-js/examples@2.1.0",
+      "licenza": "MIT",
+      "data": "2026-11-16"
+    },
+    {
       "id": "github:mermaid-js/mermaid-cli",
       "motivo": "Riga di comando per rendere i diagrammi Mermaid, usata dalla resa dei diagrammi del template.",
       "pacchetto": "sistema",
@@ -1488,6 +1521,17 @@
       "data": "2026-11-13"
     },
     {
+      "id": "github:morganlinton/BeautifulRust",
+      "pacchetto": "docs",
+      "scheda": "docs/filoni-verticali.md",
+      "ruolo": "candidati",
+      "motivo": "Candidato del filone sviluppo: skill per Rust, da leggere prima di una voce di catalogo",
+      "controllo": "release",
+      "verificato": "v1.5.0",
+      "licenza": "MIT",
+      "data": "2026-11-16"
+    },
+    {
       "id": "github:morluto/rea",
       "motivo": "Server MCP e CLI per l'analisi di software senza sorgente; il pacchetto rea ne fissa il perimetro d'uso senza vendorarlo.",
       "pacchetto": "rea",
@@ -1552,6 +1596,17 @@
       "data": "2026-10-21",
       "ruolo": "skill-e-agenti",
       "licenza": "MIT"
+    },
+    {
+      "id": "github:netbox-community/netbox-topology-views",
+      "pacchetto": "docs",
+      "scheda": "docs/filoni-verticali.md",
+      "ruolo": "candidati",
+      "motivo": "Osservazione del filone diagrammi e reti: topologia interattiva dall'inventario di NetBox, solo dove NetBox esiste",
+      "controllo": "release",
+      "verificato": "v5.0.2",
+      "licenza": "Apache-2.0",
+      "data": "2026-11-16"
     },
     {
       "id": "github:netdata/netdata",
@@ -1932,6 +1987,28 @@
       "data": "2026-11-12"
     },
     {
+      "id": "github:samber/cc-skills-golang",
+      "pacchetto": "docs",
+      "scheda": "docs/filoni-verticali.md",
+      "ruolo": "candidati",
+      "motivo": "Candidato del filone sviluppo: skill per Go, da leggere prima di una voce di catalogo",
+      "controllo": "release",
+      "verificato": "v2.0.0",
+      "licenza": "MIT",
+      "data": "2026-11-16"
+    },
+    {
+      "id": "github:scanopy/scanopy",
+      "pacchetto": "docs",
+      "scheda": "docs/filoni-verticali.md",
+      "ruolo": "candidati",
+      "motivo": "Osservazione del filone diagrammi e reti: mappa di rete da scansione, servizio sempre acceso e AGPL, materia del progetto del laboratorio",
+      "controllo": "release",
+      "verificato": "v0.20.0",
+      "licenza": "AGPL-3.0",
+      "data": "2026-11-16"
+    },
+    {
       "id": "github:shiyu-coder/Kronos",
       "pacchetto": "filone trading",
       "scheda": "docs/piano-potenziamento-2026-11.md",
@@ -2073,6 +2150,17 @@
       "controllo": "release",
       "verificato": "v15.19.0",
       "licenza": "Apache-2.0",
+      "data": "2026-11-16"
+    },
+    {
+      "id": "github:tinyhumansai/openhuman",
+      "pacchetto": "filone orchestrazione",
+      "scheda": "docs/filone-orchestrazione.md",
+      "ruolo": "candidati",
+      "motivo": "Osservazione del filone orchestrazione: harness autonomo alternativo ai due client, niente adottato",
+      "controllo": "release",
+      "verificato": "v0.64.15",
+      "licenza": "GPL-3.0",
       "data": "2026-11-16"
     },
     {
@@ -2634,6 +2722,17 @@
       "data": "2026-11-12"
     },
     {
+      "id": "web:https://code.claude.com/docs/en/commands",
+      "pacchetto": "filone nativo-prima-dello-scritto",
+      "scheda": "docs/filone-nativo-prima-dello-scritto.md",
+      "ruolo": "fonti-di-norme",
+      "motivo": "Elenco dei comandi nativi di Claude Code, termine di confronto per le skill di sistema",
+      "controllo": "manuale",
+      "scadenza": 60,
+      "verificato": "2026-11-16",
+      "data": "2026-11-16"
+    },
+    {
       "id": "web:https://code.claude.com/docs/en/debug-your-config",
       "pacchetto": "filone setup-del-client",
       "scheda": "docs/piano-potenziamento-2026-11.md",
@@ -2739,6 +2838,17 @@
       "controllo": "versione",
       "verificato": "c2b765b8541a",
       "data": "2026-10-29"
+    },
+    {
+      "id": "web:https://learn.chatgpt.com/docs/developer-commands",
+      "pacchetto": "filone nativo-prima-dello-scritto",
+      "scheda": "docs/filone-nativo-prima-dello-scritto.md",
+      "ruolo": "fonti-di-norme",
+      "motivo": "Elenco dei comandi nativi di Codex, termine di confronto per le skill di sistema e per la parità",
+      "controllo": "manuale",
+      "scadenza": 60,
+      "verificato": "2026-11-16",
+      "data": "2026-11-16"
     },
     {
       "id": "web:https://platform.claude.com/docs/en/about-claude/api-credits-for-subscribers",
