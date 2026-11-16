@@ -6,7 +6,7 @@ limite settimanale, per tenere quello spazio ad altro, e che cio' che vale per C
 anche per Codex. In Claude Code la riserva la attua la mod `instradamento-modelli`, che legge dal
 motore la percentuale usata e nega lo spawn. Codex non ha un punto equivalente dentro la sessione:
 ha pero' due cose che bastano a un wrapper. Scrive nei propri file di sessione, a ogni risposta,
-la percentuale usata delle due finestre del piano; e accetta all'avvio `--disable multi_agent`,
+la percentuale usata delle due finestre del piano; e accetta all'avvio `--disable multi_agent` e `--disable multi_agent_v2`,
 che toglie alla sessione gli strumenti con cui apre altri agenti. Questo strumento unisce le due:
 `Avvia-Codex.ps1` gli chiede prima di partire se la soglia e' passata, e all'uscita gli fa
 registrare l'ultima lettura prima che la pulizia cancelli le sessioni.
@@ -133,6 +133,25 @@ def registra(radice: Path) -> bool:
     return True
 
 
+# Le due funzioni di delega di Codex 0.169: la prima e' dichiarata deprecata, la seconda stabile e
+# spenta per difetto. Si spengono entrambe, perche' una riserva che ne chiude una sola smette di
+# valere il giorno in cui il client accende l'altra.
+SPEGNI_DELEGA = ("--disable", "multi_agent", "--disable", "multi_agent_v2")
+# I nomi con cui l'hook PreToolUse di Codex vede l'avvio di un subagent, dalla documentazione
+# letta il 2026-11-16 in forma riassunta: da confermare alla prima prova dal vero.
+STRUMENTI_DI_DELEGA = {"spawn_agent", "agent"}
+
+
+def hook(entrata, radice: Path, adesso: int):
+    """Per un hook PreToolUse di Codex: (2, motivo) se l'avvio di un subagent va negato, altrimenti (0, "")."""
+    if str((entrata or {}).get("tool_name") or "").lower() not in STRUMENTI_DI_DELEGA:
+        return 0, ""
+    d = decidi(leggi_json(radice / FILE_CODEX), ultima_lettura_dalle_sessioni(radice) or leggi_json(radice / FILE_LETTURA), adesso)
+    if d["nega"]:
+        return 2, "Subagent non avviato: " + d["motivo"] + ". Fai il lavoro in prima persona, oppure rimandalo."
+    return 0, ""
+
+
 def decidi(riserva, lettura, adesso: int) -> dict:
     """La decisione del wrapper. Senza soglia, senza lettura o a finestra azzerata non si nega."""
     riserva = dict(SPENTA, **(riserva or {}))
@@ -153,7 +172,7 @@ def decidi(riserva, lettura, adesso: int) -> dict:
                 quando = ", la finestra si azzera il " + dt.datetime.fromtimestamp(int(f["azzera"])).strftime("%Y-%m-%d alle %H:%M")
             motivo = "il limite %s del piano era al %g%% all'ultima lettura, la riserva parte dal %g%%%s" % (quale, f["usato"], soglia, quando)
             nega = riserva.get("azione") != "avvisa"
-            return {"oltre": True, "nega": nega, "motivo": motivo, "argomenti": ["--disable", "multi_agent"] if nega else []}
+            return {"oltre": True, "nega": nega, "motivo": motivo, "argomenti": list(SPEGNI_DELEGA) if nega else []}
     return {"oltre": False, "nega": False, "motivo": "", "argomenti": []}
 
 
@@ -218,7 +237,7 @@ def autotest() -> int:
     caso("una finestra assente non produce una lettura", finestre({"primary": None, "secondary": None}) == {})
     lettura = {"letto": 900, "finestre": f}
     d = decidi({"settimanale": 80}, lettura, 1000)
-    caso("oltre la soglia settimanale i subagent si spengono, con il motivo", d["nega"] and d["argomenti"] == ["--disable", "multi_agent"] and "85%" in d["motivo"] and "80%" in d["motivo"], d)
+    caso("oltre la soglia settimanale i subagent si spengono, con il motivo", d["nega"] and d["argomenti"] == ["--disable", "multi_agent", "--disable", "multi_agent_v2"] and "85%" in d["motivo"] and "80%" in d["motivo"], d)
     caso("sotto la soglia non si nega", not decidi({"settimanale": 90}, lettura, 1000)["oltre"])
     caso("in solo avviso si dichiara e non si spegne", decidi({"settimanale": 80, "azione": "avvisa"}, lettura, 1000) == dict(d, nega=False, argomenti=[]))
     caso("una finestra gia' azzerata non conta", not decidi({"settimanale": 80}, lettura, 6000)["oltre"])
@@ -250,6 +269,11 @@ def autotest() -> int:
         caso("la radice Codex di default, senza numero, non e' una radice di account", not (base / ".codex" / FILE_CODEX).exists())
         seconda = imposta(base, r)
         caso("imposta e' idempotente", sum("invariata" in x for x in seconda) == 2, seconda)
+        codice, motivo = hook({"tool_name": "spawn_agent", "tool_input": {}}, codex, 1000)
+        caso("l'hook nega l'avvio di un subagent oltre soglia, con il motivo", codice == 2 and "85%" in motivo, (codice, motivo))
+        caso("l'hook lascia passare uno strumento che non e' di delega", hook({"tool_name": "Bash"}, codex, 1000) == (0, ""))
+        caso("l'hook lascia passare tutto a finestra azzerata", hook({"tool_name": "Agent"}, codex, 9000) == (0, ""))
+        caso("l'hook non nega in una radice senza soglia", hook({"tool_name": "spawn_agent"}, altro, 1000) == (0, ""))
         caso("lo stato dichiara i subagent spenti quando la lettura e' oltre soglia", any("SUBAGENT SPENTI" in x for x in stato(base, 1000)), stato(base, 1000))
     finally:
         shutil.rmtree(base, ignore_errors=True)
@@ -259,7 +283,7 @@ def autotest() -> int:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("comando", nargs="?", choices=["stato", "imposta", "decidi", "registra"])
+    ap.add_argument("comando", nargs="?", choices=["stato", "imposta", "decidi", "registra", "hook"])
     ap.add_argument("--radice", help="radice di un account Codex, cioe' il suo CODEX_HOME")
     ap.add_argument("--casa", default=os.path.expanduser("~"), help="cartella che contiene le radici; per difetto il profilo utente")
     ap.add_argument("--settimanale", type=float)
@@ -278,6 +302,16 @@ def main() -> int:
         except Exception:
             print(json.dumps({"oltre": False, "nega": False, "motivo": "", "argomenti": []}))
         return 0
+    if a.comando == "hook":
+        # Un hook che si rompe non deve fermare il client: qualunque errore vale «lascia passare».
+        try:
+            radice = Path(a.radice or os.environ.get("CODEX_HOME") or "")
+            codice, motivo = hook(json.loads(sys.stdin.read() or "{}"), radice, adesso)
+        except Exception:
+            return 0
+        if codice:
+            sys.stderr.write(motivo + "\n")
+        return codice
     if a.comando == "registra":
         try:
             registra(Path(a.radice))

@@ -57,7 +57,15 @@ Lo schema che il proprietario ha indicato divide un harness in sei parti. Rilett
 | Permessi | La regola sui permessi, le impostazioni del progetto, la riserva dei subagent, gli hook | Per Codex la riserva vale solo all'avvio e solo dal wrapper |
 | Prove | I controlli di chiusura, la norma sulle prove, le prove interne degli strumenti | Le prove delle skill: nessuna skill del template ha una suite che dica se, invocata, fa ciò che promette |
 
-La casella vuota che conta è l'ultima. Gli strumenti in Python hanno prove; le skill, che sono testo, no. Claude Code ha un comando nativo per valutare un plugin con una suite di casi, e la prossima voce di questo filone è scriverne una per le tre skill che decidono di più, cioè `riprendi`, `cerca-pacchetto` e `gate-pacchetti`.
+La casella vuota che conta è l'ultima. Gli strumenti in Python hanno prove; le skill, che sono testo, no. Claude Code ha un comando nativo per valutare un plugin o una skill con una suite di casi, e il 2026-11-16 le tre skill che decidono di più ne hanno ricevuto uno ciascuna, nella cartella `evals/` della skill: `riprendi` con una ripresa in cui la verifica segnala una divergenza, `cerca-pacchetto` con la richiesta di scrivere a mano una capacità che il catalogo ha, `gate-pacchetti` con un progetto appena inizializzato. Ogni caso è un prompt e un criterio che un modello giudice applica tre volte.
+
+Esito della prima corsa, una esecuzione per caso e senza il braccio di confronto: `cerca-pacchetto` superato con tre voti su tre, `riprendi` superato con due su tre, al costo di circa un decimo di dollaro per caso. Il caso di `gate-pacchetti` non si può eseguire su Windows, ed è un limite della macchina e non della skill: la skill si invoca solo a mano e porta nel proprio testo un comando di shell che inietta il contesto, il comando di valutazione rifiuta di concedere una shell dove non può confinarla, e su questa piattaforma il confinamento non è attivo. Va eseguito su una macchina Linux. Una corsa sola non è una misura: il comando ne fa tre per caso e confronta con e senza la skill, e quella corsa completa non è stata fatta.
+
+```
+claude plugin eval .claude/skills/cerca-pacchetto --no-publish
+```
+
+L'opzione `--no-publish` tiene il rapporto in locale: senza, il comando lo pubblica sull'account.
 
 ## Quale strumento per quale lavoro
 
@@ -76,4 +84,4 @@ Il mandato chiedeva una tabella che separi i lavori, sul modello delle immagini 
 
 ## Che cosa resta aperto
 
-La ricerca strutturata su Reddit e dev.to, che il mandato chiedeva per tarare il costo su un piano personale, non è stata fatta: la misura di questa sessione ne è un primo dato, non un sostituto. Lo scanner dello stesso autore della raccolta più grande va letto. La suite di prove per tre skill va scritta. La soglia della riserva sulle cinque ore va decisa dal proprietario e scritta nei valori di macchina. Headcount, lo strumento di ricerca a passi verificati e il «DeepSeek Harness» restano non letti.
+La ricerca strutturata su Reddit e dev.to, che il mandato chiedeva per tarare il costo su un piano personale, non è stata fatta: la misura di questa sessione ne è un primo dato, non un sostituto. Lo scanner dello stesso autore della raccolta più grande va letto. La suite di prove delle tre skill va eseguita per intero, e il caso del gate su Linux. La soglia della riserva sulle cinque ore va decisa dal proprietario e scritta nei valori di macchina. Headcount, lo strumento di ricerca a passi verificati e il «DeepSeek Harness» restano non letti.

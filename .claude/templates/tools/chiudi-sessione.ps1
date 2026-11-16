@@ -257,6 +257,7 @@ $controlli = @(
     @{ n = "test-documenti-personali.py"; a = @(); solobundle = $true },
     # Dal 2026-11-16: le prove del pacchetto agenti-terminale, che si lanciavano a mano.
     @{ n = "test-agenti-terminale.py"; a = @(); solobundle = $true },
+    @{ n = "controllo-rilascio.py";    a = @("--autotest"); solobundle = $true },
     # Dal 2026-10-21: nessun identificativo personale nei file che il template porta nei progetti.
     @{ n = "test-identita-personali.py"; a = @(); solobundle = $true },
     # Dal 2026-10-28: la visibilita' dichiarata si confronta con quella del servizio. La

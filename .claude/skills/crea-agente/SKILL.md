@@ -53,7 +53,22 @@ La descrizione decide se l'agente verrà mai usato: dice quando delegare, non ch
 
 ## 4. Collegarlo al resto
 
-Se il lavoro è meccanico e la macchina usa il pacchetto `instradamento-modelli`, proponi la riga da aggiungere alla tabella dell'account, senza scriverla tu. Se il progetto usa anche Codex, dichiara che la definizione vale per Claude Code e che l'equivalente Codex, cioè una voce `agents.<nome>` della sua configurazione, va scritto a parte e non è stato provato da questa skill.
+Se il lavoro è meccanico e la macchina usa il pacchetto `instradamento-modelli`, proponi la riga da aggiungere alla tabella dell'account, senza scriverla tu. Se il progetto usa anche Codex, cioè se esiste `.agents/skills` o `.codex/`, scrivi anche la definizione per Codex, che è un file a sé: `.codex/agents/<nome>.toml`, con lo stesso nome. I campi obbligatori sono tre, `name`, `description` e `developer_instructions`; fra i facoltativi servono di solito `model` e `model_reasoning_effort`. Un agente con il nome di uno incorporato lo sostituisce, e un agente non può cambiare il sandbox, la politica di approvazione o i server MCP della sessione che lo avvia: i confini che in Claude Code si scrivono in `tools` e `disallowedTools` qui si scrivono in prosa dentro le istruzioni.
+
+```toml
+name = "<nome>"
+description = "<quando delegare a questo agente>"
+developer_instructions = """
+Ruolo in una frase.
+Che cosa ricevi, e che cosa fai se manca.
+Procedura, nell'ordine in cui la esegui.
+Che cosa non fai: non esegui git add, commit o push; non scrivi fuori dal perimetro indicato.
+Che cosa riporti: l'esito, i file toccati, e che cosa non hai verificato.
+"""
+model_reasoning_effort = "low"
+```
+
+Il corpo è lo stesso testo dei due file: scrivilo una volta e copialo, così che i due agenti non divergano. Il formato viene dalla documentazione di Codex letta il 2026-11-16 e non da una prova: dopo averlo scritto, apri Codex nel progetto, guarda con `/agents` se l'agente compare, e dì al proprietario se è comparso oppure no.
 
 ## 5. Provarlo una volta
 
