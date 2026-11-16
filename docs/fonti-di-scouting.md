@@ -59,3 +59,7 @@ Thread letto per intero dall'archivio Arctic Shift il 2026-10-27; licenza, ultim
 ## Segnalazione home-lab del29/10/2026
 
 Learn ESP32 e Learn Arduino sono siti didattici indicati dal proprietario; confronto primario con Wokwi e CircuitJS nel [filone firmware e microserver](filone-microcontrollori-e-microserver.md). Pagine lette, interattività non provata e licenze/condizioni da chiarire. Le quattro URL canoniche sono sorvegliate nel registro a monte. Non sono promosse al catalogo o installate nei progetti.
+
+## Candidati dal thread del subreddit ClaudeAI, passaggio del 2026-11-13
+
+Primo passaggio fatto con `.claude/templates/tools/miniera-novita.py`, che legge i commenti del thread dall'archivio pubblico e ne estrae i repository che il registro non conosce: 81 commenti letti, contro i 65 dell'ultima verifica, e due repository nuovi citati dal 2026-10-25. Il primo è `to-infinity-labs/plugins`, due skill per Claude Code, una per una nota di decisione con una sola raccomandazione e una per un riassunto in parole semplici, sotto licenza MIT e senza stelle il giorno della lettura: copre lo stesso terreno dei comandi `matrix` e `brief` del pacchetto `comandi-ragionamento`, quindi resta un'osservazione. Il secondo è `Spobi/clibert`, citato due volte per un comando che controlla che cosa resta in contesto dopo una compattazione: il 2026-11-13 il repository risponde 404, e si ricontrolla a mano.
