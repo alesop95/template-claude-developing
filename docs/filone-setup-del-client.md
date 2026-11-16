@@ -29,3 +29,7 @@ La procedura è la stessa. Cambiano tre cose che il sistema già tratta altrove:
 ## Che cosa manca perché diventi una voce di catalogo
 
 Manca la prova: la procedura non è stata eseguita su un guasto vero o provocato, quindi non si sa se l'ordine dei passi è quello che fa trovare prima la causa. Manca il lato Codex, di cui non è stata letta la documentazione equivalente. E manca la decisione sulla forma: una skill a invocazione manuale che guidi i cinque passi sembra la forma giusta, perché non costa contesto, ma si scrive dopo la prova.
+
+## 13/11/2026 - I progetti autorizzati seguono anche una radice nuova
+
+Il pacchetto agenti-terminale include ora un registro privato opzionale della macchina per le connessioni MCP di progetto. Entrambi gli installatori lo consultano; quello Codex aggiunge la sola fiducia per i percorsi elencati, mentre quello Claude verifica le definizioni e abilitazioni condivise nel progetto. Login, credenziali e permessi generali rimangono separati. La prova con installatore reale su profilo temporaneo crea una radice nuova e ne verifica la fiducia senza creare auth.json. Il controllo di non vacuità omette il richiamo al riconciliatore e osserva il fallimento della stessa prova. Dettagli nel [README del pacchetto](../.claude/templates/agenti-terminale/README.md). La diagnosi più ampia di questo filone rimane distinta da questa capacità implementata.
