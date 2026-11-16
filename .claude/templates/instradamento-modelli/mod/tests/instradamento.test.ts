@@ -270,3 +270,71 @@ test('una configurazione illeggibile lascia tutto come sarebbe senza la mod', as
   expect(registro.spawn[0].model).toBeUndefined()
   expect(registro.righe[registro.righe.length - 1]).toContain('JSON non valido')
 })
+
+// La riserva. Quattro prove, una per ramo: sopra soglia si nega, sotto soglia si
+// passa, in solo avviso si passa dichiarando, e senza una lettura dei limiti si
+// passa, perche' una riserva che nega senza misura sarebbe un guasto.
+function limiti(on: any, valori: any[] | null) {
+  on('session.usage', () => {
+    if (valori === null) throw new Error('nessuna lettura')
+    return { value: { startedAt: 0, context: { tokens: 0, window: 200000, percent: 0 }, rateLimits: valori } }
+  })
+}
+
+const CON_RISERVA = { ...CONF_BASE, riservaAgenti: { settimanale: 80 } }
+
+test('oltre la soglia settimanale lo spawn viene negato con il motivo, e non parte', async ($, on) => {
+  const registro = prepara(on, JSON.stringify(CON_RISERVA))
+  limiti(on, [{ kind: 'five_hour', percentUsed: 99 }, { kind: 'seven_day', percentUsed: 85.5, resetsAt: '2026-11-20T08:00:00Z' }])
+  await avvia($)
+
+  const esito = await $.agent.spawn({ prompt: 'cerca', description: 'cerca', subagentType: 'Plan' })
+
+  expect(registro.spawn.length).toBe(0)
+  expect(String(esito.deny)).toContain('85.5%')
+  expect(String(esito.deny)).toContain('80%')
+  await $.command.run({ command: 'instradamento', args: '' })
+  expect(registro.righe[registro.righe.length - 1]).toContain('spawn negati in questa sessione: 1')
+})
+
+test('sotto la soglia lo spawn parte e si instrada come sempre', async ($, on) => {
+  const registro = prepara(on, JSON.stringify(CON_RISERVA))
+  limiti(on, [{ kind: 'seven_day', percentUsed: 79.9 }])
+  await avvia($)
+
+  await $.agent.spawn({ prompt: 'cerca', description: 'cerca', subagentType: 'Explore' })
+
+  expect(registro.spawn[0].model).toBe('haiku')
+})
+
+test('in solo avviso la riserva si dichiara e lo spawn parte', async ($, on) => {
+  const registro = prepara(on, JSON.stringify({ ...CONF_BASE, riservaAgenti: { settimanale: 80, azione: 'avvisa' } }))
+  limiti(on, [{ kind: 'seven_day', percentUsed: 91 }])
+  await avvia($)
+
+  await $.agent.spawn({ prompt: 'cerca', description: 'cerca', subagentType: 'Explore' })
+
+  expect(registro.spawn.length).toBe(1)
+  expect(registro.righe.join('\n')).toContain('solo avviso')
+})
+
+test('senza una lettura dei limiti la riserva non nega', async ($, on) => {
+  const registro = prepara(on, JSON.stringify(CON_RISERVA))
+  limiti(on, null)
+  await avvia($)
+
+  await $.agent.spawn({ prompt: 'cerca', description: 'cerca', subagentType: 'Explore' })
+
+  expect(registro.spawn.length).toBe(1)
+})
+
+test('la soglia delle cinque ore e indipendente da quella settimanale', async ($, on) => {
+  const registro = prepara(on, JSON.stringify({ ...CONF_BASE, riservaAgenti: { cinqueOre: 90 } }))
+  limiti(on, [{ kind: 'five_hour', percentUsed: 92 }, { kind: 'seven_day', percentUsed: 99 }])
+  await avvia($)
+
+  const esito = await $.agent.spawn({ prompt: 'cerca', description: 'cerca', subagentType: 'Explore' })
+
+  expect(registro.spawn.length).toBe(0)
+  expect(String(esito.deny)).toContain('cinque ore')
+})

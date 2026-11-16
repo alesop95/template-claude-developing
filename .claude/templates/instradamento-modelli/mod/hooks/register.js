@@ -49,7 +49,21 @@ const PREDEFINITA = {
   rispettaModelloChiesto: true,
   annuncia: true,
   promemoriaDopo: 10,
+  riservaAgenti: { settimanale: 0, cinqueOre: 0, azione: 'nega' },
 }
+
+/*
+ * LA RISERVA. I limiti del piano sono due finestre, cinque ore e sette giorni,
+ * e il motore ne espone la percentuale usata. Un subagent consuma dalla stessa
+ * finestra della conversazione principale, e a differenza di quella si puo'
+ * rimandare: quando la finestra ha passato la soglia scelta dal proprietario,
+ * la mod nega lo spawn e dice perche', cosi' che la parte restante resti a chi
+ * lavora in prima persona. Zero, che e' il predefinito, spegne la soglia.
+ * I nomi delle finestre sono quelli del motore: seven_day e five_hour.
+ */
+const FINESTRE = { seven_day: 'settimanale', five_hour: 'cinqueOre' }
+let negatiPerRiserva = 0
+let ultimaLetturaLimiti = null
 
 let conf = PREDEFINITA
 let origini = []
@@ -164,7 +178,57 @@ function fondi(base, aggiunta) {
   const esito = Object.assign({}, base, aggiunta)
   esito.agenti = Object.assign({}, base.agenti || {}, aggiunta.agenti || {})
   esito.conversazione = Object.assign({}, base.conversazione || {}, aggiunta.conversazione || {})
+  esito.riservaAgenti = Object.assign({}, base.riservaAgenti || {}, aggiunta.riservaAgenti || {})
   return esito
+}
+
+/*
+ * Restituisce la finestra che ha passato la soglia, oppure null. Una lettura
+ * che fallisce o che non porta finestre vale come «sotto soglia»: fuori da un
+ * abbonamento, o prima della prima risposta della sessione, il motore non ha
+ * il dato, e una riserva che nega senza una misura sarebbe un guasto.
+ */
+function finestraOltreSoglia(limiti, riserva) {
+  for (const limite of limiti || []) {
+    const chiave = FINESTRE[limite && limite.kind]
+    if (!chiave) continue
+    const soglia = Number((riserva || {})[chiave])
+    const usato = Number(limite.percentUsed)
+    if (!soglia || soglia <= 0 || isNaN(usato)) continue
+    if (usato >= soglia) return { kind: limite.kind, usato: usato, soglia: soglia, azzera: limite.resetsAt }
+  }
+  return null
+}
+
+async function leggiLimiti($) {
+  try {
+    const uso = await $.session.usage()
+    ultimaLetturaLimiti = (uso && uso.rateLimits) || []
+  } catch (errore) {
+    ultimaLetturaLimiti = null
+  }
+  return ultimaLetturaLimiti
+}
+
+function righeRiserva() {
+  const r = conf.riservaAgenti || {}
+  const righe = []
+  const soglie = Object.keys(FINESTRE).map(function (kind) {
+    const s = Number(r[FINESTRE[kind]])
+    return FINESTRE[kind] + ' ' + (s > 0 ? s + '%' : 'spenta')
+  }).join(', ')
+  righe.push('riserva per i subagent: ' + soglie + ', azione ' + (r.azione === 'avvisa' ? 'avvisa' : 'nega') +
+    ', spawn negati in questa sessione: ' + negatiPerRiserva)
+  if (ultimaLetturaLimiti === null) {
+    righe.push('  limiti del piano: non letti')
+  } else if (ultimaLetturaLimiti.length === 0) {
+    righe.push('  limiti del piano: il motore non ne riporta (nessun abbonamento, o nessuna risposta ancora in questa sessione)')
+  } else {
+    for (const l of ultimaLetturaLimiti) {
+      righe.push('  ' + l.kind + ': ' + l.percentUsed + '% usato' + (l.resetsAt ? ', si azzera ' + l.resetsAt : ''))
+    }
+  }
+  return righe
 }
 
 function unisciPercorso(cartella, nome) {
@@ -319,6 +383,8 @@ async function resoconto($) {
   righe.push('conversazione principale: ' +
     (c.modello || c.sforzo ? (c.modello || 'modello invariato') + (c.sforzo ? ' / sforzo ' + c.sforzo : '') : 'non toccata'))
   righe.push('spawn instradati in questa sessione: ' + instradati + ' su ' + proposti + ' proposti')
+  await leggiLimiti($)
+  for (const riga of righeRiserva()) righe.push(riga)
   for (const riga of righeSforzo(spawnConSforzo, richiesteConSforzo)) righe.push(riga)
   righe.push('token di questa sessione, per modello:')
   for (const riga of tabellaContatori(contatoriSessione)) righe.push(riga)
@@ -447,6 +513,37 @@ export function register(on) {
       regola = regolaDi((conf.agenti || {})[e.subagentType])
     } catch (errore) {
       return next(e)
+    }
+
+    // La riserva viene prima dell'instradamento e vale per ogni spawn, fork e
+    // tipi fuori tabella compresi, perche' consumano tutti dalla stessa finestra.
+    // E' il solo ramo in cui la mod trattiene uno spawn, ed e' una scelta del
+    // proprietario scritta nella configurazione, non un guasto: un errore nel
+    // leggerla lascia passare, come tutto il resto.
+    let oltre = null
+    try {
+      const riserva = conf.riservaAgenti || {}
+      if (Number(riserva.settimanale) > 0 || Number(riserva.cinqueOre) > 0) {
+        oltre = finestraOltreSoglia(await leggiLimiti($), riserva)
+      }
+    } catch (errore) {
+      oltre = null
+    }
+    if (oltre) {
+      const quale = oltre.kind === 'seven_day' ? 'settimanale' : 'delle cinque ore'
+      const frase = 'il limite ' + quale + ' del piano e al ' + oltre.usato + '%, la riserva scelta dal proprietario parte dal ' +
+        oltre.soglia + '%' + (oltre.azzera ? ' e la finestra si azzera ' + oltre.azzera : '')
+      if ((conf.riservaAgenti || {}).azione === 'avvisa') {
+        await annuncia($, 'instradamento-modelli (riserva, solo avviso): ' + frase)
+      } else {
+        negatiPerRiserva += 1
+        await annuncia($, 'instradamento-modelli: subagent ' + (e.subagentType || '') + ' non avviato, ' + frase)
+        return {
+          deny: 'Subagent non avviato: ' + frase + '. Non riprovare e non aggirare con altri strumenti di delega. ' +
+            'Fai nella conversazione principale solo la parte indispensabile, dichiara al proprietario che cosa resta rimandato ' +
+            'e che la soglia sta in riservaAgenti di instradamento-modelli.json.',
+        }
+      }
     }
     if (!regola || (!regola.modello && !regola.sforzo)) return next(e)
     if (e.fork) return next(e)

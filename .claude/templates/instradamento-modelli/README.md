@@ -20,7 +20,7 @@ Una mod è un plugin fatto di gestori di eventi che Claude Code chiama dentro il
 
 I modi sono tre e il predefinito non instrada niente. In `osserva` la mod scrive in trascrizione che cosa instraderebbe e lascia correre: è il modo in cui si misura la linea di partenza e si controlla che la tabella nomini agenti che esistono. In `instrada` riscrive davvero. In `spento` non fa nulla, nemmeno la misura, ed è il modo con cui si esclude la mod da una sessione senza disinstallarla.
 
-Quattro casi lasciano passare uno spawn intatto anche in modo `instrada`, e ciascuno per una ragione propria. Un fork eredita il contesto e il modello del genitore per definizione, quindi il campo verrebbe ignorato. Un modello già chiesto da chi apre il subagent è una decisione presa da chi ne sa più della tabella, e si rispetta salvo configurazione contraria. Un tipo di agente che la tabella non nomina non si tocca. E qualunque errore, di lettura o di configurazione, lascia passare la chiamata: una mod che instrada non è una guardia di sicurezza, e il suo guasto non deve mai fermare il lavoro. Questa scelta è dichiarata nel codice con un gestore di errore esplicito, perché `claude plugin validate` segnala come degna di nota ogni mod che possa trattenere uno spawn.
+Quattro casi lasciano passare uno spawn intatto anche in modo `instrada`, e ciascuno per una ragione propria. Un fork eredita il contesto e il modello del genitore per definizione, quindi il campo verrebbe ignorato. Un modello già chiesto da chi apre il subagent è una decisione presa da chi ne sa più della tabella, e si rispetta salvo configurazione contraria. Un tipo di agente che la tabella non nomina non si tocca. E qualunque errore, di lettura o di configurazione, lascia passare la chiamata: una mod che instrada non è una guardia di sicurezza, e il suo guasto non deve mai fermare il lavoro. Questa scelta è dichiarata nel codice con un gestore di errore esplicito, perché `claude plugin validate` segnala come degna di nota ogni mod che possa trattenere uno spawn. Dal 2026-11-16 esiste un solo caso in cui la mod trattiene uno spawn di proposito, la riserva descritta più sotto, ed è spenta finché il proprietario non scrive una soglia.
 
 ## La configurazione, che è per account
 
@@ -40,6 +40,20 @@ La configurazione si compone leggendo due file, in quest'ordine. Il primo è `<C
 I valori del campo `modello` sono quelli che Claude Code accetta altrove, cioè un alias come `haiku`, `sonnet` o `opus`, oppure un identificativo completo. I valori dello sforzo sono `low`, `medium`, `high`, `xhigh` e `max`.
 
 I nomi sotto `agenti` devono corrispondere esattamente ai tipi che la sessione offre, e un refuso qui non produce alcun errore: produce una regola che non scatta mai, cioè un risparmio che non arriva e nessuno sa perché. Per questo la mod tiene nota dei tipi che la sessione ha offerto davvero e `/instradamento` segna con una nota i nomi della tabella che non ha mai visto offrire.
+
+## La riserva: i subagent si fermano prima che il limite sia pieno
+
+Il proprietario ha chiesto il 2026-11-16 un tetto settimanale per gli agenti, per non arrivare mai al massimo e tenere quello spazio per altro. Claude Code non ha un'impostazione che lo faccia: `--max-budget-usd` vale solo in modo non interattivo e conta dollari stimati, non la quota del piano. Le mod però leggono dal motore la percentuale usata delle due finestre del piano, cinque ore e sette giorni, con `$.session.usage()`, e `agent.spawn` può negare uno spawn con un motivo. La riserva è l'unione delle due cose.
+
+| Campo di `riservaAgenti` | Valore | Che cosa fa |
+|---|---|---|
+| `settimanale` | percentuale da 1 a 100, zero di default | Quando la finestra dei sette giorni ha raggiunto questa percentuale, nessun subagent parte più |
+| `cinqueOre` | percentuale da 1 a 100, zero di default | Lo stesso sulla finestra delle cinque ore, indipendente dalla prima |
+| `azione` | `nega` di default, oppure `avvisa` | Con `avvisa` lo spawn parte e la mod lo dichiara soltanto: serve a vedere quante volte la soglia scatterebbe prima di attivarla |
+
+Con `"riservaAgenti": { "settimanale": 80 }` nel file dell'account, dall'ottanta per cento della settimana in poi ogni delega riceve un diniego che il modello legge, con la percentuale, la soglia e l'istante in cui la finestra si azzera, e l'istruzione di fare nella conversazione principale la sola parte indispensabile e di dichiarare che cosa resta rimandato. Il venti per cento restante resta a chi lavora in prima persona. La riserva vale per ogni spawn, compresi i fork e i tipi che la tabella non nomina, perché consumano tutti dalla stessa finestra, e vale in `osserva` come in `instrada`; in `spento` no. `/instradamento` mostra le soglie, le finestre lette in quel momento e quanti spawn sono stati negati nella sessione.
+
+È il solo ramo in cui questa mod trattiene uno spawn, ed è una scelta scritta nella configurazione e non un guasto: una lettura dei limiti che fallisce, o che non porta finestre, lascia passare. Ne seguono i limiti da conoscere. Il motore riporta le finestre solo sotto un abbonamento e solo dopo la prima risposta della sessione, quindi un subagent lanciato come primissima cosa passa comunque. La percentuale è quella dell'account, non dei soli subagent: la riserva non misura quanto hanno consumato gli agenti, ferma gli agenti quando il totale ha passato la soglia. La conversazione principale non viene mai fermata. E Codex non ha un equivalente: la sua configurazione, letta il 2026-11-16, non espone la quota del piano.
 
 ## Installazione, una radice alla volta
 
@@ -105,7 +119,7 @@ Una mod è codice che gira dentro Claude Code con i permessi dell'utente: legge 
 claude plugin validate ".claude/templates/instradamento-modelli/mod"
 ```
 
-Su questa mod l'elenco è quello che segue, ed è il perimetro intero: gli eventi `session.start`, `command.run`, `agent.offer`, `agent.spawn`, `turn.step`, `turn.complete` e `session.end`; le chiamate `$.command.register`, `$.env.get`, `$.fs.read`, `$.session.cwd`, `$.store.get`, `$.store.set` e `$.ui.log`; nessuna scrittura di variabili d'ambiente; le sole variabili lette sono `CLAUDE_CONFIG_DIR`, `HOME` e `USERPROFILE`. Non c'è `$.http.fetch`, non c'è `$.process.run`, non c'è `$.fs.write`: la mod non raggiunge la rete, non avvia processi e non scrive file, e un elenco diverso da questo in una versione futura è la domanda da porre a chi l'ha cambiata.
+Su questa mod l'elenco è quello che segue, ed è il perimetro intero: gli eventi `session.start`, `command.run`, `agent.offer`, `agent.spawn`, `turn.step`, `turn.complete` e `session.end`; le chiamate `$.command.register`, `$.env.get`, `$.fs.read`, `$.session.cwd`, `$.session.usage`, `$.store.get`, `$.store.set` e `$.ui.log`; nessuna scrittura di variabili d'ambiente; le sole variabili lette sono `CLAUDE_CONFIG_DIR`, `HOME` e `USERPROFILE`. Non c'è `$.http.fetch`, non c'è `$.process.run`, non c'è `$.fs.write`: la mod non raggiunge la rete, non avvia processi e non scrive file, e un elenco diverso da questo in una versione futura è la domanda da porre a chi l'ha cambiata.
 
 ## Le prove, e che cosa misurano
 
@@ -125,6 +139,8 @@ Le quattordici prove della mod coprono un ramo di decisione ciascuna, perché un
 
 Misura del 2026-10-12, su questa macchina, con Claude Code 2.1.296: quattordici prove della mod verdi e sedici dell'installatore verdi. Otto mutazioni della mod, cioè guardia sul fork tolta, guardia sul modello chiesto tolta, modo `osserva` reso equivalente a `instrada`, riscrittura dello sforzo tolta, somma dei token tolta, promemoria cieco al modo, occasioni non riversate nello store e soglia del promemoria ignorata, fanno fallire ciascuna esattamente le prove che la coprono e nessun'altra. Due mutazioni dell'installatore, cioè le cartelle di plugin già registrate dimenticate e la deduplicazione tolta, fanno fallire rispettivamente due casi e uno.
 
+Misura del 2026-11-16, con Claude Code 2.1.325: ventidue prove della mod verdi, di cui cinque nuove sulla riserva, una per ramo, cioè sopra soglia, sotto soglia, solo avviso, lettura dei limiti assente e soglia delle cinque ore. Una mutazione, il confronto con la soglia reso sempre falso, fa fallire le tre prove che dipendono dalla soglia e nessun'altra. `claude plugin validate` passa.
+
 ## Il consigliere: un modello più capace a chiamata
 
 L'instradamento manda il lavoro meccanico verso il basso. Claude Code offre anche la mossa opposta per la conversazione principale: farla girare su un modello medio e dargli un modello più capace da consultare nei momenti chiave. La documentazione, letta il 2026-11-12 nella pagina dedicata, lo chiama *advisor* e lo dichiara sperimentale. Si attiva con `/advisor opus` nella sessione, con l'impostazione `advisorModel` o con `claude --advisor opus` per una sessione sola, opzione che `claude --help` non elenca; si spegne con `/advisor off` o con `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`. Il consigliere riceve l'intera conversazione, risponde con un'indicazione e non scrive codice; quando chiamarlo lo decide il modello principale; deve essere di rango pari o superiore; i subagent lo ereditano.
@@ -134,6 +150,9 @@ Il costo va capito prima di adottarlo, perché non è quello che il nome suggeri
 Come si compone con questo pacchetto: l'instradamento decide il modello dei subagent, il consigliere affianca la conversazione principale, e le due scelte non si pestano. La combinazione che il proprietario ha indicato, cioè sessione principale su un modello medio, consigliere a chiamata e subagent economici per cercare e contare, si ottiene con il consigliere acceso e la tabella di questo pacchetto invariata. Resta vero ciò che `token-economy.md` dice della conversazione principale: non è il posto dove risparmiare alla cieca, quindi la coppia si prova su un compito reale misurando il consumo con e senza, prima di farne l'abitudine.
 
 ## Quello che ancora non è misurato
+
+La riserva è provata contro il motore simulato dalle prove, non in una sessione vera oltre soglia: resta da osservare, con `azione` su `avvisa` e una soglia bassa, che le finestre lette da `/instradamento` coincidano con quelle di `/usage`, e poi con `nega` che il modello riceva il motivo e si comporti come gli chiede.
+
 
 Il risparmio sul campo non è misurato, e finché non lo è questo pacchetto va letto come codice scritto e provato con un effetto atteso, non come un guadagno ottenuto. La forma onesta, che `interaction-style.md` prescrive proprio per questo caso, è dire che cosa manca: serve una sessione reale che lavori in modo `osserva` per un periodo rappresentativo, un'annotazione dei conteggi per modello letti da `/instradamento`, lo stesso lavoro in modo `instrada`, e il confronto. Il primo numero da guardare non è il totale ma la quota di richieste che cambia modello: se gli spawn instradati sono pochi rispetto ai proposti, la tabella nomina agenti che quel progetto non usa, e il problema sta nella tabella e non nell'instradamento.
 
