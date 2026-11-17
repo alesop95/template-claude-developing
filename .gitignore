@@ -32,3 +32,6 @@ __pycache__/
 # estenderla. Versionarlo darebbe a un clone un file che punta a qualcosa che li' non c'e'.
 .claude/templates/instradamento-modelli/mod/tsconfig.json
 .pytest_cache/
+
+# vista Obsidian del progetto: si ricrea con vault-progetto.py crea
+_vault/

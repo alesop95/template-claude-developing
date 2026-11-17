@@ -368,11 +368,11 @@
       "pacchetto": "vault-di-progetto",
       "scheda": ".claude/templates/vault-di-progetto/README.md",
       "ruolo": "strumenti",
-      "motivo": "Plugin di Obsidian per il grafo dei documenti in tre dimensioni, con filtri; uno dei tre plugin di base di vault-di-progetto. MIT.",
+      "motivo": "Plugin di Obsidian per il grafo dei documenti in tre dimensioni, con filtri; uno dei tre plugin di base di vault-di-progetto, fissato alla 2.8.3. MIT.",
       "controllo": "release",
       "verificato": "2.8.3",
       "licenza": "MIT",
-      "data": "2026-11-13"
+      "data": "2026-11-17"
     },
     {
       "id": "github:ArthurHeitmann/arctic_shift",
@@ -1514,11 +1514,11 @@
       "pacchetto": "vault-di-progetto",
       "scheda": ".claude/templates/vault-di-progetto/README.md",
       "ruolo": "strumenti",
-      "motivo": "Plugin di Obsidian che incorpora un file HTML in una nota; uno dei tre plugin di base di vault-di-progetto. Licenza non letta.",
+      "motivo": "Plugin di Obsidian che incorpora un file HTML in una nota; uno dei tre plugin di base di vault-di-progetto, fissato alla 2.7.0. MIT.",
       "controllo": "release",
       "verificato": "2.7.0",
       "licenza": "MIT",
-      "data": "2026-11-13"
+      "data": "2026-11-17"
     },
     {
       "id": "github:morganlinton/BeautifulRust",
@@ -1684,6 +1684,17 @@
       "verificato": "5c9072877417873fee42be1805aa776a453ec394",
       "licenza": "MIT",
       "data": "2026-11-16"
+    },
+    {
+      "id": "github:obsidianmd/obsidian-releases",
+      "pacchetto": "vault-di-progetto",
+      "scheda": ".claude/templates/vault-di-progetto/README.md",
+      "ruolo": "cataloghi",
+      "motivo": "Catalogo ufficiale dei plugin di Obsidian, con statistiche di scaricamento e plugin tolti: vault-di-progetto lo interroga dal vivo con cerca e valuta, quindi si sorveglia a mano e non per commit, che sono quotidiani.",
+      "controllo": "manuale",
+      "scadenza": 90,
+      "verificato": "2026-11-17",
+      "data": "2026-11-17"
     },
     {
       "id": "github:olafgeibig/knowledge-mcp",
@@ -2135,11 +2146,11 @@
       "pacchetto": "vault-di-progetto",
       "scheda": ".claude/templates/vault-di-progetto/README.md",
       "ruolo": "strumenti",
-      "motivo": "Plugin di Obsidian che installa e aggiorna plugin fuori dal catalogo ufficiale; uno dei tre plugin di base che vault-di-progetto copia da un vault di riferimento. MIT.",
+      "motivo": "Plugin di Obsidian che installa e aggiorna plugin fuori dal catalogo ufficiale; uno dei tre plugin di base di vault-di-progetto, fissato alla 2.2.0. MIT.",
       "controllo": "release",
       "verificato": "2.2.0",
       "licenza": "MIT",
-      "data": "2026-11-13"
+      "data": "2026-11-17"
     },
     {
       "id": "github:thedotmack/claude-mem",

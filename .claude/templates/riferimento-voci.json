@@ -485,7 +485,7 @@
     "quando_no": "Si offre solo a chi usa tmux e tiene tre o più sessioni Claude Code contemporanee, quindi è inutile senza tmux o con una sessione sola."
   },
   "pacchetto:vault-di-progetto": {
-    "come": "Si lancia `python tools/vault-progetto.py crea --ignora` e in Obsidian si apre come vault la cartella `_vault`, poi `verifica` controlla che collegamenti e plugin siano a posto.",
+    "come": "Si lancia `python tools/vault-progetto.py crea --ignora` e in Obsidian si apre come vault la cartella `_vault`, poi `verifica` controlla che collegamenti e plugin siano a posto; dopo una passata che sposta i plugin fissati, `aggiorna --rete` li porta alla versione dell'elenco, anche su un vault esistente indicato con `--vault`. Un plugin nuovo si cerca con `cerca`, si misura con `valuta` e entra nell'elenco con `fissa --motivo`.",
     "perche": "La memoria sta sotto `.claude/`, che Obsidian non mostra, e copiarla in una cartella visibile creerebbe due verità: un vault di soli collegamenti fa navigare e modificare i file veri.",
     "quando_no": "Non si propone dove Obsidian non è installato, perché il pacchetto non lo installa, né a un progetto con pochi documenti o su una macchina remota senza interfaccia grafica, e non sostituisce `knowledge-wiki` per costruire un sapere da fonti."
   },

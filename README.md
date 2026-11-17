@@ -505,7 +505,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 - `latex` - ambiente di build LaTeX: [.claude/templates/latex/README.md](.claude/templates/latex/README.md)
 - `docx-to-docs` - `.docx` in albero `docs/` versionato: [.claude/templates/docx-to-docs/README.md](.claude/templates/docx-to-docs/README.md)
 - `knowledge-wiki` - LLM Wiki accumulatoria: [.claude/templates/knowledge-wiki/README.md](.claude/templates/knowledge-wiki/README.md)
-- `vault-di-progetto` - Un vault Obsidian sopra la memoria e la documentazione del progetto, fatto di soli collegamenti, con i tre plugin di base copiati da un vault già presente sulla macchina.: [.claude/templates/vault-di-progetto/README.md](.claude/templates/vault-di-progetto/README.md)
+- `vault-di-progetto` - Un vault Obsidian sopra la memoria e la documentazione del progetto, fatto di soli collegamenti, con i plugin di base fissati per versione e impronta in un elenco che la passata porta ai progetti e che aggiorna anche i vault esistenti.: [.claude/templates/vault-di-progetto/README.md](.claude/templates/vault-di-progetto/README.md)
 
 ### Fonti, ricerca e corpus documentali
 
