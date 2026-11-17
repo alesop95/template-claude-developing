@@ -51,7 +51,7 @@ def pubblica(path, value):
     os.replace(tmp, path)
 
 
-def registra(root, identifier, agente, progetto):
+def registra(root, identifier, agente, progetto, pid=None):
     identifier = nome(identifier)
     if agente not in ("claude", "codex"):
         raise ValueError("agente non riconosciuto")
@@ -62,6 +62,10 @@ def registra(root, identifier, agente, progetto):
         "registrato_il": dt.datetime.now(dt.timezone.utc).isoformat(),
         "stato": "registrato",
     }
+    if pid:
+        # Il processo del launcher che ha aperto la sessione: e' cio' che permette a `pulisci` di
+        # riconoscere una sessione caduta senza congedo, invece di aspettare la scopa per eta'.
+        value["pid"] = int(pid)
     pubblica(Path(root) / identifier / "partecipante.json", value)
     (Path(root) / identifier / "in").mkdir(exist_ok=True)
     return value
@@ -93,6 +97,88 @@ def congeda(root, identifier=None, inattivi_da=None):
             pubblica(path, voce)
         fuori.append(voce)
     return fuori
+
+
+def vivo(pid):
+    """True se il processo esiste, False se non esiste, None se non si puo' sapere."""
+    try:
+        pid = int(pid)
+    except (TypeError, ValueError):
+        return None
+    if pid <= 0:
+        return None
+    if os.name == "nt":
+        import ctypes
+        k = ctypes.WinDLL("kernel32", use_last_error=True)
+        h = k.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
+        if not h:
+            # 5 = accesso negato: il processo esiste ma e' di un altro utente o elevato.
+            return True if ctypes.get_last_error() == 5 else False
+        codice = ctypes.c_ulong()
+        ok = k.GetExitCodeProcess(h, ctypes.byref(codice))
+        k.CloseHandle(h)
+        return True if not ok else codice.value == 259  # STILL_ACTIVE
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def pulisci(root, prova=False):
+    """Toglie dalla cassetta le sessioni finite, con i loro messaggi; lascia intatte quelle vive.
+
+    Decisione del proprietario del 2026-11-17: la cassetta serve alle sessioni che stanno
+    parlando, e una sessione finita va cancellata anche da qui, con il wipe, altrimenti si
+    sostituisce un magazzino nascosto con un altro. E' finita una registrazione congedata, oppure
+    una ancora registrata il cui processo di launcher non esiste piu'. Una registrazione senza
+    PID, scritta prima di questa versione, non si giudica: la chiude la scopa per eta' e il passo
+    successivo la toglie.
+    """
+    import shutil
+    root = Path(root)
+    tolti, vive, ignote, bloccate = [], 0, 0, []
+    if not root.is_dir():
+        return "cassetta assente, niente da togliere"
+    for cartella in sorted(p for p in root.iterdir() if p.is_dir()):
+        scheda = cartella / "partecipante.json"
+        try:
+            nome(cartella.name)
+        except ValueError:
+            continue
+        if not scheda.is_file():
+            continue
+        try:
+            voce = json.loads(scheda.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        finita = voce.get("stato") == "chiuso"
+        if not finita and voce.get("stato") == "registrato":
+            stato_pid = vivo(voce.get("pid"))
+            finita = stato_pid is False
+            if stato_pid is None:
+                ignote += 1
+        if finita:
+            if not prova:
+                try:
+                    shutil.rmtree(cartella)
+                except OSError:
+                    # Una cartella creata da una sessione avviata come amministratore non si toglie
+                    # da un processo normale (misurato il 2026-11-17): si prosegue con le altre e lo si
+                    # dice, invece di fermare la pulizia e il launcher che la chiama.
+                    bloccate.append(cartella.name)
+                    continue
+            tolti.append(cartella.name)
+        else:
+            vive += 1
+    verbo = "da togliere" if prova else "tolte"
+    esito = "%d sessioni finite %s, %d restano (di cui %d senza PID, lasciate alla scopa per eta')" % (
+        len(tolti), verbo, vive, ignote)
+    if bloccate:
+        esito += "; %d finite non tolte per permessi: cartelle create da una sessione amministratore" % len(bloccate)
+    return esito
 
 
 def elenco(root, tutti=False):
@@ -300,6 +386,25 @@ def autotest():
         prova("la registrazione riesce anche con un'emoji nel percorso su una console cp1252",
               uscita.returncode == 0, uscita.stdout.decode("utf-8", "replace")[-200:])
         congeda(d, "emoji")
+        # pulisci: le finite si tolgono con i messaggi, le vive restano e continuano a parlarsi.
+        with tempfile.TemporaryDirectory() as c:
+            morto = subprocess.Popen([_sys.executable, "-c", "pass"])
+            morto.wait()
+            registra(c, "chiusa", "claude", c)
+            invia(c, "chiusa", "chiusa", "x", "un messaggio che deve sparire")
+            congeda(c, "chiusa")
+            registra(c, "caduta", "codex", c, pid=morto.pid)
+            registra(c, "viva", "claude", c, pid=os.getpid())
+            registra(c, "vecchia-senza-pid", "claude", c)
+            esito = pulisci(c, prova=True)
+            prova("pulisci --prova non toglie niente", len(list(Path(c).iterdir())) == 4, esito)
+            esito = pulisci(c)
+            rimasti = sorted(p.name for p in Path(c).iterdir())
+            prova("pulisci toglie la congedata con i suoi messaggi e la caduta col processo morto",
+                  rimasti == ["vecchia-senza-pid", "viva"], (rimasti, esito))
+            invia(c, "viva", "viva", "x", "la sessione viva continua a ricevere")
+            prova("dopo pulisci la sessione viva riceve ancora", len(leggi(c, "viva")) == 1)
+            prova("il processo corrente risulta vivo e uno terminato no", vivo(os.getpid()) is True and vivo(morto.pid) is False)
         n = len(congeda(d, None, 0))
         prova("la scopa per eta' chiude i vivi piu' vecchi del limite", n == 1, n)
         prova("dopo la scopa non resta nessun vivo", elenco(d) == [], elenco(d))
@@ -349,6 +454,9 @@ def main():
     reg.add_argument("--nome", required=True)
     reg.add_argument("--agente", choices=["claude", "codex"], required=True)
     reg.add_argument("--progetto", required=True)
+    reg.add_argument("--pid", type=int, help="PID del launcher, per riconoscere una sessione caduta")
+    pul = sub.add_parser("pulisci", help="toglie le sessioni finite e i loro messaggi, lascia le vive")
+    pul.add_argument("--prova", action="store_true", help="dice che cosa toglierebbe, senza togliere")
     send = sub.add_parser("invia")
     send.add_argument("--da", dest="sender", required=True)
     send.add_argument("--a", dest="recipient", required=True)
@@ -371,7 +479,10 @@ def main():
         parser.error("specificare --root oppure PROJECT_AGENT_MAILBOX_ROOT")
     try:
         if args.azione == "registra":
-            result = registra(args.root, args.nome, args.agente, args.progetto)
+            result = registra(args.root, args.nome, args.agente, args.progetto, args.pid)
+        elif args.azione == "pulisci":
+            print(pulisci(args.root, args.prova))
+            return 0
         elif args.azione == "invia":
             body = (
                 Path(args.testo_file).read_text(encoding="utf-8")
