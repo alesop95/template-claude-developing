@@ -137,14 +137,34 @@ def registra(radice: Path) -> bool:
 # spenta per difetto. Si spengono entrambe, perche' una riserva che ne chiude una sola smette di
 # valere il giorno in cui il client accende l'altra.
 SPEGNI_DELEGA = ("--disable", "multi_agent", "--disable", "multi_agent_v2")
-# I nomi con cui l'hook PreToolUse di Codex vede l'avvio di un subagent, dalla documentazione
-# letta il 2026-11-16 in forma riassunta: da confermare alla prima prova dal vero.
+# Il nome con cui l'hook PreToolUse di Codex vede l'avvio di un subagent. La documentazione letta
+# il 2026-11-16 diceva spawn_agent; la prova dal vero del 2026-11-17 con Codex 0.169 ha registrato
+# collaborationspawn_agent, cioe' il nome dello strumento con davanti quello del suo gruppo, senza
+# separatore. Si riconosce quindi la desinenza, che copre il nome nudo, quello con il prefisso e
+# un eventuale prefisso di altra forma; Agent resta per la forma di Claude Code.
 STRUMENTI_DI_DELEGA = {"spawn_agent", "agent"}
+
+
+def e_delega(nome) -> bool:
+    n = str(nome or "").lower()
+    return n == "agent" or n.endswith("spawn_agent")
+
+
+def risposta_hook(motivo: str) -> dict:
+    """Il diniego nella forma JSON che Codex legge dallo standard output, con uscita 0.
+
+    La prova dal vero del 2026-11-17 su Windows ha mostrato che l'uscita 2 non arriva a Codex:
+    lo strumento usciva con 2 e Codex riportava «hook exited with code 1», trattava l'hook come
+    guasto e lasciava partire il subagent. Il codice si perde nella shell con cui Codex lancia il
+    comando. La forma JSON, che la documentazione di Codex indica come preferita, non dipende dal
+    codice di uscita."""
+    return {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny",
+                                   "permissionDecisionReason": motivo}}
 
 
 def hook(entrata, radice: Path, adesso: int):
     """Per un hook PreToolUse di Codex: (2, motivo) se l'avvio di un subagent va negato, altrimenti (0, "")."""
-    if str((entrata or {}).get("tool_name") or "").lower() not in STRUMENTI_DI_DELEGA:
+    if not e_delega((entrata or {}).get("tool_name")):
         return 0, ""
     d = decidi(leggi_json(radice / FILE_CODEX), ultima_lettura_dalle_sessioni(radice) or leggi_json(radice / FILE_LETTURA), adesso)
     if d["nega"]:
@@ -271,7 +291,13 @@ def autotest() -> int:
         caso("imposta e' idempotente", sum("invariata" in x for x in seconda) == 2, seconda)
         codice, motivo = hook({"tool_name": "spawn_agent", "tool_input": {}}, codex, 1000)
         caso("l'hook nega l'avvio di un subagent oltre soglia, con il motivo", codice == 2 and "85%" in motivo, (codice, motivo))
+        codice, _ = hook({"tool_name": "collaborationspawn_agent", "tool_input": {"agent_type": "elenca-file"}}, codex, 1000)
+        caso("l'hook nega anche con il nome registrato dal vero da Codex 0.169, collaborationspawn_agent", codice == 2, codice)
+        caso("il diniego si consegna come JSON di PreToolUse con decisione deny e il motivo",
+             risposta_hook("x")["hookSpecificOutput"] == {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "x"})
         caso("l'hook lascia passare uno strumento che non e' di delega", hook({"tool_name": "Bash"}, codex, 1000) == (0, ""))
+        caso("l'hook lascia passare l'attesa e i messaggi fra agenti, che non avviano niente",
+             hook({"tool_name": "collaborationwait_agent"}, codex, 1000) == (0, "") and hook({"tool_name": "collaborationsend_message"}, codex, 1000) == (0, ""))
         caso("l'hook lascia passare tutto a finestra azzerata", hook({"tool_name": "Agent"}, codex, 9000) == (0, ""))
         caso("l'hook non nega in una radice senza soglia", hook({"tool_name": "spawn_agent"}, altro, 1000) == (0, ""))
         caso("lo stato dichiara i subagent spenti quando la lettura e' oltre soglia", any("SUBAGENT SPENTI" in x for x in stato(base, 1000)), stato(base, 1000))
@@ -310,8 +336,9 @@ def main() -> int:
         except Exception:
             return 0
         if codice:
+            print(json.dumps(risposta_hook(motivo), ensure_ascii=False))
             sys.stderr.write(motivo + "\n")
-        return codice
+        return 0
     if a.comando == "registra":
         try:
             registra(Path(a.radice))
