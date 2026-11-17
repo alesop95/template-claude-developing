@@ -328,6 +328,47 @@ test('senza una lettura dei limiti la riserva non nega', async ($, on) => {
   expect(registro.spawn.length).toBe(1)
 })
 
+// Il caso trovato dal vero il 2026-11-16: una sessione che si apre delegando non
+// ha ancora la lettura del motore. Vale l'ultima lettura conservata, ma solo per
+// le finestre che non si sono ancora azzerate.
+test("senza lettura del motore vale l'ultima lettura conservata dell'account", async ($, on) => {
+  const futuro = new Date(Date.now() + 3600000).toISOString()
+  const registro = prepara(on, JSON.stringify(CON_RISERVA), {
+    'ultimaLetturaLimiti:/conf/instradamento-modelli.json': { letto: 1, limiti: [{ kind: 'seven_day', percentUsed: 88, resetsAt: futuro }] },
+  })
+  limiti(on, [])
+  await avvia($)
+
+  const esito = await $.agent.spawn({ prompt: 'cerca', description: 'cerca', subagentType: 'Explore' })
+
+  expect(registro.spawn.length).toBe(0)
+  expect(String(esito.deny)).toContain("ultima lettura registrata")
+})
+
+test("una lettura conservata di una finestra gia' azzerata non nega", async ($, on) => {
+  const passato = new Date(Date.now() - 3600000).toISOString()
+  const registro = prepara(on, JSON.stringify(CON_RISERVA), {
+    'ultimaLetturaLimiti:/conf/instradamento-modelli.json': { letto: 1, limiti: [{ kind: 'seven_day', percentUsed: 99, resetsAt: passato }] },
+  })
+  limiti(on, [])
+  await avvia($)
+
+  await $.agent.spawn({ prompt: 'cerca', description: 'cerca', subagentType: 'Explore' })
+
+  expect(registro.spawn.length).toBe(1)
+})
+
+test('una lettura con dati viene conservata per la sessione successiva', async ($, on) => {
+  const registro = prepara(on, JSON.stringify(CON_RISERVA))
+  limiti(on, [{ kind: 'seven_day', percentUsed: 40, resetsAt: '2099-01-01T00:00:00Z' }])
+  await avvia($)
+
+  await $.agent.spawn({ prompt: 'cerca', description: 'cerca', subagentType: 'Explore' })
+
+  const conservata: any = registro.store.get('ultimaLetturaLimiti:/conf/instradamento-modelli.json')
+  expect(conservata.limiti[0].percentUsed).toBe(40)
+})
+
 test('la soglia delle cinque ore e indipendente da quella settimanale', async ($, on) => {
   const registro = prepara(on, JSON.stringify({ ...CONF_BASE, riservaAgenti: { cinqueOre: 90 } }))
   limiti(on, [{ kind: 'five_hour', percentUsed: 92 }, { kind: 'seven_day', percentUsed: 99 }])

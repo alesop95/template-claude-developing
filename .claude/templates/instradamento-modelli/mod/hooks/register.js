@@ -64,6 +64,7 @@ const PREDEFINITA = {
 const FINESTRE = { seven_day: 'settimanale', five_hour: 'cinqueOre' }
 let negatiPerRiserva = 0
 let ultimaLetturaLimiti = null
+let letturaDaMemoria = false
 
 let conf = PREDEFINITA
 let origini = []
@@ -200,14 +201,57 @@ function finestraOltreSoglia(limiti, riserva) {
   return null
 }
 
+/*
+ * La lettura del motore manca finche' la sessione non ha avuto la prima
+ * risposta, e il 2026-11-16 una prova dal vero ha mostrato che cosa costa: una
+ * sessione che si apre delegando avviava il subagent a qualunque percentuale.
+ * Per quel caso vale l'ultima lettura con dati, conservata nello store con una
+ * chiave per account, perche' la stessa mod serve piu' account e i limiti sono
+ * di ciascuno; delle finestre conservate si tengono solo quelle che non si sono
+ * ancora azzerate, quindi un dato vecchio non nega mai a finestra nuova.
+ */
+const CHIAVE_LIMITI = 'ultimaLetturaLimiti'
+
+function chiaveLimiti() {
+  return CHIAVE_LIMITI + ':' + (percorsoAccount || 'predefinito')
+}
+
 async function leggiLimiti($) {
+  let letti = null
   try {
     const uso = await $.session.usage()
-    ultimaLetturaLimiti = (uso && uso.rateLimits) || []
+    letti = (uso && uso.rateLimits) || []
   } catch (errore) {
-    ultimaLetturaLimiti = null
+    letti = null
   }
-  return ultimaLetturaLimiti
+  if (letti && letti.length) {
+    ultimaLetturaLimiti = letti
+    letturaDaMemoria = false
+    try {
+      await $.store.set(chiaveLimiti(), { letto: Date.now(), limiti: letti })
+    } catch (errore) {
+      // Uno store che non risponde non deve fermare la decisione.
+    }
+    return letti
+  }
+  try {
+    const salvata = await $.store.get(chiaveLimiti())
+    const adesso = Date.now()
+    const valide = ((salvata && salvata.limiti) || []).filter(function (l) {
+      const azzera = l && l.resetsAt ? Date.parse(l.resetsAt) : NaN
+      return !isNaN(azzera) && azzera > adesso
+    })
+    if (valide.length) {
+      ultimaLetturaLimiti = valide
+      letturaDaMemoria = true
+      return valide
+    }
+  } catch (errore) {
+    // Nessuna lettura conservata: si torna al caso senza dato.
+  }
+  ultimaLetturaLimiti = letti
+  letturaDaMemoria = false
+  return letti
 }
 
 function righeRiserva() {
@@ -531,7 +575,9 @@ export function register(on) {
     }
     if (oltre) {
       const quale = oltre.kind === 'seven_day' ? 'settimanale' : 'delle cinque ore'
-      const frase = 'il limite ' + quale + ' del piano e al ' + oltre.usato + '%, la riserva scelta dal proprietario parte dal ' +
+      const frase = 'il limite ' + quale + ' del piano e al ' + oltre.usato + '%' +
+        (letturaDaMemoria ? " secondo l'ultima lettura registrata" : '') +
+        ', la riserva scelta dal proprietario parte dal ' +
         oltre.soglia + '%' + (oltre.azzera ? ' e la finestra si azzera ' + oltre.azzera : '')
       if ((conf.riservaAgenti || {}).azione === 'avvisa') {
         await annuncia($, 'instradamento-modelli (riserva, solo avviso): ' + frase)
