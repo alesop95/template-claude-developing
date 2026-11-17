@@ -30,6 +30,7 @@ import importlib.util
 import json
 import os
 import re
+import sys
 import uuid
 
 
@@ -290,6 +291,15 @@ def autotest():
         prova("la scopa per eta' non congeda la sessione corrente per via del default",
               stato_amb == "registrato", stato_amb)
         congeda(d, "ambiente")
+        # Il difetto del 2026-11-17: un progetto con un'emoji nel percorso, su una console cp1252.
+        cartella_emoji = os.path.join(d, "casa \U0001f3e0")
+        amb_cp = dict(os.environ, PYTHONIOENCODING="cp1252", PYTHONUTF8="0")
+        uscita = subprocess.run([_sys.executable, __file__, "--root", d, "registra", "--nome", "emoji",
+                                 "--agente", "claude", "--progetto", cartella_emoji],
+                                capture_output=True, env=amb_cp)
+        prova("la registrazione riesce anche con un'emoji nel percorso su una console cp1252",
+              uscita.returncode == 0, uscita.stdout.decode("utf-8", "replace")[-200:])
+        congeda(d, "emoji")
         n = len(congeda(d, None, 0))
         prova("la scopa per eta' chiude i vivi piu' vecchi del limite", n == 1, n)
         prova("dopo la scopa non resta nessun vivo", elenco(d) == [], elenco(d))
@@ -326,6 +336,12 @@ def autotest():
 
 
 def main():
+    # La risposta contiene il percorso del progetto, e un percorso puo' contenere caratteri che la
+    # codifica della console di Windows non ha: il 2026-11-17 una cartella con un'emoji nel nome ha
+    # fatto fallire la stampa della registrazione, e il launcher ha rifiutato di avviare i tre account.
+    for flusso in (sys.stdout, sys.stderr):
+        if hasattr(flusso, "reconfigure"):
+            flusso.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", default=os.environ.get("PROJECT_AGENT_MAILBOX_ROOT"))
     sub = parser.add_subparsers(dest="azione", required=True)

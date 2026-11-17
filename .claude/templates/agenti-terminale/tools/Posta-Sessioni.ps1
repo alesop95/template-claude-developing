@@ -26,7 +26,13 @@ function Prepara-PostaSessioni([string]$Agente, [int]$Account, [string]$Progetto
   # soglia stretta sbaglia togliendo dall'elenco chi c'e', che e' l'errore peggiore dei due.
   & python $tool --root $Posta congeda --inattivi-da 168 | Out-Null
   $registrazione = & python $tool --root $Posta registra --nome $nome --agente $Agente --progetto $Progetto
-  if ($LASTEXITCODE -ne 0) { throw "Registrazione nella cassetta fallita: $registrazione" }
+  # La cassetta e' un servizio accessorio: se non registra, la sessione parte senza, e lo dice.
+  # Fino al 2026-11-17 qui c'era un throw, e una cartella con un'emoji nel nome ha impedito di
+  # avviare tutti e tre gli account: un wrapper che non parte e' peggio di una cassetta mancante.
+  if ($LASTEXITCODE -ne 0) {
+    Write-Warning "Cassetta non disponibile, la sessione parte senza: $registrazione"
+    return $null
+  }
   $env:PROJECT_AGENT_MAILBOX_ROOT = $Posta
   $env:PROJECT_AGENT_MAILBOX_ID = $nome
   $env:PROJECT_AGENT_MAILBOX_TOOL = $tool
