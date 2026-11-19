@@ -1120,6 +1120,20 @@
     "dove": ".claude/skills/prove-che-misurano/RIFERIMENTO.md: una dipendenza importata solo dal punto d'ingresso si prova con la build"
   },
   {
+    "progetto": "9546cca6109b",
+    "id": "L-053",
+    "commit": "2130769",
+    "data": "2026-11-19",
+    "dove": ".claude/templates/agenti-terminale/tools/posta-sessioni.py"
+  },
+  {
+    "progetto": "9546cca6109b",
+    "id": "L-054",
+    "commit": "2130769",
+    "data": "2026-11-19",
+    "dove": ".claude/templates/agenti-terminale/tools/Pulisci-Codex.ps1"
+  },
+  {
     "progetto": "9781581909d7",
     "id": "L-001",
     "commit": "",
