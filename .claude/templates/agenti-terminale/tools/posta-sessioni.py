@@ -83,6 +83,10 @@ def congeda(root, identifier=None, inattivi_da=None):
             voce = json.loads(path.read_text(encoding="utf-8"))
             if voce.get("stato") != "registrato":
                 continue
+            # Un PID vivo dice che la sessione c'e', e batte l'eta': fino al 2026-11-19 la scopa
+            # non lo guardava e ogni sessione aperta da piu' di sette giorni perdeva la cassetta.
+            if vivo(voce.get("pid")) is True:
+                continue
             quando = dt.datetime.fromisoformat(voce["registrato_il"])
             if quando < limite:
                 bersagli.append(path)
@@ -405,6 +409,11 @@ def autotest():
             invia(c, "viva", "viva", "x", "la sessione viva continua a ricevere")
             prova("dopo pulisci la sessione viva riceve ancora", len(leggi(c, "viva")) == 1)
             prova("il processo corrente risulta vivo e uno terminato no", vivo(os.getpid()) is True and vivo(morto.pid) is False)
+            # Misurato il 2026-11-19: la scopa per eta' chiudeva anche le registrazioni con un PID
+            # vivo, quindi ogni sessione aperta da piu' di sette giorni perdeva la cassetta.
+            fuori = [v["nome"] for v in congeda(c, None, 0)]
+            prova("la scopa per eta' non chiude una sessione il cui processo e' vivo",
+                  fuori == ["vecchia-senza-pid"], fuori)
         n = len(congeda(d, None, 0))
         prova("la scopa per eta' chiude i vivi piu' vecchi del limite", n == 1, n)
         prova("dopo la scopa non resta nessun vivo", elenco(d) == [], elenco(d))
