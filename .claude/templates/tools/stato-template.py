@@ -263,7 +263,7 @@ TITOLO_GATE = "## Gate dei pacchetti"
 def sezione_gate(gate):
     """La sezione che dice se una tornata del gate dei pacchetti è dovuta.
 
-    Dal 2026-11-20 (L-002 di blog-alessio): l'allineamento in blocco porta il catalogo
+    Dal 2026-11-20 (L-002 di un progetto istanziato): l'allineamento in blocco porta il catalogo
     ma non esegue il gate, riservato al proprietario, e nessun punto letto in sessione
     lo diceva. `gate` è il dizionario con `riga` e `nuovi` calcolato da
     verifica-pacchetti.py; None quando il catalogo non c'è."""

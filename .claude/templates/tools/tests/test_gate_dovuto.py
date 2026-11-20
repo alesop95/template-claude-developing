@@ -1,6 +1,6 @@
 """Il gate dei pacchetti dovuto, visto dalla ricevuta dell'allineamento e dall'apertura di sessione.
 
-Dal 2026-11-20, L-002 di blog-alessio: un allineamento in blocco portava il catalogo nel
+Dal 2026-11-20, L-002 di un progetto istanziato: un allineamento in blocco portava il catalogo nel
 progetto senza eseguire il gate, riservato al proprietario, e niente lo diceva alla sessione
 successiva. Un progetto di novanta commit non aveva mai fatto una tornata. Queste prove
 esercitano il percorso vero: lo strumento di allineamento su un template e un progetto

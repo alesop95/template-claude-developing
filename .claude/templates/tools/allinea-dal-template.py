@@ -905,7 +905,7 @@ def main():
     attesi = stato_template.attese(tpl, prj)
     # Il gate dei pacchetti viaggia nella ricevuta per la stessa ragione: l'allineamento in
     # blocco porta il catalogo e non esegue il gate, riservato al proprietario, e senza una
-    # riga letta in sessione un progetto non lo faceva mai (L-002 di blog-alessio, 2026-11-20).
+    # riga letta in sessione un progetto non lo faceva mai (L-002 di un progetto istanziato, 2026-11-20).
     try:
         stato_gate = pacchetti.gate(prj, catalogo)
     except (OSError, ValueError, TypeError) as errore:

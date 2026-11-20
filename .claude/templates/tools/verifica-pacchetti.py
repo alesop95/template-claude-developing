@@ -98,7 +98,7 @@ def voci_catalogo(catalog):
 def gate(project, catalog):
     """Quante voci del catalogo nessuna tornata del gate ha mai visto né deciso.
 
-    Dal 2026-11-20 (L-002 di blog-alessio). Un allineamento in blocco porta il catalogo
+    Dal 2026-11-20 (L-002 di un progetto istanziato). Un allineamento in blocco porta il catalogo
     nel progetto ma non esegue il gate, che è riservato al proprietario, e niente lo
     diceva alla sessione successiva: un progetto con novanta commit non aveva mai fatto
     una tornata. Il solo conto dei pacchetti senza decisione non basta, perché il gate
