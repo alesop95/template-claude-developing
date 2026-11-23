@@ -254,6 +254,12 @@ Un pacchetto non è attivo finché il gate non lo propone e tu non rispondi. La 
 | `tmux-claude-hatch` | Setup con tmux e 3 o più sessioni Claude Code contemporanee | Si installa come plugin tmux tramite TPM aggiungendolo a `.tmux.conf`, con il plugin Claude Code facoltativo, e si apre una sessione per cartella di progetto in un popup | Si offre solo a chi usa tmux e tiene tre o più sessioni Claude Code contemporanee, quindi è inutile senza tmux o con una sessione sola |
 | `claudecode.nvim` | Workflow primario in Neovim | Si aggiunge il plugin alla configurazione init.lua di Neovim dell'utente, senza file nel progetto, per usare il toggle della finestra flottante | Non proporlo a chi non usa Neovim come ambiente principale: richiede `folke/snacks.nvim` per il terminale integrato e una configurazione nel proprio `init.lua`, e per [...] |
 
+### Strategia e gestione d'impresa
+
+| Pacchetto | Quando | Come si usa | Quando no |
+|---|---|---|---|
+| `stratega-impresa` | Il progetto deve impostare o rivedere la strategia di un'impresa, scrivere un piano industriale, un budget legato agli obiettivi o una roadmap di trasformazione, o [...] | Si invoca la skill `stratega-impresa` con la domanda e i dati dell'impresa: fa la diagnosi, carica i filoni che servono e, per un percorso pluriennale, segue [...] | Non usarlo in un progetto che tratta un'impresa solo come cliente o contesto, come il software gestionale di un'azienda, né per un singolo calcolo finanziario: lì basta [...] |
+
 ## Gli strumenti
 
 Quelli che `chiudi` e gli hook lanciano da sé non vanno ricordati: sono qui per sapere che esistono. La descrizione completa di ciascuno sta in `.claude/templates/tools/README.md`.

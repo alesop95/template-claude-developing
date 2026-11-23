@@ -33,6 +33,7 @@ Questo file e il README della repository GitHub. Serve a far capire cos'e il tem
 - [Software di cui non si ha il sorgente (rea)](#software-di-cui-non-si-ha-il-sorgente-rea)
 - [Knowledge wiki: accumulare conoscenza nel tempo](#knowledge-wiki-accumulare-conoscenza-nel-tempo)
 - [Libri come skill (book-to-skill)](#libri-come-skill-book-to-skill)
+- [Uno stratega d'impresa (stratega-impresa)](#uno-stratega-dimpresa-stratega-impresa)
 - [Bibliografia da libri fisici o scansionati (book-bib-extract)](#bibliografia-da-libri-fisici-o-scansionati-book-bib-extract)
 - [Ricerca accademica (academic-researcher)](#ricerca-accademica-academic-researcher)
 - [Ricerca fondata su fonti proprie (notebooklm-bridge)](#ricerca-fondata-su-fonti-proprie-notebooklm-bridge)
@@ -191,6 +192,10 @@ Per i progetti dove si accumula conoscenza trasversale (ricerca, studio di un do
 
 Per i progetti con libri o PDF tecnici di riferimento, il pacchetto opzionale `book-to-skill` installa la skill `book-digest`, che trasforma un PDF in una skill-libro densa e interrogabile on-demand: durante il lavoro `/<slug> argomento` restituisce la sintesi del tema senza rileggere il PDF. Le skill-libro nascono dentro il progetto (`.claude/skills/<slug>/`, versionate), perché ogni progetto può avere libri suoi; si possono promuovere al contesto globale di Claude (`~/.claude/skills/`) solo su conferma esplicita e tracciando la scelta. La stessa skill-libro ha un doppio uso: resta una skill che gli agenti consultano (path A), oppure, se il progetto ha `knowledge-wiki`, alimenta la wiki accumulatoria copiando i file capitolo in `knowledge/sources/books/<slug>/` (path B). Dettaglio e comandi in `.claude/templates/book-to-skill/README.md`.
 
+
+## Uno stratega d'impresa (stratega-impresa)
+
+Per i progetti il cui oggetto è un'impresa, cioè impostarne la strategia, scriverne il piano industriale o il budget, leggerne i numeri o prepararne una trasformazione, il pacchetto opzionale `stratega-impresa` installa sette skill che fanno ragionare l'agente come uno stratega senior. La skill d'ingresso porta un caso dalla diagnosi alle scelte, al piano, all'esecuzione e al controllo, e per una roadmap di trasformazione segue un metodo in sei mosse; a ogni passo carica uno dei sei filoni tematici, cioè scenari e modelli di business, pianificazione strategica, analisi economica e controllo, mercato e vendite, processi e persone, strategia e azione. La teoria viene da un corso executive di strategia e management frequentato dal proprietario del template, distillata in locale, riscritta e anonimizzata: i rimandi alle fonti sono identificativi neutri, e ciò che la skill aggiunge di suo è marcato come tale. Ogni filone ha un file di potenziamento con strumenti open source verificati, tenuti separati dalla teoria. Dettaglio e mappa di istanziazione in `.claude/templates/stratega-impresa/README.md`.
 ## Bibliografia da libri fisici o scansionati (book-bib-extract)
 
 Per i progetti che costruiscono una bibliografia a partire da libri fisici o scansionati senza DOI, per esempio libri di studio posseduti dall'autore di un manoscritto, il pacchetto opzionale `book-bib-extract` installa una skill che estrae autore, titolo, anno, editore, edizione e ISBN dal frontespizio/colophon di un libro già ingerito da `doc-ingest`, propone una citekey, e aggiorna un registro unificato `_notes/book-bib-registry.json` a tre stati (verificata, da-verificare, scartata) prima di scrivere qualunque voce nel `.bib` reale del progetto, sempre dopo conferma umana esplicita contro il colophon. Copre un vuoto tra `doc-ingest`, che estrae struttura ma non anagrafica, e `academic-researcher`, pensato per paper con DOI verificabili contro database esterni, un metodo non applicabile a un libro senza DOI. Per i PDF scansionati senza testo nativo, dove l'OCR di `doc-ingest` è spesso inaffidabile su scansioni di bassa qualità, il pacchetto standardizza l'estrazione di poche pagine di frontespizio/colophon come immagini PNG (via `pdftoppm`/Poppler) per la verifica visiva diretta, mai un OCR sull'intero corpus. Se il progetto ha anche `book-to-skill` attivo, i due pacchetti condividono lo stesso registro invece di due sistemi di stato paralleli: `book-bib-extract` possiede il campo `bib_status`, `book-digest` possiede `skill_status`. Il dettaglio è in `.claude/templates/book-bib-extract/README.md`.
@@ -465,7 +470,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**50 pacchetti a cartella** su **107 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**51 pacchetti a cartella** su **108 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -558,6 +563,10 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 - `lavoro-a-lotti` - registro riprendibile per lavori estesi su molti elementi: [.claude/templates/lavoro-a-lotti/README.md](.claude/templates/lavoro-a-lotti/README.md)
 - `agent-catalog` - fetch mirato di subagent community da fonti flat: [.claude/templates/agent-catalog/README.md](.claude/templates/agent-catalog/README.md)
 - `nimbalyst` - agenti in parallelo su worktree git separati in un'applicazione desktop nativa anche su Windows; se è già installata il gate chiede se usarla e ne mostra l'uso: [.claude/templates/nimbalyst/README.md](.claude/templates/nimbalyst/README.md)
+
+### Strategia e gestione d'impresa
+
+- `stratega-impresa` - sette skill per ragionare da stratega d'impresa, dalla diagnosi alla roadmap: [.claude/templates/stratega-impresa/README.md](.claude/templates/stratega-impresa/README.md)
 <!-- sync-readme:packages:end -->
 
 ## Cosa non finisce nei progetti

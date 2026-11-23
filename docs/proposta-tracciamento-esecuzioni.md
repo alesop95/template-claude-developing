@@ -1,16 +1,16 @@
-# Proposta: ricevute riproducibili per operazioni a passi
+# Proposta: tracciamento riproducibile del lavoro da terminale
 
 **Stato.** Proposta di sviluppo richiesta dal proprietario il 27 ottobre 2026. Non implementata, non attiva e fuori dal catalogo dei pacchetti. Il dettaglio vive qui; il filone degli strumenti agentici e il suo indice ne registrano la pendenza. Nessuna nuova regola caricata all'avvio.
 
-## Il problema concreto
+## La lezione astratta per il template
 
-Un resoconto del terminale perde il collegamento fra il codice inviato a un host, i parametri, la risposta e lo stato che ne consegue. Un output conservato senza lo script non permette di capire che cosa sia stato davvero eseguito. Uno script conservato senza stdout, stderr ed esito non permette di distinguere una prova riuscita da un'interruzione a metà. Una ricevuta positiva di sola lettura, infine, non prova che la successiva operazione mutante sia stata eseguita.
+Il template deve poter proporre uno strumento riutilizzabile per tracciare il lavoro da terminale, locale o remoto. La lezione riguarda il metodo di lavoro e non una piattaforma applicativa: vale per comandi locali, script, test, build, procedure sperimentali e sessioni SSH. Un resoconto del terminale perde il collegamento fra il comando o lo script eseguito, i parametri, la risposta e lo stato che ne consegue. Un output conservato senza lo script non permette di capire che cosa sia stato davvero eseguito. Uno script conservato senza stdout, stderr ed esito non permette di distinguere una prova riuscita da un'interruzione a metà. Una ricevuta positiva di sola lettura, infine, non prova che la successiva operazione mutante sia stata eseguita.
 
 La proposta nasce da un'esigenza operativa di ricostruzione a micro-passaggi. Il contributo specifico non è il promemoria generico di salvare i log: è il contratto che separa autorizzazione, comando, trasporto, verifica dello stato e conclusione consentita. Un errore SSH o un timeout possono lasciare effetti già avvenuti sul remoto; il solo codice di uscita del client non autorizza a registrare «nessuna modifica» o a ripetere il comando.
 
 ## Destinatario e costo
 
-Il futuro pacchetto si propone ai progetti che eseguono manutenzioni remote, procedure sperimentali o operazioni in più passi con approvazioni, oppure che devono consegnare una prova riproducibile del lavoro. Non si impone a ogni comando di sviluppo locale. Il settore è strumenti di lavoro degli agenti, con un collegamento operativo a macchine e continuità.
+Il destinatario della lezione è il template, che valuterà lo strumento come capacità generale da proporre ai progetti quando serve ricostruire il lavoro svolto da terminale. Nessun progetto che ha fatto emergere la lezione diventa il destinatario esclusivo o un requisito dello strumento. La manutenzione remota è un esempio, come lo sono un test locale o una compilazione con esito da conservare. Non si impone a ogni comando di sviluppo locale. Il settore è strumenti di lavoro degli agenti, con un collegamento operativo a macchine e continuità.
 
 La specifica iniziale privilegia un adattatore locale senza servizi esterni, con dati dentro il progetto e interfaccia portabile Windows/Linux. Dipendenze, licenza, dimensionamento, retention e rimozione restano da progettare e provare prima del catalogo. Non si introduce un demone o un magazzino globale per raccogliere le esecuzioni.
 
@@ -54,6 +54,6 @@ La prova dei segreti deve dimostrare l'assenza di valori sintetici in argv, stdi
 
 ## Passo di sviluppo successivo
 
-Definire uno schema minimo della ricevuta e un adattatore di esecuzione con controlli prima/dopo iniettati dal progetto, poi provarlo su un piccolo servizio isolato con fault injection. Solo dopo misurare costo e benefici, scegliere il trigger del gate, documentare installazione e rimozione e valutare l'ingresso in catalogo. Questa consegna registra la proposta: non implementa o distribuisce il pacchetto.
+Definire uno schema minimo della ricevuta e un adattatore di esecuzione con controlli prima/dopo iniettati dal progetto, poi provarlo prima con comandi locali sintetici e successivamente con un servizio remoto isolato e fault injection. Solo dopo misurare costo e benefici, scegliere il trigger del gate, documentare installazione e rimozione e valutare l'ingresso in catalogo. Questa consegna registra la proposta: non implementa o distribuisce il pacchetto.
 
 **Esito del 27 ottobre.** Proposta generalizzata senza nomi di progetti, domini o valori di accesso; indice del filone e punto di ripresa aggiornati. Nessuna modifica alle capacità attive o ai file già in stage di altre lavorazioni. Version control manuale.
