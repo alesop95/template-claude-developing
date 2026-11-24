@@ -559,7 +559,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 
 ### Orchestrazione, sessioni e cataloghi di agenti
 
-- `agenti-terminale` - radici isolate, ricostruzione, pulizia e consumo di Claude Code e Codex: [.claude/templates/agenti-terminale/README.md](.claude/templates/agenti-terminale/README.md)
+- `agenti-terminale` - radici isolate, ricostruzione, pulizia e consumo di Claude Code e Codex, quarantena e recupero delle sessioni dopo un crash dei terminali: [.claude/templates/agenti-terminale/README.md](.claude/templates/agenti-terminale/README.md)
 - `lavoro-a-lotti` - registro riprendibile per lavori estesi su molti elementi: [.claude/templates/lavoro-a-lotti/README.md](.claude/templates/lavoro-a-lotti/README.md)
 - `agent-catalog` - fetch mirato di subagent community da fonti flat: [.claude/templates/agent-catalog/README.md](.claude/templates/agent-catalog/README.md)
 - `nimbalyst` - agenti in parallelo su worktree git separati in un'applicazione desktop nativa anche su Windows; se è già installata il gate chiede se usarla e ne mostra l'uso: [.claude/templates/nimbalyst/README.md](.claude/templates/nimbalyst/README.md)

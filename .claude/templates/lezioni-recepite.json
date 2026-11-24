@@ -1309,6 +1309,13 @@
     "dove": ".claude/skills/cerca-pacchetto/SKILL.md, sezione sul confine dei dati letto sul flusso"
   },
   {
+    "progetto": "ae8dd2775ccf",
+    "id": "L-018",
+    "commit": "",
+    "data": "2026-11-24",
+    "dove": ".claude/templates/tools/session-end-wipe.ps1, agenti-terminale/tools/Pulisci-Codex.ps1, Avvia-Codex.ps1, Avvia-Claude.ps1, Recupera-DaShadow.ps1, Riapri-Sessione.ps1, agenti-terminale/recupero-dopo-crash.md, agenti-terminale/rules/chiusura-delle-sessioni.md"
+  },
+  {
     "progetto": "b3f9f458b450",
     "id": "L-001",
     "commit": "",
