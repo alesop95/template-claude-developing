@@ -17,7 +17,7 @@ La norma sta per intero in `RIFERIMENTO.md`, accanto a questo file, e va letta p
 
 ## Dove stanno le cose di questa postazione
 
-Il template non contiene indirizzi, nomi di macchine né percorsi di una rete, perché arriva anche in progetti privati. Dove stanno la cartella dei progetti, gli strumenti comuni di irrobustimento e il documento del flusso di lavoro lo dice un file della macchina, `~/.progetti-su-vm.json`, che non sta in nessun repository:
+Il template non contiene indirizzi, nomi di macchine né percorsi di una rete, perché arriva in progetti diversi, su reti diverse. Dove stanno la cartella dei progetti, gli strumenti comuni di irrobustimento e il documento del flusso di lavoro lo dice un file della macchina, `~/.progetti-su-vm.json`, che non sta in nessun repository:
 
 ```json
 {

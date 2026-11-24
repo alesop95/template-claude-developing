@@ -452,7 +452,7 @@
     "id": "L-048",
     "commit": "d915d1a",
     "data": "2026-11-12",
-    "dove": "nomi dei progetti privati tolti dai file propagati in d915d1a, controllo per forma esteso in e9acf12"
+    "dove": "esempi resi generici nei file propagati in d915d1a, controllo per forma esteso in e9acf12"
   },
   {
     "progetto": "7bdce874415c",
