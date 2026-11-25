@@ -4,7 +4,7 @@
 
 ## Come si legge
 
-Il template offre le proprie capacità in quattro forme, e questo documento le elenca tutte: 20 skill di sistema, che ogni progetto istanziato riceve; 108 voci di catalogo in 15 settori, che il gate propone e l'utente sceglie; 52 strumenti, che le skill e `chiudi` eseguono; e 308 fonti a monte, sorvegliate a ogni apertura di sessione. Per ogni skill e per ogni pacchetto ci sono cinque risposte: che cosa fa, come si usa, perché adottarlo, quando conviene e quando no. Il dettaglio di un pacchetto sta nel suo `README.md` sotto `.claude/templates/<nome>/`; quello di ogni fonte, con ciò che il template ne prende e la data dell'ultima verifica, in `.claude/templates/fonti-a-monte.md`.
+Il template offre le proprie capacità in quattro forme, e questo documento le elenca tutte: 20 skill di sistema, che ogni progetto istanziato riceve; 108 voci di catalogo in 15 settori, che il gate propone e l'utente sceglie; 52 strumenti, che le skill e `chiudi` eseguono; e 309 fonti a monte, sorvegliate a ogni apertura di sessione. Per ogni skill e per ogni pacchetto ci sono cinque risposte: che cosa fa, come si usa, perché adottarlo, quando conviene e quando no. Il dettaglio di un pacchetto sta nel suo `README.md` sotto `.claude/templates/<nome>/`; quello di ogni fonte, con ciò che il template ne prende e la data dell'ultima verifica, in `.claude/templates/fonti-a-monte.md`.
 
 ## Skill di sistema
 
@@ -300,6 +300,7 @@ Il registro lega ogni fonte a un pacchetto, a un filone o al sistema. Quelle dei
 | filone nativo-prima-dello-scritto | [code.claude.com/docs/en/commands](https://code.claude.com/docs/en/commands), [learn.chatgpt.com/docs/developer-commands](https://learn.chatgpt.com/docs/developer-commands) |
 | filone orchestrazione | [tinyhumansai/openhuman](https://github.com/tinyhumansai/openhuman) |
 | filone orchestrazione-agenti | [aayushch/laya](https://github.com/aayushch/laya), [affaan-m/ECC](https://github.com/affaan-m/ECC), [anomalyco/opencode](https://github.com/anomalyco/opencode), [cbrock84/headcount](https://github.com/cbrock84/headcount), [cheaper-inference/OmniRoute](https://github.com/cheaper-inference/OmniRoute), [citrolabs/ego-lite](https://github.com/citrolabs/ego-lite), [Contrastive-LM/CLM](https://github.com/Contrastive-LM/CLM), [jesseduffield/lazygit](https://github.com/jesseduffield/lazygit), [langflow-ai/langflow](https://github.com/langflow-ai/langflow), [ruvnet/ruflo](https://github.com/ruvnet/ruflo), [contrastive-lm.notion.site](https://contrastive-lm.notion.site) |
+| filone prima-installazione-windows | [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat) |
 | filone prompt-efficaci | [elder-plinius/cl4r1t4s](https://github.com/elder-plinius/cl4r1t4s) |
 | filone ricerca | [lfnovo/open-notebook](https://github.com/lfnovo/open-notebook), [arxiv.org/abs/2603.21852v2](https://arxiv.org/abs/2603.21852v2), [core.ac.uk](https://core.ac.uk/), [doaj.org](https://doaj.org/), [scispace.com/it](https://scispace.com/it), [connectedpapers.com](https://www.connectedpapers.com/) |
 | filone scrittura | [petergyang/no-ai-slop](https://github.com/petergyang/no-ai-slop) |
