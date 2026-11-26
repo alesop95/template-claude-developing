@@ -81,6 +81,7 @@ SEMPRE_ATTIVE = {
     "regola:disclosure-progressiva": "accesso per livelli ai documenti voluminosi, in ogni progetto: si carica da sé davanti a un documento, e token-economy ne tiene la prescrizione breve",
     "regola:token-economy": "economia del contesto, vale in ogni sessione",
     "skill:craft-apps": "skill di sistema in ogni progetto: verifica in locale le app Craft prima di produrre un artefatto",
+    "skill:analisi-codice": "skill di sistema in ogni progetto: analisi d'impatto del codice su più livelli quando si chiede dove o perché un oggetto è usato",
     "skill:cerca-pacchetto":"skill di sistema in ogni progetto: e' essa stessa l'ingresso al catalogo fra un gate e l'altro",
 }
 

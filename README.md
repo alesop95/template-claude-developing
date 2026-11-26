@@ -470,7 +470,7 @@ template-claude-developing/
 Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione sotto `.claude/templates/<nome>/`, che ne spiega il funzionamento su due piani, concettuale e operativo, con la mappa di istanziazione e i crediti agli strumenti open source. L'indice qui sotto viene rigenerato dal catalogo e dai README dei pacchetti con `readme-sync`; una cartella senza voce di catalogo o senza descrizione breve fa fallire il controllo. Le voci senza README dedicato, fra cui strumenti esterni e server MCP, vivono nel catalogo `PACKAGES.md`.
 
 <!-- sync-readme:packages:start -->
-**51 pacchetti a cartella** su **108 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
+**52 pacchetti a cartella** su **109 voci** del catalogo. Le altre voci non hanno un README di pacchetto dedicato.
 
 ### Fondamenta e igiene del progetto
 
@@ -536,6 +536,7 @@ Ogni pacchetto a cartella porta con sé un proprio `README.md` di istanziazione 
 
 ### Comprensione di una codebase
 
+- `analisi-codice` - analisi d'impatto del codice su più repository, con mappa generata delle occorrenze, link permanenti a riga, commit introduttivi da git blame e pagine con il design system del progetto: [.claude/templates/analisi-codice/README.md](.claude/templates/analisi-codice/README.md)
 - `codebase-learning` - comprensione guidata di un progetto finito: [.claude/templates/codebase-learning/README.md](.claude/templates/codebase-learning/README.md)
 - `rea` - capire come funziona un software di cui non si ha il sorgente, con le prove accanto a ogni conclusione: [.claude/templates/rea/README.md](.claude/templates/rea/README.md)
 
