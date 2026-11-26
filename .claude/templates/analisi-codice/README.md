@@ -31,9 +31,15 @@ Il progetto dichiara il sistema in `analisi-codice.json` nella radice, dal model
 
 `sorgenti/` contiene il codice di altri e va ignorato da git. GitHub si raggiunge con `gh`, che fa anche da gestore delle credenziali di git: i repository privati si scaricano con l'account attivo, e quelli non accessibili si registrano come tali nel manifesto. Ogni conclusione del tipo "compare solo in" vale quindi sui sorgenti accessibili, e va scritta così.
 
+## Una ricerca, una pagina
+
+Ogni ricerca ha due sorgenti, `analisi.md` scritta da chi analizza e `mappa.md` generata da `dove-usato.py`, ma una pagina sola, `analisi.html`: la mappa vi entra come macro-sezione «Mappa delle occorrenze», prima delle Note, con un riepilogo per termine e un sottolivello per termine. Così chi legge un difetto trova nella stessa pagina tutti i punti in cui compare l'oggetto, senza passare da un file all'altro; la scelta è del 2026-11-26, quando il proprietario ha chiesto perché analisi e mappa fossero due file.
+
+L'impatto operativo è la prima cosa che la pagina mostra. L'analisi ha in testa, dopo la risposta, la sezione «Impatto operativo», con chi è toccato, che cosa vede o può fare e da quale riga viene. E ogni termine della mappa porta l'impatto operativo in un riquadro sopra le sue occorrenze, scritto da chi analizza nella chiave `impatti` di `ricerca.json`, perché dal codice si deduce il tipo di un'occorrenza e non che cosa cambia per chi usa il sistema: `ricerca.py` rifiuta di generare se un termine non ce l'ha.
+
 ## Le pagine
 
-Le pagine si generano con il design system che il progetto dichiara in `_notes/.tema.txt`, con caratteri e stile incorporati, quindi si aprono e si inviano come file singoli. Senza dichiarazione il generatore lo dice nella pagina invece di inventare uno stile. La prosa occupa tutta la larghezza del contenitore, e ogni titolo `##` e `###` è comprimibile con il più/meno a destra, come il componente Accordion del design system aziendale: la pagina si apre con le sezioni chiuse, ha i comandi Espandi tutto e Comprimi tutto in cima ed esce intera in stampa. Un sottolivello si scrive quindi come `###`, non come paragrafo che comincia con il suo nome.
+Le pagine si generano con il design system che il progetto dichiara in `_notes/.tema.txt`, con caratteri e stile incorporati, quindi si aprono e si inviano come file singoli. Senza dichiarazione il generatore lo dice nella pagina invece di inventare uno stile. La prosa occupa tutta la larghezza del contenitore, e ogni titolo `##` e `###` è comprimibile con il più/meno a destra, come il componente Accordion del design system aziendale: la pagina si apre con le sezioni chiuse e compattate, cioè con poco spazio fra l'una e l'altra e titoli ridotti, così che l'indice dell'analisi stia in una schermata; ha i comandi Espandi tutto e Comprimi tutto in cima ed esce intera in stampa. Un sottolivello si scrive quindi come `###`, non come paragrafo che comincia con il suo nome.
 
 ## I limiti dichiarati
 

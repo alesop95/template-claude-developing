@@ -125,9 +125,32 @@ def link_rotti(percorso):
     return errori
 
 
+def componi(cartella):
+    """La pagina della ricerca: l'analisi con la mappa come macro-sezione, prima delle Note.
+
+    Analisi e mappa restano due sorgenti, perché una si scrive e l'altra si genera, ma diventano
+    una pagina sola: chi legge un difetto trova nella stessa pagina tutti i punti in cui compare
+    l'oggetto. Il file composto è temporaneo e nascosto, e si cancella dopo l'uso."""
+    testo = (cartella / "analisi.md").read_text(encoding="utf-8")
+    mappa = cartella / "mappa.md"
+    if mappa.exists():
+        blocco = mappa.read_text(encoding="utf-8").strip() + "\n\n"
+        m = re.search(r"^## Note\b", testo, re.M)
+        testo = testo[:m.start()] + blocco + testo[m.start():] if m else testo.rstrip("\n") + "\n\n" + blocco
+    composta = cartella / ".pagina.md"
+    composta.write_text(testo, encoding="utf-8")
+    return composta
+
+
+def impatti_mancanti(cartella):
+    conf = json.loads((cartella / "ricerca.json").read_text(encoding="utf-8"))
+    mancano = [t for t in conf.get("termini", []) if not conf.get("impatti", {}).get(t)]
+    return [f"ricerca.json: impatto operativo da scrivere per {', '.join(mancano)}"] if mancano else []
+
+
 def controlla(cartella):
-    """Esegue tutti i controlli sui .md della ricerca. Torna l'elenco dei problemi."""
-    problemi = []
+    """Esegue tutti i controlli sui .md della ricerca e sulla pagina composta. Torna i problemi."""
+    problemi = impatti_mancanti(cartella)
     for nome in PAGINE:
         md = cartella / f"{nome}.md"
         if not md.exists():
@@ -142,9 +165,12 @@ def controlla(cartella):
             r = py("lint-prosa.py", md)
             segni = [riga for riga in r.stdout.splitlines() if re.search(r":\d+\s+P\d", riga)]
             problemi += [f"{md.name}: anti-slop {riga.split(md.name)[-1].strip()}" for riga in segni]
-        r = py("documento-genera.py", md, "--giro")
+    if (cartella / "analisi.md").exists():
+        composta = componi(cartella)
+        r = py("documento-genera.py", composta, "--giro")
+        composta.unlink()
         if "il giro chiude" not in r.stdout:
-            problemi.append(f"{md.name}: il giro fra testo e pagina non chiude: {(r.stdout + r.stderr).strip()[-200:]}")
+            problemi.append(f"pagina: il giro fra testo e pagina non chiude: {(r.stdout + r.stderr).strip()[-200:]}")
     return problemi
 
 
@@ -168,7 +194,7 @@ def indice():
              f"intestazione: Indice delle ricerche | {date.today():%d/%m/%Y}",
              "etichette: " + " | ".join(ETICHETTE + ["Una cartella per ricerca"]), "---", "",
              f'# Analisi del codice {SISTEMA} {{occhiello="Indice delle ricerche"}}', "",
-             f"> {len(voci)} ricerche. Ognuna ha un'analisi scritta e una mappa generata di tutti i punti dell'istanza in cui compaiono gli oggetti coinvolti.", "",
+             f"> {len(voci)} ricerche. Ognuna è una pagina con l'analisi scritta e, come sezione, la mappa generata di tutti i punti in cui compaiono gli oggetti coinvolti.", "",
              "::: schede"]
     for i, (c, conf) in enumerate(voci):
         if i:
@@ -176,7 +202,7 @@ def indice():
         righe += [f"Ricerca: [{conf['titolo']}]({c.name}/analisi.html)",
                   f"Domanda: {conf.get('domanda', '')}",
                   f"Aperta: {conf.get('aperta', '')}",
-                  f"Mappa: [{len(conf.get('termini', []))} termini]({c.name}/mappa.html)"]
+                  f"Termini mappati: {len(conf.get('termini', []))}"]
     righe += [":::", ""]
     md = RICERCHE / "indice.md"
     md.write_text("\n".join(righe), encoding="utf-8")
@@ -194,9 +220,8 @@ def indice():
         vecchio.unlink()
     collegamento(cart, "00 - Indice delle ricerche", RICERCHE / "indice.html")
     for n, (c, conf) in enumerate(voci, 1):
-        for pagina, etichetta in (("analisi", "analisi"), ("mappa", "mappa delle occorrenze")):
-            if (c / f"{pagina}.html").exists():
-                collegamento(cart, f"{n:02d} - {conf['titolo']} - {etichetta}", c / f"{pagina}.html")
+        if (c / "analisi.html").exists():
+            collegamento(cart, f"{n:02d} - {conf['titolo']}", c / "analisi.html")
     print(f"ricerca: indice e collegamenti aggiornati in {cart}")
 
 
@@ -205,11 +230,13 @@ def genera(cartella):
     if problemi:
         print("\n".join(problemi))
         sys.exit(f"ricerca: {len(problemi)} problemi in {cartella.name}, pagine non generate")
-    for nome in PAGINE:
-        md = cartella / f"{nome}.md"
-        if md.exists():
-            r = py("documento-genera.py", md, "--uscita", cartella / f"{nome}.html", "--incorpora", "--con-caratteri")
-            print(r.stdout.strip() or r.stderr.strip())
+    composta = componi(cartella)
+    r = py("documento-genera.py", composta, "--uscita", cartella / "analisi.html", "--incorpora", "--con-caratteri")
+    composta.unlink()
+    print(r.stdout.strip() or r.stderr.strip())
+    # La mappa era una pagina a sé fino al 26/11/2026: la copia vecchia si toglie, perché un
+    # collegamento rimasto a una pagina superata mostra dati che la ricerca non aggiorna più.
+    (cartella / "mappa.html").unlink(missing_ok=True)
     for cache in (PROGETTO / "tools").glob("__pycache__"):
         for f in cache.iterdir():
             f.unlink()

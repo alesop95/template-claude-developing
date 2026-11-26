@@ -257,30 +257,36 @@ def cella(s, n=150):
     return s if len(s) <= n else s[:n - 1] + "…"
 
 
-def markdown(trovati, termini, sorgenti, famiglie, titolo):
+def markdown(trovati, termini, sorgenti, famiglie, impatti=None):
+    """La mappa come macro-sezione dell'analisi: un titolo ## e un ### per termine.
+
+    Non ha front matter né titolo di documento, perché non è una pagina a sé: `ricerca.py genera`
+    la accoda all'analisi e ne fa una pagina sola. L'impatto operativo di ogni termine non si
+    deduce dal codice, lo scrive chi analizza in ricerca.json; qui apre il riepilogo e ogni
+    termine, così che chi legge veda prima che cosa cambia per chi usa il sistema e poi dove."""
+    impatti = impatti or {}
     usati = [n for n, i in sorgenti.items() if i.get("accessibile") and (not famiglie or i["famiglia"] in famiglie)]
     mancanti = [i["repo"] for i in sorgenti.values() if not i.get("accessibile")]
     tot = sum(len(v) for v in trovati.values())
-    fuori = ["---", f"titolo: {titolo}",
-             f"intestazione: Mappa delle occorrenze | {datetime.now():%d/%m/%Y %H:%M}",
-             "etichette: " + " | ".join(x for x in (CONF.get("organizzazione"), CONF.get("descrizione"), "Generata da dove-usato.py") if x), "---", "",
-             f'# {titolo} {{occhiello="Dove è usato, punto per punto"}}', "",
-             f"> {tot} occorrenze di {len(termini)} termini in {len(usati)} sorgenti, ricerca testuale con confini di parola su .py .xml .csv .js e it.po; non trova le chiamate costruite a runtime.", ""]
-    fuori += ["## Perimetro {occhiello=\"Che cosa è stato cercato\"}", "", "::: schede"]
+    fuori = ['## Mappa delle occorrenze {occhiello="Dove è usato, punto per punto"}', "",
+             f"{tot} occorrenze di {len(termini)} termini in {len(usati)} sorgenti, il {datetime.now():%d/%m/%Y}: ricerca testuale con confini di parola su .py .xml .csv .js e it.po, che non trova le chiamate costruite a runtime."
+             + (" Non accessibili e quindi non cercati: " + ", ".join(sorted(mancanti)) + "." if mancanti else ""), "",
+             "### Riepilogo per termine", "", "::: schede"]
     for i, t in enumerate(termini):
         per_livello = defaultdict(int)
         for o in trovati.get(t, []):
             per_livello[o["livello"]] += 1
         if i:
             fuori.append("---")
-        fuori += [f"Termine: `{t}`", f"Occorrenze: {len(trovati.get(t, []))}",
+        fuori += [f"Termine: `{t}`",
+                  f"Impatto operativo: {impatti.get(t, 'da scrivere in ricerca.json')}",
+                  f"Occorrenze: {len(trovati.get(t, []))}",
                   "Per livello: " + (", ".join(f"{k} {v}" for k, v in sorted(per_livello.items())) or "nessuna")]
     fuori += [":::", ""]
-    if mancanti:
-        fuori += ["Sorgenti dell'istanza non accessibili e quindi non cercati: " + ", ".join(sorted(mancanti)) + ".", ""]
     for t in termini:
         occ = sorted(trovati.get(t, []), key=lambda o: (o["livello"], o["modulo"], o["file"], o["riga"]))
-        fuori += [f'## `{t}` {{occhiello="{len(occ)} occorrenze"}}', ""]
+        fuori += [f"### `{t}`, {len(occ)} occorrenze", "", "> [!riquadro]", "> **Impatto operativo**", ">",
+                  f"> {impatti.get(t, 'da scrivere in ricerca.json')}", ""]
         if not occ:
             fuori += ["Nessuna occorrenza nei sorgenti cercati.", ""]
             continue
@@ -291,17 +297,17 @@ def markdown(trovati, termini, sorgenti, famiglie, titolo):
             org = o["origine"]
             origine = (f"[{org['commit'][:8]}](https://github.com/{o['repo']}/commit/{org['commit']}) {org['data']} {cella(org['autore'], 30)}: {cella(org['oggetto'], 70)}"
                        if org else "storia non disponibile (clone superficiale)")
-            fuori += [f"Dove: [{o['modulo'] or o['sorgente']}/{o['file'].split('/')[-1]}:{o['riga']}]({o['link']})",
+            fuori += [f"Effetto: {o['effetto']}",
+                      f"Dove: [{o['modulo'] or o['sorgente']}/{o['file'].split('/')[-1]}:{o['riga']}]({o['link']})",
                       f"Tipo: {o['tipo']}, {o['livello']}",
                       f"Contesto: `{cella(o['contesto'], 80)}`" if o["contesto"] else "Contesto: -",
-                      f"Effetto: {o['effetto']}",
                       f"Riga: `{cella(o['testo'])}`",
                       f"Introdotta: {origine}"]
         fuori += [":::", ""]
     sugg = collegati(trovati, termini)
     if sugg:
-        fuori += ['## Termini collegati {occhiello="Da cercare se rilevanti"}', "",
-                  "Simboli che compaiono accanto alle occorrenze: " + ", ".join(f"`{s}`" for s in sugg) + ".", ""]
+        fuori += ["### Termini collegati", "",
+                  "Simboli che compaiono accanto alle occorrenze, da aggiungere alla ricerca se rilevanti: " + ", ".join(f"`{s}`" for s in sugg) + ".", ""]
     return "\n".join(fuori) + "\n"
 
 
@@ -310,22 +316,21 @@ def main():
     ap.add_argument("termini", nargs="*")
     ap.add_argument("--ricerca", help="cartella di una ricerca: legge ricerca.json e scrive mappa.md e mappa.json")
     ap.add_argument("--famiglie", help="personalizzazione,terzi,oca,core; per difetto tutte le scaricate")
-    ap.add_argument("--titolo", default="Mappa delle occorrenze")
     a = ap.parse_args()
 
-    termini, uscita, titolo = list(a.termini), None, a.titolo
+    termini, uscita, impatti = list(a.termini), None, {}
     if a.ricerca:
         cartella = Path(a.ricerca)
         conf = json.loads((cartella / "ricerca.json").read_text(encoding="utf-8"))
         termini = termini or conf["termini"]
-        titolo = conf.get("titolo", titolo) + ": mappa delle occorrenze"
+        impatti = conf.get("impatti", {})
         uscita = cartella
     if not termini:
         ap.error("nessun termine")
     famiglie = set(a.famiglie.split(",")) if a.famiglie else set()
 
     trovati, sorgenti = cerca(termini, famiglie)
-    md = markdown(trovati, termini, sorgenti, famiglie, titolo)
+    md = markdown(trovati, termini, sorgenti, famiglie, impatti)
     if uscita:
         (uscita / "mappa.md").write_text(md, encoding="utf-8")
         (uscita / "mappa.json").write_text(json.dumps(trovati, indent=1, ensure_ascii=False), encoding="utf-8")
