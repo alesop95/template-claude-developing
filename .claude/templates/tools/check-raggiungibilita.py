@@ -70,6 +70,7 @@ MARCATORE_BUNDLE = os.path.join(".claude", "PROMPT-nuovo-progetto.md")
 # Le capacità che non si scelgono, con il motivo. Aggiungerne una è una decisione: significa
 # dichiarare che vale in ogni progetto e che nessun gate deve proporla.
 SEMPRE_ATTIVE = {
+    "regola:artefatti-temporanei": "destinazione esplicita e pulizia delle copie di consegna, in ogni progetto",
     "regola:chat-non-e-memoria": "persistenza di ciò che nasce in sessione, vale in ogni progetto",
     "regola:git-commands-format": "forma dei comandi consegnati all'utente, vale in ogni progetto",
     "regola:documenti-personali": "documenti personali mai letti senza richiesta espressa, vale in ogni progetto",

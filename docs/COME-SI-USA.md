@@ -321,6 +321,7 @@ Quelli che `chiudi` e gli hook lanciano da sé non vanno ricordati: sono qui per
 | `verifica-portabilita.py` | Dice che cosa, nel template, funziona su un solo sistema operativo |
 | `verifica-ripresa.py` | Dice, alla riapertura, se fra l'ultima sessione e questa si è perso qualcosa |
 | `verifica-schede.py` | Misura lo stato delle schede di `.claude/context/` rispetto al codice che dichiarano di coprire |
+| `wipe-temporanei-perimetro.ps1` | Verifica i componenti prima di passare una directory a Remove-Item -Recurse |
 
 ## Dove si legge il resto
 

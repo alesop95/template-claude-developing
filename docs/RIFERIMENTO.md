@@ -4,7 +4,7 @@
 
 ## Come si legge
 
-Il template offre le proprie capacità in quattro forme, e questo documento le elenca tutte: 21 skill di sistema, che ogni progetto istanziato riceve; 109 voci di catalogo in 15 settori, che il gate propone e l'utente sceglie; 52 strumenti, che le skill e `chiudi` eseguono; e 309 fonti a monte, sorvegliate a ogni apertura di sessione. Per ogni skill e per ogni pacchetto ci sono cinque risposte: che cosa fa, come si usa, perché adottarlo, quando conviene e quando no. Il dettaglio di un pacchetto sta nel suo `README.md` sotto `.claude/templates/<nome>/`; quello di ogni fonte, con ciò che il template ne prende e la data dell'ultima verifica, in `.claude/templates/fonti-a-monte.md`.
+Il template offre le proprie capacità in quattro forme, e questo documento le elenca tutte: 21 skill di sistema, che ogni progetto istanziato riceve; 109 voci di catalogo in 15 settori, che il gate propone e l'utente sceglie; 53 strumenti, che le skill e `chiudi` eseguono; e 309 fonti a monte, sorvegliate a ogni apertura di sessione. Per ogni skill e per ogni pacchetto ci sono cinque risposte: che cosa fa, come si usa, perché adottarlo, quando conviene e quando no. Il dettaglio di un pacchetto sta nel suo `README.md` sotto `.claude/templates/<nome>/`; quello di ogni fonte, con ciò che il template ne prende e la data dell'ultima verifica, in `.claude/templates/fonti-a-monte.md`.
 
 ## Skill di sistema
 
@@ -280,6 +280,7 @@ Stanno in `.claude/templates/tools/` e in un progetto istanziato in `tools/`. La
 | `verifica-portabilita.py` | Dice che cosa, nel template, funziona su un solo sistema operativo. |
 | `verifica-ripresa.py` | Dice, alla riapertura, se fra l'ultima sessione e questa si è perso qualcosa. |
 | `verifica-schede.py` | Misura lo stato delle schede di `.claude/context/` rispetto al codice che dichiarano di coprire. |
+| `wipe-temporanei-perimetro.ps1` | Verifica i componenti prima di passare una directory a Remove-Item -Recurse. |
 
 ## Fonti che non appartengono a un pacchetto
 
